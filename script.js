@@ -78,11 +78,25 @@ function createLabCard(lab) {
 // Render all lab cards
 function renderLabs() {
     const labsGrid = document.getElementById('labsGrid');
-    labsGrid.innerHTML = '';
+    const simulationsGrid = document.getElementById('simulationsGrid');
 
-    labs.forEach(lab => {
+    labsGrid.innerHTML = '';
+    simulationsGrid.innerHTML = '';
+
+    // Separate labs and simulations
+    const labItems = labs.filter(lab => lab.type === 'lab');
+    const simulationItems = labs.filter(lab => lab.type === 'simulation');
+
+    // Render labs
+    labItems.forEach(lab => {
         const card = createLabCard(lab);
         labsGrid.appendChild(card);
+    });
+
+    // Render simulations
+    simulationItems.forEach(lab => {
+        const card = createLabCard(lab);
+        simulationsGrid.appendChild(card);
     });
 }
 
