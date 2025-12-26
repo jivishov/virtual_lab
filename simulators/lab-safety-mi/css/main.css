@@ -498,8 +498,10 @@ body {
    =================================== */
 
 .hud {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.8));
     border-bottom: 2px solid var(--accent-blue);
@@ -511,7 +513,6 @@ body {
     font-size: 13px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
     gap: 30px;
-    width: 100%;
 }
 
 .hud-left,
@@ -570,7 +571,7 @@ body {
 .scenario-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 70px 20px 20px 20px;
 }
 
 .scenario-header {
