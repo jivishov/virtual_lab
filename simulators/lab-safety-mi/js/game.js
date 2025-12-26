@@ -27,6 +27,11 @@ class LabSafetyGame {
     init() {
         // Initialize intro screen
         this.setupIntroScreen();
+
+        // Debug: Global click listener
+        document.addEventListener('click', (e) => {
+            console.log('GLOBAL CLICK:', e.target);
+        });
     }
 
     setupIntroScreen() {
@@ -99,28 +104,46 @@ class LabSafetyGame {
     }
 
     setupAgentSelection() {
+        console.log('=== SETUP AGENT SELECTION CALLED ===');
+
         // Small delay to ensure DOM is ready
         setTimeout(() => {
             const agentCards = document.querySelectorAll('.agent-card');
-
-            console.log('Setting up agent selection, found cards:', agentCards.length);
+            console.log('Found agent cards:', agentCards.length);
 
             agentCards.forEach((card, index) => {
-                // Remove any existing listeners by cloning
-                const selectBtn = card.querySelector('.select-agent-btn');
-                if (selectBtn) {
-                    // Clone to remove old listeners
-                    const newBtn = selectBtn.cloneNode(true);
-                    selectBtn.parentNode.replaceChild(newBtn, selectBtn);
+                console.log(`Setting up card ${index}`);
 
-                    // Add new listener
-                    newBtn.addEventListener('click', (e) => {
+                const selectBtn = card.querySelector('.select-agent-btn');
+                console.log(`Button ${index}:`, selectBtn);
+
+                if (selectBtn) {
+                    // Direct event listener without cloning
+                    selectBtn.onclick = (e) => {
                         e.preventDefault();
-                        console.log('Agent selected:', index);
+                        e.stopPropagation();
+                        console.log('=== BUTTON CLICKED ===', index);
                         this.selectAgent(index);
-                    });
+                    };
+
+                    // Also try addEventListener as backup
+                    selectBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('=== addEventListener FIRED ===', index);
+                        this.selectAgent(index);
+                    }, { once: false });
+
+                    console.log(`Listeners attached to button ${index}`);
+
+                    // Test if button is clickable
+                    const styles = window.getComputedStyle(selectBtn);
+                    console.log(`Button ${index} pointer-events:`, styles.pointerEvents);
+                    console.log(`Button ${index} display:`, styles.display);
                 }
             });
+
+            console.log('=== SETUP COMPLETE ===');
         }, 100);
     }
 
