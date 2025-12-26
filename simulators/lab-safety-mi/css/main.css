@@ -500,34 +500,40 @@ body {
 .hud {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.8));
     border-bottom: 2px solid var(--accent-blue);
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 15px 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
     font-family: var(--font-header);
-    font-size: 13px;
+    font-size: 14px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-    flex-wrap: wrap;
 }
 
-.hud-left,
-.hud-center,
-.hud-right {
+.hud-left {
     display: flex;
-    gap: 20px;
-    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
 }
 
 .hud-center {
-    flex: 1;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.hud-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
 }
 
 .hud-item {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
-    white-space: nowrap;
 }
 
 .hud-item .label {
