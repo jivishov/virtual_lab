@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission: Impossible - Laboratory Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/effects.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button id="musicToggle" class="audio-btn" title="Toggle Music">
+            <span class="icon">🎵</span>
+        </button>
+        <button id="sfxToggle" class="audio-btn" title="Toggle Sound Effects">
+            <span class="icon">🔊</span>
+        </button>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="bgMusic" loop>
+        <source src="assets/audio/mi-theme.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="beepSound" src="assets/audio/beep.mp3"></audio>
+    <audio id="explosionSound" src="assets/audio/explosion.mp3"></audio>
+    <audio id="successSound" src="assets/audio/success.mp3"></audio>
+    <audio id="failSound" src="assets/audio/fail.mp3"></audio>
+    <audio id="alarmSound" src="assets/audio/alarm.mp3"></audio>
+
+    <!-- Main Container -->
+    <div id="gameContainer" class="game-container">
+
+        <!-- INTRO SCREEN -->
+        <div id="introScreen" class="screen active">
+            <div class="briefing-room">
+                <div class="spotlight"></div>
+                <div class="mission-dossier">
+                    <div class="classified-header">
+                        <span class="blink">● REC</span>
+                        <span>CLASSIFIED - EYES ONLY</span>
+                        <span class="timestamp"></span>
+                    </div>
+                    <div class="dossier-content">
+                        <h1 class="glitch-text" data-text="MISSION: IMPOSSIBLE">MISSION: IMPOSSIBLE</h1>
+                        <h2>LABORATORY PROTOCOL</h2>
+
+                        <div class="divider"></div>
+
+                        <div class="typing-text" id="missionBrief">
+                            <p><strong>AGENT IDENTIFICATION REQUIRED</strong></p>
+                            <div class="agent-input-group">
+                                <label>CODENAME:</label>
+                                <input type="text" id="agentName" placeholder="Enter codename..." maxlength="20">
+                            </div>
+                        </div>
+
+                        <button id="acceptMissionBtn" class="mission-btn pulse-btn" disabled>
+                            ACCEPT MISSION
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BRIEFING SCREEN -->
+        <div id="briefingScreen" class="screen">
+            <div class="briefing-room">
+                <div class="mission-dossier">
+                    <div class="classified-header">
+                        <span class="blink">● REC</span>
+                        <span>MISSION BRIEFING</span>
+                    </div>
+                    <div class="dossier-content">
+                        <div id="briefingText" class="typing-text">
+                            <p><strong>MISSION DOSSIER - CLEARANCE LEVEL: OMEGA</strong></p>
+                            <p>Intelligence indicates a rogue scientist is developing hazardous compounds in Lab Omega-7.</p>
+                            <p>Your mission, should you choose to accept it, is to navigate the facility while adhering to strict safety protocols.</p>
+                            <p><span class="warning-text">Any deviation could trigger catastrophic chain reactions.</span></p>
+                            <br>
+                            <p class="self-destruct">This message will self-destruct in <span id="countdown">5</span> seconds...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SELF DESTRUCT ANIMATION -->
+        <div id="destructScreen" class="screen">
+            <div class="lab-scene">
+                <div class="beaker-container">
+                    <div class="beaker">
+                        <div class="liquid acid"></div>
+                        <div class="liquid water"></div>
+                        <div class="bubbles"></div>
+                        <div class="steam"></div>
+                    </div>
+                    <div class="pour-animation">
+                        <div class="pouring-liquid"></div>
+                    </div>
+                </div>
+                <div class="violation-warning">
+                    <div class="warning-box">
+                        <h2>⚠️ PROTOCOL VIOLATION DETECTED</h2>
+                        <p>NEVER add water to acid!</p>
+                        <p class="safety-tip">Always add acid TO water slowly to dissipate heat safely.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AGENT SELECTION SCREEN -->
+        <div id="agentSelectScreen" class="screen">
+            <div class="briefing-room">
+                <h1 class="screen-title">SELECT CLEARANCE LEVEL</h1>
+                <div class="agent-grid">
+                    <div class="agent-card" data-level="0">
+                        <div class="agent-silhouette">👤</div>
+                        <h3>RECRUIT</h3>
+                        <div class="agent-stats">
+                            <p>Starting Points: 0</p>
+                            <p>Status: Learning the Ropes</p>
+                        </div>
+                        <button class="select-agent-btn">SELECT</button>
+                    </div>
+                    <div class="agent-card" data-level="1">
+                        <div class="agent-silhouette">🕵️</div>
+                        <h3>FIELD AGENT</h3>
+                        <div class="agent-stats">
+                            <p>Starting Points: 30</p>
+                            <p>Status: Trained Professional</p>
+                        </div>
+                        <button class="select-agent-btn">SELECT</button>
+                    </div>
+                    <div class="agent-card" data-level="2">
+                        <div class="agent-silhouette">🥷</div>
+                        <h3>SPECIAL OPS</h3>
+                        <div class="agent-stats">
+                            <p>Starting Points: 60</p>
+                            <p>Status: Expert Operative</p>
+                        </div>
+                        <button class="select-agent-btn">SELECT</button>
+                    </div>
+                    <div class="agent-card" data-level="3">
+                        <div class="agent-silhouette">👨‍💼</div>
+                        <h3>IMF DIRECTOR</h3>
+                        <div class="agent-stats">
+                            <p>Starting Points: 90</p>
+                            <p>Status: Master of Protocols</p>
+                        </div>
+                        <button class="select-agent-btn">SELECT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="gameScreen" class="screen">
+            <!-- HUD -->
+            <div class="hud">
+                <div class="hud-left">
+                    <div class="hud-item">
+                        <span class="label">AGENT:</span>
+                        <span id="hudAgent" class="value"></span>
+                    </div>
+                    <div class="hud-item">
+                        <span class="label">CLEARANCE:</span>
+                        <span id="hudLevel" class="value"></span>
+                    </div>
+                </div>
+                <div class="hud-center">
+                    <div class="hud-item">
+                        <span class="label">SCENARIO:</span>
+                        <span id="hudScenario" class="value">1/10</span>
+                    </div>
+                    <div class="hud-item alert-level">
+                        <span class="label">ALERT:</span>
+                        <span id="hudAlert" class="value alert-green">SECURE</span>
+                    </div>
+                </div>
+                <div class="hud-right">
+                    <div class="hud-item">
+                        <span class="label">POINTS:</span>
+                        <span id="hudPoints" class="value">0</span>
+                    </div>
+                    <div class="hud-item">
+                        <span class="label">STREAK:</span>
+                        <span id="hudStreak" class="value">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenario Display -->
+            <div id="scenarioContainer" class="scenario-container">
+                <div class="scenario-header">
+                    <h2 id="scenarioTitle" class="scenario-title"></h2>
+                    <div class="threat-level">
+                        <span class="label">THREAT LEVEL:</span>
+                        <span id="threatLevel" class="threat-indicator"></span>
+                    </div>
+                </div>
+
+                <!-- Scene Animation Area -->
+                <div id="sceneArea" class="scene-area">
+                    <div class="camera-overlay">
+                        <div class="corner-tl"></div>
+                        <div class="corner-tr"></div>
+                        <div class="corner-bl"></div>
+                        <div class="corner-br"></div>
+                        <div class="scan-line"></div>
+                    </div>
+                    <div id="sceneContent" class="scene-content"></div>
+                </div>
+
+                <!-- Situation Description -->
+                <div class="situation-box">
+                    <div class="situation-label">SITUATION ANALYSIS:</div>
+                    <p id="situationText" class="situation-text"></p>
+                </div>
+
+                <!-- Timer Bar -->
+                <div class="timer-container">
+                    <div class="timer-label">
+                        <span>TIME REMAINING:</span>
+                        <span id="timerText" class="timer-value">15s</span>
+                    </div>
+                    <div class="timer-bar">
+                        <div id="timerFill" class="timer-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="options-container"></div>
+
+                <!-- Feedback Area -->
+                <div id="feedbackArea" class="feedback-area hidden">
+                    <div class="feedback-content">
+                        <h3 id="feedbackTitle" class="feedback-title"></h3>
+                        <p id="feedbackText" class="feedback-text"></p>
+                        <div class="field-notes">
+                            <div class="notes-label">FIELD NOTES:</div>
+                            <p id="fieldNotes" class="notes-text"></p>
+                        </div>
+                        <button id="nextBtn" class="next-btn">NEXT SCENARIO ➤</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MISSION COMPLETE SCREEN -->
+        <div id="completeScreen" class="screen">
+            <div class="briefing-room">
+                <div class="mission-dossier">
+                    <div class="classified-header">
+                        <span id="missionStatusIcon">✓</span>
+                        <span id="missionStatus">MISSION STATUS</span>
+                    </div>
+                    <div class="dossier-content">
+                        <h1 id="completionTitle" class="completion-title"></h1>
+
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">FINAL CLEARANCE LEVEL</div>
+                                <div id="finalLevel" class="stat-value"></div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">SECURITY POINTS</div>
+                                <div id="finalPoints" class="stat-value"></div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">PROTOCOLS EXECUTED</div>
+                                <div id="protocolsExecuted" class="stat-value"></div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">BREACH COUNT</div>
+                                <div id="breachCount" class="stat-value"></div>
+                            </div>
+                        </div>
+
+                        <div id="badgesContainer" class="badges-container">
+                            <h3>COMMENDATIONS EARNED</h3>
+                            <div id="badgesList" class="badges-list"></div>
+                        </div>
+
+                        <div class="debriefing">
+                            <h3>DEBRIEFING NOTES</h3>
+                            <p id="debriefingText"></p>
+                        </div>
+
+                        <div class="final-buttons">
+                            <button id="newMissionBtn" class="mission-btn">ACCEPT NEW MISSION</button>
+                            <button id="reviewBtn" class="mission-btn secondary">REVIEW PROTOCOLS</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/questions.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
