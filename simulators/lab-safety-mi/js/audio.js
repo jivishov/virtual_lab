@@ -320,22 +320,39 @@ class AudioManager {
 
     playMIThemeFallback() {
         // Simple MI theme melody fallback
-        if (!this.audioContext) return;
+        if (!this.audioContext) {
+            console.error('No AudioContext available for MI theme');
+            return;
+        }
 
-        console.log('Playing synthesized MI theme');
+        if (this.audioContext.state !== 'running') {
+            console.warn('AudioContext not running, state:', this.audioContext.state);
+            return;
+        }
+
+        console.log('🎵 Playing synthesized MI theme (looping)');
 
         const melody = [
-            { freq: 659.25, duration: 0.15 }, // E
-            { freq: 698.46, duration: 0.15 }, // F
-            { freq: 659.25, duration: 0.15 }, // E
-            { freq: 587.33, duration: 0.15 }, // D
-            { freq: 523.25, duration: 0.3 },  // C
+            { freq: 659.25, duration: 0.2 }, // E
+            { freq: 698.46, duration: 0.2 }, // F
+            { freq: 659.25, duration: 0.2 }, // E
+            { freq: 587.33, duration: 0.2 }, // D
+            { freq: 523.25, duration: 0.4 },  // C
         ];
 
         const playMelody = () => {
-            if (!this.musicEnabled) return;
+            if (!this.musicEnabled) {
+                console.log('Music disabled, stopping theme');
+                return;
+            }
 
-            let currentTime = this.audioContext.currentTime;
+            if (this.audioContext.state !== 'running') {
+                console.warn('AudioContext stopped, state:', this.audioContext.state);
+                return;
+            }
+
+            console.log('🔊 Playing melody iteration...');
+            let currentTime = this.audioContext.currentTime + 0.1;
 
             melody.forEach(note => {
                 const oscillator = this.audioContext.createOscillator();
@@ -345,9 +362,10 @@ class AudioManager {
                 gainNode.connect(this.audioContext.destination);
 
                 oscillator.frequency.value = note.freq;
-                oscillator.type = 'square';
+                oscillator.type = 'sine'; // Changed to sine for smoother sound
 
-                gainNode.gain.setValueAtTime(0.08, currentTime);
+                // Increased volume significantly
+                gainNode.gain.setValueAtTime(0.2, currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
 
                 oscillator.start(currentTime);
@@ -356,9 +374,9 @@ class AudioManager {
                 currentTime += note.duration + 0.05;
             });
 
-            // Loop the melody
+            // Loop the melody every 2.5 seconds
             if (this.musicEnabled) {
-                setTimeout(playMelody, 2000);
+                setTimeout(playMelody, 2500);
             }
         };
 

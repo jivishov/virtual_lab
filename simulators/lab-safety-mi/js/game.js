@@ -114,11 +114,19 @@ class LabSafetyGame {
             agentCards.forEach((card, index) => {
                 console.log(`Setting up card ${index}`);
 
+                // SOLUTION: Add listener to the ENTIRE CARD, not just the button
+                card.onclick = (e) => {
+                    console.log('=== CARD CLICKED ===', index);
+                    this.selectAgent(index);
+                };
+
+                card.style.cursor = 'pointer';
+
                 const selectBtn = card.querySelector('.select-agent-btn');
                 console.log(`Button ${index}:`, selectBtn);
 
                 if (selectBtn) {
-                    // Direct event listener without cloning
+                    // Also add to button for redundancy
                     selectBtn.onclick = (e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -126,20 +134,7 @@ class LabSafetyGame {
                         this.selectAgent(index);
                     };
 
-                    // Also try addEventListener as backup
-                    selectBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('=== addEventListener FIRED ===', index);
-                        this.selectAgent(index);
-                    }, { once: false });
-
-                    console.log(`Listeners attached to button ${index}`);
-
-                    // Test if button is clickable
-                    const styles = window.getComputedStyle(selectBtn);
-                    console.log(`Button ${index} pointer-events:`, styles.pointerEvents);
-                    console.log(`Button ${index} display:`, styles.display);
+                    console.log(`Listeners attached to card and button ${index}`);
                 }
             });
 
