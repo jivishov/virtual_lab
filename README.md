@@ -4,7 +4,9 @@ A professional, educational frontpage for hosting virtual laboratory simulations
 
 ## Features
 
+- **Hero Image Slider**: Eye-catching image carousel for showcasing lab screenshots
 - **Modern Card-Based Layout**: Clean, professional design with card-style presentation for each lab
+- **Categorized Sections**: Separate sections for Virtual Labs and Simulations
 - **Responsive Design**: Optimized for all devices (desktop, tablet, mobile)
 - **Smooth Animations**: Professional fade-in effects and hover interactions
 - **Accessibility**: Keyboard navigation and screen reader friendly
@@ -25,6 +27,37 @@ virtual_lab/
 1. **Open the website**: Simply open `index.html` in a web browser
 2. **View labs**: Browse through the available virtual labs and simulations
 3. **Launch a lab**: Click on any "Launch Lab" or "Launch Simulation" button
+
+## Adding Hero Slider Images
+
+The hero section at the top of the page can display a rotating carousel of images (screenshots of your labs/simulations).
+
+**To add images to the hero slider:**
+
+1. Create an `images` folder in the same directory as your HTML file (if it doesn't exist)
+2. Add your lab/simulation screenshots to this folder (e.g., `lab1.jpg`, `lab2.jpg`, `simulation1.jpg`)
+3. Open `script.js`
+4. Find the `heroImages` array at the top of the file
+5. Add your image paths to the array:
+
+```javascript
+const heroImages = [
+    'images/lab-screenshot1.jpg',
+    'images/lab-screenshot2.jpg',
+    'images/simulation-screenshot.jpg',
+];
+```
+
+**Features:**
+- Images will automatically rotate every 5 seconds
+- Click on the dots at the bottom to navigate manually
+- Overlay ensures text remains readable over any image
+- If no images are added, the hero section displays with a gradient background
+
+**Recommended image specifications:**
+- Resolution: 1920x600px or similar aspect ratio
+- Format: JPG or PNG
+- File size: Keep under 500KB for fast loading
 
 ## Adding New Labs
 
