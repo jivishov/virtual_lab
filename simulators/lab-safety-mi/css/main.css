@@ -500,40 +500,27 @@ body {
 .hud {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.8));
     border-bottom: 2px solid var(--accent-blue);
-    padding: 15px 30px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
-    font-family: var(--font-header);
-    font-size: 14px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-}
-
-.hud-left {
+    padding: 12px 30px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-}
-
-.hud-center {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: space-evenly;
     align-items: center;
+    font-family: var(--font-header);
+    font-size: 13px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    gap: 30px;
 }
 
+.hud-left,
+.hud-center,
 .hud-right {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-end;
+    display: contents;
 }
 
 .hud-item {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
+    white-space: nowrap;
 }
 
 .hud-item .label {
