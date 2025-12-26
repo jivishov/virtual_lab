@@ -50,12 +50,20 @@ class AudioManager {
         const sfxToggle = document.getElementById('sfxToggle');
 
         if (musicToggle) {
+            // Set initial button state
+            musicToggle.classList.toggle('muted', !this.musicEnabled);
+            console.log('🎵 Music button initialized, enabled:', this.musicEnabled);
+
             musicToggle.addEventListener('click', () => {
                 this.toggleMusic();
             });
         }
 
         if (sfxToggle) {
+            // Set initial button state
+            sfxToggle.classList.toggle('muted', !this.sfxEnabled);
+            console.log('🔊 SFX button initialized, enabled:', this.sfxEnabled);
+
             sfxToggle.addEventListener('click', () => {
                 this.toggleSFX();
             });
@@ -64,41 +72,27 @@ class AudioManager {
 
     async playMusic() {
         console.log('=== PLAY MUSIC CALLED ===');
+        console.log('Music enabled:', this.musicEnabled);
+
+        if (!this.musicEnabled) {
+            console.log('❌ Music is disabled - skipping playback');
+            return;
+        }
 
         // Resume AudioContext if suspended
         if (this.audioContext && this.audioContext.state === 'suspended') {
             console.log('Resuming suspended AudioContext...');
             try {
                 await this.audioContext.resume();
-                console.log('AudioContext resumed, state:', this.audioContext.state);
+                console.log('✅ AudioContext resumed, state:', this.audioContext.state);
             } catch (e) {
                 console.error('Failed to resume AudioContext:', e);
             }
         }
 
-        if (this.bgMusic && this.musicEnabled) {
-            console.log('Trying to play bgMusic element...');
-            // Try to play music
-            const playPromise = this.bgMusic.play();
-
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        console.log('✓ Music started successfully from audio element');
-                    })
-                    .catch((error) => {
-                        console.warn('✗ Background music blocked or not found:', error.message);
-                        // Fallback to Web Audio synthesized theme
-                        this.playMIThemeFallback();
-                    });
-            }
-        } else if (!this.bgMusic && this.musicEnabled) {
-            // No audio element, use fallback
-            console.log('No audio element found, using synthesized MI theme');
-            this.playMIThemeFallback();
-        } else if (!this.musicEnabled) {
-            console.log('Music is disabled');
-        }
+        // ALWAYS use Web Audio API synthesized theme (no audio files needed)
+        console.log('🎵 Using Web Audio API for MI theme');
+        this.playMIThemeFallback();
     }
 
     stopMusic() {
