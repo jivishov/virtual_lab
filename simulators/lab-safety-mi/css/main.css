@@ -498,6 +498,9 @@ body {
    =================================== */
 
 .hud {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.8));
     border-bottom: 2px solid var(--accent-blue);
     padding: 12px 30px;
@@ -508,6 +511,7 @@ body {
     font-size: 13px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
     gap: 30px;
+    width: 100%;
 }
 
 .hud-left,
