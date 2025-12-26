@@ -99,32 +99,60 @@ class LabSafetyGame {
     }
 
     setupAgentSelection() {
-        const agentCards = document.querySelectorAll('.agent-card');
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+            const agentCards = document.querySelectorAll('.agent-card');
 
-        agentCards.forEach((card, index) => {
-            const selectBtn = card.querySelector('.select-agent-btn');
-            if (selectBtn) {
-                selectBtn.addEventListener('click', () => {
-                    this.selectAgent(index);
-                });
-            }
-        });
+            console.log('Setting up agent selection, found cards:', agentCards.length);
+
+            agentCards.forEach((card, index) => {
+                // Remove any existing listeners by cloning
+                const selectBtn = card.querySelector('.select-agent-btn');
+                if (selectBtn) {
+                    // Clone to remove old listeners
+                    const newBtn = selectBtn.cloneNode(true);
+                    selectBtn.parentNode.replaceChild(newBtn, selectBtn);
+
+                    // Add new listener
+                    newBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        console.log('Agent selected:', index);
+                        this.selectAgent(index);
+                    });
+                }
+            });
+        }, 100);
     }
 
     selectAgent(levelIndex) {
+        console.log('selectAgent called with level:', levelIndex);
+
         this.state.agentLevel = levelIndex;
         this.state.score = AGENT_LEVELS[levelIndex].startingPoints;
 
-        // Start music
+        // Start music (user interaction allows autoplay)
         if (window.audioManager) {
+            console.log('Starting music...');
             window.audioManager.playMusic();
         }
 
-        // Switch to game screen
-        window.animations.switchScreen('agentSelectScreen', 'gameScreen', () => {
-            this.initializeHUD();
-            this.loadScenario(0);
+        // Give visual feedback
+        const agentCards = document.querySelectorAll('.agent-card');
+        agentCards.forEach((card, index) => {
+            if (index === levelIndex) {
+                card.style.transform = 'scale(1.1)';
+                card.style.boxShadow = '0 0 40px var(--accent-blue)';
+            }
         });
+
+        // Small delay for feedback, then switch
+        setTimeout(() => {
+            // Switch to game screen
+            window.animations.switchScreen('agentSelectScreen', 'gameScreen', () => {
+                this.initializeHUD();
+                this.loadScenario(0);
+            });
+        }, 600);
     }
 
     initializeHUD() {
