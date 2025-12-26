@@ -500,39 +500,34 @@ body {
 .hud {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.8));
     border-bottom: 2px solid var(--accent-blue);
-    padding: 20px 30px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-family: var(--font-header);
-    font-size: 14px;
+    font-size: 13px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    flex-wrap: wrap;
 }
 
-.hud-left {
+.hud-left,
+.hud-center,
+.hud-right {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.hud-center {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    gap: 20px;
     align-items: center;
 }
 
-.hud-right {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-end;
+.hud-center {
+    flex: 1;
+    justify-content: center;
 }
 
 .hud-item {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
+    white-space: nowrap;
 }
 
 .hud-item .label {
@@ -578,24 +573,24 @@ body {
 .scenario-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px;
 }
 
 .scenario-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    gap: 20px;
+    margin-bottom: 20px;
+    gap: 15px;
 }
 
 .scenario-title {
     font-family: var(--font-header);
-    font-size: 32px;
+    font-size: 28px;
     color: var(--accent-blue);
     text-shadow: 0 0 15px var(--accent-blue);
     letter-spacing: 2px;
+    text-align: center;
 }
 
 .threat-level {
@@ -637,12 +632,12 @@ body {
 
 .scene-area {
     position: relative;
-    height: 400px;
+    height: 250px;
     background: rgba(0, 0, 0, 0.8);
     border: 3px solid var(--accent-blue-dim);
     border-radius: 10px;
     overflow: hidden;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .camera-overlay {
@@ -734,9 +729,10 @@ body {
 }
 
 .situation-text {
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1.6;
     color: var(--text-primary);
+    font-weight: 500;
 }
 
 /* ===================================
