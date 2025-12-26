@@ -55,9 +55,17 @@ const heroImages = [
 - If no images are added, the hero section displays with a gradient background
 
 **Recommended image specifications:**
-- Resolution: 1920x600px or similar aspect ratio
-- Format: JPG or PNG
-- File size: Keep under 500KB for fast loading
+- **Minimum Resolution**: 800x400px (2:1 aspect ratio ideal)
+- **Good Resolution**: 1200x600px or 800x600px work well
+- **Optimal Resolution**: 1920x600px for high-res displays (optional)
+- **Format**: JPG (recommended) or PNG
+- **File size**: Keep under 200-300KB for fast loading
+
+**Tips:**
+- Hero section is 400px tall, so images will be cropped to fit width
+- Images are set to `background-size: cover` so they scale automatically
+- 800x600px images work perfectly fine - no need for massive files
+- The gradient overlay ensures text remains readable on any image
 
 ## Adding New Labs
 
