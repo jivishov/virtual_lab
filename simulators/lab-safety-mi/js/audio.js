@@ -58,19 +58,41 @@ class AudioManager {
 
     playMusic() {
         if (this.bgMusic && this.musicEnabled) {
-            // Create a simple MI theme using Web Audio if file not available
-            this.bgMusic.play().catch(() => {
-                console.warn('Background music file not found, using fallback');
-                this.playMIThemeFallback();
-            });
+            // Try to play music
+            const playPromise = this.bgMusic.play();
+
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log('Music started successfully');
+                    })
+                    .catch((error) => {
+                        console.warn('Background music blocked or not found:', error);
+                        // Fallback to Web Audio synthesized theme
+                        this.playMIThemeFallback();
+                    });
+            }
+        } else if (!this.bgMusic && this.musicEnabled) {
+            // No audio element, use fallback
+            console.log('No audio element, using synthesized MI theme');
+            this.playMIThemeFallback();
         }
     }
 
     stopMusic() {
+        // Stop looping theme by disabling music
+        const wasEnabled = this.musicEnabled;
+        this.musicEnabled = false;
+
         if (this.bgMusic) {
             this.bgMusic.pause();
             this.bgMusic.currentTime = 0;
         }
+
+        // Re-enable for next play
+        setTimeout(() => {
+            this.musicEnabled = wasEnabled;
+        }, 100);
     }
 
     toggleMusic() {
@@ -278,6 +300,8 @@ class AudioManager {
         // Simple MI theme melody fallback
         if (!this.audioContext) return;
 
+        console.log('Playing synthesized MI theme');
+
         const melody = [
             { freq: 659.25, duration: 0.15 }, // E
             { freq: 698.46, duration: 0.15 }, // F
@@ -286,26 +310,37 @@ class AudioManager {
             { freq: 523.25, duration: 0.3 },  // C
         ];
 
-        let currentTime = this.audioContext.currentTime;
+        const playMelody = () => {
+            if (!this.musicEnabled) return;
 
-        melody.forEach(note => {
-            const oscillator = this.audioContext.createOscillator();
-            const gainNode = this.audioContext.createGain();
+            let currentTime = this.audioContext.currentTime;
 
-            oscillator.connect(gainNode);
-            gainNode.connect(this.audioContext.destination);
+            melody.forEach(note => {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
 
-            oscillator.frequency.value = note.freq;
-            oscillator.type = 'square';
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
 
-            gainNode.gain.setValueAtTime(0.1, currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
+                oscillator.frequency.value = note.freq;
+                oscillator.type = 'square';
 
-            oscillator.start(currentTime);
-            oscillator.stop(currentTime + note.duration);
+                gainNode.gain.setValueAtTime(0.08, currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
 
-            currentTime += note.duration + 0.05;
-        });
+                oscillator.start(currentTime);
+                oscillator.stop(currentTime + note.duration);
+
+                currentTime += note.duration + 0.05;
+            });
+
+            // Loop the melody
+            if (this.musicEnabled) {
+                setTimeout(playMelody, 2000);
+            }
+        };
+
+        playMelody();
     }
 }
 
