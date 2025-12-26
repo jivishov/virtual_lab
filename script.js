@@ -35,6 +35,15 @@ const labs = [
         icon: "⚛️",
         tags: ["Nuclear Chemistry", "Physics", "Game"],
         link: "#" // Replace with actual link when available
+    },
+    {
+        id: 5,
+        title: "Mission: Impossible - Lab Safety Protocol",
+        description: "Accept your mission and navigate through 10 high-stakes laboratory scenarios. Master critical safety protocols in this immersive spy-themed training simulation with realistic animations.",
+        type: "simulation",
+        icon: "🎬",
+        tags: ["Lab Safety", "Training", "Interactive"],
+        link: "simulators/lab-safety-mi/index.html"
     }
 ];
 
