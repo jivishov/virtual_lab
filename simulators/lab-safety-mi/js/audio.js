@@ -351,10 +351,10 @@ class AudioManager {
                 return;
             }
 
-            console.log('🔊 Playing melody iteration...');
+            console.log('🔊 Playing melody iteration... Volume: 0.4');
             let currentTime = this.audioContext.currentTime + 0.1;
 
-            melody.forEach(note => {
+            melody.forEach((note, index) => {
                 const oscillator = this.audioContext.createOscillator();
                 const gainNode = this.audioContext.createGain();
 
@@ -362,14 +362,18 @@ class AudioManager {
                 gainNode.connect(this.audioContext.destination);
 
                 oscillator.frequency.value = note.freq;
-                oscillator.type = 'sine'; // Changed to sine for smoother sound
+                oscillator.type = 'sine';
 
-                // Increased volume significantly
-                gainNode.gain.setValueAtTime(0.2, currentTime);
+                // INCREASED VOLUME TO 0.4 (MUCH LOUDER!)
+                gainNode.gain.setValueAtTime(0.4, currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
 
                 oscillator.start(currentTime);
                 oscillator.stop(currentTime + note.duration);
+
+                if (index === 0) {
+                    console.log(`Note ${index}: ${note.freq}Hz at time ${currentTime.toFixed(2)}`);
+                }
 
                 currentTime += note.duration + 0.05;
             });
