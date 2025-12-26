@@ -62,10 +62,8 @@ function createLabCard(lab) {
     card.innerHTML = `
         <div class="${headerClass}">
             <span class="lab-type-badge">${badgeText}</span>
-            <div>
-                <div class="lab-icon">${lab.icon}</div>
-                <h3 class="lab-card-title">${lab.title}</h3>
-            </div>
+            <div class="lab-icon">${lab.icon}</div>
+            <h3 class="lab-card-title">${lab.title}</h3>
         </div>
         <div class="lab-card-body">
             <p class="lab-card-description">${lab.description}</p>
