@@ -1,3 +1,14 @@
+// ===== HERO SLIDER CONFIGURATION =====
+// To add images to the hero slider, simply add image paths to this array
+// Images should be placed in the same directory as this file or use absolute paths
+// Example: 'hero1.jpg', 'hero2.jpg', etc.
+const heroImages = [
+    // Add your image paths here
+    // 'images/lab-screenshot1.jpg',
+    // 'images/lab-screenshot2.jpg',
+    // 'images/simulation-screenshot.jpg',
+];
+
 // Virtual Labs Data
 const labs = [
     {
@@ -46,13 +57,11 @@ function createLabCard(lab) {
 
     const headerClass = lab.type === 'simulation' ? 'lab-card-header simulation' : 'lab-card-header';
     const buttonClass = lab.type === 'simulation' ? 'launch-button simulation-btn' : 'launch-button';
-    const badgeText = lab.type === 'simulation' ? 'Simulation' : 'Virtual Lab';
 
     const tagsHTML = lab.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
 
     card.innerHTML = `
         <div class="${headerClass}">
-            <span class="lab-type-badge">${badgeText}</span>
             <div class="lab-icon">${lab.icon}</div>
             <h3 class="lab-card-title">${lab.title}</h3>
         </div>
@@ -161,8 +170,72 @@ function makeCardsAccessible() {
     });
 }
 
+// ===== HERO SLIDER FUNCTIONALITY =====
+function initHeroSlider() {
+    const slider = document.querySelector('.hero-slider');
+    const dotsContainer = document.getElementById('sliderDots');
+
+    if (!slider || heroImages.length === 0) {
+        // No images configured, hide dots
+        if (dotsContainer) {
+            dotsContainer.style.display = 'none';
+        }
+        return;
+    }
+
+    let currentSlide = 0;
+    const slides = [];
+
+    // Create slides for each image
+    heroImages.forEach((imagePath, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'hero-slide';
+        if (index === 0) slide.classList.add('active');
+        slide.style.backgroundImage = `url('${imagePath}')`;
+
+        slide.innerHTML = `
+            <div class="hero-content">
+                <h2 class="hero-title">Welcome to Your Learning Space</h2>
+                <p class="hero-description">Explore scientific concepts through interactive simulations designed for educational excellence.</p>
+            </div>
+        `;
+
+        slider.appendChild(slide);
+        slides.push(slide);
+
+        // Create dot
+        const dot = document.createElement('div');
+        dot.className = 'slider-dot';
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+    function goToSlide(index) {
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
+
+        currentSlide = index;
+
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+    }
+
+    function nextSlide() {
+        goToSlide((currentSlide + 1) % slides.length);
+    }
+
+    // Auto-advance slides every 5 seconds
+    if (slides.length > 1) {
+        setInterval(nextSlide, 5000);
+    }
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    initHeroSlider();
     renderLabs();
     makeCardsAccessible();
 
