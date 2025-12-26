@@ -34,8 +34,14 @@ class AudioManager {
     initWebAudio() {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('AudioContext created, state:', this.audioContext.state);
+
+            // Resume context on user interaction if suspended
+            if (this.audioContext.state === 'suspended') {
+                console.log('AudioContext suspended, will resume on user interaction');
+            }
         } catch (e) {
-            console.warn('Web Audio API not supported');
+            console.error('Web Audio API not supported:', e);
         }
     }
 
@@ -56,26 +62,42 @@ class AudioManager {
         }
     }
 
-    playMusic() {
+    async playMusic() {
+        console.log('=== PLAY MUSIC CALLED ===');
+
+        // Resume AudioContext if suspended
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            console.log('Resuming suspended AudioContext...');
+            try {
+                await this.audioContext.resume();
+                console.log('AudioContext resumed, state:', this.audioContext.state);
+            } catch (e) {
+                console.error('Failed to resume AudioContext:', e);
+            }
+        }
+
         if (this.bgMusic && this.musicEnabled) {
+            console.log('Trying to play bgMusic element...');
             // Try to play music
             const playPromise = this.bgMusic.play();
 
             if (playPromise !== undefined) {
                 playPromise
                     .then(() => {
-                        console.log('Music started successfully');
+                        console.log('✓ Music started successfully from audio element');
                     })
                     .catch((error) => {
-                        console.warn('Background music blocked or not found:', error);
+                        console.warn('✗ Background music blocked or not found:', error.message);
                         // Fallback to Web Audio synthesized theme
                         this.playMIThemeFallback();
                     });
             }
         } else if (!this.bgMusic && this.musicEnabled) {
             // No audio element, use fallback
-            console.log('No audio element, using synthesized MI theme');
+            console.log('No audio element found, using synthesized MI theme');
             this.playMIThemeFallback();
+        } else if (!this.musicEnabled) {
+            console.log('Music is disabled');
         }
     }
 
