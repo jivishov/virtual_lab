@@ -90,8 +90,22 @@ class AudioManager {
             }
         }
 
-        // ALWAYS use Web Audio API synthesized theme (no audio files needed)
-        console.log('🎵 Using Web Audio API for MI theme');
+        // Try to play MP3 file first
+        if (this.bgMusic) {
+            console.log('🎵 Attempting to play MP3 file...');
+            try {
+                // Load the audio file
+                this.bgMusic.load();
+                await this.bgMusic.play();
+                console.log('✅ MP3 file playing successfully!');
+                return;
+            } catch (error) {
+                console.warn('⚠️ MP3 file failed to play:', error.message);
+                console.log('🎵 Falling back to Web Audio API synthesized theme');
+            }
+        }
+
+        // Fallback to Web Audio API if MP3 fails
         this.playMIThemeFallback();
     }
 
