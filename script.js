@@ -4,9 +4,10 @@
 // Example: 'hero1.jpg', 'hero2.jpg', etc.
 const heroImages = [
     // Add your image paths here
-    // 'images/lab-screenshot1.jpg',
-    // 'images/lab-screenshot2.jpg',
-    // 'images/simulation-screenshot.jpg',
+    'images/spectrophotom.jpg',
+    'images/dnamicroarray.jpg',
+    'images/nuclearrxn.jpg',
+    'images/safetyquiz.jpg',
 ];
 
 // Virtual Labs Data
