@@ -19,7 +19,7 @@ const labs = [
         type: "lab",
         icon: "🔬",
         tags: ["Spectrophotometry", "Chemistry", "Analytical"],
-        link: "#" // Replace with actual link when available
+        link: "experiments/spectrophotometry/" // Replace with actual link when available
     },
     {
         id: 2,
@@ -28,7 +28,7 @@ const labs = [
         type: "lab",
         icon: "🧬",
         tags: ["Genetics", "Molecular Biology", "DNA"],
-        link: "#" // Replace with actual link when available
+        link: "experiments/dnamicroarray/" // Replace with actual link when available
     },
     {
         id: 3,
@@ -37,7 +37,7 @@ const labs = [
         type: "lab",
         icon: "⚗️",
         tags: ["Spectrophotometry", "Chemistry", "Metals"],
-        link: "#" // Replace with actual link when available
+        link: "experiments/copperinbrass/" // Replace with actual link when available
     },
     {
         id: 4,
@@ -46,7 +46,7 @@ const labs = [
         type: "simulation",
         icon: "⚛️",
         tags: ["Nuclear Chemistry", "Physics", "Game"],
-        link: "#" // Replace with actual link when available
+        link: "simulations/nuclearchemistry/" // Replace with actual link when available
     },
     {
         id: 5,
@@ -55,7 +55,7 @@ const labs = [
         type: "simulation",
         icon: "🎬",
         tags: ["Lab Safety", "Training", "Interactive"],
-        link: "simulators/lab-safety-mi/index.html"
+        link: "simulations/lab-safety-mi/"
     }
 ];
 
