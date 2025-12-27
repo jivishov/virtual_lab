@@ -183,6 +183,9 @@ function initHeroSlider() {
         return;
     }
 
+    // Clear default slide when we have images
+    slider.innerHTML = '';
+
     let currentSlide = 0;
     const slides = [];
 
