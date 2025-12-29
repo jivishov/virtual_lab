@@ -15,7 +15,7 @@ const translations = {
                 about: "About"
             },
             stats: {
-                labs: "Labs",
+                labs: "Experiments",
                 simulations: "Simulations"
             }
         },
@@ -162,7 +162,7 @@ const translations = {
                 about: "Haqqında"
             },
             stats: {
-                labs: "Laboratoriya",
+                labs: "Təcrübə",
                 simulations: "Simulyasiya"
             }
         },
@@ -175,7 +175,7 @@ const translations = {
 
         // Section Titles
         sections: {
-            virtualLabs: "Virtual Laboratoriyalar",
+            virtualLabs: "Virtual Təcrübələr",
             simulations: "Simulyasiyalar"
         },
 
@@ -210,9 +210,9 @@ const translations = {
 
         // Buttons
         buttons: {
-            launchLab: "Laboratoriyanı Aç",
+            launchLab: "Təcrübəyə Başla",
             launchSimulation: "Simulyasiyanı Aç",
-            backToLabs: "Virtual Laboratoriyalara Qayıt",
+            backToLabs: "Virtual Laboratoriyaya Qayıt",
             connectLinkedIn: "LinkedIn-də Əlaqə"
         },
 
@@ -238,7 +238,7 @@ const translations = {
                 },
                 vision: {
                     title: "Viziya",
-                    content1: "Virtual təcrübələr uçuş simulyatorlarının pilotları real uçuşlardan əvvəl hazırlaması kimi, laboratoriya öncəsi fəaliyyətlər kimi xidmət edir. Hər bir simulyasiya istifadəçiləri real laboratoriya şəraitində tələb olunan bütün prosedur addımları ilə tanış edir və praktik işdən əvvəl inam və başa düşmə formalaşdırır.",
+                    content1: "Virtual təcrübələr uçuş simulyatorlarının pilotları real uçuşlardan əvvəl hazırlaması kimi, təcrübə öncəsi fəaliyyətlər kimi xidmət edir. Hər bir simulyasiya istifadəçiləri real laboratoriya şəraitində tələb olunan bütün prosedur addımları ilə tanış edir və praktik işdən əvvəl inam və başa düşmə formalaşdırır.",
                     content2: "Laboratoriya təcrübələrinə virtual giriş təmin etməklə, bu layihə yaxşı təchiz olunmuş laboratoriya imkanlarının olmadığı icmalara çatır və bütün tələbələrin tam eksperimental prosesdən keçməsini təmin edir."
                 },
                 development: {
@@ -258,7 +258,7 @@ const translations = {
                 },
                 classroom: {
                     title: "Sinif İnteqrasiyası",
-                    content: "Bu virtual təcrübələr Dr. Cıvışovun tələbələri ilə real sinif mühitlərində aktiv şəkildə istifadə olunur. Yaxın gələcəkdə layihəyə effektiv dərs planları və tədris təlimatları əlavə olunacaq ki, bu da müəllimlərə sinif tətbiqi üçün hərtərəfli resurslar təqdim edəcək."
+                    content: "Bu virtual təcrübələr Dr. Civişovun tələbələri ilə real sinif mühitlərində aktiv şəkildə istifadə olunur. Yaxın gələcəkdə layihəyə effektiv dərs planları və tədris təlimatları əlavə olunacaq ki, bu da müəllimlərə sinif tətbiqi üçün hərtərəfli resurslar təqdim edəcək."
                 },
                 multilingual: {
                     title: "Çoxdilli Əlçatanlıq",
@@ -266,8 +266,8 @@ const translations = {
                 },
                 author: {
                     title: "Müəllif Haqqında",
-                    content1: "Dr. Emil Cıvışov Virtual Laboratoriya layihəsinin yaradıcısı və aparıcı tərtibatçısıdır. Pedaqoq və tədqiqatçı kimi Dr. Cıvışov müxtəlif təhsil kontekstlərində tələbələrə xidmət edən effektiv öyrənmə vasitələri yaratmaq üçün pedaqoji təcrübəni müasir texnologiya ilə birləşdirir.",
-                    content2: "Layihə Dr. Cıvışovun elm təhsilini demokratikləşdirmək və yerdən və resurslardan asılı olmayaraq bütün tələbələrin mənalı laboratoriya təcrübələrinə çıxışını təmin etmək öhdəliyini əks etdirir."
+                    content1: "Dr. Emil Civişov Virtual Laboratoriya layihəsinin yaradıcısı və aparıcı tərtibatçısıdır. Pedaqoq və tədqiqatçı kimi Dr. Civişov müxtəlif təhsil kontekstlərində tələbələrə xidmət edən effektiv öyrənmə vasitələri yaratmaq üçün pedaqoji təcrübəni müasir texnologiya ilə birləşdirir.",
+                    content2: "Layihə Dr. Civişovun elm təhsilini demokratikləşdirmək və yerdən və resurslardan asılı olmayaraq bütün tələbələrin mənalı laboratoriya təcrübələrinə çıxışını təmin etmək öhdəliyini əks etdirir."
                 },
                 opensource: {
                     title: "Açıq Mənbə və Əməkdaşlıq",
@@ -289,7 +289,7 @@ const translations = {
                 },
                 contact: {
                     title: "Əlaqə",
-                    content: "Rəylər, təkliflər və əməkdaşlıq sorğuları xoş qarşılanır. Dr. Cıvışov ilə LinkedIn vasitəsilə əlaqə saxlaya bilərsiniz:",
+                    content: "Rəylər, təkliflər və əməkdaşlıq sorğuları xoş qarşılanır. Dr. Civişov ilə LinkedIn vasitəsilə əlaqə saxlaya bilərsiniz:",
                     disclaimer: "Bütün rəy və təkliflər layihənin mövcud imkanları və əhatə dairəsi çərçivəsində diqqətlə nəzərdən keçiriləcək."
                 }
             }
@@ -405,7 +405,7 @@ const translations = {
                 },
                 classroom: {
                     title: "Sınıf Entegrasyonu",
-                    content: "Bu sanal deneyler, Dr. Jivishov'un öğrencileriyle gerçek sınıf ortamlarında aktif olarak kullanılmaktadır. Yakın gelecekte projeye etkili ders planları ve öğretim kılavuzları eklenecek ve eğitimcilere sınıf uygulaması için kapsamlı kaynaklar sağlanacaktır."
+                    content: "Bu sanal deneyler, Dr. Civişov'un öğrencileriyle gerçek sınıf ortamlarında aktif olarak kullanılmaktadır. Yakın gelecekte projeye etkili ders planları ve öğretim kılavuzları eklenecek ve eğitimcilere sınıf uygulaması için kapsamlı kaynaklar sağlanacaktır."
                 },
                 multilingual: {
                     title: "Çok Dilli Erişilebilirlik",
@@ -413,8 +413,8 @@ const translations = {
                 },
                 author: {
                     title: "Yazar Hakkında",
-                    content1: "Dr. Emil Jivishov, Sanal Laboratuvar projesinin yaratıcısı ve baş geliştiricisidir. Bir eğitimci ve araştırmacı olarak Dr. Jivishov, çeşitli eğitim bağlamlarında öğrencilere hizmet eden etkili öğrenme araçları oluşturmak için pedagojik uzmanlığı modern teknolojiyle birleştirir.",
-                    content2: "Proje, Dr. Jivishov'un fen eğitimini demokratikleştirme ve konum veya kaynaklardan bağımsız olarak tüm öğrencilerin anlamlı laboratuvar deneyimlerine erişmesini sağlama taahhüdünü temsil eder."
+                    content1: "Dr. Emil Civişov, Sanal Laboratuvar projesinin yaratıcısı ve baş geliştiricisidir. Bir eğitimci ve araştırmacı olarak Dr. Civişov, çeşitli eğitim bağlamlarında öğrencilere hizmet eden etkili öğrenme araçları oluşturmak için pedagojik uzmanlığı modern teknolojiyle birleştirir.",
+                    content2: "Proje, Dr. Civişov'un fen eğitimini demokratikleştirme ve konum veya kaynaklardan bağımsız olarak tüm öğrencilerin anlamlı laboratuvar deneyimlerine erişmesini sağlama taahhüdünü temsil eder."
                 },
                 opensource: {
                     title: "Açık Kaynak ve İşbirliği",
@@ -436,7 +436,7 @@ const translations = {
                 },
                 contact: {
                     title: "İletişime Geçin",
-                    content: "Geri bildirimler, öneriler ve işbirliği talepleri memnuniyetle karşılanır. Dr. Jivishov'a LinkedIn üzerinden ulaşılabilir:",
+                    content: "Geri bildirimler, öneriler ve işbirliği talepleri memnuniyetle karşılanır. Dr. Civişov'a LinkedIn üzerinden ulaşılabilir:",
                     disclaimer: "Tüm geri bildirimler ve öneriler, projenin mevcut kapasitesi ve kapsamı dahilinde dikkatlice değerlendirilecektir."
                 }
             }
