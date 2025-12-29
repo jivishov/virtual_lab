@@ -1,1 +1,163 @@
-coming soon
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Chem: Copper Analysis Lab</title>
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/simulation.css">
+</head>
+<body>
+    <div id="sidebar">
+        <div class="sidebar-header">Lab Equipment</div>
+        <div id="shelf"></div>
+    </div>
+
+    <div id="workbench">
+        <div id="topbar">
+            <div id="hud">
+                <div id="step-tracker" class="panel">
+                    <div class="step-tracker-header">
+                        <div class="tracker-title">
+                            <span class="pill" id="step-progress">Step 1 / 56</span>
+                            <span class="lab-title">Brass Lab</span>
+                        </div>
+                        <div class="tracker-controls">
+                            <button class="icon-btn" id="undo-btn" type="button" title="Undo (max 10)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 10h10a5 5 0 0 1 5 5v2M3 10l5-5M3 10l5 5"/>
+                                </svg>
+                            </button>
+                            <button class="icon-btn" id="ff-btn" type="button" title="Auto-forward">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5,4 15,12 5,20"/>
+                                    <line x1="19" y1="5" x2="19" y2="19"/>
+                                </svg>
+                            </button>
+                            <button class="icon-btn" id="toggle-steps" type="button" title="Toggle list">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="3" y1="6" x2="21" y2="6"/>
+                                    <line x1="3" y1="12" x2="21" y2="12"/>
+                                    <line x1="3" y1="18" x2="21" y2="18"/>
+                                </svg>
+                            </button>
+                            <select id="lang-select" class="lang-select" title="Language">
+                                <option value="en">EN</option>
+                                <option value="az">AZ</option>
+                                <option value="tr">TR</option>
+                                <option value="de">DE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="step-list"></div>
+                </div>
+            </div>
+
+            <div id="notebook">
+                <div class="nb-header"><span>Lab Notebook</span></div>
+                <div class="nb-body">
+                    <p style="margin-top:0"><strong>1. Sample Data</strong></p>
+                    <div class="nb-card">
+                        Mass Brass: <strong id="nb-mass" class="nb-accent">--</strong><br>
+                        Condition: <span id="nb-cond">Solid</span>
+                    </div>
+
+                    <p><strong>2. Spectrophotometry</strong></p>
+                    <table id="nb-table">
+                        <thead><tr><th>Sample</th><th>Abs</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <!-- Calibration Curve Graph -->
+                    <div id="graph-area" style="margin-top:10px; display:none;">
+                        <p style="margin:0 0 5px 0; font-size:0.75rem; color:#5d6d7e;">Calibration Curve (Abs vs Conc)</p>
+                        <canvas id="calibration-graph" width="200" height="140" style="background:#fafbfc; border:1px solid #e1e5ea; border-radius:4px;"></canvas>
+                    </div>
+
+                    <!-- Cleaning Checklist -->
+                    <div id="cleaning-area" style="display:none; margin-top:12px; border-top:1px solid #eee; padding-top:8px;">
+                        <p style="margin:0 0 8px 0; font-weight:bold; font-size:0.8rem;">Lab Cleanup Checklist:</p>
+                        <div style="font-size:0.75rem; display:flex; flex-direction:column; gap:6px;">
+                            <label style="display:flex; align-items:flex-start; gap:6px; cursor:pointer;">
+                                <input type="checkbox" class="cleanup-item" style="margin-top:2px;"> Discard liquid from all cuvettes into waste beaker
+                            </label>
+                            <label style="display:flex; align-items:flex-start; gap:6px; cursor:pointer;">
+                                <input type="checkbox" class="cleanup-item" style="margin-top:2px;"> Rinse cuvettes with d.water at least 3 times
+                            </label>
+                            <label style="display:flex; align-items:flex-start; gap:6px; cursor:pointer;">
+                                <input type="checkbox" class="cleanup-item" style="margin-top:2px;"> Discard all pipettes into waste beaker
+                            </label>
+                            <label style="display:flex; align-items:flex-start; gap:6px; cursor:pointer;">
+                                <input type="checkbox" class="cleanup-item" style="margin-top:2px;"> Wash hands
+                            </label>
+                        </div>
+                        <button class="btn" style="margin-top:10px; width:100%;" onclick="submitCleaningChecklist()">Complete Cleanup</button>
+                    </div>
+
+                    <!-- Calculation Area -->
+                    <div id="result-area" style="display:none; margin-top:12px; border-top:1px solid #eee; padding-top:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <label style="font-size:0.8rem">Calc Mass % Cu:</label>
+                            <button type="button" class="btn-hint" onclick="toggleFormulaHint()">Show Hint</button>
+                        </div>
+                        <div id="formula-hint" style="display:none; font-size:0.7rem; color:#5d6d7e; margin:8px 0; padding:8px; background:#f5f7fa; border-radius:4px; border-left:3px solid #3498db;">
+                            <strong>Formula:</strong><br>
+                            Conc = (Abs + 0.00538) / 2.426<br>
+                            Mass % Cu = (Conc x 0.100L x 63.55) / brass mass x 100
+                        </div>
+                        <div style="display:flex; gap:5px; margin-top:5px;">
+                            <input type="number" id="user-calc" placeholder="%" class="nb-input" step="0.01">
+                            <button class="btn" style="margin:0; width:auto;" onclick="checkResult()">Check</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback panel for messages -->
+    <div id="feedback-panel" class="hidden"></div>
+
+    <!-- SVG Gradient Definitions -->
+    <svg width="0" height="0" style="position:absolute;">
+        <defs>
+            <linearGradient id="glass-sheen" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.7)" />
+                <stop offset="15%" stop-color="rgba(255,255,255,0.25)" />
+                <stop offset="85%" stop-color="rgba(255,255,255,0.25)" />
+                <stop offset="100%" stop-color="rgba(255,255,255,0.7)" />
+            </linearGradient>
+            <linearGradient id="glass-body" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.55)" />
+                <stop offset="20%" stop-color="rgba(235,240,245,0.48)" />
+                <stop offset="80%" stop-color="rgba(235,240,245,0.48)" />
+                <stop offset="100%" stop-color="rgba(255,255,255,0.6)" />
+            </linearGradient>
+            <linearGradient id="steel-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#bdc3c7" />
+                <stop offset="50%" stop-color="#ecf0f1" />
+                <stop offset="100%" stop-color="#95a5a6" />
+            </linearGradient>
+            <radialGradient id="brass-grad" cx="35%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#ffebcd" />
+                <stop offset="40%" stop-color="#f1c40f" />
+                <stop offset="100%" stop-color="#b7860b" />
+            </radialGradient>
+            <linearGradient id="waste-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#5e4b35" />
+                <stop offset="100%" stop-color="#3e2b15" />
+            </linearGradient>
+            <linearGradient id="copper-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3498db" />
+                <stop offset="100%" stop-color="#2980b9" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- Modular JavaScript -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

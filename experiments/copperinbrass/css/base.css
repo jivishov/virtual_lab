@@ -1,0 +1,55 @@
+/* base.css - Global styles, resets, variables, typography */
+
+:root {
+    --bg: #e9eff5;
+    --sidebar-bg: #132238;
+    --accent: #1f9df2;
+    --accent-soft: #b5ddff;
+    --text-light: #ecf0f1;
+    --ink: #1a2b3d;
+    --panel: #ffffff;
+    --panel-border: #d9e2ec;
+    --glow: 0 10px 30px rgba(19, 34, 56, 0.22);
+
+    /* Feedback colors */
+    --success: #27ae60;
+    --error: #e74c3c;
+    --info: #3498db;
+
+    /* Content colors */
+    --acid: #e74c3c;
+    --water: #3498db;
+    --copper: #2980b9;
+    --copper-light: rgba(41, 128, 185, 0.5);
+    --standard: rgba(41, 128, 185, 0.7);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Manrope', 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: radial-gradient(circle at 20% 20%, rgba(63, 158, 255, 0.09), transparent 25%),
+        radial-gradient(circle at 80% 10%, rgba(255, 194, 120, 0.18), transparent 28%),
+        linear-gradient(180deg, #f7f9fb 0%, #e8eef4 60%, #e2e9f1 100%);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+    font-size: 13px;
+}
+
+/* Typography helpers */
+.text-light { color: var(--text-light); }
+.text-ink { color: var(--ink); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-error { color: var(--error); }
+.text-info { color: var(--info); }
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
