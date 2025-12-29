@@ -58,7 +58,7 @@ body {
     color: white;
     padding: 1.25rem 0 1rem;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -71,6 +71,7 @@ body {
     height: 600px;
     background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
     border-radius: 50%;
+    pointer-events: none;
 }
 
 .header::after {
@@ -82,6 +83,7 @@ body {
     height: 500px;
     background: radial-gradient(circle, rgba(249, 115, 22, 0.2) 0%, transparent 60%);
     border-radius: 50%;
+    pointer-events: none;
 }
 
 .header-content {
