@@ -210,7 +210,7 @@ const translations = {
 
         // Buttons
         buttons: {
-            launchLab: "Təcrübəni Aç",
+            launchLab: "Təcrübəyə Başla",
             launchSimulation: "Simulyasiyanı Aç",
             backToLabs: "Virtual Təcrübələrə Qayıt",
             connectLinkedIn: "LinkedIn-də Əlaqə"
