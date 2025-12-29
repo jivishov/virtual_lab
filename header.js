@@ -27,10 +27,10 @@ function renderHeader(currentPage = 'home') {
                     <div class="header-stats">
                         <div class="header-stat">
                             <span class="header-stat-number">3</span>
-                            <span class="header-stat-label">Labs</span>
+                            <span class="header-stat-label">Experiments</span>
                         </div>
                         <div class="header-stat">
-                            <span class="header-stat-number">1</span>
+                            <span class="header-stat-number">2</span>
                             <span class="header-stat-label">Simulations</span>
                         </div>
                     </div>
