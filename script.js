@@ -192,8 +192,9 @@ function initHeroSlider() {
         return;
     }
 
-    // Clear default slide when we have images
+    // Clear existing slides and dots to prevent duplication on language change
     slider.innerHTML = '';
+    dotsContainer.innerHTML = '';
 
     let currentSlide = 0;
     const slides = [];

@@ -15,7 +15,7 @@ const translations = {
                 about: "About"
             },
             stats: {
-                labs: "Labs",
+                labs: "Experiments",
                 simulations: "Simulations"
             }
         },
@@ -28,7 +28,7 @@ const translations = {
 
         // Section Titles
         sections: {
-            virtualLabs: "Virtual Labs",
+            virtualLabs: "Virtual Experiments",
             simulations: "Simulations"
         },
 
@@ -63,9 +63,9 @@ const translations = {
 
         // Buttons
         buttons: {
-            launchLab: "Launch Lab",
+            launchLab: "Launch Experiment",
             launchSimulation: "Launch Simulation",
-            backToLabs: "Back to Virtual Labs",
+            backToLabs: "Back to Virtual Experiments",
             connectLinkedIn: "Connect on LinkedIn"
         },
 
@@ -162,7 +162,7 @@ const translations = {
                 about: "Haqqında"
             },
             stats: {
-                labs: "Laboratoriya",
+                labs: "Təcrübə",
                 simulations: "Simulyasiya"
             }
         },
@@ -175,7 +175,7 @@ const translations = {
 
         // Section Titles
         sections: {
-            virtualLabs: "Virtual Laboratoriyalar",
+            virtualLabs: "Virtual Təcrübələr",
             simulations: "Simulyasiyalar"
         },
 
@@ -210,9 +210,9 @@ const translations = {
 
         // Buttons
         buttons: {
-            launchLab: "Laboratoriyanı Aç",
+            launchLab: "Təcrübəni Aç",
             launchSimulation: "Simulyasiyanı Aç",
-            backToLabs: "Virtual Laboratoriyalara Qayıt",
+            backToLabs: "Virtual Təcrübələrə Qayıt",
             connectLinkedIn: "LinkedIn-də Əlaqə"
         },
 
@@ -309,7 +309,7 @@ const translations = {
                 about: "Hakkında"
             },
             stats: {
-                labs: "Laboratuvar",
+                labs: "Deney",
                 simulations: "Simülasyon"
             }
         },
@@ -322,7 +322,7 @@ const translations = {
 
         // Section Titles
         sections: {
-            virtualLabs: "Sanal Laboratuvarlar",
+            virtualLabs: "Sanal Deneyler",
             simulations: "Simülasyonlar"
         },
 
@@ -357,9 +357,9 @@ const translations = {
 
         // Buttons
         buttons: {
-            launchLab: "Laboratuvarı Başlat",
+            launchLab: "Deneyi Başlat",
             launchSimulation: "Simülasyonu Başlat",
-            backToLabs: "Sanal Laboratuvarlara Dön",
+            backToLabs: "Sanal Deneylere Dön",
             connectLinkedIn: "LinkedIn'de Bağlan"
         },
 
@@ -456,7 +456,7 @@ const translations = {
                 about: "Über uns"
             },
             stats: {
-                labs: "Labore",
+                labs: "Experimente",
                 simulations: "Simulationen"
             }
         },
@@ -469,7 +469,7 @@ const translations = {
 
         // Section Titles
         sections: {
-            virtualLabs: "Virtuelle Labore",
+            virtualLabs: "Virtuelle Experimente",
             simulations: "Simulationen"
         },
 
@@ -504,9 +504,9 @@ const translations = {
 
         // Buttons
         buttons: {
-            launchLab: "Labor Starten",
+            launchLab: "Experiment Starten",
             launchSimulation: "Simulation Starten",
-            backToLabs: "Zurück zu Virtuellen Laboren",
+            backToLabs: "Zurück zu Virtuellen Experimenten",
             connectLinkedIn: "Auf LinkedIn Verbinden"
         },
 
