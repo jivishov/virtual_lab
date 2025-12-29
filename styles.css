@@ -102,6 +102,15 @@ body {
     font-size: 3rem;
     line-height: 1;
     animation: pulse 2s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon svg {
+    width: 3rem;
+    height: 3rem;
+    color: white;
 }
 
 .header-text {
