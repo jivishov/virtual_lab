@@ -9,7 +9,7 @@ const translations = {
         // Header
         header: {
             title: "Virtual Laboratory",
-            subtitle: "Interactive science experiments and simulations for hands-on learning",
+            subtitle: "Interactive scientific experiments and simulations for hands-on learning",
             nav: {
                 home: "Home",
                 about: "About"
@@ -23,12 +23,12 @@ const translations = {
         // Hero Section
         hero: {
             title: "Welcome to Your Learning Space",
-            description: "Explore scientific concepts through interactive simulations designed for educational excellence."
+            description: "Explore scientific concepts through interactive experiments and simulations designed for educational excellence."
         },
 
         // Section Titles
         sections: {
-            virtualLabs: "Virtual Labs",
+            virtualLabs: "Virtual Experiments",
             simulations: "Simulations"
         },
 
@@ -63,9 +63,9 @@ const translations = {
 
         // Buttons
         buttons: {
-            launchLab: "Launch Lab",
+            launchLab: "Launch Experiment",
             launchSimulation: "Launch Simulation",
-            backToLabs: "Back to Virtual Labs",
+            backToLabs: "Back to Virtual Lab",
             connectLinkedIn: "Connect on LinkedIn"
         },
 
