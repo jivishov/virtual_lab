@@ -1,0 +1,606 @@
+/* ===================================
+   MISSION: IMPOSSIBLE - LAB SAFETY
+   Animation Keyframes
+   =================================== */
+
+/* ===================================
+   BASIC ANIMATIONS
+   =================================== */
+
+@keyframes scanlineMove {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(10px);
+    }
+}
+
+@keyframes blink {
+    0%, 49%, 100% {
+        opacity: 1;
+    }
+    50%, 99% {
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes spotlightPulse {
+    0%, 100% {
+        opacity: 0.5;
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateX(-50%) scale(1.1);
+    }
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow: 0 5px 20px rgba(0, 243, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 5px 30px rgba(0, 243, 255, 0.8);
+    }
+}
+
+@keyframes alertBlink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes scanDown {
+    0% {
+        top: 0;
+    }
+    100% {
+        top: 100%;
+    }
+}
+
+/* ===================================
+   GLITCH EFFECT
+   =================================== */
+
+@keyframes glitch {
+    0% {
+        transform: translate(0);
+        opacity: 1;
+    }
+    20% {
+        transform: translate(-2px, 2px);
+        opacity: 0.8;
+    }
+    40% {
+        transform: translate(-2px, -2px);
+        opacity: 0.9;
+    }
+    60% {
+        transform: translate(2px, 2px);
+        opacity: 0.8;
+    }
+    80% {
+        transform: translate(2px, -2px);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(0);
+        opacity: 1;
+    }
+}
+
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch-text::before {
+    animation: glitchTop 0.3s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    color: rgba(255, 0, 0, 0.8);
+}
+
+.glitch-text::after {
+    animation: glitchBottom 0.3s infinite;
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+    color: rgba(0, 255, 255, 0.8);
+}
+
+@keyframes glitchTop {
+    0%, 100% {
+        transform: translate(0);
+    }
+    33% {
+        transform: translate(-2px, 2px);
+    }
+    66% {
+        transform: translate(2px, -2px);
+    }
+}
+
+@keyframes glitchBottom {
+    0%, 100% {
+        transform: translate(0);
+    }
+    33% {
+        transform: translate(2px, -2px);
+    }
+    66% {
+        transform: translate(-2px, 2px);
+    }
+}
+
+/* ===================================
+   TYPING ANIMATION
+   =================================== */
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes cursorBlink {
+    0%, 49% {
+        border-right-color: var(--accent-blue);
+    }
+    50%, 100% {
+        border-right-color: transparent;
+    }
+}
+
+.typing-effect {
+    overflow: hidden;
+    border-right: 2px solid var(--accent-blue);
+    white-space: nowrap;
+    animation: typing 3s steps(40) 1s forwards, cursorBlink 0.75s step-end infinite;
+}
+
+/* ===================================
+   SCREEN TRANSITIONS
+   =================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutToTop {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideInFromBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes glitchTransition {
+    0%, 100% {
+        transform: translate(0);
+        filter: hue-rotate(0deg);
+    }
+    10% {
+        transform: translate(-5px, 5px);
+    }
+    20% {
+        transform: translate(5px, -5px);
+    }
+    30% {
+        transform: translate(-5px, -5px);
+    }
+    40% {
+        transform: translate(5px, 5px);
+    }
+    50% {
+        transform: translate(0);
+        filter: hue-rotate(90deg);
+    }
+    60% {
+        transform: translate(-5px, 5px);
+    }
+    70% {
+        transform: translate(5px, -5px);
+    }
+    80% {
+        transform: translate(-5px, -5px);
+    }
+    90% {
+        transform: translate(5px, 5px);
+    }
+}
+
+.glitch-transition {
+    animation: glitchTransition 0.5s;
+}
+
+/* ===================================
+   SHAKE EFFECT
+   =================================== */
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-10px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(10px);
+    }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+/* ===================================
+   SCREEN SHAKE (for explosion)
+   =================================== */
+
+@keyframes screenShake {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    10% {
+        transform: translate(-5px, -5px) rotate(-1deg);
+    }
+    20% {
+        transform: translate(5px, 5px) rotate(1deg);
+    }
+    30% {
+        transform: translate(-5px, 5px) rotate(-1deg);
+    }
+    40% {
+        transform: translate(5px, -5px) rotate(1deg);
+    }
+    50% {
+        transform: translate(-5px, -5px) rotate(-1deg);
+    }
+    60% {
+        transform: translate(5px, 5px) rotate(1deg);
+    }
+    70% {
+        transform: translate(-5px, 5px) rotate(-1deg);
+    }
+    80% {
+        transform: translate(5px, -5px) rotate(1deg);
+    }
+    90% {
+        transform: translate(-5px, -5px) rotate(-1deg);
+    }
+}
+
+.screen-shake {
+    animation: screenShake 0.5s;
+}
+
+/* ===================================
+   SUCCESS/FAILURE ANIMATIONS
+   =================================== */
+
+@keyframes successFlash {
+    0%, 100% {
+        background-color: rgba(0, 255, 0, 0);
+    }
+    50% {
+        background-color: rgba(0, 255, 0, 0.3);
+    }
+}
+
+@keyframes failureFlash {
+    0%, 100% {
+        background-color: rgba(255, 0, 0, 0);
+    }
+    50% {
+        background-color: rgba(255, 0, 0, 0.3);
+    }
+}
+
+.success-flash {
+    animation: successFlash 0.5s;
+}
+
+.failure-flash {
+    animation: failureFlash 0.5s;
+}
+
+/* ===================================
+   LOADING/PROCESSING
+   =================================== */
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dots {
+    0%, 20% {
+        content: '.';
+    }
+    40% {
+        content: '..';
+    }
+    60%, 100% {
+        content: '...';
+    }
+}
+
+.loading::after {
+    content: '';
+    animation: dots 1.5s infinite;
+}
+
+/* ===================================
+   COUNTDOWN PULSE
+   =================================== */
+
+@keyframes countdownPulse {
+    0% {
+        transform: scale(1);
+        color: var(--alert-red);
+        text-shadow: 0 0 10px var(--alert-red);
+    }
+    50% {
+        transform: scale(1.3);
+        color: #ff3333;
+        text-shadow: 0 0 30px var(--alert-red), 0 0 50px var(--alert-red);
+    }
+    100% {
+        transform: scale(1);
+        color: var(--alert-red);
+        text-shadow: 0 0 10px var(--alert-red);
+    }
+}
+
+.countdown-pulse {
+    animation: countdownPulse 1s infinite;
+}
+
+/* ===================================
+   PROGRESS BAR FILL
+   =================================== */
+
+@keyframes progressFill {
+    from {
+        width: 0%;
+    }
+}
+
+.progress-fill {
+    animation: progressFill 1s ease-out;
+}
+
+/* ===================================
+   ZOOM IN/OUT
+   =================================== */
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes zoomOut {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+.zoom-in {
+    animation: zoomIn 0.5s ease-out;
+}
+
+.zoom-out {
+    animation: zoomOut 0.5s ease-in;
+}
+
+/* ===================================
+   NOTIFICATION SLIDE
+   =================================== */
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* ===================================
+   BADGE EARN ANIMATION
+   =================================== */
+
+@keyframes badgeEarn {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2) rotate(10deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.badge-earn {
+    animation: badgeEarn 0.8s ease-out;
+}
+
+/* ===================================
+   HOVER GLOW
+   =================================== */
+
+@keyframes hoverGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(0, 243, 255, 0.8);
+    }
+}
+
+.hover-glow {
+    animation: hoverGlow 1.5s infinite;
+}
+
+/* ===================================
+   CRITICAL WARNING
+   =================================== */
+
+@keyframes criticalBlink {
+    0%, 49% {
+        opacity: 1;
+        background-color: rgba(255, 0, 0, 0.3);
+    }
+    50%, 99% {
+        opacity: 0.5;
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+}
+
+.critical-warning {
+    animation: criticalBlink 0.3s infinite;
+}
+
+/* ===================================
+   UTILITY ANIMATION CLASSES
+   =================================== */
+
+.animated {
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+.animated-slow {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+.animated-fast {
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+}
+
+.infinite {
+    animation-iteration-count: infinite;
+}
+
+.delay-1 {
+    animation-delay: 0.1s;
+}
+
+.delay-2 {
+    animation-delay: 0.2s;
+}
+
+.delay-3 {
+    animation-delay: 0.3s;
+}
+
+.delay-4 {
+    animation-delay: 0.4s;
+}
+
+.delay-5 {
+    animation-delay: 0.5s;
+}

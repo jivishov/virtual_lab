@@ -4,9 +4,10 @@
 // Example: 'hero1.jpg', 'hero2.jpg', etc.
 const heroImages = [
     // Add your image paths here
-    // 'images/lab-screenshot1.jpg',
-    // 'images/lab-screenshot2.jpg',
-    // 'images/simulation-screenshot.jpg',
+    'images/spectrophotom.jpg',
+    'images/dnamicroarray.jpg',
+    'images/nuclearrxn.jpg',
+    'images/safetyquiz.jpg',
 ];
 
 // Virtual Labs Data
@@ -18,7 +19,7 @@ const labs = [
         type: "lab",
         icon: "🔬",
         tags: ["Spectrophotometry", "Chemistry", "Analytical"],
-        link: "#" // Replace with actual link when available
+        link: "experiments/spectrophotometry/" // Replace with actual link when available
     },
     {
         id: 2,
@@ -27,7 +28,7 @@ const labs = [
         type: "lab",
         icon: "🧬",
         tags: ["Genetics", "Molecular Biology", "DNA"],
-        link: "#" // Replace with actual link when available
+        link: "experiments/dnamicroarray/" // Replace with actual link when available
     },
     {
         id: 3,
@@ -36,7 +37,7 @@ const labs = [
         type: "lab",
         icon: "⚗️",
         tags: ["Spectrophotometry", "Chemistry", "Metals"],
-        link: "#" // Replace with actual link when available
+        link: "experiments/copperinbrass/" // Replace with actual link when available
     },
     {
         id: 4,
@@ -45,7 +46,16 @@ const labs = [
         type: "simulation",
         icon: "⚛️",
         tags: ["Nuclear Chemistry", "Physics", "Game"],
-        link: "#" // Replace with actual link when available
+        link: "simulations/nuclearchemistry/" // Replace with actual link when available
+    },
+    {
+        id: 5,
+        title: "Mission: Impossible - Lab Safety Protocol",
+        description: "Accept your mission and navigate through 10 high-stakes laboratory scenarios. Master critical safety protocols in this immersive spy-themed training simulation with realistic animations.",
+        type: "simulation",
+        icon: "🎬",
+        tags: ["Lab Safety", "Training", "Interactive"],
+        link: "simulations/lab-safety-mi/"
     }
 ];
 
