@@ -6,9 +6,11 @@ function renderFooter() {
     const footerHTML = `
         <div class="container">
             <div class="footer-content">
-                <p class="footer-copyright">&copy; 2025 Dr. Emil Jivishov · Virtual Laboratory · An ongoing educational project</p>
+                <p class="footer-copyright">&copy; 2025 <a href="https://www.linkedin.com/in/jivishov/" target="_blank" rel="noopener noreferrer" class="footer-author-link">Dr. Emil Jivishov</a> · Virtual Laboratory · An ongoing educational project</p>
                 <p class="footer-license">Released under the <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" class="footer-license-link">MIT License</a></p>
                 <div class="footer-links">
+                    <a href="index.html" class="footer-link">Home</a>
+                    <span class="footer-separator">·</span>
                     <a href="about.html" class="footer-link">About</a>
                     <span class="footer-separator">·</span>
                     <a href="https://github.com/jivishov/virtual_lab" target="_blank" rel="noopener noreferrer" class="footer-link footer-github">
