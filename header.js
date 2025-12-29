@@ -58,8 +58,8 @@ function renderHeader(currentPage = 'home') {
                             </svg>
                         </div>
                         <div class="header-text">
-                            <h1 class="main-title" data-i18n="header.title">Virtual Laboratory</h1>
-                            <p class="subtitle" data-i18n="header.subtitle">Interactive science experiments and simulations for hands-on learning</p>
+                            <h1 class="main-title">Virtual Laboratory</h1>
+                            <p class="subtitle">${t('header.subtitle')}</p>
                         </div>
                     </a>
                 </div>
@@ -92,17 +92,17 @@ function renderHeader(currentPage = 'home') {
                         </div>
                     </div>
                     <nav class="header-nav">
-                        <a href="index.html" class="header-nav-link ${currentPage === 'home' ? 'active' : ''}" data-i18n="header.nav.home">Home</a>
-                        <a href="about.html" class="header-nav-link ${currentPage === 'about' ? 'active' : ''}" data-i18n="header.nav.about">About</a>
+                        <a href="index.html" class="header-nav-link ${currentPage === 'home' ? 'active' : ''}">${t('header.nav.home')}</a>
+                        <a href="about.html" class="header-nav-link ${currentPage === 'about' ? 'active' : ''}">${t('header.nav.about')}</a>
                     </nav>
                     <div class="header-stats">
                         <div class="header-stat">
                             <span class="header-stat-number">3</span>
-                            <span class="header-stat-label" data-i18n="header.stats.labs">Labs</span>
+                            <span class="header-stat-label">${t('header.stats.labs')}</span>
                         </div>
                         <div class="header-stat">
                             <span class="header-stat-number">1</span>
-                            <span class="header-stat-label" data-i18n="header.stats.simulations">Simulations</span>
+                            <span class="header-stat-label">${t('header.stats.simulations')}</span>
                         </div>
                     </div>
                 </div>
