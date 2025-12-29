@@ -10,51 +10,41 @@ const heroImages = [
     'images/safetyquiz.jpg',
 ];
 
-// Virtual Labs Data
+// Virtual Labs Data - now uses translation keys
 const labs = [
     {
         id: 1,
-        title: "Spectrophotometry: Blue Dye Analysis",
-        description: "Determine the concentration of blue dye in a sports drink using spectrophotometry techniques. Learn about Beer's Law and calibration curves.",
+        translationKey: "spectrophotometry",
         type: "lab",
         icon: "🔬",
-        tags: ["Spectrophotometry", "Chemistry", "Analytical"],
-        link: "experiments/spectrophotometry/" // Replace with actual link when available
+        link: "experiments/spectrophotometry/"
     },
     {
         id: 2,
-        title: "DNA Microarray",
-        description: "Explore gene expression analysis using DNA microarray technology. Understand how genetic information is analyzed and interpreted.",
+        translationKey: "dnamicroarray",
         type: "lab",
         icon: "🧬",
-        tags: ["Genetics", "Molecular Biology", "DNA"],
-        link: "experiments/dnamicroarray/" // Replace with actual link when available
+        link: "experiments/dnamicroarray/"
     },
     {
         id: 3,
-        title: "Copper in Brass Analysis",
-        description: "Determine the amount of copper in a brass sample using spectrophotometric methods. Apply quantitative analysis techniques.",
+        translationKey: "copperinbrass",
         type: "lab",
         icon: "⚗️",
-        tags: ["Spectrophotometry", "Chemistry", "Metals"],
-        link: "experiments/copperinbrass/" // Replace with actual link when available
+        link: "experiments/copperinbrass/"
     },
     {
         id: 4,
-        title: "Nuclear Chemistry Game",
-        description: "Interactive simulation exploring nuclear reactions, radioactive decay, and nuclear chemistry principles through engaging gameplay.",
+        translationKey: "nuclearchemistry",
         type: "simulation",
         icon: "⚛️",
-        tags: ["Nuclear Chemistry", "Physics", "Game"],
-        link: "simulations/nuclearchemistry/" // Replace with actual link when available
+        link: "simulations/nuclearchemistry/"
     },
     {
         id: 5,
-        title: "Mission: Impossible - Lab Safety Protocol",
-        description: "Accept your mission and navigate through 10 high-stakes laboratory scenarios. Master critical safety protocols in this immersive spy-themed training simulation with realistic animations.",
+        translationKey: "labsafety",
         type: "simulation",
-        icon: "🎬",
-        tags: ["Lab Safety", "Training", "Interactive"],
+        icon: "🥽",
         link: "simulations/lab-safety-mi/"
     }
 ];
@@ -65,25 +55,34 @@ function createLabCard(lab) {
     card.className = 'lab-card';
     card.setAttribute('data-id', lab.id);
 
+    // Get translations
+    const t = (key) => (typeof I18n !== 'undefined') ? I18n.translate(key) : key;
+    const labData = (typeof I18n !== 'undefined') ? I18n.translate(`labs.${lab.translationKey}`) : {};
+
+    const title = labData.title || lab.translationKey;
+    const description = labData.description || '';
+    const tags = labData.tags || [];
+
     const headerClass = lab.type === 'simulation' ? 'lab-card-header simulation' : 'lab-card-header';
     const buttonClass = lab.type === 'simulation' ? 'launch-button simulation-btn' : 'launch-button';
 
-    const tagsHTML = lab.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+    const tagsHTML = tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+    const buttonText = lab.type === 'simulation' ? t('buttons.launchSimulation') : t('buttons.launchLab');
 
     card.innerHTML = `
         <div class="${headerClass}">
             <div class="lab-icon">${lab.icon}</div>
-            <h3 class="lab-card-title">${lab.title}</h3>
+            <h3 class="lab-card-title">${title}</h3>
         </div>
         <div class="lab-card-body">
-            <p class="lab-card-description">${lab.description}</p>
+            <p class="lab-card-description">${description}</p>
             <div class="lab-card-tags">
                 ${tagsHTML}
             </div>
         </div>
         <div class="lab-card-footer">
             <button class="${buttonClass}" onclick="launchLab(${lab.id})">
-                <span>Launch ${lab.type === 'simulation' ? 'Simulation' : 'Lab'}</span>
+                <span>${buttonText}</span>
                 <span>→</span>
             </button>
         </div>
@@ -206,10 +205,13 @@ function initHeroSlider() {
         if (index === 0) slide.classList.add('active');
         slide.style.backgroundImage = `url('${imagePath}')`;
 
+        // Get translations
+        const t = (key) => (typeof I18n !== 'undefined') ? I18n.translate(key) : '';
+
         slide.innerHTML = `
             <div class="hero-content">
-                <h2 class="hero-title">Welcome to Your Learning Space</h2>
-                <p class="hero-description">Explore scientific concepts through interactive simulations designed for educational excellence.</p>
+                <h2 class="hero-title" data-i18n="hero.title">${t('hero.title') || 'Welcome to Your Learning Space'}</h2>
+                <p class="hero-description" data-i18n="hero.description">${t('hero.description') || 'Explore scientific concepts through interactive simulations designed for educational excellence.'}</p>
             </div>
         `;
 
@@ -262,6 +264,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Listen for language changes and re-render content
+if (typeof window !== 'undefined') {
+    window.addEventListener('languageChanged', function() {
+        initHeroSlider();
+        renderLabs();
+        makeCardsAccessible();
+    });
+}
 
 // Export labs data for easy updates
 // To add a new lab, simply add a new object to the labs array above

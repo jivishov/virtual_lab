@@ -2,7 +2,45 @@
 // This file provides a consistent header across all pages
 // Simply include this script in any HTML page to get the header
 
+// SVG Flag Icons
+const flagIcons = {
+    en: `<svg viewBox="0 0 60 30" class="flag-icon">
+        <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+        <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+        <g clip-path="url(#s)">
+            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+        </g>
+    </svg>`,
+    az: `<svg viewBox="0 0 60 30" class="flag-icon">
+        <rect width="60" height="30" fill="#00B5E2"/>
+        <rect width="60" height="20" y="10" fill="#EF3340"/>
+        <rect width="60" height="10" y="20" fill="#00A86B"/>
+        <circle cx="27" cy="15" r="6" fill="#fff"/>
+        <circle cx="28.5" cy="15" r="5" fill="#EF3340"/>
+        <path d="M32,12 L33.5,13.5 L35.5,12.5 L34.5,14.5 L36,16 L34,15.5 L33,17.5 L32.5,15.5 L30.5,16 L31.5,14.5 Z" fill="#fff"/>
+    </svg>`,
+    tr: `<svg viewBox="0 0 60 30" class="flag-icon">
+        <rect width="60" height="30" fill="#E30A17"/>
+        <circle cx="22" cy="15" r="7" fill="#fff"/>
+        <circle cx="24" cy="15" r="5.5" fill="#E30A17"/>
+        <path d="M32,10 L33.5,14 L37.5,14 L34,16.5 L35.5,20.5 L32,18 L28.5,20.5 L30,16.5 L26.5,14 L30.5,14 Z" fill="#fff"/>
+    </svg>`,
+    de: `<svg viewBox="0 0 60 30" class="flag-icon">
+        <rect width="60" height="10" fill="#000"/>
+        <rect width="60" height="10" y="10" fill="#D00"/>
+        <rect width="60" height="10" y="20" fill="#FFCE00"/>
+    </svg>`
+};
+
 function renderHeader(currentPage = 'home') {
+    // Get current language if I18n is loaded
+    const currentLang = (typeof I18n !== 'undefined') ? I18n.getCurrentLanguage() : 'en';
+    const t = (key) => (typeof I18n !== 'undefined') ? I18n.translate(key) : key;
+
     const headerHTML = `
         <div class="container">
             <div class="header-content">
@@ -14,24 +52,51 @@ function renderHeader(currentPage = 'home') {
                             </svg>
                         </div>
                         <div class="header-text">
-                            <h1 class="main-title">Virtual Laboratory</h1>
-                            <p class="subtitle">Interactive science experiments and simulations for hands-on learning</p>
+                            <h1 class="main-title" data-i18n="header.title">Virtual Laboratory</h1>
+                            <p class="subtitle" data-i18n="header.subtitle">Interactive science experiments and simulations for hands-on learning</p>
                         </div>
                     </a>
                 </div>
                 <div class="header-right">
+                    <div class="language-selector">
+                        <button class="language-selector-button" id="languageButton" aria-label="Select language">
+                            ${flagIcons[currentLang]}
+                            <span class="language-code">${currentLang.toUpperCase()}</span>
+                            <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                                <path d="M2 4 L6 8 L10 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <div class="language-dropdown" id="languageDropdown">
+                            <button class="language-option ${currentLang === 'en' ? 'active' : ''}" data-lang="en">
+                                ${flagIcons.en}
+                                <span>English</span>
+                            </button>
+                            <button class="language-option ${currentLang === 'az' ? 'active' : ''}" data-lang="az">
+                                ${flagIcons.az}
+                                <span>Azərbaycan</span>
+                            </button>
+                            <button class="language-option ${currentLang === 'tr' ? 'active' : ''}" data-lang="tr">
+                                ${flagIcons.tr}
+                                <span>Türkçe</span>
+                            </button>
+                            <button class="language-option ${currentLang === 'de' ? 'active' : ''}" data-lang="de">
+                                ${flagIcons.de}
+                                <span>Deutsch</span>
+                            </button>
+                        </div>
+                    </div>
                     <nav class="header-nav">
-                        <a href="index.html" class="header-nav-link ${currentPage === 'home' ? 'active' : ''}">Home</a>
-                        <a href="about.html" class="header-nav-link ${currentPage === 'about' ? 'active' : ''}">About</a>
+                        <a href="index.html" class="header-nav-link ${currentPage === 'home' ? 'active' : ''}" data-i18n="header.nav.home">Home</a>
+                        <a href="about.html" class="header-nav-link ${currentPage === 'about' ? 'active' : ''}" data-i18n="header.nav.about">About</a>
                     </nav>
                     <div class="header-stats">
                         <div class="header-stat">
                             <span class="header-stat-number">3</span>
-                            <span class="header-stat-label">Labs</span>
+                            <span class="header-stat-label" data-i18n="header.stats.labs">Labs</span>
                         </div>
                         <div class="header-stat">
                             <span class="header-stat-number">1</span>
-                            <span class="header-stat-label">Simulations</span>
+                            <span class="header-stat-label" data-i18n="header.stats.simulations">Simulations</span>
                         </div>
                     </div>
                 </div>
@@ -42,7 +107,45 @@ function renderHeader(currentPage = 'home') {
     const headerElement = document.querySelector('.header');
     if (headerElement) {
         headerElement.innerHTML = headerHTML;
+        initializeLanguageSelector();
     }
+}
+
+function initializeLanguageSelector() {
+    const button = document.getElementById('languageButton');
+    const dropdown = document.getElementById('languageDropdown');
+    const options = document.querySelectorAll('.language-option');
+
+    if (!button || !dropdown) return;
+
+    // Toggle dropdown
+    button.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('active');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.language-selector')) {
+            dropdown.classList.remove('active');
+        }
+    });
+
+    // Handle language selection
+    options.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const lang = this.getAttribute('data-lang');
+
+            if (typeof I18n !== 'undefined') {
+                I18n.setLanguage(lang);
+                // Re-render header with new language
+                renderHeader(window.location.pathname.includes('about') ? 'about' : 'home');
+            }
+
+            dropdown.classList.remove('active');
+        });
+    });
 }
 
 // Auto-render on page load
@@ -51,3 +154,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname.includes('about') ? 'about' : 'home';
     renderHeader(currentPage);
 });
+
+// Listen for language changes
+if (typeof window !== 'undefined') {
+    window.addEventListener('languageChanged', function() {
+        const currentPage = window.location.pathname.includes('about') ? 'about' : 'home';
+        renderHeader(currentPage);
+    });
+}

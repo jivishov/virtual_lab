@@ -15,22 +15,22 @@
     <main class="main-content">
         <div class="container">
             <article class="about-page">
-                <h1 class="page-title">About Virtual Laboratory</h1>
+                <h1 class="page-title" data-i18n="about.pageTitle">About Virtual Laboratory</h1>
 
                 <section class="about-section">
-                    <h2>Project Overview</h2>
-                    <p>Virtual Laboratory is an open-source educational project that leverages modern AI capabilities to create interactive science simulations and virtual lab experiments. The project aims to make quality science education accessible to students worldwide, regardless of their access to physical laboratory facilities.</p>
+                    <h2 data-i18n="about.sections.overview.title">Project Overview</h2>
+                    <p data-i18n="about.sections.overview.content">Virtual Laboratory is an open-source educational project that leverages modern AI capabilities to create interactive science simulations and virtual lab experiments. The project aims to make quality science education accessible to students worldwide, regardless of their access to physical laboratory facilities.</p>
                 </section>
 
                 <section class="about-section">
-                    <h2>The Vision</h2>
-                    <p>Virtual experiments serve as pre-lab activities, similar to how flight simulators prepare pilots before actual flights. Each simulation guides users through every procedural step required in real laboratory settings, building confidence and understanding before hands-on work.</p>
-                    <p>By providing virtual access to laboratory experiences, this project reaches communities where well-equipped lab facilities may not be available, ensuring all students can experience the complete experimental process.</p>
+                    <h2 data-i18n="about.sections.vision.title">The Vision</h2>
+                    <p data-i18n="about.sections.vision.content1">Virtual experiments serve as pre-lab activities, similar to how flight simulators prepare pilots before actual flights. Each simulation guides users through every procedural step required in real laboratory settings, building confidence and understanding before hands-on work.</p>
+                    <p data-i18n="about.sections.vision.content2">By providing virtual access to laboratory experiences, this project reaches communities where well-equipped lab facilities may not be available, ensuring all students can experience the complete experimental process.</p>
                 </section>
 
                 <section class="about-section">
-                    <h2>Development Journey</h2>
-                    <p>The Virtual Laboratory project went live in 2025, following several years of development and refinement since the popularization of large language models in 2023. The journey involved numerous trials and iterations to harness AI coding capabilities effectively for educational purposes.</p>
+                    <h2 data-i18n="about.sections.development.title">Development Journey</h2>
+                    <p data-i18n="about.sections.development.content">The Virtual Laboratory project went live in 2025, following several years of development and refinement since the popularization of large language models in 2023. The journey involved numerous trials and iterations to harness AI coding capabilities effectively for educational purposes.</p>
                 </section>
 
                 <section class="about-section">
@@ -102,7 +102,13 @@
         <!-- Footer content loaded from footer.js -->
     </footer>
 
+    <!-- i18n files must load first -->
+    <script src="i18n/translations.js"></script>
+    <script src="i18n/i18n.js"></script>
+
+    <!-- Then component files -->
     <script src="header.js"></script>
     <script src="footer.js"></script>
+    <script src="about-i18n.js"></script>
 </body>
 </html>

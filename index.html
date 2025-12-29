@@ -28,14 +28,14 @@
             </section>
 
             <section class="category-section">
-                <h2 class="section-title labs-title">Virtual Experiments</h2>
+                <h2 class="section-title labs-title" data-i18n="sections.virtualLabs">Virtual Labs</h2>
                 <div class="labs-grid" id="labsGrid">
                     <!-- Lab cards will be dynamically inserted here -->
                 </div>
             </section>
 
             <section class="category-section">
-                <h2 class="section-title simulations-title">Simulations</h2>
+                <h2 class="section-title simulations-title" data-i18n="sections.simulations">Simulations</h2>
                 <div class="labs-grid" id="simulationsGrid">
                     <!-- Simulation cards will be dynamically inserted here -->
                 </div>
@@ -47,6 +47,11 @@
         <!-- Footer content loaded from footer.js -->
     </footer>
 
+    <!-- i18n files must load first -->
+    <script src="i18n/translations.js"></script>
+    <script src="i18n/i18n.js"></script>
+
+    <!-- Then component files -->
     <script src="header.js"></script>
     <script src="footer.js"></script>
     <script src="script.js"></script>
