@@ -254,15 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderLabs();
     makeCardsAccessible();
 
-    // Add a subtle parallax effect to the header (optional)
-    window.addEventListener('scroll', function() {
-        const header = document.querySelector('.header');
-        const scrollPosition = window.pageYOffset;
-        if (header && scrollPosition < 500) {
-            header.style.transform = `translateY(${scrollPosition * 0.5}px)`;
-            header.style.opacity = 1 - (scrollPosition / 500);
-        }
-    });
+    // Header is now fixed, parallax effect removed
 });
 
 // Listen for language changes and re-render content
