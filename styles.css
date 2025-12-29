@@ -57,9 +57,13 @@ body {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: white;
     padding: 1.25rem 0 1rem;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     overflow: visible;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 100;
 }
 
 .header::before {
@@ -240,7 +244,7 @@ body {
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
-    z-index: 1000;
+    z-index: 101;
     overflow: hidden;
 }
 
@@ -303,6 +307,7 @@ body {
 .main-content {
     padding: 3rem 0;
     min-height: calc(100vh - 400px);
+    margin-top: 90px; /* Account for fixed header height */
 }
 
 /* ===== Hero Section ===== */
@@ -758,6 +763,10 @@ body {
         font-size: 0.875rem;
     }
 
+    .main-content {
+        margin-top: 80px;
+    }
+
     .hero-slider {
         height: 300px;
     }
@@ -795,6 +804,10 @@ body {
 
     .subtitle {
         font-size: 0.8125rem;
+    }
+
+    .main-content {
+        margin-top: 70px;
     }
 
     .hero-slider {
