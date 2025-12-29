@@ -1,0 +1,161 @@
+/* simulation.css - Lab objects, animations, SVG gradients */
+
+/* LAB OBJECTS */
+.lab-obj {
+    position: absolute;
+    cursor: grab;
+    filter: drop-shadow(0px 8px 6px rgba(0,0,0,0.2));
+    transition: transform 0.1s cubic-bezier(0.2,0.8,0.2,1);
+    transform-origin: center;
+}
+
+.lab-obj:active {
+    cursor: grabbing;
+    transform: scale(1.05) translateY(-5px);
+    z-index: 1000 !important;
+    filter: drop-shadow(0px 15px 10px rgba(0,0,0,0.3));
+}
+
+.lab-obj.dragging {
+    cursor: grabbing;
+    transform: scale(1.08) translateY(-8px);
+    z-index: 1000 !important;
+    filter: drop-shadow(0px 18px 12px rgba(0,0,0,0.35));
+    pointer-events: none;
+}
+
+/* Drop target highlight */
+.drag-target {
+    filter: drop-shadow(0 0 10px #f1c40f) !important;
+}
+
+/* Object highlight for current step */
+.lab-obj.highlighted {
+    filter: drop-shadow(0 0 12px #f39c12) !important;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { filter: drop-shadow(0 0 8px #f39c12); }
+    50% { filter: drop-shadow(0 0 16px #f39c12); }
+}
+
+/* Clickable objects */
+.lab-obj.clickable {
+    cursor: pointer;
+}
+
+.lab-obj.clickable:hover {
+    transform: scale(1.02);
+}
+
+/* BUBBLES ANIMATION (for chemical reactions) */
+@keyframes rise {
+    0% { cy: 80; r: 1; opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { cy: 40; r: 3; opacity: 0; }
+}
+
+.bubble {
+    fill: rgba(255,255,255,0.6);
+    animation: rise 1.5s infinite linear;
+}
+
+/* Reaction animation glow */
+@keyframes react-glow {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(231, 76, 60, 0.3)); }
+    50% { filter: drop-shadow(0 0 15px rgba(231, 76, 60, 0.6)); }
+}
+
+.lab-obj.reacting {
+    animation: react-glow 0.8s infinite;
+}
+
+/* SVG GRADIENTS (defined in HTML, referenced here for documentation) */
+/*
+    #brass-grad - Golden brass color gradient
+    #steel-grad - Steel/chrome gradient for balance
+    #glass-sheen - Glass reflection effect
+    #waste-grad - Murky waste liquid gradient
+    #copper-grad - Blue copper solution gradient
+*/
+
+/* SPEC 20 SPECIFIC */
+.spec-lid {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.spec-lid:hover {
+    opacity: 0.9;
+}
+
+.spec-calibrate {
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    will-change: transform;
+}
+
+.spec-calibrate:hover {
+    transform: scale(1.1);
+}
+
+.spec-calibrate:active {
+    transform: scale(0.95);
+}
+
+/* CUVETTE RACK */
+.cuvette-slot {
+    cursor: pointer;
+}
+
+.cuvette-slot:hover {
+    fill: rgba(255,255,255,0.2);
+}
+
+/* LIQUID LEVELS - visual helpers */
+.liquid-surface {
+    transition: y 0.3s ease, height 0.3s ease;
+}
+
+/* DISSOLUTION ANIMATION */
+@keyframes dissolve {
+    0% { r: 6; opacity: 1; }
+    100% { r: 0; opacity: 0; }
+}
+
+.dissolving {
+    animation: dissolve 3s ease-out forwards;
+}
+
+/* POUR ANIMATION */
+@keyframes pour {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-45deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.pouring {
+    animation: pour 0.5s ease-in-out;
+    transform-origin: top center;
+}
+
+/* Z-INDEX LAYERS */
+.lab-obj { z-index: 10; }
+.lab-obj.balance { z-index: 5; }
+.lab-obj.beaker { z-index: 15; }
+.lab-obj.flask { z-index: 15; }
+.lab-obj.spec { z-index: 8; }
+.lab-obj.rack { z-index: 8; }
+.lab-obj.pipette { z-index: 20; }
+.lab-obj.cuvette {
+    z-index: 25;
+    transition: left 0.4s ease-out, top 0.4s ease-out;
+}
+.lab-obj.bottle { z-index: 12; }
+.lab-obj.brass { z-index: 30; }
+
+/* Ensure dragged objects are on top */
+.lab-obj[data-dragging="true"] {
+    z-index: 999 !important;
+}
