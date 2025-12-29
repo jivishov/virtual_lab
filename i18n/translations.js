@@ -303,7 +303,7 @@ const translations = {
         // Header
         header: {
             title: "Sanal Laboratuvar",
-            subtitle: "Uygulamalı öğrenme için interaktif bilim deneyleri ve simülasyonlar",
+            subtitle: "Uygulamalı öğrenme için interaktif bilimsel deneyler ve simülasyonlar",
             nav: {
                 home: "Ana Sayfa",
                 about: "Hakkında"
