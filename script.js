@@ -46,6 +46,13 @@ const labs = [
         type: "simulation",
         icon: "🥽",
         link: "simulations/lab-safety-mi/"
+    },
+    {
+        id: 6,
+        translationKey: "gaslaws",
+        type: "simulation",
+        icon: "💨",
+        link: "simulations/gassimulation/"
     }
 ];
 
