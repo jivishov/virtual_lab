@@ -58,6 +58,11 @@ const translations = {
                 title: "Mission: Impossible - Lab Safety Protocol",
                 description: "Accept your mission and navigate through 10 high-stakes laboratory scenarios. Master critical safety protocols in this immersive spy-themed training simulation with realistic animations.",
                 tags: ["Lab Safety", "Training", "Interactive"]
+            },
+            gaslaws: {
+                title: "Gas Laws Simulation",
+                description: "Explore the fundamental gas laws through interactive simulations. Investigate relationships between pressure, volume, temperature, and amount of gas in real-time experiments.",
+                tags: ["Gas Laws", "Chemistry", "Physics"]
             }
         },
 
@@ -205,6 +210,11 @@ const translations = {
                 title: "Mümkünsüz Missiya - Laboratoriya Təhlükəsizliyi",
                 description: "Missiyanızı qəbul edin və 10 yüksək riskli laboratoriya ssenarisindən keçin. Real animasiyalarla təchiz edilmiş casus mövzulu təlim simulyasiyasında kritik təhlükəsizlik protokollarına yiyələnin.",
                 tags: ["Laboratoriya Təhlükəsizliyi", "Təlim", "İnteraktiv"]
+            },
+            gaslaws: {
+                title: "Qaz Qanunları Simulyasiyası",
+                description: "İnteraktiv simulyasiyalar vasitəsilə əsas qaz qanunlarını kəşf edin. Real vaxt təcrübələrində təzyiq, həcm, temperatur və qaz miqdarı arasındakı əlaqələri araşdırın.",
+                tags: ["Qaz Qanunları", "Kimya", "Fizika"]
             }
         },
 
@@ -352,6 +362,11 @@ const translations = {
                 title: "Görevimiz Tehlike - Laboratuvar Güvenlik Protokolü",
                 description: "Görevinizi kabul edin ve 10 yüksek riskli laboratuvar senaryosunda ilerleyin. Gerçekçi animasyonlarla donatılmış casus temalı eğitim simülasyonunda kritik güvenlik protokollerinde uzmanlaşın.",
                 tags: ["Laboratuvar Güvenliği", "Eğitim", "İnteraktif"]
+            },
+            gaslaws: {
+                title: "Gaz Yasaları Simülasyonu",
+                description: "İnteraktif simülasyonlarla temel gaz yasalarını keşfedin. Basınç, hacim, sıcaklık ve gaz miktarı arasındaki ilişkileri gerçek zamanlı deneylerde inceleyin.",
+                tags: ["Gaz Yasaları", "Kimya", "Fizik"]
             }
         },
 
@@ -499,6 +514,11 @@ const translations = {
                 title: "Mission: Impossible - Labor-Sicherheitsprotokoll",
                 description: "Akzeptieren Sie Ihre Mission und navigieren Sie durch 10 hochriskante Laboratoriumsszenarien. Meistern Sie kritische Sicherheitsprotokolle in dieser immersiven Spionage-Trainingssimulation mit realistischen Animationen.",
                 tags: ["Laborsicherheit", "Training", "Interaktiv"]
+            },
+            gaslaws: {
+                title: "Gasgesetze-Simulation",
+                description: "Erkunden Sie die grundlegenden Gasgesetze durch interaktive Simulationen. Untersuchen Sie Beziehungen zwischen Druck, Volumen, Temperatur und Gasmenge in Echtzeit-Experimenten.",
+                tags: ["Gasgesetze", "Chemie", "Physik"]
             }
         },
 

@@ -101,7 +101,7 @@ function renderHeader(currentPage = 'home') {
                             <span class="header-stat-label">${t('header.stats.labs')}</span>
                         </div>
                         <div class="header-stat">
-                            <span class="header-stat-number">1</span>
+                            <span class="header-stat-number">3</span>
                             <span class="header-stat-label">${t('header.stats.simulations')}</span>
                         </div>
                     </div>
