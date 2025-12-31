@@ -1,166 +1,84 @@
-# Virtual Laboratory Website
+# Virtual Laboratory
 
-A professional, educational frontpage for hosting virtual laboratory simulations and interactive science experiments.
+**Interactive Scientific Experiments and Simulations for Hands-On Learning**
 
-## Features
+Visit: [virtuallab.az](https://virtuallab.az)
 
-- **Hero Image Slider**: Eye-catching image carousel for showcasing lab screenshots
-- **Modern Card-Based Layout**: Clean, professional design with card-style presentation for each lab
-- **Categorized Sections**: Separate sections for Virtual Labs and Simulations
-- **Responsive Design**: Optimized for all devices (desktop, tablet, mobile)
-- **Smooth Animations**: Professional fade-in effects and hover interactions
-- **Accessibility**: Keyboard navigation and screen reader friendly
-- **Easy to Customize**: Simple data structure for adding new labs
+## About the Project
 
-## Files Structure
+Virtual Laboratory is an open-source educational platform that makes quality science education accessible to students worldwide. The project leverages modern web technologies to create interactive science simulations and virtual lab experiments that can be accessed from any device with a web browser.
 
-```
-virtual_lab/
-├── index.html          # Main HTML structure
-├── styles.css          # All styling and animations
-├── script.js           # Interactive functionality and lab data
-└── README.md          # This file
-```
+## Our Vision
 
-## How to Use
+Virtual experiments serve as pre-lab activities, similar to how flight simulators prepare pilots before actual flights. Each simulation guides users through every procedural step required in real laboratory settings, building confidence and understanding before hands-on work.
 
-1. **Open the website**: Simply open `index.html` in a web browser
-2. **View labs**: Browse through the available virtual labs and simulations
-3. **Launch a lab**: Click on any "Launch Lab" or "Launch Simulation" button
+By providing virtual access to laboratory experiences, this project reaches communities where well-equipped lab facilities may not be available, ensuring all students can experience the complete experimental process.
 
-## Adding Hero Slider Images
+## Available Experiments
 
-The hero section at the top of the page can display a rotating carousel of images (screenshots of your labs/simulations).
+### Virtual Experiments
+1. **Spectrophotometry: Blue Dye Analysis**
+   Determine the concentration of blue dye in a sports drink using spectrophotometry techniques. Learn about Beer's Law and calibration curves.
 
-**To add images to the hero slider:**
+2. **DNA Microarray**
+   Explore gene expression analysis using DNA microarray technology. Understand how genetic information is analyzed and interpreted.
 
-1. Create an `images` folder in the same directory as your HTML file (if it doesn't exist)
-2. Add your lab/simulation screenshots to this folder (e.g., `lab1.jpg`, `lab2.jpg`, `simulation1.jpg`)
-3. Open `script.js`
-4. Find the `heroImages` array at the top of the file
-5. Add your image paths to the array:
+3. **Copper in Brass Analysis**
+   Determine the amount of copper in a brass sample using spectrophotometric methods. Apply quantitative analysis techniques.
 
-```javascript
-const heroImages = [
-    'images/lab-screenshot1.jpg',
-    'images/lab-screenshot2.jpg',
-    'images/simulation-screenshot.jpg',
-];
-```
+### Simulations
+1. **Nuclear Chemistry Game**
+   Interactive simulation exploring nuclear reactions, radioactive decay, and nuclear chemistry principles through engaging gameplay.
 
-**Features:**
-- Images will automatically rotate every 5 seconds
-- Click on the dots at the bottom to navigate manually
-- Overlay ensures text remains readable over any image
-- If no images are added, the hero section displays with a gradient background
+2. **Mission: Impossible - Lab Safety Protocol**
+   Navigate through 10 high-stakes laboratory scenarios. Master critical safety protocols in this immersive spy-themed training simulation with realistic animations.
 
-**Recommended image specifications:**
-- **Minimum Resolution**: 800x400px (2:1 aspect ratio ideal)
-- **Good Resolution**: 1200x600px or 800x600px work well
-- **Optimal Resolution**: 1920x600px for high-res displays (optional)
-- **Format**: JPG (recommended) or PNG
-- **File size**: Keep under 200-300KB for fast loading
+3. **Gas Laws Simulation**
+   Explore the fundamental gas laws through interactive simulations. Investigate relationships between pressure, volume, temperature, and amount of gas in real-time experiments.
 
-**Tips:**
-- Hero section is 400px tall, so images will be cropped to fit width
-- Images are set to `background-size: cover` so they scale automatically
-- 800x600px images work perfectly fine - no need for massive files
-- The gradient overlay ensures text remains readable on any image
+## Multilingual Support
 
-## Adding New Labs
+The Virtual Laboratory interface is available in multiple languages to ensure accessibility for students worldwide:
+- **English**
+- **Azərbaycan dili** (Azerbaijani)
+- **Türkçe** (Turkish)
+- **Deutsch** (German)
 
-To add a new virtual lab to the website:
+Language barriers should never prevent students from accessing quality science education.
 
-1. Open `script.js`
-2. Find the `labs` array at the top of the file
-3. Add a new lab object following this format:
+## Educational Use
 
-```javascript
-{
-    id: 5,                              // Unique ID number
-    title: "Your Lab Title",            // Lab name
-    description: "Lab description...",   // Brief description
-    type: "lab",                        // "lab" or "simulation"
-    icon: "🔬",                         // Emoji icon
-    tags: ["Tag1", "Tag2"],             // Category tags
-    link: "/path/to/lab.html"           // Link to your lab file
-}
-```
+These virtual experiments are actively used in real classroom environments. The platform serves as:
+- **Pre-lab preparation** for hands-on experiments
+- **Supplementary learning** for remote students
+- **Practice environments** for mastering laboratory techniques
+- **Accessible alternatives** where physical labs are not available
 
-### Example:
+## Open Source Commitment
 
-```javascript
-{
-    id: 5,
-    title: "Titration Experiment",
-    description: "Learn acid-base titration techniques and calculations",
-    type: "lab",
-    icon: "🧪",
-    tags: ["Chemistry", "Acid-Base", "Titration"],
-    link: "./labs/titration.html"
-}
-```
+Virtual Laboratory is released under the MIT License, making it freely available for educational use, modification, and distribution. All code is open source, encouraging contributions from educators, developers, and students worldwide.
 
-## Customization
+## About the Author
 
-### Colors
-Edit the CSS variables in `styles.css` (lines 11-30) to change the color scheme:
+Dr. Emil Jivishov is the creator and lead developer of the Virtual Laboratory project. As an educator and researcher, Dr. Jivishov combines pedagogical expertise with modern technology to create effective learning tools that serve students across diverse educational contexts.
 
-```css
---primary-color: #2563eb;      /* Main blue color */
---secondary-color: #7c3aed;    /* Purple for simulations */
---accent-color: #06b6d4;       /* Accent color */
-```
+The project represents a commitment to democratizing science education and ensuring that all students, regardless of location or resources, have access to meaningful laboratory experiences.
 
-### Icons
-You can use any emoji as an icon, or replace with image files:
-- 🔬 Microscope (general lab)
-- 🧬 DNA (genetics/biology)
-- ⚗️ Alembic (chemistry)
-- ⚛️ Atom (physics/nuclear)
-- 🧪 Test tube (chemistry)
-- 🔭 Telescope (astronomy)
+## Connect
 
-### Header Text
-Edit the header content in `index.html` (lines 13-14):
+- **Website**: [virtuallab.az](https://virtuallab.az)
+- **GitHub**: [github.com/jivishov/virtual_lab](https://github.com/jivishov/virtual_lab)
+- **LinkedIn**: Connect with Dr. Emil Jivishov
 
-```html
-<h1 class="main-title">Virtual Laboratory</h1>
-<p class="subtitle">Explore interactive science simulations and experiments</p>
-```
+## Future Development
 
-## Current Labs
+This is an ongoing project with continuous updates. Planned enhancements include:
+- Additional virtual laboratory experiments
+- Comprehensive lesson plans and teaching guides
+- Expanded language support
+- Assessment and progress tracking features
+- Community-contributed experiments and simulations
 
-1. **Spectrophotometry: Blue Dye Analysis** (Lab)
-   - Determine concentration of blue dye in sports drinks
-   - Topics: Beer's Law, calibration curves
+---
 
-2. **DNA Microarray** (Lab)
-   - Gene expression analysis
-   - Topics: Genetics, molecular biology
-
-3. **Copper in Brass Analysis** (Lab)
-   - Quantitative analysis of copper content
-   - Topics: Spectrophotometry, metallurgy
-
-4. **Nuclear Chemistry Game** (Simulation)
-   - Interactive nuclear chemistry exploration
-   - Topics: Nuclear reactions, radioactive decay
-
-## Browser Compatibility
-
-- Chrome/Edge: ✅ Full support
-- Firefox: ✅ Full support
-- Safari: ✅ Full support
-- Mobile browsers: ✅ Responsive design
-
-## Tips
-
-- **Update Links**: Remember to update the `link` property in each lab object when your lab files are ready
-- **Image Backgrounds**: You can add custom background images to lab cards by modifying the `.lab-card-header` CSS
-- **Custom Fonts**: Add Google Fonts or custom fonts by linking them in `index.html`
-- **Analytics**: Add Google Analytics or other tracking by inserting the script in `index.html`
-
-## License
-
-See LICENSE file for details.
+*Virtual Laboratory · An ongoing educational project · 2025*
