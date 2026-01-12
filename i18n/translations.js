@@ -63,6 +63,11 @@ const translations = {
                 title: "Gas Laws Simulation",
                 description: "Explore the fundamental gas laws through interactive simulations. Investigate relationships between pressure, volume, temperature, and amount of gas in real-time experiments.",
                 tags: ["Gas Laws", "Chemistry", "Physics"]
+            },
+            moletycoon: {
+                title: "MoleTycoon",
+                description: "Become a chemistry tycoon! Fulfill contracts from Texas companies, advance your career, buy premium lab equipment, and work shifts—all while mastering chemistry problems.",
+                tags: ["Simulation", "Chemistry", "Tycoon"]
             }
         },
 
