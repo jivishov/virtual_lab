@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="MoleTycoon - Build your chemistry empire, one mole at a time. A chemistry career simulation aligned with Texas TEKS Standards.">
+  <meta name="keywords" content="chemistry, mole, education, TEKS, Texas, high school, stoichiometry">
+  <title>MoleTycoon | Chemistry Mole Games</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/themes.css">
+
+  <!-- Favicon (molecule emoji) -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+</head>
+
+<body>
+  <!-- Game Hub Container -->
+  <div id="hub-container">
+    <!-- Populated by app.js -->
+    <div class="loading">
+      <div class="loading__spinner"></div>
+      <p>Loading MoleTycoon...</p>
+    </div>
+  </div>
+
+  <!-- Game Play Container -->
+  <div id="game-container" class="hidden">
+    <div class="container">
+      <div id="question-area">
+        <!-- Questions rendered here by game-engine.js -->
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="texas-stamp" title="Made in Texas with Oxytocin (The Love Hormone)">
+      <span class="texas-stamp__text">Made in Texas</span>
+      <span class="texas-stamp__subtext">with</span>
+      <a href="https://virtuallab.az" target="_blank" rel="noopener noreferrer" class="texas-stamp__link"
+        title="Oxytocin Structure SVG by User:Yikrazuul via Wikimedia Commons (CC BY-SA 3.0)">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Oxytocin.svg" class="texas-stamp__icon"
+          alt="Oxytocin">
+      </a>
+    </div>
+  </footer>
+
+  <!-- Main Application Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

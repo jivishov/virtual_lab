@@ -1,0 +1,2216 @@
+/* MoleTycoon Theme Definitions */
+
+/* ==================== COLOR THEMES ==================== */
+:root {
+    --avatar-image-male: url('../assets/avatars/classic-male.png');
+    --avatar-image-female: url('../assets/avatars/classic-female.png');
+    --avatar-text-color: transparent;
+}
+
+/* ==================== DARK LAB THEME ==================== */
+[data-theme="dark-lab"] {
+    --avatar-image-male: url('../assets/avatars/darklab-male.png');
+    --avatar-image-female: url('../assets/avatars/darklab-female.png');
+    /* Dark signature colors */
+    --plumbob-green: #00FF88;
+    --plumbob-glow: 0 0 20px #00FF88, 0 0 40px rgba(0, 255, 136, 0.5);
+    --sims-blue: #00BFFF;
+    --sims-blue-dark: #0099CC;
+    --sims-green: #00FF88;
+    --sims-panel: #0D1117;
+    --sims-panel-light: #1A1F2E;
+
+    /* Background - Dark lab aesthetic */
+    --bg-gradient: linear-gradient(180deg,
+            #0D1117 0%,
+            #161B22 30%,
+            #1A1F2E 60%,
+            #21262D 100%);
+    --bg-pattern:
+        radial-gradient(circle at 10% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(0, 191, 255, 0.1) 0%, transparent 25%);
+
+    /* Cards & Surfaces - Dark panels */
+    --card-bg: linear-gradient(145deg, #1A1F2E 0%, #21262D 100%);
+    --card-bg-hover: linear-gradient(145deg, #21262D 0%, #2D333B 100%);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 255, 136, 0.1);
+    --card-shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 255, 136, 0.15);
+    --card-border: 3px solid rgba(0, 255, 136, 0.2);
+
+    /* Primary */
+    --primary: #00FF88;
+    --primary-light: #4DFFAB;
+    --primary-dark: #00CC6A;
+
+    /* Secondary */
+    --secondary: #FF6B9D;
+    --secondary-light: #FF9BBF;
+    --secondary-dark: #FF3D7F;
+
+    /* Text */
+    --text: #E6EDF3;
+    --text-muted: #8B949E;
+    --text-light: #6E7681;
+
+    /* Feedback Colors */
+    --success: #00FF88;
+    --success-light: #4DFFAB;
+    --success-bg: rgba(0, 255, 136, 0.15);
+    --error: #FF6B6B;
+    --error-light: #FF9999;
+    --error-bg: rgba(255, 107, 107, 0.15);
+    --warning: #FFB347;
+    --warning-bg: rgba(255, 179, 71, 0.15);
+
+    /* Border */
+    --border-color: rgba(0, 255, 136, 0.2);
+
+    /* Investor Modal - Dark theme */
+    --investor-modal-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --investor-modal-border: 2px solid rgba(0, 255, 136, 0.3);
+}
+
+/* Dark Lab Element Overrides */
+[data-theme="dark-lab"] .option {
+    background: rgba(30, 40, 50, 0.8);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+[data-theme="dark-lab"] .option:hover:not(.option--disabled) {
+    background: rgba(0, 255, 136, 0.15);
+    border-color: #00FF88;
+}
+
+[data-theme="dark-lab"] .avatar-section {
+    background: rgba(13, 17, 23, 0.85);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+[data-theme="dark-lab"] .skill-bar {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark-lab"] .speech-bubble {
+    background: rgba(13, 17, 23, 0.95);
+    border-color: var(--plumbob-green);
+    color: var(--text);
+}
+
+[data-theme="dark-lab"] .speech-bubble::after {
+    border-top-color: rgba(13, 17, 23, 0.95);
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+}
+
+[data-theme="dark-lab"] .speech-bubble::before {
+    border-top-color: var(--plumbob-green);
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+}
+
+[data-theme="dark-lab"] .thought-bubble {
+    background: rgba(13, 17, 23, 0.95);
+    color: var(--text);
+    border: 2px solid var(--sims-blue);
+}
+
+[data-theme="dark-lab"] .thought-bubble::before,
+[data-theme="dark-lab"] .thought-bubble::after {
+    /* Shadow looks weird on dark circles */
+    border: 2px solid var(--sims-blue);
+}
+
+/* Dark Lab Profile Dashboard Overrides */
+[data-theme="dark-lab"] .character-card {
+    background: rgba(30, 40, 50, 0.6);
+    border-color: rgba(0, 255, 136, 0.1);
+}
+
+[data-theme="dark-lab"] .character-card:hover {
+    background: rgba(30, 40, 50, 0.9);
+    border-color: rgba(0, 255, 136, 0.5);
+}
+
+[data-theme="dark-lab"] .character-card.selected {
+    background: rgba(26, 31, 46, 0.95);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+}
+
+[data-theme="dark-lab"] .character-label {
+    color: var(--text);
+    /* Ensure light text */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark-lab"] .profile-title {
+    color: var(--primary);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+[data-theme="dark-lab"] .stats-panel {
+    background: rgba(13, 17, 23, 0.6);
+    border: 1px solid rgba(0, 255, 136, 0.1);
+}
+
+/* ==================== OCEAN DEEP THEME ==================== */
+[data-theme="ocean"] {
+    /* Avatar Defaults (Classic) */
+    --avatar-image-male: url('../assets/avatars/classic-male.png');
+    --avatar-image-female: url('../assets/avatars/classic-female.png');
+    --avatar-text-color: transparent;
+
+    /* Ocean signature colors */
+    --plumbob-green: #00CED1;
+    --plumbob-glow: 0 0 20px #00CED1, 0 0 40px rgba(0, 206, 209, 0.5);
+    --sims-blue: #1E90FF;
+    --sims-blue-dark: #1565C0;
+    --sims-green: #20B2AA;
+    --sims-panel: #001F3F;
+    --sims-panel-light: #003366;
+
+    /* Background - Deep ocean gradient */
+    --bg-gradient: linear-gradient(180deg,
+            #001F3F 0%,
+            #003366 30%,
+            #006699 60%,
+            #0099CC 100%);
+    --bg-pattern:
+        radial-gradient(circle at 20% 30%, rgba(0, 206, 209, 0.15) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(30, 144, 255, 0.15) 0%, transparent 30%);
+
+    /* Cards & Surfaces - Underwater glass */
+    --card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(224, 247, 250, 0.95) 100%);
+    --card-bg-hover: linear-gradient(145deg, rgba(224, 247, 250, 0.98) 0%, rgba(178, 235, 242, 0.98) 100%);
+    --card-shadow: 0 8px 32px rgba(0, 31, 63, 0.3), 0 2px 8px rgba(0, 206, 209, 0.1);
+    --card-shadow-hover: 0 16px 48px rgba(0, 31, 63, 0.4), 0 4px 16px rgba(0, 206, 209, 0.2);
+    --card-border: 3px solid rgba(0, 206, 209, 0.3);
+
+    /* Primary */
+    --primary: #00CED1;
+    --primary-light: #40E0D0;
+    --primary-dark: #008B8B;
+
+    /* Secondary */
+    --secondary: #FF6B9D;
+    --secondary-light: #FF9BBF;
+    --secondary-dark: #E91E63;
+
+    /* Text */
+    --text: #001F3F;
+    --text-muted: #336699;
+    --text-light: #6699CC;
+
+    /* Feedback Colors */
+    --success: #20B2AA;
+    --success-light: #48D1CC;
+    --success-bg: rgba(32, 178, 170, 0.15);
+    --error: #FF6347;
+    --error-light: #FF7F6B;
+    --error-bg: rgba(255, 99, 71, 0.15);
+    --warning: #FFA500;
+    --warning-bg: rgba(255, 165, 0, 0.15);
+
+    /* Border */
+    --border-color: rgba(0, 206, 209, 0.3);
+
+    /* Investor Modal - Dark ocean theme */
+    --investor-modal-bg: linear-gradient(135deg, #0a1628 0%, #0d2137 100%);
+    --investor-modal-border: 2px solid rgba(0, 206, 209, 0.4);
+}
+
+/* ==================== SUNSET THEME ==================== */
+[data-theme="sunset"] {
+    /* Avatar Defaults (Classic) */
+    --avatar-image-male: url('../assets/avatars/classic-male.png');
+    --avatar-image-female: url('../assets/avatars/classic-female.png');
+    --avatar-text-color: transparent;
+
+    /* Sunset signature colors */
+    --plumbob-green: #FF6B35;
+    --plumbob-glow: 0 0 20px #FF6B35, 0 0 40px rgba(255, 107, 53, 0.5);
+    --sims-blue: #FF9500;
+    --sims-blue-dark: #E67E00;
+    --sims-green: #FFD93D;
+    --sims-panel: #6B2D5C;
+    --sims-panel-light: #8B3A62;
+
+    /* Background - Sunset gradient */
+    --bg-gradient: linear-gradient(180deg,
+            #FF9A8B 0%,
+            #FF6B8A 25%,
+            #FF8E53 50%,
+            #FCCB90 100%);
+    --bg-pattern:
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 20%),
+        radial-gradient(circle at 70% 80%, rgba(255, 217, 61, 0.2) 0%, transparent 25%);
+
+    /* Cards & Surfaces - Warm glass */
+    --card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 248, 240, 0.95) 100%);
+    --card-bg-hover: linear-gradient(145deg, rgba(255, 248, 240, 0.98) 0%, rgba(255, 236, 210, 0.98) 100%);
+    --card-shadow: 0 8px 32px rgba(107, 45, 92, 0.2), 0 2px 8px rgba(255, 107, 53, 0.1);
+    --card-shadow-hover: 0 16px 48px rgba(107, 45, 92, 0.3), 0 4px 16px rgba(255, 107, 53, 0.15);
+    --card-border: 3px solid rgba(255, 107, 53, 0.3);
+
+    /* Primary */
+    --primary: #FF6B35;
+    --primary-light: #FF8F66;
+    --primary-dark: #E55A2B;
+
+    /* Secondary */
+    --secondary: #6B2D5C;
+    --secondary-light: #8B3A62;
+    --secondary-dark: #4A1E3F;
+
+    /* Text */
+    --text: #4A1E3F;
+    --text-muted: #8B3A62;
+    --text-light: #B8627D;
+
+    /* Feedback Colors */
+    --success: #4CAF50;
+    --success-light: #81C784;
+    --success-bg: rgba(76, 175, 80, 0.15);
+    --error: #E53935;
+    --error-light: #EF5350;
+    --error-bg: rgba(229, 57, 53, 0.15);
+    --warning: #FFD93D;
+    --warning-bg: rgba(255, 217, 61, 0.2);
+
+    /* Border */
+    --border-color: rgba(255, 107, 53, 0.3);
+}
+
+/* ==================== FOREST THEME ==================== */
+[data-theme="forest"] {
+    /* Avatar Defaults (Classic) */
+    --avatar-image-male: url('../assets/avatars/classic-male.png');
+    --avatar-image-female: url('../assets/avatars/classic-female.png');
+    --avatar-text-color: transparent;
+
+    /* Forest signature colors */
+    --plumbob-green: #2ECC71;
+    --plumbob-glow: 0 0 20px #2ECC71, 0 0 40px rgba(46, 204, 113, 0.5);
+    --sims-blue: #3498DB;
+    --sims-blue-dark: #2980B9;
+    --sims-green: #27AE60;
+    --sims-panel: #1A3A2A;
+    --sims-panel-light: #2D5A3D;
+
+    /* Background - Forest gradient */
+    --bg-gradient: linear-gradient(180deg,
+            #134E5E 0%,
+            #1A6B4A 30%,
+            #2D8659 60%,
+            #71B280 100%);
+    --bg-pattern:
+        radial-gradient(circle at 15% 25%, rgba(46, 204, 113, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at 85% 75%, rgba(52, 152, 219, 0.15) 0%, transparent 25%);
+
+    /* Cards & Surfaces - Natural wood-like */
+    --card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 255, 244, 0.95) 100%);
+    --card-bg-hover: linear-gradient(145deg, rgba(240, 255, 244, 0.98) 0%, rgba(220, 250, 230, 0.98) 100%);
+    --card-shadow: 0 8px 32px rgba(26, 58, 42, 0.25), 0 2px 8px rgba(46, 204, 113, 0.1);
+    --card-shadow-hover: 0 16px 48px rgba(26, 58, 42, 0.35), 0 4px 16px rgba(46, 204, 113, 0.15);
+    --card-border: 3px solid rgba(46, 204, 113, 0.3);
+
+    /* Primary */
+    --primary: #2ECC71;
+    --primary-light: #58D68D;
+    --primary-dark: #27AE60;
+
+    /* Secondary */
+    --secondary: #9B59B6;
+    --secondary-light: #BB8FCE;
+    --secondary-dark: #8E44AD;
+
+    /* Text - Light colors for dark background */
+    --text: #1A3A2A;
+    --text-muted: #E8F5E9;
+    --text-light: #C8E6C9;
+
+    /* Feedback Colors */
+    --success: #2ECC71;
+    --success-light: #58D68D;
+    --success-bg: rgba(46, 204, 113, 0.15);
+    --error: #E74C3C;
+    --error-light: #EC7063;
+    --error-bg: rgba(231, 76, 60, 0.15);
+    --warning: #F39C12;
+    --warning-bg: rgba(243, 156, 18, 0.15);
+
+    /* Border */
+    --border-color: rgba(46, 204, 113, 0.3);
+}
+
+/* Forest theme: Ensure card content text is dark */
+[data-theme="forest"] .card,
+[data-theme="forest"] .game-card,
+[data-theme="forest"] .question-card,
+[data-theme="forest"] .character-card,
+[data-theme="forest"] .stats-panel,
+[data-theme="forest"] .audit-modal,
+[data-theme="forest"] .audit-result,
+[data-theme="forest"] .paystub,
+[data-theme="forest"] .speech-bubble,
+[data-theme="forest"] .thought-bubble,
+[data-theme="forest"] .shift-card,
+[data-theme="forest"] .modal-content,
+[data-theme="forest"] .career-badge,
+[data-theme="forest"] .lab-tier-badge,
+[data-theme="forest"] .shift-selector {
+    --text: #1A3A2A;
+    --text-muted: #2D5A3D;
+    --text-light: #5D8A6D;
+    color: var(--text) !important;
+}
+
+/* Forest theme: Specific overrides for Profile Dashboard */
+[data-theme="forest"] .profile-title {
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    margin-bottom: var(--spacing-sm) !important;
+}
+
+[data-theme="forest"] .profile-dashboard {
+    padding: var(--spacing-md) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    margin-bottom: var(--spacing-lg) !important;
+}
+
+[data-theme="forest"] .profile-header-area {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: var(--spacing-md) !important;
+    padding-bottom: var(--spacing-sm) !important;
+}
+
+/* Fix for invisible text issues in Forest theme */
+/* Fix for invisible text issues in Forest theme - High Specificity */
+html[data-theme="forest"] .profile-header-area .profile-title {
+    color: #FFFFFF !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+    opacity: 1 !important;
+}
+
+html[data-theme="forest"] .lab-tier-badge__tagline {
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+    font-weight: 500;
+}
+
+html[data-theme="forest"] .stat-value.cash-display {
+    color: #1A3A2A !important;
+    /* Dark Green */
+    font-weight: 900;
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="forest"] .game-card__description,
+[data-theme="forest"] .game-card__meta,
+[data-theme="forest"] .text-muted {
+    color: #2D5A3D;
+}
+
+/* ==================== SIMS ERA THEMES ==================== */
+
+/* ==================== SIMS 1 CLASSIC (Pixelated/Retro) ==================== */
+[data-theme="sims1"] {
+    /* Classic Sims 1 colors - vibrant, retro feel */
+    --plumbob-green: #00FF00;
+    --plumbob-glow: 0 0 15px #00FF00;
+    --sims-blue: #00CCFF;
+    --sims-blue-dark: #0099CC;
+    --sims-green: #00FF00;
+    --sims-panel: #003399;
+    --sims-panel-light: #0055AA;
+
+    /* Background - Classic Sims 1 gradient */
+    --bg-gradient: linear-gradient(180deg,
+            #003399 0%,
+            #0055AA 50%,
+            #0077CC 100%);
+    --bg-pattern: none;
+
+    /* Cards - Sharp edges, bold look */
+    --card-bg: #FFFFFF;
+    --card-bg-hover: #F0F0F0;
+    --card-shadow: 4px 4px 0 #000000;
+    --card-shadow-hover: 6px 6px 0 #000000;
+    --card-border: 3px solid #000000;
+
+    /* Primary */
+    --primary: #00FF00;
+    --primary-light: #66FF66;
+    --primary-dark: #00CC00;
+
+    /* Secondary */
+    --secondary: #FF00FF;
+    --secondary-light: #FF66FF;
+    --secondary-dark: #CC00CC;
+
+    /* Text */
+    --text: #000000;
+    --text-muted: #333333;
+    --text-light: #666666;
+
+    /* UI - Reduced border radius for retro feel */
+    --border-radius-sm: 0px;
+    --border-radius: 4px;
+    --border-radius-lg: 8px;
+    --border-color: #000000;
+
+    /* Typography - Pixelated font feel */
+    --font-family: 'VT323', 'Courier New', monospace;
+
+    /* Transitions - Snappier for retro feel */
+    --transition-fast: 100ms ease;
+    --transition: 150ms ease;
+    --transition-slow: 200ms ease;
+}
+
+/* Pixelated/blocky styles for Sims 1 */
+[data-theme="sims1"] .btn {
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 #000000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+[data-theme="sims1"] .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 #000000;
+}
+
+[data-theme="sims1"] .card,
+[data-theme="sims1"] .game-card {
+    border-radius: 0 !important;
+}
+
+/* Sims 1 Profile Dashboard Overrides */
+[data-theme="sims1"] .profile-dashboard {
+    border-radius: 0;
+    border: 2px solid black;
+    background: white;
+}
+
+[data-theme="sims1"] .character-card {
+    border-radius: 0;
+    border: 2px solid black;
+    background: #ccc;
+}
+
+[data-theme="sims1"] .character-card.selected {
+    background: white;
+    box-shadow: 4px 4px 0 black;
+    transform: translate(-2px, -2px);
+}
+
+[data-theme="sims1"] .character-label {
+    font-family: 'VT323', monospace;
+    font-size: 1.2rem;
+    color: black;
+}
+
+[data-theme="sims1"] .selection-indicator {
+    border-radius: 0;
+    border: 2px solid black;
+}
+
+[data-theme="sims1"] .character-card.selected .selection-indicator {
+    background: #0f0;
+    box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="sims1"] .profile-dashboard {
+    border-radius: 0;
+    border: 2px solid black;
+    background: white;
+}
+
+[data-theme="sims1"] .character-card {
+    border-radius: 0;
+    border: 2px solid black;
+    background: #ccc;
+}
+
+[data-theme="sims1"] .character-card.selected {
+    background: white;
+    box-shadow: 4px 4px 0 black;
+    transform: translate(-2px, -2px);
+}
+
+/* Sims 1 Retro Contrast Fixes */
+[data-theme="sims1"] .game-info-bar,
+[data-theme="sims1"] .question-header,
+[data-theme="sims1"] .back-btn,
+[data-theme="sims1"] .question-progress,
+[data-theme="sims1"] .speech-bubble,
+[data-theme="sims1"] .thought-bubble,
+[data-theme="sims1"] .game-info-bar__mood,
+[data-theme="sims1"] .game-info-bar__client,
+[data-theme="sims1"] .game-info-bar__pay {
+    color: #FFFFFF !important;
+}
+
+[data-theme="sims1"] .game-info-bar,
+[data-theme="sims1"] .question-header {
+    background: rgba(0, 51, 153, 0.9) !important;
+    border-bottom: 2px solid white !important;
+}
+
+[data-theme="sims1"] .speech-bubble,
+[data-theme="sims1"] .thought-bubble {
+    background: #003399 !important;
+    border: 2px solid white !important;
+    color: #FFFFFF !important;
+}
+
+[data-theme="sims1"] .app-footer {
+    color: white !important;
+}
+
+[data-theme="sims1"] .chem-formula-img {
+    filter: invert(1);
+    opacity: 1;
+}
+
+[data-theme="sims1"] .header__subtitle {
+    color: #FFFFFF !important;
+    text-shadow: 1px 1px 0 #000000;
+}
+
+[data-theme="sims1"] .character-label {
+    font-family: 'VT323', monospace;
+    font-size: 1.2rem;
+    color: black;
+}
+
+[data-theme="sims1"] .selection-indicator {
+    border-radius: 0;
+    border: 2px solid black;
+}
+
+[data-theme="sims1"] .character-card.selected .selection-indicator {
+    background: #0f0;
+    box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* ==================== SIMS 2 (Y2K/Glossy) ==================== */
+[data-theme="sims2"] {
+    /* Sims 2 colors - glossy, 3D-ish */
+    --plumbob-green: #32CD32;
+    --plumbob-glow: 0 0 20px #32CD32, 0 0 40px rgba(50, 205, 50, 0.4);
+    --sims-blue: #4169E1;
+    --sims-blue-dark: #3357C4;
+    --sims-green: #32CD32;
+    --sims-panel: #1E3A5F;
+    --sims-panel-light: #2E5A8F;
+
+    /* Background - Sims 2 gradient with shine */
+    --bg-gradient: linear-gradient(180deg,
+            #1E3A5F 0%,
+            #2E5A8F 40%,
+            #87CEEB 100%);
+    --bg-pattern:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 30%);
+
+    /* Cards - Glossy, beveled look */
+    --card-bg: linear-gradient(145deg, #FFFFFF 0%, #E8E8E8 100%);
+    --card-bg-hover: linear-gradient(145deg, #F8F8FF 0%, #DCDCDC 100%);
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --card-border: 2px solid rgba(0, 0, 0, 0.2);
+
+    /* Primary */
+    --primary: #32CD32;
+    --primary-light: #5FD35F;
+    --primary-dark: #228B22;
+
+    /* Secondary */
+    --secondary: #FF6347;
+    --secondary-light: #FF8C7A;
+    --secondary-dark: #DC4A3A;
+
+    /* Text */
+    --text: #1E3A5F;
+    --text-muted: #4A6A8F;
+    --text-light: #7A9ABF;
+
+    /* UI - Rounded but not too much */
+    --border-radius-sm: 8px;
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    --border-color: rgba(255, 255, 255, 0.5);
+
+    /* Typography - Friendly 2000s feel */
+    --font-family: 'Trebuchet MS', 'Comic Sans MS', sans-serif;
+}
+
+/* Glossy buttons for Sims 2 */
+[data-theme="sims2"] .btn {
+    background: linear-gradient(180deg, var(--primary-light) 0%, var(--primary) 50%, var(--primary-dark) 100%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="sims2"] .btn--secondary {
+    background: linear-gradient(180deg, #F0F0F0 0%, #DCDCDC 50%, #C0C0C0 100%) !important;
+    color: var(--text) !important;
+}
+
+/* Sims 2: Light text for elements on dark background */
+[data-theme="sims2"] .back-btn,
+[data-theme="sims2"] .header__subtitle,
+[data-theme="sims2"] .text-muted:not(.card .text-muted) {
+    color: #B8C9E0;
+}
+
+[data-theme="sims2"] .back-btn:hover {
+    color: #FFFFFF;
+}
+
+/* Sims 2: Speech bubble and level-up text fixes */
+[data-theme="sims2"] .speech-bubble,
+[data-theme="sims2"] .level-up-header,
+[data-theme="sims2"] .avatar-section .speech-bubble,
+[data-theme="sims2"] .feedback-bubble,
+[data-theme="sims2"] .thought-bubble {
+    background: rgba(255, 255, 255, 0.98) !important;
+    color: #1E3A5F !important;
+}
+
+[data-theme="sims2"] .speech-bubble *,
+[data-theme="sims2"] .feedback-bubble *,
+[data-theme="sims2"] .thought-bubble *,
+[data-theme="sims2"] .thought-bubble--question,
+[data-theme="sims2"] .thought-bubble--happy,
+[data-theme="sims2"] .thought-bubble--sad {
+    color: #1E3A5F !important;
+}
+
+/* Sims 2: Gameplay header contrast fixes */
+[data-theme="sims2"] .shift-banner,
+[data-theme="sims2"] .avatar-status,
+[data-theme="sims2"] .contract-header,
+[data-theme="sims2"] .game-info-bar {
+    background: rgba(30, 58, 95, 0.95) !important;
+    color: #FFFFFF !important;
+}
+
+[data-theme="sims2"] .shift-banner__name,
+[data-theme="sims2"] .shift-banner__earnings,
+[data-theme="sims2"] .avatar-status__label,
+[data-theme="sims2"] .avatar-status__value,
+[data-theme="sims2"] .avatar-status__mood-text,
+[data-theme="sims2"] .contract-client__name,
+[data-theme="sims2"] .contract-client__location,
+[data-theme="sims2"] .contract-meta,
+[data-theme="sims2"] .game-info-bar__shift-name,
+[data-theme="sims2"] .game-info-bar__value,
+[data-theme="sims2"] .game-info-bar__mood-text,
+[data-theme="sims2"] .game-info-bar__client-name {
+    color: #FFFFFF !important;
+}
+
+/* ==================== ART STYLE THEMES ==================== */
+
+/* ==================== FLAT MODERN (Clean, Minimal, Professional) ==================== */
+/* Reference: Clean white/light gray background, soft pastel accents, 
+   isometric lab aesthetic, minimalist icons, distraction-free learning */
+[data-theme="flat-modern"] {
+    --avatar-image-male: url('../assets/avatars/flat-male.png');
+    --avatar-image-female: url('../assets/avatars/flat-female.png');
+    /* Soft pastel accent palette - mint, coral, soft blue */
+    --plumbob-green: #7DD3C0;
+    --plumbob-glow: 0 0 12px rgba(125, 211, 192, 0.4);
+    --sims-blue: #7EB8DA;
+    --sims-blue-dark: #5A9BC4;
+    --sims-green: #7DD3C0;
+    --sims-panel: #F5F7FA;
+    --sims-panel-light: #FFFFFF;
+
+    /* Background - Clean off-white with lab illustration */
+    --bg-gradient: linear-gradient(180deg,
+            rgba(250, 252, 253, 0.95) 0%,
+            rgba(245, 249, 250, 0.95) 50%,
+            rgba(238, 245, 244, 0.95) 100%);
+    --bg-pattern: none;
+    --bg-image: url('../assets/backgrounds/bg-flat-modern.png');
+
+    /* Cards - Crisp white with soft shadow */
+    --card-bg: #FFFFFF;
+    --card-bg-hover: #FAFEFE;
+    --card-shadow: 0 2px 12px rgba(125, 211, 192, 0.12), 0 1px 3px rgba(0, 0, 0, 0.04);
+    --card-shadow-hover: 0 6px 20px rgba(125, 211, 192, 0.18), 0 2px 6px rgba(0, 0, 0, 0.06);
+    --card-border: 1px solid rgba(125, 211, 192, 0.25);
+
+    /* Primary - Soft mint/teal */
+    --primary: #5CC9B5;
+    --primary-light: #7DD3C0;
+    --primary-dark: #4AB8A5;
+
+    /* Secondary - Soft coral */
+    --secondary: #F4A896;
+    --secondary-light: #F7BFB2;
+    --secondary-dark: #EF8B75;
+
+    /* Text - Clean dark gray, excellent readability */
+    --text: #2D3748;
+    --text-muted: #5A6577;
+    --text-light: #8892A2;
+
+    /* Feedback */
+    --success: #5CC9B5;
+    --success-light: #7DD3C0;
+    --success-bg: rgba(92, 201, 181, 0.1);
+    --error: #F56565;
+    --error-light: #FC8181;
+    --error-bg: rgba(245, 101, 101, 0.1);
+
+    /* UI - Smooth, medium radius */
+    --border-radius-sm: 8px;
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    --border-color: rgba(125, 211, 192, 0.25);
+
+    /* Typography - Clean sans-serif */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* Avatar Defaults */
+    --avatar-image-male: url('../assets/avatars/classic-male.png');
+    --avatar-image-female: url('../assets/avatars/classic-female.png');
+    --avatar-text-color: transparent;
+}
+
+/* Flat Modern: Ultra-clean styling */
+[data-theme="flat-modern"] .btn {
+    box-shadow: none;
+    border: 2px solid currentColor;
+    font-weight: 600;
+}
+
+[data-theme="flat-modern"] .btn--primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #FFFFFF;
+}
+
+[data-theme="flat-modern"] .btn--primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+[data-theme="flat-modern"] .teks-badge {
+    background: #5CC9B5;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+[data-theme="flat-modern"] .game-card {
+    border-radius: 12px;
+}
+
+[data-theme="flat-modern"] .game-card__meta {
+    color: #5A6577;
+}
+
+[data-theme="flat-modern"] .header__subtitle {
+    color: #5A6577;
+}
+
+[data-theme="flat-modern"] .skill-bar {
+    background: #E8F0EE;
+}
+
+[data-theme="flat-modern"] .avatar-section {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(125, 211, 192, 0.2);
+}
+
+[data-theme="flat-modern"] .speech-bubble,
+[data-theme="flat-modern"] .thought-bubble {
+    background: #FFFFFF !important;
+    color: #2D3748 !important;
+    border: 2px solid rgba(125, 211, 192, 0.4) !important;
+}
+
+[data-theme="flat-modern"] .speech-bubble *,
+[data-theme="flat-modern"] .thought-bubble * {
+    color: #2D3748 !important;
+}
+
+/* ==================== PIXEL ART (16-bit Retro Game) ==================== */
+/* Reference: Vibrant teal/green lab background, rainbow test tubes,
+   pixel scientist character, chunky retro SNES aesthetic, nostalgic */
+[data-theme="pixel-art"] {
+    --avatar-image-male: url('../assets/avatars/pixel.png');
+    --avatar-image-female: url('../assets/avatars/pixel-female.png');
+    --avatar-text-color: transparent;
+    /* Vibrant retro game palette */
+    --plumbob-green: #00FF66;
+    --plumbob-glow: 0 0 8px #00FF66;
+    --sims-blue: #00CCFF;
+    --sims-blue-dark: #0099CC;
+    --sims-green: #00FF66;
+    --sims-panel: #006666;
+    --sims-panel-light: #008888;
+
+    /* Background - Vibrant teal lab with pixel art */
+    --bg-gradient: linear-gradient(180deg,
+            rgba(0, 102, 102, 0.85) 0%,
+            rgba(0, 119, 119, 0.85) 40%,
+            rgba(0, 136, 136, 0.85) 100%);
+    --bg-pattern: none;
+    --bg-image: url('../assets/backgrounds/bg-pixel-art.png');
+
+    /* Cards - Chunky pixel style with hard shadows */
+    --card-bg: #EEEECC;
+    --card-bg-hover: #FFFFDD;
+    --card-shadow: 6px 6px 0 #004444;
+    --card-shadow-hover: 8px 8px 0 #004444;
+    --card-border: 4px solid #003333;
+
+    /* Primary - Bright lime green */
+    --primary: #00CC66;
+    --primary-light: #33FF99;
+    --primary-dark: #009944;
+
+    /* Secondary - Bright orange */
+    --secondary: #FF9933;
+    --secondary-light: #FFBB66;
+    --secondary-dark: #CC7722;
+
+    /* Text - Dark teal for cards, light for bg */
+    --text: #003333;
+    --text-muted: #005555;
+    --text-light: #007777;
+
+    /* Feedback - Retro game colors */
+    --success: #00FF66;
+    --success-light: #66FF99;
+    --success-bg: rgba(0, 255, 102, 0.2);
+    --error: #FF3333;
+    --error-light: #FF6666;
+    --error-bg: rgba(255, 51, 51, 0.2);
+
+    /* UI - Sharp square edges */
+    --border-radius-sm: 0px;
+    --border-radius: 0px;
+    --border-radius-lg: 0px;
+    --border-color: #003333;
+
+    /* Typography - Pixel/retro font */
+    --font-family: 'VT323', 'Courier New', monospace;
+    --font-size-base: 18px;
+
+    /* Snappy discrete transitions */
+    --transition-fast: 0ms;
+    --transition: 100ms steps(2);
+    --transition-slow: 200ms steps(3);
+}
+
+/* Pixel Art: Everything blocky */
+[data-theme="pixel-art"] .btn,
+[data-theme="pixel-art"] .card,
+[data-theme="pixel-art"] .game-card,
+[data-theme="pixel-art"] .speech-bubble,
+[data-theme="pixel-art"] .thought-bubble,
+[data-theme="pixel-art"] .teks-badge,
+[data-theme="pixel-art"] .skill-bar,
+[data-theme="pixel-art"] .avatar-section,
+[data-theme="pixel-art"] input {
+    border-radius: 0 !important;
+}
+
+[data-theme="pixel-art"] .btn {
+    box-shadow: 4px 4px 0 #003333;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: 3px solid #003333;
+}
+
+[data-theme="pixel-art"] .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #003333;
+}
+
+[data-theme="pixel-art"] .btn--primary {
+    background: linear-gradient(180deg, #00FF66 0%, #00CC44 100%);
+    color: #003333;
+}
+
+[data-theme="pixel-art"] .teks-badge {
+    background: #FF9933;
+    color: #003333;
+    font-weight: bold;
+    border: 2px solid #003333;
+    box-shadow: 2px 2px 0 #003333;
+}
+
+[data-theme="pixel-art"] .header__title {
+    text-shadow: 3px 3px 0 #003333;
+    color: #FFFFCC;
+}
+
+[data-theme="pixel-art"] .header__subtitle {
+    color: #AADDDD;
+}
+
+[data-theme="pixel-art"] .game-card {
+    border: 4px solid #003333;
+}
+
+[data-theme="pixel-art"] .avatar-section {
+    background: rgba(0, 68, 68, 0.8);
+    border: 4px solid #003333;
+}
+
+[data-theme="pixel-art"] .skill-bar {
+    border: 2px solid #003333;
+    background: #AADDDD;
+}
+
+[data-theme="pixel-art"] .skill-bar__fill {
+    background: linear-gradient(180deg, #00FF66 0%, #00CC44 100%);
+}
+
+[data-theme="pixel-art"] .speech-bubble,
+[data-theme="pixel-art"] .thought-bubble {
+    background: #EEEECC !important;
+    color: #003333 !important;
+    border: 4px solid #003333 !important;
+}
+
+[data-theme="pixel-art"] .speech-bubble *,
+[data-theme="pixel-art"] .thought-bubble * {
+    color: #003333 !important;
+}
+
+[data-theme="pixel-art"] .avatar-stats__label {
+    color: #FFFFCC !important;
+    text-shadow: 2px 2px 0 #003333;
+    font-weight: bold;
+}
+
+/* ==================== SIMS CARTOON (Sims 4 3D Animated Style) ==================== */
+/* Reference: Cheerful 3D Sims aesthetic, cartoon characters in lab coats,
+   vibrant green and blue, speech bubbles, bouncy animated feel, playful */
+[data-theme="sims-cartoon"] {
+    --avatar-image-male: url('../assets/avatars/sims.png');
+    --avatar-image-female: url('../assets/avatars/sims-female.png');
+    --avatar-text-color: transparent;
+    /* Vibrant Sims game palette */
+    --plumbob-green: #39FF14;
+    --plumbob-glow: 0 0 25px #39FF14, 0 0 50px rgba(57, 255, 20, 0.6);
+    --sims-blue: #00CED1;
+    --sims-blue-dark: #00A0A0;
+    --sims-green: #39FF14;
+    --sims-panel: #00897B;
+    --sims-panel-light: #26A69A;
+
+    /* Background - Bright cheerful 3D lab */
+    --bg-gradient: linear-gradient(180deg,
+            rgba(0, 172, 193, 0.85) 0%,
+            rgba(38, 198, 218, 0.85) 30%,
+            rgba(77, 208, 225, 0.85) 70%,
+            rgba(128, 222, 234, 0.85) 100%);
+    --bg-pattern: none;
+    --bg-image: url('../assets/backgrounds/bg-sims-cartoon.png');
+
+    /* Cards - Glossy 3D style with depth */
+    --card-bg: linear-gradient(145deg, #FFFFFF 0%, #E0F7FA 100%);
+    --card-bg-hover: linear-gradient(145deg, #E8FFFF 0%, #B2EBF2 100%);
+    --card-shadow: 0 8px 24px rgba(0, 137, 123, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
+    --card-shadow-hover: 0 16px 40px rgba(0, 137, 123, 0.4), 0 8px 16px rgba(0, 0, 0, 0.15);
+    --card-border: 4px solid rgba(57, 255, 20, 0.4);
+
+    /* Primary - Bright Sims green */
+    --primary: #39FF14;
+    --primary-light: #66FF44;
+    --primary-dark: #00E600;
+
+    /* Secondary - Bright orange */
+    --secondary: #FF9800;
+    --secondary-light: #FFAB40;
+    --secondary-dark: #F57C00;
+
+    /* Text - Teal for readability */
+    --text: #004D40;
+    --text-muted: #00695C;
+    --text-light: #00897B;
+
+    /* Feedback */
+    --success: #39FF14;
+    --success-light: #66FF44;
+    --success-bg: rgba(57, 255, 20, 0.15);
+    --error: #FF5252;
+    --error-light: #FF8A80;
+    --error-bg: rgba(255, 82, 82, 0.15);
+
+    /* UI - Very rounded, bubbly like Sims */
+    --border-radius-sm: 16px;
+    --border-radius: 24px;
+    --border-radius-lg: 32px;
+    --border-color: rgba(57, 255, 20, 0.4);
+
+    /* Typography - Friendly rounded */
+    --font-family: 'Nunito', 'Quicksand', -apple-system, sans-serif;
+
+    /* Bouncy elastic transitions */
+    --transition-fast: 200ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition: 350ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-slow: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Sims Cartoon: Extra bouncy and playful */
+[data-theme="sims-cartoon"] .btn:hover,
+[data-theme="sims-cartoon"] .game-card:hover {
+    transform: scale(1.08) translateY(-6px);
+}
+
+[data-theme="sims-cartoon"] .btn {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+[data-theme="sims-cartoon"] .btn--primary {
+    background: linear-gradient(180deg, #39FF14 0%, #00CC00 100%);
+    color: #004D40;
+    border: 3px solid #00AA00;
+    box-shadow: 0 6px 20px rgba(57, 255, 20, 0.4);
+}
+
+[data-theme="sims-cartoon"] .speech-bubble,
+[data-theme="sims-cartoon"] .thought-bubble {
+    border-width: 4px;
+    border-color: #39FF14;
+    background: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(0, 137, 123, 0.2);
+}
+
+[data-theme="sims-cartoon"] .teks-badge {
+    background: linear-gradient(180deg, #FF9800 0%, #F57C00 100%);
+    color: #FFFFFF;
+    font-weight: 700;
+    box-shadow: 0 3px 8px rgba(255, 152, 0, 0.4);
+}
+
+[data-theme="sims-cartoon"] .avatar-section {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(224, 247, 250, 0.95) 100%);
+    border: 4px solid rgba(57, 255, 20, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 137, 123, 0.25);
+}
+
+[data-theme="sims-cartoon"] .header__title {
+    color: #FFFFFF;
+    text-shadow: 2px 2px 4px rgba(0, 77, 64, 0.3);
+}
+
+[data-theme="sims-cartoon"] .header__subtitle {
+    color: #E0F2F1;
+}
+
+[data-theme="sims-cartoon"] .game-card {
+    border: 4px solid rgba(57, 255, 20, 0.4);
+}
+
+[data-theme="sims-cartoon"] .plumbob {
+    filter: drop-shadow(0 0 15px rgba(57, 255, 20, 0.8));
+}
+
+/* Sims Cartoon: Feedback card text contrast fixes */
+[data-theme="sims-cartoon"] .feedback__card-answer {
+    color: #8b1a1a !important;
+}
+
+[data-theme="sims-cartoon"] .feedback__card-answer strong {
+    color: #6b0f0f !important;
+}
+
+[data-theme="sims-cartoon"] .feedback__card--profit .feedback__card-extra .label {
+    color: #1a5c1a !important;
+}
+
+[data-theme="sims-cartoon"] .feedback__card--profit .feedback__card-extra {
+    color: #2a7a2a !important;
+}
+
+/* Sims Cartoon: Investor Review Modal - bright cartoon style */
+[data-theme="sims-cartoon"] .investor-modal {
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+    border: 4px solid #39FF14 !important;
+}
+
+[data-theme="sims-cartoon"] .investor-modal__title {
+    color: #1B5E20 !important;
+    text-shadow: none;
+}
+
+[data-theme="sims-cartoon"] .investor-modal__message {
+    color: #2E7D32 !important;
+}
+
+[data-theme="sims-cartoon"] .investor-header {
+    background: rgba(57, 255, 20, 0.15) !important;
+}
+
+[data-theme="sims-cartoon"] .investor-header__name {
+    color: #1B5E20 !important;
+}
+
+[data-theme="sims-cartoon"] .investor-header__title {
+    color: #388E3C !important;
+}
+
+[data-theme="sims-cartoon"] .investor-stat {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 2px solid #81C784 !important;
+}
+
+[data-theme="sims-cartoon"] .investor-stat__value {
+    color: #1B5E20 !important;
+}
+
+[data-theme="sims-cartoon"] .investor-stat__label {
+    color: #388E3C !important;
+}
+
+[data-theme="sims-cartoon"] .investor-chart {
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-theme="sims-cartoon"] .investor-chart__labels span {
+    color: #2E7D32 !important;
+}
+
+[data-theme="sims-cartoon"] .investor-warning {
+    background: rgba(255, 152, 0, 0.2) !important;
+    color: #E65100 !important;
+}
+
+[data-theme="sims-cartoon"] .investor-warning__text {
+    color: #E65100 !important;
+}
+
+/* ==================== DARK NEON (Futuristic Holographic) ==================== */
+/* Reference: Deep navy/purple background, glowing cyan and magenta neon,
+   holographic molecular structures, glassmorphism, premium high school appeal */
+[data-theme="dark-neon"] {
+    --avatar-image-male: url('../assets/avatars/neon.png');
+    --avatar-image-female: url('../assets/avatars/neon-female-v2.png');
+    --avatar-text-color: transparent;
+    /* Neon glow palette */
+    --plumbob-green: #00FFFF;
+    --plumbob-glow: 0 0 20px #00FFFF, 0 0 40px #00FFFF, 0 0 80px rgba(0, 255, 255, 0.5);
+    --sims-blue: #00D4FF;
+    --sims-blue-dark: #00A0CC;
+    --sims-green: #00FF88;
+    --sims-panel: #0D0D1A;
+    --sims-panel-light: #1A1A2E;
+
+    /* Background - Deep space with holographic lab */
+    --bg-gradient: linear-gradient(180deg,
+            rgba(13, 13, 26, 0.9) 0%,
+            rgba(21, 21, 48, 0.9) 25%,
+            rgba(26, 26, 58, 0.9) 50%,
+            rgba(37, 37, 80, 0.9) 100%);
+    --bg-pattern: none;
+    --bg-image: url('../assets/backgrounds/bg-dark-neon.png');
+
+    /* Cards - Glassmorphism with neon glow */
+    --card-bg: linear-gradient(145deg, rgba(20, 20, 40, 0.85) 0%, rgba(35, 35, 70, 0.85) 100%);
+    --card-bg-hover: linear-gradient(145deg, rgba(30, 30, 55, 0.9) 0%, rgba(50, 50, 90, 0.9) 100%);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 255, 255, 0.1);
+    --card-shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 255, 255, 0.25);
+    --card-border: 1px solid rgba(0, 255, 255, 0.25);
+
+    /* Primary - Cyan neon */
+    --primary: #00FFFF;
+    --primary-light: #66FFFF;
+    --primary-dark: #00CCCC;
+
+    /* Secondary - Magenta neon */
+    --secondary: #FF00FF;
+    --secondary-light: #FF66FF;
+    --secondary-dark: #CC00CC;
+
+    /* Text - Light on dark */
+    --text: #E8E8F0;
+    --text-muted: #B0B0D0;
+    --text-light: #8080A0;
+
+    /* Feedback - Neon versions */
+    --success: #00FF88;
+    --success-light: #66FFAA;
+    --success-bg: rgba(0, 255, 136, 0.15);
+    --error: #FF4466;
+    --error-light: #FF7788;
+    --error-bg: rgba(255, 68, 102, 0.15);
+    --warning: #FFEE00;
+    --warning-bg: rgba(255, 238, 0, 0.15);
+
+    /* UI - Modern angular */
+    --border-radius-sm: 6px;
+    --border-radius: 10px;
+    --border-radius-lg: 14px;
+    --border-color: rgba(0, 255, 255, 0.25);
+
+    /* Typography - Futuristic tech */
+    --font-family: 'Orbitron', 'Rajdhani', 'Segoe UI', sans-serif;
+
+    /* Investor Modal - Neon dark theme */
+    --investor-modal-bg: linear-gradient(135deg, #0D0D1A 0%, #1A1A2E 100%);
+    --investor-modal-border: 2px solid rgba(0, 255, 255, 0.4);
+}
+
+/* Dark Neon: Everything glows */
+[data-theme="dark-neon"] .btn {
+    box-shadow: 0 0 15px currentColor, inset 0 0 10px rgba(0, 255, 255, 0.1);
+    border: 2px solid currentColor;
+    text-shadow: 0 0 8px currentColor;
+    background: transparent;
+}
+
+[data-theme="dark-neon"] .btn:hover {
+    box-shadow: 0 0 25px currentColor, 0 0 50px currentColor, inset 0 0 20px rgba(0, 255, 255, 0.2);
+    text-shadow: 0 0 15px currentColor;
+}
+
+[data-theme="dark-neon"] .btn--primary {
+    background: linear-gradient(145deg, rgba(0, 255, 255, 0.2) 0%, rgba(0, 200, 200, 0.1) 100%);
+    color: #00FFFF;
+}
+
+[data-theme="dark-neon"] .btn--secondary {
+    background: linear-gradient(145deg, rgba(255, 0, 255, 0.2) 0%, rgba(200, 0, 200, 0.1) 100%);
+    color: #FF00FF;
+}
+
+[data-theme="dark-neon"] .plumbob::before,
+[data-theme="dark-neon"] .plumbob::after {
+    filter: drop-shadow(0 0 15px #00FFFF) drop-shadow(0 0 30px #00FFFF);
+}
+
+[data-theme="dark-neon"] .game-card {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+[data-theme="dark-neon"] .game-card:hover {
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.35), 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark-neon"] .teks-badge {
+    background: linear-gradient(145deg, rgba(255, 0, 255, 0.4) 0%, rgba(200, 0, 200, 0.3) 100%);
+    color: #FF66FF;
+    border: 1px solid rgba(255, 0, 255, 0.5);
+    text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+}
+
+[data-theme="dark-neon"] .header__title {
+    color: #00FFFF;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.3);
+}
+
+/* ==================== PIXEL ART THEME FIXES ==================== */
+/* Overrides to ensure text visibility on dark backgrounds */
+
+/* 1. Force "Your Career" Title to White */
+[data-theme="pixel-art"] .profile-title {
+    color: #FFFFFF !important;
+    text-shadow: 2px 2px 0 #003333;
+    opacity: 1 !important;
+}
+
+/* 2. Fix Header Tagline Visibility & Alignment */
+[data-theme="pixel-art"] .header__subtitle {
+    color: #FFFFFF !important;
+    text-shadow: 1px 1px 0 #003333;
+    /* Alignment handles by components.css padding, just fix color */
+}
+
+/* 3. Fix Industrial Facility / Lab Tier Text */
+[data-theme="pixel-art"] .lab-tier-badge__tagline,
+[data-theme="pixel-art"] .lab-tier-badge__name {
+    color: #FFFFFF !important;
+    text-shadow: 2px 2px 0 #000000;
+}
+
+/* 4. Fix Money Display (Dark contrast on light card) */
+/* 5. Fix Gameplay UI Text (Back button & Contract Count) */
+[data-theme="pixel-art"] .back-btn,
+[data-theme="pixel-art"] .question-progress {
+    color: #FFFFFF !important;
+    text-shadow: 1px 1px 0 #000000;
+}
+
+[data-theme="pixel-art"] .question-progress span {
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark-neon"] .avatar-section {
+    background: linear-gradient(145deg, rgba(20, 20, 40, 0.9) 0%, rgba(35, 35, 70, 0.9) 100%);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+[data-theme="dark-neon"] .skill-bar {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+[data-theme="dark-neon"] .skill-bar__fill {
+    background: linear-gradient(90deg, #00FFFF 0%, #00FF88 100%);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+[data-theme="dark-neon"] .speech-bubble,
+[data-theme="dark-neon"] .thought-bubble {
+    background: rgba(20, 20, 40, 0.95);
+    border: 2px solid rgba(0, 255, 255, 0.4);
+    color: #E8E8F0;
+}
+
+[data-theme="dark-neon"] .speech-bubble *,
+[data-theme="dark-neon"] .thought-bubble * {
+    color: #E8E8F0 !important;
+}
+
+/* Dark Neon: Fix option cards and question text */
+[data-theme="dark-neon"] .option {
+    background: rgba(20, 20, 40, 0.9) !important;
+    border: 2px solid rgba(0, 255, 255, 0.3) !important;
+}
+
+[data-theme="dark-neon"] .option__text {
+    color: #E8E8F0 !important;
+}
+
+[data-theme="dark-neon"] .option__letter {
+    background: rgba(0, 255, 255, 0.2);
+    color: #00FFFF;
+}
+
+[data-theme="dark-neon"] .option:hover {
+    border-color: rgba(0, 255, 255, 0.6) !important;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+[data-theme="dark-neon"] .option--correct {
+    border-color: #00FF88 !important;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3) !important;
+}
+
+[data-theme="dark-neon"] .option--incorrect {
+    border-color: #FF4466 !important;
+    box-shadow: 0 0 20px rgba(255, 68, 102, 0.3) !important;
+}
+
+[data-theme="dark-neon"] .question-card {
+    background: rgba(20, 20, 40, 0.9);
+    border: 1px solid rgba(0, 255, 255, 0.25);
+}
+
+[data-theme="dark-neon"] .question-text {
+    color: #E8E8F0;
+}
+
+/* ==================== THEME SELECTOR UI ==================== */
+/* Dark Neon Profile Dashboard Overrides */
+[data-theme="dark-neon"] .character-card {
+    background: rgba(20, 20, 40, 0.6);
+    border-color: rgba(0, 255, 255, 0.2);
+}
+
+[data-theme="dark-neon"] .character-card:hover {
+    background: rgba(20, 20, 40, 0.9);
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+[data-theme="dark-neon"] .character-card.selected {
+    background: rgba(20, 20, 40, 0.95);
+    border-color: #00FFFF;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+[data-theme="dark-neon"] .character-label {
+    color: #00FFFF;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+}
+
+[data-theme="dark-neon"] .selection-indicator {
+    border-color: rgba(0, 255, 255, 0.5);
+}
+
+[data-theme="dark-neon"] .character-card.selected .selection-indicator {
+    background: #00FFFF;
+    box-shadow: 0 0 15px #00FFFF;
+    border-color: #00FFFF;
+}
+
+/* Dark Neon: Summary box text contrast fixes */
+[data-theme="dark-neon"] .summary__message,
+[data-theme="dark-neon"] .summary__message--needs-work {
+    color: #1a1a2e !important;
+}
+
+[data-theme="dark-neon"] .summary__message h3 {
+    color: #1a1a2e !important;
+}
+
+[data-theme="dark-neon"] .summary__message p {
+    color: #2d2d44 !important;
+}
+
+[data-theme="dark-neon"] .summary__stat {
+    background: rgba(20, 20, 40, 0.85);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+[data-theme="dark-neon"] .summary__stat-value {
+    color: #00FFFF;
+}
+
+[data-theme="dark-neon"] .summary__stat-label {
+    color: #B8B8D0;
+}
+
+.theme-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.theme-selector__label {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.theme-selector__options {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.theme-option {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-option:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.theme-option.active {
+    border-color: white;
+    box-shadow: 0 0 0 2px var(--plumbob-green), 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Color theme previews */
+.theme-option--default {
+    background: linear-gradient(135deg, #39FF14 0%, #00D4FF 50%, #87CEEB 100%);
+}
+
+.theme-option--dark-lab {
+    background: linear-gradient(135deg, #00FF88 0%, #00BFFF 50%, #0D1117 100%);
+}
+
+.theme-option--ocean {
+    background: linear-gradient(135deg, #00CED1 0%, #1E90FF 50%, #001F3F 100%);
+}
+
+.theme-option--sunset {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF9500 50%, #FF9A8B 100%);
+}
+
+.theme-option--forest {
+    background: linear-gradient(135deg, #2ECC71 0%, #3498DB 50%, #134E5E 100%);
+}
+
+/* Sims era theme previews */
+.theme-option--sims1 {
+    background: linear-gradient(135deg, #003399 0%, #00FF00 100%);
+    border-radius: 0;
+}
+
+.theme-option--sims2 {
+    background: linear-gradient(180deg, #1E3A5F 0%, #4169E1 50%, #87CEEB 100%);
+}
+
+/* Art style theme previews */
+.theme-option--flat-modern {
+    background: linear-gradient(135deg, #7FDBCA 0%, #89CFF0 50%, #FFB5A7 100%);
+}
+
+.theme-option--pixel-art {
+    background: linear-gradient(135deg, #1B5E20 0%, #4CAF50 50%, #FF9800 100%);
+    border-radius: 0;
+}
+
+.theme-option--sims-cartoon {
+    background: linear-gradient(135deg, #26C6DA 0%, #00E676 50%, #FFAB40 100%);
+}
+
+.theme-option--dark-neon {
+    background: linear-gradient(135deg, #0A0A1A 0%, #00FFFF 50%, #FF00FF 100%);
+}
+
+/* Tooltip for theme names */
+.theme-option::after {
+    content: attr(data-name);
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    font-family: system-ui, sans-serif;
+    z-index: 100;
+}
+
+.theme-option:hover::after {
+    opacity: 1;
+}
+
+/* Header adjustments for theme selector */
+.header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+/* Google Fonts for pixel theme */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+/* ==================== SIMS 1 (Retro) ==================== */
+[data-theme="sims1"] {
+    --avatar-image-male: url('../assets/avatars/sims1-male.png');
+    --avatar-image-female: url('../assets/avatars/sims1-female.png');
+    --avatar-text-color: transparent;
+}
+
+/* ==================== SIMS 2 (Glossy) ==================== */
+[data-theme="sims2"] {
+    --avatar-image-male: url('../assets/avatars/sims2-male.png');
+    --avatar-image-female: url('../assets/avatars/sims2-female.png');
+    --avatar-text-color: transparent;
+}
+
+/* ==================== UNIVERSAL THEME CONTRAST FIXES ==================== */
+/* These ensure proper readability for feedback cards and investor modals */
+
+/* --- LIGHT THEMES: Need dark text on feedback cards --- */
+/* Default, flat-modern, sunset, sims2, pixel-art - have light backgrounds */
+
+/* Default theme (no data-theme attribute) */
+.feedback__card-answer {
+    color: #d32f2f !important;
+}
+
+.feedback__card-answer strong {
+    color: #b71c1c !important;
+}
+
+.feedback__card--profit .feedback__card-extra .label {
+    color: #2e7d32 !important;
+}
+
+.feedback__card--profit .feedback__card-extra {
+    color: #388e3c !important;
+}
+
+/* Default theme investor modal - classic Sims green style */
+:root .investor-modal,
+html:not([data-theme]) .investor-modal {
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+    border: 3px solid var(--primary) !important;
+}
+
+:root .investor-modal__title,
+html:not([data-theme]) .investor-modal__title {
+    color: #1B5E20 !important;
+}
+
+:root .investor-modal__message,
+html:not([data-theme]) .investor-modal__message {
+    color: #2E7D32 !important;
+}
+
+:root .investor-header__name,
+html:not([data-theme]) .investor-header__name {
+    color: #1B5E20 !important;
+}
+
+:root .investor-header__title,
+html:not([data-theme]) .investor-header__title {
+    color: #388E3C !important;
+}
+
+:root .investor-stat,
+html:not([data-theme]) .investor-stat {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #81C784 !important;
+}
+
+:root .investor-stat__value,
+html:not([data-theme]) .investor-stat__value {
+    color: #1B5E20 !important;
+}
+
+:root .investor-stat__label,
+html:not([data-theme]) .investor-stat__label {
+    color: #388E3C !important;
+}
+
+:root .investor-chart,
+html:not([data-theme]) .investor-chart {
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
+:root .investor-chart__labels span,
+html:not([data-theme]) .investor-chart__labels span {
+    color: #2E7D32 !important;
+}
+
+/* Flat Modern */
+[data-theme="flat-modern"] .feedback__card-answer {
+    color: #c62828 !important;
+}
+
+[data-theme="flat-modern"] .feedback__card--profit .feedback__card-extra .label {
+    color: #1b5e20 !important;
+}
+
+[data-theme="flat-modern"] .feedback__card--profit .feedback__card-extra {
+    color: #2e7d32 !important;
+}
+
+[data-theme="flat-modern"] .investor-modal {
+    background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+    border: 3px solid var(--primary) !important;
+}
+
+[data-theme="flat-modern"] .investor-modal__title {
+    color: #1565C0 !important;
+}
+
+[data-theme="flat-modern"] .investor-modal__message {
+    color: #1976D2 !important;
+}
+
+[data-theme="flat-modern"] .investor-header__name {
+    color: #0D47A1 !important;
+}
+
+[data-theme="flat-modern"] .investor-header__title {
+    color: #1976D2 !important;
+}
+
+[data-theme="flat-modern"] .investor-stat {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #90CAF9 !important;
+}
+
+[data-theme="flat-modern"] .investor-stat__value {
+    color: #0D47A1 !important;
+}
+
+[data-theme="flat-modern"] .investor-stat__label {
+    color: #1976D2 !important;
+}
+
+[data-theme="flat-modern"] .investor-chart__labels span {
+    color: #1976D2 !important;
+}
+
+/* Sunset theme - warm orange/coral colors */
+[data-theme="sunset"] .feedback__card-answer {
+    color: #c62828 !important;
+}
+
+[data-theme="sunset"] .feedback__card--profit .feedback__card-extra .label {
+    color: #2e7d32 !important;
+}
+
+[data-theme="sunset"] .feedback__card--profit .feedback__card-extra {
+    color: #388e3c !important;
+}
+
+[data-theme="sunset"] .investor-modal {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%) !important;
+    border: 3px solid var(--primary) !important;
+}
+
+[data-theme="sunset"] .investor-modal__title {
+    color: #E65100 !important;
+}
+
+[data-theme="sunset"] .investor-modal__message {
+    color: #F57C00 !important;
+}
+
+[data-theme="sunset"] .investor-header__name {
+    color: #BF360C !important;
+}
+
+[data-theme="sunset"] .investor-header__title {
+    color: #E65100 !important;
+}
+
+[data-theme="sunset"] .investor-stat {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #FFCC80 !important;
+}
+
+[data-theme="sunset"] .investor-stat__value {
+    color: #BF360C !important;
+}
+
+[data-theme="sunset"] .investor-stat__label {
+    color: #E65100 !important;
+}
+
+[data-theme="sunset"] .investor-chart__labels span {
+    color: #E65100 !important;
+}
+
+/* Sims 2 Glossy */
+[data-theme="sims2"] .feedback__card-answer {
+    color: #c62828 !important;
+}
+
+[data-theme="sims2"] .feedback__card--profit .feedback__card-extra .label {
+    color: #1565C0 !important;
+}
+
+[data-theme="sims2"] .feedback__card--profit .feedback__card-extra {
+    color: #1976D2 !important;
+}
+
+[data-theme="sims2"] .investor-modal {
+    background: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 100%) !important;
+    border: 3px solid var(--primary) !important;
+}
+
+[data-theme="sims2"] .investor-modal__title {
+    color: #01579B !important;
+}
+
+[data-theme="sims2"] .investor-modal__message {
+    color: #0277BD !important;
+}
+
+[data-theme="sims2"] .investor-header__name {
+    color: #01579B !important;
+}
+
+[data-theme="sims2"] .investor-header__title {
+    color: #0288D1 !important;
+}
+
+[data-theme="sims2"] .investor-stat {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #81D4FA !important;
+}
+
+[data-theme="sims2"] .investor-stat__value {
+    color: #01579B !important;
+}
+
+[data-theme="sims2"] .investor-stat__label {
+    color: #0277BD !important;
+}
+
+[data-theme="sims2"] .investor-chart__labels span {
+    color: #0277BD !important;
+}
+
+/* Pixel Art */
+[data-theme="pixel-art"] .feedback__card-answer {
+    color: #b71c1c !important;
+}
+
+[data-theme="pixel-art"] .feedback__card--profit .feedback__card-extra .label {
+    color: #1b5e20 !important;
+}
+
+[data-theme="pixel-art"] .feedback__card--profit .feedback__card-extra {
+    color: #2e7d32 !important;
+}
+
+[data-theme="pixel-art"] .investor-modal {
+    background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%) !important;
+    border: 4px solid #9C27B0 !important;
+}
+
+[data-theme="pixel-art"] .investor-modal__title {
+    color: #6A1B9A !important;
+}
+
+[data-theme="pixel-art"] .investor-modal__message {
+    color: #7B1FA2 !important;
+}
+
+[data-theme="pixel-art"] .investor-header__name {
+    color: #4A148C !important;
+}
+
+[data-theme="pixel-art"] .investor-header__title {
+    color: #6A1B9A !important;
+}
+
+[data-theme="pixel-art"] .investor-stat {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 3px solid #CE93D8 !important;
+}
+
+[data-theme="pixel-art"] .investor-stat__value {
+    color: #4A148C !important;
+}
+
+[data-theme="pixel-art"] .investor-stat__label {
+    color: #7B1FA2 !important;
+}
+
+[data-theme="pixel-art"] .investor-chart__labels span {
+    color: #7B1FA2 !important;
+}
+
+/* --- DARK THEMES: Need light text/elements --- */
+/* dark-lab, dark-neon, ocean, forest, sims1 */
+
+/* Dark Lab - Neon green accents */
+[data-theme="dark-lab"] .feedback__card-answer {
+    color: #FF6B6B !important;
+}
+
+[data-theme="dark-lab"] .feedback__card-answer strong {
+    color: #FF5252 !important;
+}
+
+[data-theme="dark-lab"] .feedback__card--profit .feedback__card-extra .label {
+    color: #00FF88 !important;
+}
+
+[data-theme="dark-lab"] .feedback__card--profit .feedback__card-extra {
+    color: #4DFFAB !important;
+}
+
+[data-theme="dark-lab"] .investor-modal__title {
+    color: #00FF88 !important;
+}
+
+[data-theme="dark-lab"] .investor-modal__message {
+    color: #B0E8C0 !important;
+}
+
+[data-theme="dark-lab"] .investor-stat__value {
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark-lab"] .investor-stat__label {
+    color: #8B949E !important;
+}
+
+[data-theme="dark-lab"] .investor-chart__labels span {
+    color: #8B949E !important;
+}
+
+/* Ocean theme - Deep blue */
+[data-theme="ocean"] .feedback__card-answer {
+    color: #EF5350 !important;
+}
+
+[data-theme="ocean"] .feedback__card--profit .feedback__card-extra .label {
+    color: #00BCD4 !important;
+}
+
+[data-theme="ocean"] .feedback__card--profit .feedback__card-extra {
+    color: #26C6DA !important;
+}
+
+[data-theme="ocean"] .investor-modal__title {
+    color: #00E5FF !important;
+}
+
+[data-theme="ocean"] .investor-modal__message {
+    color: #B2EBF2 !important;
+}
+
+[data-theme="ocean"] .investor-stat__value {
+    color: #FFFFFF !important;
+}
+
+[data-theme="ocean"] .investor-stat__label {
+    color: #80DEEA !important;
+}
+
+[data-theme="ocean"] .investor-chart__labels span {
+    color: #80DEEA !important;
+}
+
+/* Forest theme - Light cards with green accents */
+[data-theme="forest"] .feedback__card-answer {
+    color: #b71c1c !important;
+}
+
+[data-theme="forest"] .feedback__card--profit .feedback__card-extra .label {
+    color: #1B5E20 !important;
+}
+
+[data-theme="forest"] .feedback__card--profit .feedback__card-extra {
+    color: #2E7D32 !important;
+}
+
+[data-theme="forest"] .investor-modal {
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+    border: 3px solid #2ECC71 !important;
+}
+
+[data-theme="forest"] .investor-modal__title {
+    color: #1B5E20 !important;
+}
+
+[data-theme="forest"] .investor-modal__message {
+    color: #2E7D32 !important;
+}
+
+[data-theme="forest"] .investor-header__name {
+    color: #1B5E20 !important;
+}
+
+[data-theme="forest"] .investor-header__title {
+    color: #388E3C !important;
+}
+
+[data-theme="forest"] .investor-stat {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #81C784 !important;
+}
+
+[data-theme="forest"] .investor-stat__value {
+    color: #1B5E20 !important;
+}
+
+[data-theme="forest"] .investor-stat__label {
+    color: #388E3C !important;
+}
+
+[data-theme="forest"] .investor-chart__labels span {
+    color: #2E7D32 !important;
+}
+
+/* Sims 1 Retro - Light cards with retro green/blue style */
+[data-theme="sims1"] .feedback__card-answer {
+    color: #b71c1c !important;
+}
+
+[data-theme="sims1"] .feedback__card--profit .feedback__card-extra .label {
+    color: #006600 !important;
+}
+
+[data-theme="sims1"] .feedback__card--profit .feedback__card-extra {
+    color: #008800 !important;
+}
+
+[data-theme="sims1"] .investor-modal {
+    background: linear-gradient(135deg, #FFFFFF 0%, #E0FFE0 100%) !important;
+    border: 4px solid #00CC00 !important;
+}
+
+[data-theme="sims1"] .investor-modal__title {
+    color: #003399 !important;
+}
+
+[data-theme="sims1"] .investor-modal__message {
+    color: #004466 !important;
+}
+
+[data-theme="sims1"] .investor-header__name {
+    color: #003399 !important;
+}
+
+[data-theme="sims1"] .investor-header__title {
+    color: #005599 !important;
+}
+
+[data-theme="sims1"] .investor-stat {
+    background: #FFFFFF !important;
+    border: 3px solid #000000 !important;
+}
+
+[data-theme="sims1"] .investor-stat__value {
+    color: #003399 !important;
+}
+
+[data-theme="sims1"] .investor-stat__label {
+    color: #333333 !important;
+}
+
+[data-theme="sims1"] .investor-chart {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+}
+
+[data-theme="sims1"] .investor-chart__labels span {
+    color: #333333 !important;
+}
+
+/* ==================== GAME INFO BAR THEME OVERRIDES ==================== */
+/* Ensures proper text contrast for the game header bar across all themes */
+
+/* Default (Sims Classic) - Dark bar with bright text */
+:root {
+    --info-bar-bg: rgba(0, 0, 0, 0.75);
+    --info-bar-border: rgba(57, 255, 20, 0.3);
+    --info-bar-text: #FFFFFF;
+    --info-bar-muted: rgba(255, 255, 255, 0.8);
+    --info-bar-highlight: #FFD700;
+    --info-bar-client: #FFFFFF;
+    --info-bar-cash: #4ADE80;
+    --info-bar-xp: #FACC15;
+}
+
+/* Dark Lab */
+[data-theme="dark-lab"] {
+    --info-bar-bg: rgba(13, 17, 23, 0.9);
+    --info-bar-border: rgba(0, 255, 136, 0.4);
+    --info-bar-text: #E6EDF3;
+    --info-bar-muted: #8B949E;
+    --info-bar-highlight: #00FF88;
+    --info-bar-client: #00FF88;
+    --info-bar-cash: #4DFFAB;
+    --info-bar-xp: #FFD700;
+}
+
+/* Ocean */
+[data-theme="ocean"] {
+    --info-bar-bg: rgba(10, 22, 40, 0.9);
+    --info-bar-border: rgba(0, 206, 209, 0.4);
+    --info-bar-text: #E0F7FA;
+    --info-bar-muted: #80DEEA;
+    --info-bar-highlight: #00E5FF;
+    --info-bar-client: #00E5FF;
+    --info-bar-cash: #4ADE80;
+    --info-bar-xp: #FACC15;
+}
+
+/* Sunset - Light theme needs dark bar for contrast */
+[data-theme="sunset"] {
+    --info-bar-bg: rgba(50, 30, 20, 0.9);
+    --info-bar-border: rgba(255, 107, 53, 0.4);
+    --info-bar-text: #FFF3E0;
+    --info-bar-muted: #FFCC80;
+    --info-bar-highlight: #FFB74D;
+    --info-bar-client: #FFFFFF;
+    --info-bar-cash: #81C784;
+    --info-bar-xp: #FFCA28;
+}
+
+/* Forest - Light cards but needs dark bar */
+[data-theme="forest"] {
+    --info-bar-bg: rgba(20, 40, 30, 0.9);
+    --info-bar-border: rgba(46, 204, 113, 0.4);
+    --info-bar-text: #E8F5E9;
+    --info-bar-muted: #A5D6A7;
+    --info-bar-highlight: #69F0AE;
+    --info-bar-client: #69F0AE;
+    --info-bar-cash: #4ADE80;
+    --info-bar-xp: #FACC15;
+}
+
+/* Sims 1 Retro */
+[data-theme="sims1"] {
+    --info-bar-bg: #003399;
+    --info-bar-border: 3px solid #000000;
+    --info-bar-text: #FFFFFF;
+    --info-bar-muted: #CCDDFF;
+    --info-bar-highlight: #00FF00;
+    --info-bar-client: #FFFFFF;
+    --info-bar-cash: #00FF00;
+    --info-bar-xp: #FFFF00;
+}
+
+/* Sims 2 Glossy */
+[data-theme="sims2"] {
+    --info-bar-bg: rgba(0, 40, 80, 0.9);
+    --info-bar-border: rgba(70, 130, 180, 0.5);
+    --info-bar-text: #E1F5FE;
+    --info-bar-muted: #81D4FA;
+    --info-bar-highlight: #4FC3F7;
+    --info-bar-client: #FFFFFF;
+    --info-bar-cash: #4ADE80;
+    --info-bar-xp: #FACC15;
+}
+
+/* Flat Modern */
+[data-theme="flat-modern"] {
+    --info-bar-bg: rgba(30, 50, 80, 0.9);
+    --info-bar-border: rgba(125, 211, 192, 0.4);
+    --info-bar-text: #ECEFF1;
+    --info-bar-muted: #B0BEC5;
+    --info-bar-highlight: #7DD3C0;
+    --info-bar-client: #FFFFFF;
+    --info-bar-cash: #4ADE80;
+    --info-bar-xp: #FACC15;
+}
+
+/* Pixel Art */
+[data-theme="pixel-art"] {
+    --info-bar-bg: rgba(40, 20, 60, 0.95);
+    --info-bar-border: 3px solid #9C27B0;
+    --info-bar-text: #F3E5F5;
+    --info-bar-muted: #CE93D8;
+    --info-bar-highlight: #E040FB;
+    --info-bar-client: #FFFFFF;
+    --info-bar-cash: #69F0AE;
+    --info-bar-xp: #FFEE58;
+}
+
+/* Sims Cartoon */
+[data-theme="sims-cartoon"] {
+    --info-bar-bg: rgba(15, 40, 15, 0.9);
+    --info-bar-border: rgba(57, 255, 20, 0.5);
+    --info-bar-text: #E8F5E9;
+    --info-bar-muted: #A5D6A7;
+    --info-bar-highlight: #39FF14;
+    --info-bar-client: #39FF14;
+    --info-bar-cash: #4ADE80;
+    --info-bar-xp: #FACC15;
+}
+
+/* Dark Neon */
+[data-theme="dark-neon"] {
+    --info-bar-bg: rgba(13, 13, 26, 0.95);
+    --info-bar-border: rgba(0, 255, 255, 0.4);
+    --info-bar-text: #E8E8F0;
+    --info-bar-muted: #B0B0D0;
+    --info-bar-highlight: #00FFFF;
+    --info-bar-client: #00FFFF;
+    --info-bar-cash: #00FF88;
+    --info-bar-xp: #FFEE00;
+}

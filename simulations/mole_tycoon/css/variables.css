@@ -1,0 +1,99 @@
+/* MoleTycoon Theme Variables - Sims-Inspired Design */
+:root {
+  /* Sims Signature Colors */
+  --plumbob-green: #39FF14;
+  --plumbob-glow: 0 0 20px #39FF14, 0 0 40px rgba(57, 255, 20, 0.5);
+  --sims-blue: #00D4FF;
+  --sims-blue-dark: #0099CC;
+  --sims-green: #00E676;
+  --sims-panel: #1A237E;
+  --sims-panel-light: #3949AB;
+
+  /* Background - Sims neighborhood vibe */
+  --bg-gradient: linear-gradient(180deg,
+      #87CEEB 0%,
+      #98E4FF 30%,
+      #B8F5E0 60%,
+      #90EE90 100%);
+  --bg-pattern:
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.2) 0%, transparent 25%);
+
+  /* Cards & Surfaces - Sims UI panels */
+  --card-bg: linear-gradient(145deg, #FFFFFF 0%, #F0F8FF 100%);
+  --card-bg-hover: linear-gradient(145deg, #F0FFFF 0%, #E0F7FA 100%);
+  --card-shadow: 0 8px 32px rgba(26, 35, 126, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 16px 48px rgba(26, 35, 126, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15);
+  --card-border: 3px solid rgba(0, 212, 255, 0.3);
+
+  /* Primary - Sims interaction green */
+  --primary: #00E676;
+  --primary-light: #69F0AE;
+  --primary-dark: #00C853;
+
+  /* Secondary - Sims social/fun colors */
+  --secondary: #FF4081;
+  --secondary-light: #FF80AB;
+  --secondary-dark: #F50057;
+
+  /* Accent - Sims skill blue */
+  --accent: #00D4FF;
+  --accent-light: #40E0FF;
+  --accent-dark: #00A8CC;
+
+  /* Text */
+  --text: #1A237E;
+  --text-muted: #5C6BC0;
+  --text-light: #9FA8DA;
+
+  /* Feedback Colors - Sims style */
+  --success: #00E676;
+  --success-light: #69F0AE;
+  --success-bg: rgba(0, 230, 118, 0.15);
+  --error: #FF5252;
+  --error-light: #FF8A80;
+  --error-bg: rgba(255, 82, 82, 0.15);
+  --warning: #FFAB40;
+  --warning-bg: rgba(255, 171, 64, 0.15);
+
+  /* UI Elements - Rounded Sims style */
+  --border-radius-sm: 12px;
+  --border-radius: 20px;
+  --border-radius-lg: 28px;
+  --border-color: rgba(0, 212, 255, 0.2);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  /* Typography - Friendly, game-like */
+  --font-family: 'Nunito', 'Comic Neue', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+  --font-size-hero: 3rem;
+
+  /* Transitions - Bouncy Sims feel */
+  --transition-fast: 150ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition: 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-slow: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Game-specific colors - Sims skill categories */
+  --game-1-color: #00E676;
+  /* Logic/Science - Green */
+  --game-2-color: #AA00FF;
+  /* Creativity - Purple */
+  --game-3-color: #FF6D00;
+  /* Cooking - Orange */
+  --game-4-color: #00B0FF;
+  /* Fitness - Blue */
+  --game-5-color: #FF4081;
+  /* Social - Pink */
+}
