@@ -53,6 +53,13 @@ const labs = [
         type: "simulation",
         icon: "💨",
         link: "simulations/gassimulation/"
+    },
+    {
+        id: 7,
+        translationKey: "moletycoon",
+        type: "simulation",
+        icon: '<img src="simulations/mole_tycoon/assets/images/logo.png" alt="MoleTycoon Logo" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">',
+        link: "simulations/mole_tycoon/index.html"
     }
 ];
 
@@ -157,7 +164,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Add keyboard navigation for lab cards
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
         const focusedCard = document.activeElement.closest('.lab-card');
         if (focusedCard) {
@@ -175,7 +182,7 @@ function makeCardsAccessible() {
     cards.forEach(card => {
         card.setAttribute('tabindex', '0');
         card.setAttribute('role', 'button');
-        card.addEventListener('click', function(e) {
+        card.addEventListener('click', function (e) {
             if (e.target.tagName !== 'BUTTON') {
                 const button = this.querySelector('.launch-button');
                 if (button) {
@@ -257,7 +264,7 @@ function initHeroSlider() {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initHeroSlider();
     renderLabs();
     makeCardsAccessible();
@@ -267,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Listen for language changes and re-render content
 if (typeof window !== 'undefined') {
-    window.addEventListener('languageChanged', function() {
+    window.addEventListener('languageChanged', function () {
         initHeroSlider();
         renderLabs();
         makeCardsAccessible();
