@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BioLab: Cellular Energy Cycle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Light mode palette - organic scientific */
+      --bg-primary: #f8faf5;
+      --bg-secondary: #eef3e8;
+      --text-primary: #1a2e1a;
+      --text-secondary: #4a6548;
+      --text-dim: #7a9878;
+      
+      /* Chloroplast colors */
+      --chloro-outer: #2d8a4e;
+      --chloro-inner: #45a865;
+      --chloro-stroma: #7dd99a;
+      --chloro-thylakoid: #1e6b3a;
+      --chloro-grana: #145a2c;
+      --chloro-glow: rgba(125, 217, 154, 0.4);
+      
+      /* Mitochondria colors */
+      --mito-outer: #d4956a;
+      --mito-inner: #e8b08a;
+      --mito-matrix: #4fb8c9;
+      --mito-cristae: #ffd966;
+      --mito-membrane: #c0392b;
+      --mito-glow: rgba(79, 184, 201, 0.4);
+      
+      /* Accent colors */
+      --accent-energy: #ffd700;
+      --accent-water: #4a9eff;
+      --accent-co2: #8b9dc3;
+      --accent-o2: #ff6b6b;
+      --accent-glucose: #9b59b6;
+      
+      /* Glass effect */
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.9);
+      --glass-shadow: rgba(0, 0, 0, 0.08);
+    }
+
+    body.night-mode {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-dim: #6e7681;
+      
+      --chloro-outer: #238636;
+      --chloro-inner: #2ea043;
+      --chloro-stroma: #3fb950;
+      --chloro-thylakoid: #1a7f37;
+      --chloro-grana: #116329;
+      --chloro-glow: rgba(63, 185, 80, 0.3);
+      
+      --mito-outer: #bf8040;
+      --mito-inner: #d4956a;
+      --mito-matrix: #388bfd;
+      --mito-cristae: #d29922;
+      --mito-membrane: #da3633;
+      --mito-glow: rgba(56, 139, 253, 0.3);
+      
+      --glass-bg: rgba(22, 27, 34, 0.8);
+      --glass-border: rgba(48, 54, 61, 0.9);
+      --glass-shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: all 0.5s ease;
+    }
+
+    /* Animated background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 80%, var(--chloro-glow) 0%, transparent 25%),
+        radial-gradient(circle at 80% 20%, var(--mito-glow) 0%, transparent 25%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a6548' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      animation: bgPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes bgPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Header */
+    header {
+      position: relative;
+      z-index: 100;
+      padding: 10px 24px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 4px 30px var(--glass-shadow);
+    }
+
+    .header-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--chloro-inner), var(--mito-matrix));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .logo-text {
+      font-weight: 900;
+      font-size: 1.5rem;
+      letter-spacing: -1px;
+    }
+
+    .logo-text span {
+      color: var(--chloro-inner);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .cycle-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: var(--bg-secondary);
+      border: 2px solid transparent;
+      border-radius: 50px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    .cycle-toggle:hover {
+      border-color: var(--accent-energy);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+
+    .cycle-toggle .icon {
+      font-size: 1.4rem;
+      transition: transform 0.5s ease;
+    }
+
+    body.day-mode .cycle-toggle .icon {
+      animation: sunPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes sunPulse {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.1) rotate(15deg); }
+    }
+
+    .atp-meter {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .atp-label {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--accent-energy);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .atp-bar {
+      width: 180px;
+      height: 14px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .atp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24, #fcd34d);
+      border-radius: 8px;
+      transition: width 0.3s ease;
+      position: relative;
+    }
+
+    .atp-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .atp-value {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 0.85rem;
+      min-width: 50px;
+    }
+
+    /* Main Stage */
+    #stage {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 24px;
+      padding: 24px;
+      min-height: calc(100vh - 80px);
+    }
+
+    /* Input Panel */
+    .input-panel {
+      width: 220px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px var(--glass-shadow);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .spawn-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .spawn-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .spawn-btn:hover::before {
+      left: 100%;
+    }
+
+    .spawn-btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-h2o {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #1e40af;
+      border: 2px solid #93c5fd;
+    }
+
+    .btn-h2o:hover {
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-co2 {
+      background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+      color: #475569;
+      border: 2px solid #cbd5e1;
+    }
+
+    .btn-co2:hover {
+      box-shadow: 0 8px 25px rgba(100, 116, 139, 0.3);
+    }
+
+    .molecule-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .inventory-tray {
+      flex: 1;
+      min-height: 160px;
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-content: flex-start;
+      align-items: flex-start;
+    }
+
+    .tray-hint {
+      width: 100%;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* Organelle Container */
+    .organelle-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .organelle-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+    }
+
+    .chloro-title {
+      background: rgba(45, 138, 78, 0.2);
+      color: var(--chloro-outer);
+      border: 1px solid var(--chloro-outer);
+    }
+
+    .mito-title {
+      background: rgba(212, 149, 106, 0.2);
+      color: var(--mito-outer);
+      border: 1px solid var(--mito-outer);
+    }
+
+    /* Products tray - staging area above organelle */
+    .external-tray {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 14px;
+      border: 1px solid var(--glass-border);
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-content: flex-start;
+      align-items: center;
+      min-height: 50px;
+      max-height: 80px;
+      overflow: hidden;
+      width: 320px;
+      box-shadow: 0 4px 20px var(--glass-shadow);
+    }
+
+    .external-tray .tray-label {
+      width: 100%;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    /* Organelle SVG Containers */
+    .organelle-container {
+      position: relative;
+      width: 380px;
+      height: 280px;
+    }
+
+    .organelle-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
+      transition: filter 0.3s ease, transform 0.3s ease;
+    }
+
+    .organelle-container:hover .organelle-svg {
+      filter: drop-shadow(0 25px 50px rgba(0,0,0,0.2));
+      transform: scale(1.02);
+    }
+
+    .organelle-container.droppable .organelle-svg {
+      filter: drop-shadow(0 0 30px var(--chloro-glow));
+      transform: scale(1.03);
+    }
+
+    /* Inbox tray and stats - horizontal row below organelle */
+    .organelle-controls {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stats-panel-external {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 14px;
+      border: 1px solid var(--glass-border);
+      padding: 12px 16px;
+      min-width: 140px;
+      box-shadow: 0 4px 20px var(--glass-shadow);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stats-panel-external.droppable {
+      border-color: var(--accent-energy);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }
+
+    .molecule-slots {
+      display: none;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-label svg {
+      flex-shrink: 0;
+    }
+
+    /* Action Button - inline in controls */
+    .action-btn {
+      padding: 0 24px;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+    }
+
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+
+    .btn-synthesize {
+      background: linear-gradient(135deg, var(--chloro-outer), var(--chloro-inner));
+      color: white;
+      box-shadow: 0 6px 20px rgba(45, 138, 78, 0.4);
+    }
+
+    .btn-synthesize:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(45, 138, 78, 0.5);
+    }
+
+    .btn-generate {
+      background: linear-gradient(135deg, var(--mito-membrane), #e74c3c);
+      color: white;
+      box-shadow: 0 6px 20px rgba(192, 57, 43, 0.4);
+    }
+
+    .btn-generate:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(192, 57, 43, 0.5);
+    }
+
+    /* Sunbeam for Chloroplast */
+    .sunbeam-container {
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 300px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    body.day-mode .sunbeam-container {
+      opacity: 1;
+    }
+
+    .sunbeam {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 236, 130, 0.9) 0%,
+        rgba(255, 215, 0, 0.4) 30%,
+        rgba(255, 215, 0, 0.1) 70%,
+        transparent 100%
+      );
+      clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+      animation: beamPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes beamPulse {
+      0%, 100% { opacity: 0.8; transform: scaleX(1); }
+      50% { opacity: 1; transform: scaleX(1.1); }
+    }
+
+    .sun-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .sun-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #ffd700;
+      border-radius: 50%;
+      animation: particleFall 3s linear infinite;
+    }
+
+    @keyframes particleFall {
+      0% { transform: translateY(-10px); opacity: 1; }
+      100% { transform: translateY(300px); opacity: 0; }
+    }
+
+    /* Stats Panel styling */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .stat-bar {
+      width: 100%;
+      height: 5px;
+      background: var(--bg-secondary);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .stat-bar:last-child {
+      margin-bottom: 0;
+    }
+
+    .stat-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .fill-h2o { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .fill-co2 { background: linear-gradient(90deg, #64748b, #94a3b8); }
+    .fill-glu { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+    .fill-o2 { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+    /* Molecules */
+    .molecule {
+      position: absolute;
+      cursor: grab;
+      z-index: 100;
+      touch-action: none;
+      transition: filter 0.2s ease, transform 0.15s ease;
+    }
+
+    .molecule:hover {
+      filter: brightness(1.1);
+    }
+
+    .molecule.dragging {
+      cursor: grabbing;
+      z-index: 1000;
+      filter: drop-shadow(0 15px 30px rgba(0,0,0,0.3));
+    }
+
+    .molecule.docked {
+      position: relative;
+      cursor: grab;
+      transform: scale(0.6);
+    }
+
+    .molecule svg {
+      display: block;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      z-index: 5000;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Overlay / Start Screen */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .overlay-content {
+      max-width: 600px;
+    }
+
+    .overlay-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--chloro-inner), var(--mito-matrix));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .overlay-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .instructions {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 24px 32px;
+      margin-bottom: 32px;
+      text-align: left;
+      border: 1px solid var(--glass-border);
+    }
+
+    .instruction-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .instruction-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--chloro-inner), var(--mito-matrix));
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-top: 3px;
+    }
+
+    .start-btn {
+      padding: 18px 48px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, var(--chloro-inner), #22c55e);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 40px rgba(34, 197, 94, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 50px rgba(34, 197, 94, 0.5);
+    }
+
+    /* Animation for thylakoids when active */
+    @keyframes thylakoidPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    body.day-mode .thylakoid-stack {
+      animation: thylakoidPulse 2s ease-in-out infinite;
+    }
+
+    /* Animation for cristae when active */
+    @keyframes cristaeFold {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.95); }
+    }
+
+    .cristae {
+      animation: cristaeFold 3s ease-in-out infinite;
+    }
+
+    /* Reaction particles */
+    .reaction-particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particleExplode 1s ease-out forwards;
+    }
+
+    @keyframes particleExplode {
+      0% {
+        opacity: 1;
+        transform: scale(1) translate(0, 0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0) translate(var(--tx), var(--ty));
+      }
+    }
+
+    /* ==========================================
+       HOMEOSTASIS DASHBOARD (in header)
+    ========================================== */
+    .dashboard-cards {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .process-card {
+      background: rgba(0,0,0,0.15);
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      padding: 6px 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      transition: border-color 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .process-card.status-active {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .process-card.status-stressed {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.15);
+    }
+
+    .process-card.status-failing {
+      border-color: rgba(239, 68, 68, 0.4);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+    }
+
+    .process-vis {
+      flex-shrink: 0;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 2px;
+      overflow: hidden;
+      line-height: 0;
+    }
+
+    .process-vis svg {
+      display: block;
+    }
+
+    .process-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 70px;
+    }
+
+    .process-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .process-cost {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.5rem;
+      color: var(--text-dim);
+    }
+
+    .process-status {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
+      transition: all 0.3s ease;
+    }
+
+    .process-status.active {
+      background: rgba(52, 211, 153, 0.2);
+      color: #34d399;
+    }
+
+    .process-status.stressed {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+    }
+
+    .process-status.failing {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    /* Na+/K+ Pump Animations */
+    .ion-na { transition: all 0.8s ease; }
+    .ion-k { transition: all 0.8s ease; }
+
+    .pump-cycle-out .na-1 { cx: 10; cy: 20; }
+    .pump-cycle-out .na-2 { cx: 20; cy: 15; }
+    .pump-cycle-out .na-3 { cx: 15; cy: 55; }
+    .pump-cycle-out .k-1 { cx: 70; cy: 35; }
+    .pump-cycle-out .k-2 { cx: 70; cy: 35; }
+
+    .pump-cycle-in .na-1 { cx: 10; cy: 20; }
+    .pump-cycle-in .na-2 { cx: 20; cy: 15; }
+    .pump-cycle-in .na-3 { cx: 15; cy: 55; }
+    .pump-cycle-in .k-1 { cx: 110; cy: 40; }
+    .pump-cycle-in .k-2 { cx: 120; cy: 30; }
+
+    .pump-rest .na-1 { cx: 40; cy: 35; }
+    .pump-rest .na-2 { cx: 30; cy: 35; }
+    .pump-rest .na-3 { cx: 20; cy: 35; }
+    .pump-rest .k-1 { cx: 100; cy: 35; }
+    .pump-rest .k-2 { cx: 115; cy: 35; }
+
+    /* Pump failure: ions scatter */
+    .pump-fail .na-1 { cx: 60; cy: 25; opacity: 0.4; }
+    .pump-fail .na-2 { cx: 80; cy: 50; opacity: 0.4; }
+    .pump-fail .na-3 { cx: 110; cy: 30; opacity: 0.4; }
+    .pump-fail .k-1 { cx: 30; cy: 50; opacity: 0.4; }
+    .pump-fail .k-2 { cx: 50; cy: 20; opacity: 0.4; }
+
+    /* Protein folding animations */
+    .chain-unfold { transition: all 0.6s ease; }
+    .protein-folded { transition: all 0.6s ease; }
+
+    .fold-active .chain-unfold { opacity: 1; stroke: #f87171; }
+    .fold-active .protein-folded { opacity: 0.8; fill: #34d399; }
+
+    .fold-stressed .chain-unfold { opacity: 0.7; stroke: #fbbf24; }
+    .fold-stressed .protein-folded { opacity: 0.4; fill: #fbbf24; }
+
+    .fold-fail .chain-unfold { 
+      d: path("M5,35 Q10,15 20,40 Q25,20 35,45 Q40,18 45,35");
+      stroke: #ef4444;
+      opacity: 0.8;
+    }
+    .fold-fail .protein-folded { opacity: 0; }
+
+    /* DNA repair animations */
+    .repair-scanner {
+      transition: x 1.5s linear;
+    }
+
+    .dmg {
+      transition: all 0.4s ease;
+    }
+
+    .dna-fail .helix-strand1 { stroke: #f87171; opacity: 0.5; }
+    .dna-fail .helix-strand2 { stroke: #f87171; opacity: 0.5; }
+    .dna-fail .dmg { fill: #ef4444; opacity: 0.8; }
+    .dna-fail .repair-scanner { opacity: 0; }
+
+  </style>
+</head>
+<body class="day-mode">
+
+  <!-- Start Overlay -->
+  <div id="overlay">
+    <div class="overlay-content">
+      <h1 class="overlay-title">Cellular Energy Lab</h1>
+      <p class="overlay-subtitle">
+        Experience the beautiful dance of photosynthesis and cellular respiration. 
+        Watch molecules transform as energy flows through the cell.
+      </p>
+      
+      <div class="instructions">
+        <div class="instruction-step">
+          <div class="step-num">1</div>
+          <div class="step-text">Spawn <strong>Water (H₂O)</strong> and <strong>Carbon Dioxide (CO₂)</strong> molecules from the left panel</div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">2</div>
+          <div class="step-text">Drag molecules into the <strong>Chloroplast</strong> during daytime to perform photosynthesis</div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">3</div>
+          <div class="step-text">Products auto-route: <strong>Glucose</strong> and <strong>O₂</strong> fly to your inventory, ready for the next step</div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">4</div>
+          <div class="step-text">Feed them to the <strong>Mitochondrion</strong> to generate <strong>ATP</strong> energy!</div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">5</div>
+          <div class="step-text">Toggle <strong>Day/Night</strong> mode to control when photosynthesis can occur</div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">6</div>
+          <div class="step-text">Watch the <strong>Homeostasis Dashboard</strong>. Your cell's Na⁺/K⁺ pumps, protein folding, and DNA repair all consume ATP!</div>
+        </div>
+      </div>
+      
+      <button class="start-btn" onclick="startGame()">Begin Simulation</button>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-row-top">
+      <div class="logo">
+        <div class="logo-icon">🧬</div>
+        <div class="logo-text">BIO<span>LAB</span></div>
+      </div>
+      
+      <div class="dashboard-cards">
+        
+        <!-- Na+/K+ Pump -->
+        <div class="process-card" id="card-pump" data-process="pump">
+          <div class="process-vis" id="vis-pump">
+            <svg width="100" height="50" viewBox="0 0 140 70">
+              <rect x="0" y="28" width="140" height="14" rx="3" fill="#4a5568" opacity="0.3"/>
+              <rect x="0" y="30" width="140" height="10" rx="2" fill="#2d3748" opacity="0.15"/>
+              <rect x="55" y="20" width="30" height="30" rx="6" fill="#1e293b" opacity="0.4"/>
+              <rect x="60" y="24" width="20" height="22" rx="4" fill="#0f172a" opacity="0.3"/>
+              <circle class="ion ion-na na-1" cx="40" cy="35" r="4" fill="#60a5fa"/>
+              <circle class="ion ion-na na-2" cx="30" cy="35" r="4" fill="#60a5fa"/>
+              <circle class="ion ion-na na-3" cx="20" cy="35" r="4" fill="#60a5fa"/>
+              <circle class="ion ion-k k-1" cx="100" cy="35" r="4" fill="#c084fc"/>
+              <circle class="ion ion-k k-2" cx="115" cy="35" r="4" fill="#c084fc"/>
+              <text x="10" y="14" font-size="7" fill="#60a5fa" font-family="Space Mono, monospace" font-weight="700">Na⁺ out</text>
+              <text x="100" y="14" font-size="7" fill="#c084fc" font-family="Space Mono, monospace" font-weight="700">K⁺ in</text>
+            </svg>
+          </div>
+          <div class="process-info">
+            <div class="process-name">Na⁺/K⁺ Pump</div>
+            <div class="process-cost">0.4 ATP/s</div>
+            <div class="process-status" id="status-pump">Active</div>
+          </div>
+        </div>
+        
+        <!-- Protein Folding -->
+        <div class="process-card" id="card-fold" data-process="fold">
+          <div class="process-vis" id="vis-fold">
+            <svg width="100" height="50" viewBox="0 0 140 70">
+              <rect x="50" y="15" width="40" height="40" rx="10" fill="#1e293b" opacity="0.3" stroke="#475569" stroke-width="1"/>
+              <text x="70" y="39" text-anchor="middle" font-size="7" fill="#94a3b8" font-family="Space Mono, monospace">HSP60</text>
+              <path class="chain-unfold" d="M5,35 Q15,20 25,35 Q35,50 45,35" fill="none" stroke="#f87171" stroke-width="3" stroke-linecap="round"/>
+              <ellipse class="protein-folded" cx="115" cy="35" rx="12" ry="10" fill="#34d399" opacity="0.8" stroke="#059669" stroke-width="1.5"/>
+              <text x="115" y="38" text-anchor="middle" font-size="6" fill="#064e3b" font-family="Space Mono, monospace" font-weight="700">✓</text>
+            </svg>
+          </div>
+          <div class="process-info">
+            <div class="process-name">Protein Folding</div>
+            <div class="process-cost">0.3 ATP/s</div>
+            <div class="process-status" id="status-fold">Active</div>
+          </div>
+        </div>
+        
+        <!-- DNA Repair -->
+        <div class="process-card" id="card-dna" data-process="dna">
+          <div class="process-vis" id="vis-dna">
+            <svg width="100" height="50" viewBox="0 0 140 70">
+              <path class="helix-strand1" d="M10,25 Q25,10 40,25 Q55,40 70,25 Q85,10 100,25 Q115,40 130,25" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/>
+              <path class="helix-strand2" d="M10,45 Q25,60 40,45 Q55,30 70,45 Q85,60 100,45 Q115,30 130,45" fill="none" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="25" y1="28" x2="25" y2="42" stroke="#475569" stroke-width="1.5" opacity="0.6"/>
+              <line x1="40" y1="25" x2="40" y2="45" stroke="#475569" stroke-width="1.5" opacity="0.6"/>
+              <line x1="55" y1="28" x2="55" y2="42" stroke="#475569" stroke-width="1.5" opacity="0.6"/>
+              <line x1="70" y1="25" x2="70" y2="45" stroke="#475569" stroke-width="1.5" opacity="0.6"/>
+              <line x1="85" y1="28" x2="85" y2="42" stroke="#475569" stroke-width="1.5" opacity="0.6"/>
+              <line x1="100" y1="25" x2="100" y2="45" stroke="#475569" stroke-width="1.5" opacity="0.6"/>
+              <line x1="115" y1="28" x2="115" y2="42" stroke="#475569" stroke-width="1.5" opacity="0.6"/>
+              <circle class="dmg dmg-1" cx="40" cy="35" r="5" fill="#ef4444" opacity="0"/>
+              <circle class="dmg dmg-2" cx="70" cy="35" r="5" fill="#ef4444" opacity="0"/>
+              <circle class="dmg dmg-3" cx="100" cy="35" r="5" fill="#ef4444" opacity="0"/>
+              <rect class="repair-scanner" x="0" y="18" width="8" height="34" rx="2" fill="#fbbf24" opacity="0.6"/>
+            </svg>
+          </div>
+          <div class="process-info">
+            <div class="process-name">DNA Repair</div>
+            <div class="process-cost">0.15 ATP/s</div>
+            <div class="process-status" id="status-dna">Active</div>
+          </div>
+        </div>
+        
+      </div>
+      
+      <div class="header-controls">
+        <button class="cycle-toggle" onclick="toggleDayNight()">
+          <span class="icon" id="cycle-icon">☀️</span>
+          <span id="cycle-text">Day Mode</span>
+        </button>
+        
+        <div class="atp-meter">
+          <span class="atp-label">ATP</span>
+          <div class="atp-bar">
+            <div class="atp-fill" id="atp-fill" style="width: 100%"></div>
+          </div>
+          <span class="atp-value" id="atp-value">100%</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Stage -->
+  <div id="stage">
+    
+    <!-- Input Panel -->
+    <div class="input-panel">
+      <div class="panel-title">Raw Materials</div>
+      
+      <button class="spawn-btn btn-h2o" onclick="spawnMolecule('h2o')">
+        <div class="molecule-icon">
+          <svg width="36" height="36" viewBox="0 0 36 36">
+            <circle cx="18" cy="12" r="8" fill="#ef4444"/>
+            <circle cx="8" cy="26" r="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+            <circle cx="28" cy="26" r="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="14" y1="17" x2="10" y2="22" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="22" y1="17" x2="26" y2="22" stroke="#94a3b8" stroke-width="2"/>
+          </svg>
+        </div>
+        <span>Water (H₂O)</span>
+      </button>
+      
+      <button class="spawn-btn btn-co2" onclick="spawnMolecule('co2')">
+        <div class="molecule-icon">
+          <svg width="36" height="36" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="6" fill="#374151"/>
+            <circle cx="6" cy="18" r="5" fill="#ef4444"/>
+            <circle cx="30" cy="18" r="5" fill="#ef4444"/>
+            <line x1="11" y1="18" x2="12" y2="18" stroke="#6b7280" stroke-width="3"/>
+            <line x1="11" y1="16" x2="12" y2="16" stroke="#6b7280" stroke-width="2"/>
+            <line x1="24" y1="18" x2="25" y2="18" stroke="#6b7280" stroke-width="3"/>
+            <line x1="24" y1="20" x2="25" y2="20" stroke="#6b7280" stroke-width="2"/>
+          </svg>
+        </div>
+        <span>Carbon Dioxide</span>
+      </button>
+      
+      <div class="panel-title" style="margin-top: 8px;">Inventory</div>
+      <div class="inventory-tray" id="inventory-tray">
+        <div class="tray-hint">Spawned molecules appear here</div>
+      </div>
+    </div>
+
+    <!-- Chloroplast -->
+    <div class="organelle-wrapper">
+      <div class="organelle-title chloro-title">Chloroplast</div>
+      
+      <!-- Products Tray - Above organelle -->
+      <div class="external-tray" id="chloro-products">
+        <div class="tray-label">Products</div>
+      </div>
+      
+      <div class="organelle-container" id="chloroplast-container">
+        
+        <!-- Sunbeam -->
+        <div class="sunbeam-container">
+          <div class="sunbeam"></div>
+          <div class="sun-particles" id="sun-particles"></div>
+        </div>
+        
+        <!-- Chloroplast SVG with internal structure -->
+        <svg class="organelle-svg" viewBox="0 0 420 300" id="chloroplast-svg">
+          <defs>
+            <linearGradient id="chloroOuterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#2d8a4e"/>
+              <stop offset="100%" style="stop-color:#1e6b3a"/>
+            </linearGradient>
+            <linearGradient id="chloroInnerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#45a865"/>
+              <stop offset="100%" style="stop-color:#3d9458"/>
+            </linearGradient>
+            <linearGradient id="stromaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#7dd99a"/>
+              <stop offset="50%" style="stop-color:#6bc987"/>
+              <stop offset="100%" style="stop-color:#5ab976"/>
+            </linearGradient>
+            <linearGradient id="thylakoidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#1e6b3a"/>
+              <stop offset="50%" style="stop-color:#145a2c"/>
+              <stop offset="100%" style="stop-color:#1e6b3a"/>
+            </linearGradient>
+          </defs>
+          
+          <!-- Outer Membrane -->
+          <ellipse cx="210" cy="150" rx="195" ry="120" fill="url(#chloroOuterGrad)" opacity="0.9"/>
+          
+          <!-- Inner Membrane -->
+          <ellipse cx="210" cy="150" rx="180" ry="105" fill="url(#chloroInnerGrad)"/>
+          
+          <!-- Stroma (fluid) -->
+          <ellipse cx="210" cy="150" rx="170" ry="95" fill="url(#stromaGrad)"/>
+          
+          <!-- Thylakoid Stacks (Grana) - Left -->
+          <g class="thylakoid-stack" transform="translate(80, 100)">
+            <ellipse cx="30" cy="8" rx="25" ry="7" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="30" cy="19" rx="25" ry="7" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="30" cy="30" rx="25" ry="7" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="30" cy="41" rx="25" ry="7" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="30" cy="52" rx="25" ry="7" fill="url(#thylakoidGrad)"/>
+          </g>
+          
+          <!-- Thylakoid Stacks (Grana) - Center -->
+          <g class="thylakoid-stack" transform="translate(175, 85)">
+            <ellipse cx="35" cy="10" rx="28" ry="8" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="35" cy="22" rx="28" ry="8" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="35" cy="34" rx="28" ry="8" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="35" cy="46" rx="28" ry="8" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="35" cy="58" rx="28" ry="8" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="35" cy="70" rx="28" ry="8" fill="url(#thylakoidGrad)"/>
+          </g>
+          
+          <!-- Thylakoid Stacks (Grana) - Right -->
+          <g class="thylakoid-stack" transform="translate(280, 105)">
+            <ellipse cx="28" cy="8" rx="24" ry="6" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="28" cy="18" rx="24" ry="6" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="28" cy="28" rx="24" ry="6" fill="url(#thylakoidGrad)"/>
+            <ellipse cx="28" cy="38" rx="24" ry="6" fill="url(#thylakoidGrad)"/>
+          </g>
+          
+          <!-- Lamellae (connecting membranes) -->
+          <path d="M110 145 Q140 135 175 140" stroke="#1a5c30" stroke-width="3" fill="none" opacity="0.7"/>
+          <path d="M245 145 Q260 135 280 140" stroke="#1a5c30" stroke-width="3" fill="none" opacity="0.7"/>
+          
+          <!-- Starch Granules -->
+          <circle cx="150" cy="200" r="7" fill="#f0fdf4" opacity="0.8"/>
+          <circle cx="270" cy="210" r="5" fill="#f0fdf4" opacity="0.8"/>
+          
+          <!-- Plastoglobuli (lipid droplets) -->
+          <circle cx="130" cy="90" r="4" fill="#fbbf24" opacity="0.9"/>
+          <circle cx="300" cy="85" r="3" fill="#fbbf24" opacity="0.9"/>
+          <circle cx="340" cy="160" r="4" fill="#fbbf24" opacity="0.9"/>
+          
+          <!-- Highlight reflection -->
+          <ellipse cx="160" cy="85" rx="50" ry="20" fill="rgba(255,255,255,0.15)"/>
+        </svg>
+      </div>
+      
+      <!-- Controls Row - Below organelle -->
+      <div class="organelle-controls">
+        <div class="stats-panel-external" id="chloro-stats">
+          <div class="stat-row">
+            <span class="stat-label">
+              <svg width="18" height="18" viewBox="0 0 60 60"><circle cx="30" cy="25" r="10" fill="#e53e3e"/><circle cx="18" cy="40" r="7" fill="#e2e8f0"/><circle cx="42" cy="40" r="7" fill="#e2e8f0"/></svg>
+              H₂O
+            </span>
+            <span><span id="cnt-h2o">0</span>/6</span>
+          </div>
+          <div class="stat-bar">
+            <div class="stat-fill fill-h2o" id="bar-h2o" style="width: 0%"></div>
+          </div>
+          <div class="molecule-slots" id="slots-h2o"></div>
+          
+          <div class="stat-row">
+            <span class="stat-label">
+              <svg width="18" height="18" viewBox="0 0 60 60"><circle cx="20" cy="30" r="8" fill="#e53e3e"/><circle cx="30" cy="30" r="10" fill="#4a5568"/><circle cx="40" cy="30" r="8" fill="#e53e3e"/></svg>
+              CO₂
+            </span>
+            <span><span id="cnt-co2">0</span>/6</span>
+          </div>
+          <div class="stat-bar">
+            <div class="stat-fill fill-co2" id="bar-co2" style="width: 0%"></div>
+          </div>
+          <div class="molecule-slots" id="slots-co2"></div>
+        </div>
+        
+        <button class="action-btn btn-synthesize" id="btn-photo" onclick="doPhotosynthesis()" disabled>
+          ⚡ Synthesize
+        </button>
+      </div>
+    </div>
+
+    <!-- Mitochondrion -->
+    <div class="organelle-wrapper">
+      <div class="organelle-title mito-title">Mitochondrion</div>
+      
+      <!-- Products Tray - Above organelle -->
+      <div class="external-tray" id="mito-products">
+        <div class="tray-label">Products</div>
+      </div>
+      
+      <div class="organelle-container" id="mito-container">
+        
+        <!-- Mitochondrion SVG with internal structure -->
+        <svg class="organelle-svg" viewBox="0 0 420 280" id="mito-svg">
+          <defs>
+            <linearGradient id="mitoOuterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#d4956a"/>
+              <stop offset="100%" style="stop-color:#bf8040"/>
+            </linearGradient>
+            <linearGradient id="mitoInnerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#e8b08a"/>
+              <stop offset="100%" style="stop-color:#d4956a"/>
+            </linearGradient>
+            <linearGradient id="matrixGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#5ec6d4"/>
+              <stop offset="50%" style="stop-color:#4fb8c9"/>
+              <stop offset="100%" style="stop-color:#3ea8b9"/>
+            </linearGradient>
+            <linearGradient id="cristaeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#fcd34d"/>
+              <stop offset="50%" style="stop-color:#fbbf24"/>
+              <stop offset="100%" style="stop-color:#f59e0b"/>
+            </linearGradient>
+            <linearGradient id="membraneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#c0392b"/>
+              <stop offset="100%" style="stop-color:#a93226"/>
+            </linearGradient>
+          </defs>
+          
+          <!-- Outer Membrane -->
+          <ellipse cx="210" cy="140" rx="190" ry="90" fill="url(#mitoOuterGrad)"/>
+          
+          <!-- Inner Membrane space -->
+          <ellipse cx="210" cy="140" rx="175" ry="75" fill="url(#mitoInnerGrad)"/>
+          
+          <!-- Matrix -->
+          <ellipse cx="210" cy="140" rx="160" ry="60" fill="url(#matrixGrad)"/>
+          
+          <!-- Cristae (folded inner membrane) -->
+          <g class="cristae">
+            <!-- Left cristae -->
+            <path d="M75 140 Q90 100 105 140 Q90 180 75 140" fill="url(#cristaeGrad)" stroke="url(#membraneGrad)" stroke-width="2.5"/>
+            <path d="M105 140 Q120 105 135 140 Q120 175 105 140" fill="url(#cristaeGrad)" stroke="url(#membraneGrad)" stroke-width="2.5"/>
+            
+            <!-- Center-left cristae -->
+            <path d="M150 140 Q165 90 180 140 Q165 190 150 140" fill="url(#cristaeGrad)" stroke="url(#membraneGrad)" stroke-width="2.5"/>
+            
+            <!-- Center cristae -->
+            <path d="M200 140 Q215 85 230 140 Q215 195 200 140" fill="url(#cristaeGrad)" stroke="url(#membraneGrad)" stroke-width="2.5"/>
+            
+            <!-- Center-right cristae -->
+            <path d="M250 140 Q265 90 280 140 Q265 190 250 140" fill="url(#cristaeGrad)" stroke="url(#membraneGrad)" stroke-width="2.5"/>
+            
+            <!-- Right cristae -->
+            <path d="M295 140 Q310 105 325 140 Q310 175 295 140" fill="url(#cristaeGrad)" stroke="url(#membraneGrad)" stroke-width="2.5"/>
+            <path d="M325 140 Q340 100 355 140 Q340 180 325 140" fill="url(#cristaeGrad)" stroke="url(#membraneGrad)" stroke-width="2.5"/>
+          </g>
+          
+          <!-- ATP Synthase particles (on cristae) -->
+          <g class="atp-synthase">
+            <circle cx="90" cy="118" r="3.5" fill="#7c2d12"/>
+            <circle cx="90" cy="162" r="3.5" fill="#7c2d12"/>
+            <circle cx="120" cy="122" r="3.5" fill="#7c2d12"/>
+            <circle cx="165" cy="108" r="3.5" fill="#7c2d12"/>
+            <circle cx="165" cy="172" r="3.5" fill="#7c2d12"/>
+            <circle cx="215" cy="105" r="3.5" fill="#7c2d12"/>
+            <circle cx="215" cy="175" r="3.5" fill="#7c2d12"/>
+            <circle cx="265" cy="108" r="3.5" fill="#7c2d12"/>
+            <circle cx="265" cy="172" r="3.5" fill="#7c2d12"/>
+            <circle cx="310" cy="122" r="3.5" fill="#7c2d12"/>
+            <circle cx="340" cy="118" r="3.5" fill="#7c2d12"/>
+          </g>
+          
+          <!-- Matrix granules -->
+          <circle cx="130" cy="140" r="4" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="180" cy="130" r="3" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="240" cy="150" r="4" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="290" cy="140" r="3" fill="rgba(255,255,255,0.3)"/>
+          
+          <!-- mtDNA (circular) -->
+          <circle cx="210" cy="140" r="10" fill="none" stroke="#1e3a5f" stroke-width="2" stroke-dasharray="3 2" opacity="0.5"/>
+          
+          <!-- Highlight reflection -->
+          <ellipse cx="150" cy="100" rx="45" ry="18" fill="rgba(255,255,255,0.12)"/>
+        </svg>
+      </div>
+      
+      <!-- Controls Row - Below organelle -->
+      <div class="organelle-controls">
+        <div class="stats-panel-external" id="mito-stats">
+          <div class="stat-row">
+            <span class="stat-label">
+              <svg width="18" height="18" viewBox="0 0 60 60"><circle cx="30" cy="30" r="14" fill="#f6ad55"/><circle cx="22" cy="22" r="4" fill="#e53e3e"/><circle cx="38" cy="22" r="4" fill="#e53e3e"/><circle cx="22" cy="38" r="4" fill="#e53e3e"/><circle cx="38" cy="38" r="4" fill="#e53e3e"/></svg>
+              Glucose
+            </span>
+            <span><span id="cnt-glu">0</span>/1</span>
+          </div>
+          <div class="stat-bar">
+            <div class="stat-fill fill-glu" id="bar-glu" style="width: 0%"></div>
+          </div>
+          <div class="molecule-slots" id="slots-glu"></div>
+          
+          <div class="stat-row">
+            <span class="stat-label">
+              <svg width="18" height="18" viewBox="0 0 60 60"><circle cx="22" cy="30" r="10" fill="#e53e3e"/><circle cx="38" cy="30" r="10" fill="#e53e3e"/></svg>
+              O₂
+            </span>
+            <span><span id="cnt-o2">0</span>/6</span>
+          </div>
+          <div class="stat-bar">
+            <div class="stat-fill fill-o2" id="bar-o2" style="width: 0%"></div>
+          </div>
+          <div class="molecule-slots" id="slots-o2"></div>
+        </div>
+        
+        <button class="action-btn btn-generate" id="btn-mito" onclick="doRespiration()" disabled>
+          ⚡ Generate ATP
+        </button>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ============================================
+    // STATE
+    // ============================================
+    const state = {
+      atp: 100,
+      isDay: true,
+      gameActive: false,
+      moleculeId: 0,
+      processes: {
+        pump: { rate: 0.04, status: 'active', animPhase: 0 },
+        fold: { rate: 0.03, status: 'active', animPhase: 0 },
+        dna:  { rate: 0.015, status: 'active', scanPos: 0, damages: [false, false, false], damageTimer: 0 }
+      }
+    };
+
+    // ============================================
+    // DOM REFERENCES
+    // ============================================
+    const DOM = {
+      body: document.body,
+      overlay: document.getElementById('overlay'),
+      atpFill: document.getElementById('atp-fill'),
+      atpValue: document.getElementById('atp-value'),
+      cycleIcon: document.getElementById('cycle-icon'),
+      cycleText: document.getElementById('cycle-text'),
+      toast: document.getElementById('toast'),
+      
+      inventoryTray: document.getElementById('inventory-tray'),
+      
+      chloroplastContainer: document.getElementById('chloroplast-container'),
+      chloroStats: document.getElementById('chloro-stats'),
+      chloroProducts: document.getElementById('chloro-products'),
+      
+      mitoContainer: document.getElementById('mito-container'),
+      mitoStats: document.getElementById('mito-stats'),
+      mitoProducts: document.getElementById('mito-products'),
+      
+      slots: {
+        h2o: document.getElementById('slots-h2o'),
+        co2: document.getElementById('slots-co2'),
+        glu: document.getElementById('slots-glu'),
+        o2: document.getElementById('slots-o2')
+      },
+      
+      btnPhoto: document.getElementById('btn-photo'),
+      btnMito: document.getElementById('btn-mito'),
+      
+      sunParticles: document.getElementById('sun-particles'),
+      
+      // Homeostasis dashboard
+      cardPump: document.getElementById('card-pump'),
+      cardFold: document.getElementById('card-fold'),
+      cardDna: document.getElementById('card-dna'),
+      visPump: document.getElementById('vis-pump'),
+      visFold: document.getElementById('vis-fold'),
+      visDna: document.getElementById('vis-dna'),
+      statusPump: document.getElementById('status-pump'),
+      statusFold: document.getElementById('status-fold'),
+      statusDna: document.getElementById('status-dna'),
+      
+      counters: {
+        h2o: document.getElementById('cnt-h2o'),
+        co2: document.getElementById('cnt-co2'),
+        glu: document.getElementById('cnt-glu'),
+        o2: document.getElementById('cnt-o2')
+      },
+      bars: {
+        h2o: document.getElementById('bar-h2o'),
+        co2: document.getElementById('bar-co2'),
+        glu: document.getElementById('bar-glu'),
+        o2: document.getElementById('bar-o2')
+      }
+    };
+
+    // ============================================
+    // MOLECULE SVG TEMPLATES (Scientifically Accurate)
+    // ============================================
+    const moleculeSVGs = {
+      // Water: Bent structure ~104.5° angle
+      h2o: `<svg width="56" height="50" viewBox="0 0 56 50">
+        <defs>
+          <radialGradient id="h2oOxygenGrad" cx="30%" cy="30%">
+            <stop offset="0%" style="stop-color:#ff6b6b"/>
+            <stop offset="100%" style="stop-color:#dc2626"/>
+          </radialGradient>
+          <radialGradient id="h2oHydrogenGrad" cx="30%" cy="30%">
+            <stop offset="0%" style="stop-color:#ffffff"/>
+            <stop offset="100%" style="stop-color:#e5e7eb"/>
+          </radialGradient>
+          <filter id="h2oShadow">
+            <feDropShadow dx="0" dy="3" stdDeviation="2" flood-opacity="0.3"/>
+          </filter>
+        </defs>
+        <!-- Bonds -->
+        <line x1="28" y1="18" x2="14" y2="38" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+        <line x1="28" y1="18" x2="42" y2="38" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+        <!-- Oxygen (central, larger) -->
+        <circle cx="28" cy="15" r="12" fill="url(#h2oOxygenGrad)" filter="url(#h2oShadow)"/>
+        <ellipse cx="24" cy="11" rx="4" ry="3" fill="rgba(255,255,255,0.4)"/>
+        <!-- Hydrogen atoms (smaller) -->
+        <circle cx="12" cy="40" r="7" fill="url(#h2oHydrogenGrad)" stroke="#d1d5db" stroke-width="1" filter="url(#h2oShadow)"/>
+        <ellipse cx="10" cy="38" rx="2" ry="1.5" fill="rgba(255,255,255,0.6)"/>
+        <circle cx="44" cy="40" r="7" fill="url(#h2oHydrogenGrad)" stroke="#d1d5db" stroke-width="1" filter="url(#h2oShadow)"/>
+        <ellipse cx="42" cy="38" rx="2" ry="1.5" fill="rgba(255,255,255,0.6)"/>
+      </svg>`,
+      
+      // CO2: Linear structure with double bonds
+      co2: `<svg width="70" height="40" viewBox="0 0 70 40">
+        <defs>
+          <radialGradient id="co2CarbonGrad" cx="30%" cy="30%">
+            <stop offset="0%" style="stop-color:#6b7280"/>
+            <stop offset="100%" style="stop-color:#374151"/>
+          </radialGradient>
+          <radialGradient id="co2OxygenGrad" cx="30%" cy="30%">
+            <stop offset="0%" style="stop-color:#ff6b6b"/>
+            <stop offset="100%" style="stop-color:#dc2626"/>
+          </radialGradient>
+          <filter id="co2Shadow">
+            <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-opacity="0.3"/>
+          </filter>
+        </defs>
+        <!-- Double bonds (two lines each side) -->
+        <line x1="22" y1="17" x2="10" y2="17" stroke="#6b7280" stroke-width="3" stroke-linecap="round"/>
+        <line x1="22" y1="23" x2="10" y2="23" stroke="#6b7280" stroke-width="3" stroke-linecap="round"/>
+        <line x1="48" y1="17" x2="60" y2="17" stroke="#6b7280" stroke-width="3" stroke-linecap="round"/>
+        <line x1="48" y1="23" x2="60" y2="23" stroke="#6b7280" stroke-width="3" stroke-linecap="round"/>
+        <!-- Carbon (central) -->
+        <circle cx="35" cy="20" r="10" fill="url(#co2CarbonGrad)" filter="url(#co2Shadow)"/>
+        <ellipse cx="31" cy="16" rx="3" ry="2" fill="rgba(255,255,255,0.3)"/>
+        <!-- Oxygen atoms -->
+        <circle cx="8" cy="20" r="9" fill="url(#co2OxygenGrad)" filter="url(#co2Shadow)"/>
+        <ellipse cx="5" cy="17" rx="2.5" ry="2" fill="rgba(255,255,255,0.4)"/>
+        <circle cx="62" cy="20" r="9" fill="url(#co2OxygenGrad)" filter="url(#co2Shadow)"/>
+        <ellipse cx="59" cy="17" rx="2.5" ry="2" fill="rgba(255,255,255,0.4)"/>
+      </svg>`,
+      
+      // O2: Double bond diatomic
+      o2: `<svg width="58" height="36" viewBox="0 0 58 36">
+        <defs>
+          <radialGradient id="o2OxygenGrad" cx="30%" cy="30%">
+            <stop offset="0%" style="stop-color:#ff6b6b"/>
+            <stop offset="100%" style="stop-color:#dc2626"/>
+          </radialGradient>
+          <filter id="o2Shadow">
+            <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-opacity="0.3"/>
+          </filter>
+        </defs>
+        <!-- Double bond -->
+        <line x1="19" y1="15" x2="39" y2="15" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+        <line x1="19" y1="21" x2="39" y2="21" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+        <!-- Oxygen atoms -->
+        <circle cx="14" cy="18" r="11" fill="url(#o2OxygenGrad)" filter="url(#o2Shadow)"/>
+        <ellipse cx="10" cy="14" rx="3" ry="2" fill="rgba(255,255,255,0.4)"/>
+        <circle cx="44" cy="18" r="11" fill="url(#o2OxygenGrad)" filter="url(#o2Shadow)"/>
+        <ellipse cx="40" cy="14" rx="3" ry="2" fill="rgba(255,255,255,0.4)"/>
+      </svg>`,
+      
+      // Glucose: Simplified ring structure (pyranose form)
+      glucose: `<svg width="70" height="70" viewBox="0 0 70 70">
+        <defs>
+          <radialGradient id="glucoseGrad" cx="30%" cy="30%">
+            <stop offset="0%" style="stop-color:#c084fc"/>
+            <stop offset="100%" style="stop-color:#7c3aed"/>
+          </radialGradient>
+          <radialGradient id="glucoseOxygenGrad" cx="30%" cy="30%">
+            <stop offset="0%" style="stop-color:#ff6b6b"/>
+            <stop offset="100%" style="stop-color:#dc2626"/>
+          </radialGradient>
+          <filter id="glucoseShadow">
+            <feDropShadow dx="0" dy="3" stdDeviation="2" flood-opacity="0.3"/>
+          </filter>
+        </defs>
+        <!-- Hexagonal ring -->
+        <polygon points="35,8 58,20 58,44 35,56 12,44 12,20" fill="url(#glucoseGrad)" stroke="#5b21b6" stroke-width="2" filter="url(#glucoseShadow)"/>
+        <!-- Oxygen in ring -->
+        <circle cx="35" cy="8" r="6" fill="url(#glucoseOxygenGrad)"/>
+        <!-- Carbon positions -->
+        <circle cx="58" cy="20" r="4" fill="#374151"/>
+        <circle cx="58" cy="44" r="4" fill="#374151"/>
+        <circle cx="35" cy="56" r="4" fill="#374151"/>
+        <circle cx="12" cy="44" r="4" fill="#374151"/>
+        <circle cx="12" cy="20" r="4" fill="#374151"/>
+        <!-- Hydroxyl groups (small O) -->
+        <circle cx="68" cy="14" r="3" fill="#ef4444"/>
+        <circle cx="68" cy="50" r="3" fill="#ef4444"/>
+        <circle cx="35" cy="66" r="3" fill="#ef4444"/>
+        <circle cx="2" cy="50" r="3" fill="#ef4444"/>
+        <circle cx="2" cy="14" r="3" fill="#ef4444"/>
+        <!-- Highlight -->
+        <ellipse cx="30" cy="25" rx="12" ry="8" fill="rgba(255,255,255,0.2)"/>
+      </svg>`,
+      
+      // ATP: Simplified representation
+      atp: `<svg width="54" height="54" viewBox="0 0 54 54">
+        <defs>
+          <radialGradient id="atpMainGrad" cx="30%" cy="30%">
+            <stop offset="0%" style="stop-color:#fde047"/>
+            <stop offset="100%" style="stop-color:#f59e0b"/>
+          </radialGradient>
+          <filter id="atpGlowFilter">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <circle cx="27" cy="27" r="24" fill="url(#atpMainGrad)" stroke="#d97706" stroke-width="2" filter="url(#atpGlowFilter)"/>
+        <text x="27" y="33" text-anchor="middle" font-family="Space Mono, monospace" font-size="14" font-weight="bold" fill="#7c2d12">ATP</text>
+        <!-- Energy rays -->
+        <line x1="27" y1="3" x2="27" y2="8" stroke="#fcd34d" stroke-width="2" stroke-linecap="round"/>
+        <line x1="27" y1="46" x2="27" y2="51" stroke="#fcd34d" stroke-width="2" stroke-linecap="round"/>
+        <line x1="3" y1="27" x2="8" y2="27" stroke="#fcd34d" stroke-width="2" stroke-linecap="round"/>
+        <line x1="46" y1="27" x2="51" y2="27" stroke="#fcd34d" stroke-width="2" stroke-linecap="round"/>
+      </svg>`
+    };
+
+    // ============================================
+    // GAME INITIALIZATION
+    // ============================================
+    function startGame() {
+      DOM.overlay.style.opacity = '0';
+      DOM.overlay.style.pointerEvents = 'none';
+      setTimeout(() => {
+        DOM.overlay.style.display = 'none';
+      }, 500);
+      
+      state.gameActive = true;
+      createSunParticles();
+      startGameLoop();
+      showToast('🌱 Welcome to the Cellular Energy Lab!');
+    }
+
+    // ============================================
+    // DAY/NIGHT TOGGLE
+    // ============================================
+    function toggleDayNight() {
+      state.isDay = !state.isDay;
+      
+      if (state.isDay) {
+        DOM.body.classList.add('day-mode');
+        DOM.body.classList.remove('night-mode');
+        DOM.cycleIcon.textContent = '☀️';
+        DOM.cycleText.textContent = 'Day Mode';
+        showToast('☀️ Sunlight enables photosynthesis!');
+      } else {
+        DOM.body.classList.remove('day-mode');
+        DOM.body.classList.add('night-mode');
+        DOM.cycleIcon.textContent = '🌙';
+        DOM.cycleText.textContent = 'Night Mode';
+        showToast('🌙 Chloroplast resting, respiration continues');
+      }
+      
+      updateButtons();
+    }
+
+    // ============================================
+    // MOLECULE CREATION & SPAWNING
+    // ============================================
+    function createMolecule(type) {
+      const mol = document.createElement('div');
+      mol.className = 'molecule';
+      mol.dataset.type = type;
+      const id = state.moleculeId++;
+      mol.dataset.id = id;
+      
+      // Replace template SVG IDs with unique instance IDs
+      let svg = moleculeSVGs[type];
+      svg = svg.replace(/id="([^"]+)"/g, `id="$1-${id}"`);
+      svg = svg.replace(/url\(#([^)]+)\)/g, `url(#$1-${id})`);
+      mol.innerHTML = svg;
+      
+      makeDraggable(mol);
+      return mol;
+    }
+
+    function spawnMolecule(type) {
+      if (!state.gameActive) return;
+      
+      const mol = createMolecule(type);
+      mol.classList.add('docked');
+      mol.style.transform = 'scale(0)';
+      mol.style.transition = 'transform 0.3s ease';
+      
+      // Remove hint if present
+      const hint = DOM.inventoryTray.querySelector('.tray-hint');
+      if (hint) hint.remove();
+      
+      DOM.inventoryTray.appendChild(mol);
+      
+      // Animate in
+      setTimeout(() => {
+        mol.style.transform = 'scale(0.6)';
+      }, 10);
+      
+      const names = { h2o: 'H₂O', co2: 'CO₂', o2: 'O₂', glucose: 'Glucose', atp: 'ATP' };
+      showToast(`✨ Spawned ${names[type]}`);
+    }
+
+    // ============================================
+    // DRAG AND DROP SYSTEM
+    // ============================================
+    function makeDraggable(el) {
+      let isDragging = false;
+      let startX, startY, origLeft, origTop;
+      
+      const onPointerDown = (e) => {
+        if (!state.gameActive) return;
+        
+        isDragging = true;
+        el.classList.add('dragging');
+        
+        // If docked, move to body and scale up
+        if (el.classList.contains('docked')) {
+          const rect = el.getBoundingClientRect();
+          el.classList.remove('docked');
+          document.body.appendChild(el);
+          // Center the molecule at the cursor position
+          el.style.left = (rect.left) + 'px';
+          el.style.top = (rect.top) + 'px';
+          el.style.transform = 'scale(1)';
+        }
+        
+        origLeft = parseFloat(el.style.left) || 0;
+        origTop = parseFloat(el.style.top) || 0;
+        startX = e.clientX;
+        startY = e.clientY;
+        
+        el.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      };
+      
+      const onPointerMove = (e) => {
+        if (!isDragging) return;
+        
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        
+        el.style.left = (origLeft + dx) + 'px';
+        el.style.top = (origTop + dy) + 'px';
+        
+        updateDropHighlights(e.clientX, e.clientY);
+      };
+      
+      const onPointerUp = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        el.classList.remove('dragging');
+        clearDropHighlights();
+        
+        checkDrop(el, e.clientX, e.clientY);
+        updateUI();
+      };
+      
+      el.addEventListener('pointerdown', onPointerDown);
+      el.addEventListener('pointermove', onPointerMove);
+      el.addEventListener('pointerup', onPointerUp);
+      el.addEventListener('pointercancel', onPointerUp);
+    }
+
+    function updateDropHighlights(x, y) {
+      const chloroRect = DOM.chloroplastContainer.getBoundingClientRect();
+      const mitoRect = DOM.mitoContainer.getBoundingClientRect();
+      const chloroStatsRect = DOM.chloroStats.getBoundingClientRect();
+      const mitoStatsRect = DOM.mitoStats.getBoundingClientRect();
+      
+      const overChloroOrg = isInside(x, y, chloroRect);
+      const overMitoOrg = isInside(x, y, mitoRect);
+      const overChloroStats = isInside(x, y, chloroStatsRect);
+      const overMitoStats = isInside(x, y, mitoStatsRect);
+      
+      DOM.chloroplastContainer.classList.toggle('droppable', overChloroOrg || overChloroStats);
+      DOM.mitoContainer.classList.toggle('droppable', overMitoOrg || overMitoStats);
+      DOM.chloroStats.classList.toggle('droppable', overChloroOrg || overChloroStats);
+      DOM.mitoStats.classList.toggle('droppable', overMitoOrg || overMitoStats);
+    }
+
+    function clearDropHighlights() {
+      DOM.chloroplastContainer.classList.remove('droppable');
+      DOM.mitoContainer.classList.remove('droppable');
+      DOM.chloroStats.classList.remove('droppable');
+      DOM.mitoStats.classList.remove('droppable');
+    }
+
+    function checkDrop(el, x, y) {
+      const chloroContRect = DOM.chloroplastContainer.getBoundingClientRect();
+      const mitoContRect = DOM.mitoContainer.getBoundingClientRect();
+      const chloroStatsRect = DOM.chloroStats.getBoundingClientRect();
+      const mitoStatsRect = DOM.mitoStats.getBoundingClientRect();
+      const invRect = DOM.inventoryTray.getBoundingClientRect();
+      
+      const type = el.dataset.type;
+      
+      // Check chloroplast drop (accepts h2o, co2)
+      if (isInside(x, y, chloroContRect) || isInside(x, y, chloroStatsRect)) {
+        if (type === 'h2o') {
+          dockToSlot(el, DOM.slots.h2o);
+        } else if (type === 'co2') {
+          dockToSlot(el, DOM.slots.co2);
+        } else {
+          // Wrong molecule type, return to inventory
+          dockTo(el, DOM.inventoryTray);
+          showToast('⚠️ Chloroplast needs H₂O and CO₂');
+        }
+      }
+      // Check mitochondrion drop (accepts glucose, o2)
+      else if (isInside(x, y, mitoContRect) || isInside(x, y, mitoStatsRect)) {
+        if (type === 'glucose') {
+          dockToSlot(el, DOM.slots.glu);
+        } else if (type === 'o2') {
+          dockToSlot(el, DOM.slots.o2);
+        } else {
+          // Wrong molecule type, return to inventory
+          dockTo(el, DOM.inventoryTray);
+          showToast('⚠️ Mitochondrion needs Glucose and O₂');
+        }
+      }
+      // Check inventory drop
+      else if (isInside(x, y, invRect)) {
+        dockTo(el, DOM.inventoryTray);
+      }
+      // else leave floating
+    }
+
+    function dockToSlot(el, slot) {
+      el.classList.add('docked');
+      el.style.left = '';
+      el.style.top = '';
+      el.style.transform = 'scale(0.3)';
+      el.style.margin = '-6px';
+      slot.appendChild(el);
+    }
+
+    function dockTo(el, tray) {
+      el.classList.add('docked');
+      el.style.left = '';
+      el.style.top = '';
+      el.style.transform = 'scale(0.6)';
+      el.style.margin = '';
+      tray.appendChild(el);
+    }
+
+    function isInside(x, y, rect) {
+      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    }
+
+    // ============================================
+    // COUNTING MOLECULES
+    // ============================================
+    function countSlotMolecules(slot) {
+      return slot.querySelectorAll('.molecule').length;
+    }
+
+    // ============================================
+    // UI UPDATES
+    // ============================================
+    function updateUI() {
+      updateCounters();
+      updateButtons();
+    }
+
+    function updateCounters() {
+      const h2oCount = countSlotMolecules(DOM.slots.h2o);
+      const co2Count = countSlotMolecules(DOM.slots.co2);
+      DOM.counters.h2o.textContent = h2oCount;
+      DOM.counters.co2.textContent = co2Count;
+      DOM.bars.h2o.style.width = (h2oCount / 6 * 100) + '%';
+      DOM.bars.co2.style.width = (co2Count / 6 * 100) + '%';
+      
+      const gluCount = countSlotMolecules(DOM.slots.glu);
+      const o2Count = countSlotMolecules(DOM.slots.o2);
+      DOM.counters.glu.textContent = gluCount;
+      DOM.counters.o2.textContent = o2Count;
+      DOM.bars.glu.style.width = (gluCount / 1 * 100) + '%';
+      DOM.bars.o2.style.width = (o2Count / 6 * 100) + '%';
+    }
+
+    function updateButtons() {
+      const h2oCount = countSlotMolecules(DOM.slots.h2o);
+      const co2Count = countSlotMolecules(DOM.slots.co2);
+      const gluCount = countSlotMolecules(DOM.slots.glu);
+      const o2Count = countSlotMolecules(DOM.slots.o2);
+      
+      const canPhoto = state.isDay && h2oCount >= 6 && co2Count >= 6;
+      DOM.btnPhoto.disabled = !canPhoto;
+      
+      const canResp = gluCount >= 1 && o2Count >= 6;
+      DOM.btnMito.disabled = !canResp;
+    }
+
+    function updateATP() {
+      DOM.atpFill.style.width = state.atp + '%';
+      DOM.atpValue.textContent = Math.round(state.atp) + '%';
+      
+      if (state.atp < 30) {
+        DOM.atpFill.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+      } else {
+        DOM.atpFill.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24, #fcd34d)';
+      }
+    }
+
+    // ============================================
+    // REACTIONS
+    // ============================================
+    function doPhotosynthesis() {
+      const h2oCount = countSlotMolecules(DOM.slots.h2o);
+      const co2Count = countSlotMolecules(DOM.slots.co2);
+      
+      if (!state.isDay) {
+        showToast('🌙 Need sunlight for photosynthesis!');
+        return;
+      }
+      
+      if (h2oCount < 6 || co2Count < 6) {
+        showToast('⚠️ Need 6 H₂O and 6 CO₂');
+        return;
+      }
+      
+      // Consume molecules from slots
+      consumeFromSlot(DOM.slots.h2o, 6);
+      consumeFromSlot(DOM.slots.co2, 6);
+      
+      // Create reaction effect
+      createReactionParticles(DOM.chloroplastContainer, '#22c55e');
+      
+      // Produce glucose and oxygen
+      setTimeout(() => {
+        spawnToTray(DOM.chloroProducts, 'glucose', 1);
+        spawnToTray(DOM.chloroProducts, 'o2', 6);
+        updateUI();
+        showToast('🌿 Photosynthesis complete! Glucose + O₂ produced');
+      }, 500);
+    }
+
+    function doRespiration() {
+      const gluCount = countSlotMolecules(DOM.slots.glu);
+      const o2Count = countSlotMolecules(DOM.slots.o2);
+      
+      if (gluCount < 1 || o2Count < 6) {
+        showToast('⚠️ Need 1 Glucose and 6 O₂');
+        return;
+      }
+      
+      // Consume molecules from slots
+      consumeFromSlot(DOM.slots.glu, 1);
+      consumeFromSlot(DOM.slots.o2, 6);
+      
+      // Create reaction effect
+      createReactionParticles(DOM.mitoContainer, '#f59e0b');
+      
+      // Produce ATP and byproducts
+      setTimeout(() => {
+        spawnToTray(DOM.mitoProducts, 'atp', 5);
+        spawnToTray(DOM.mitoProducts, 'co2', 6);
+        spawnToTray(DOM.mitoProducts, 'h2o', 6);
+        
+        state.atp = Math.min(100, state.atp + 25);
+        updateATP();
+        updateUI();
+        showToast('⚡ Cellular respiration complete! ATP generated');
+      }, 500);
+    }
+
+    function consumeFromSlot(slot, count) {
+      const molecules = slot.querySelectorAll('.molecule');
+      for (let i = 0; i < count && i < molecules.length; i++) {
+        molecules[i].style.transform = 'scale(0)';
+        molecules[i].style.opacity = '0';
+        setTimeout(() => molecules[i].remove(), 300);
+      }
+    }
+
+    function consumeMolecules(tray, type, count) {
+      const molecules = tray.querySelectorAll(`.molecule[data-type="${type}"]`);
+      for (let i = 0; i < count && i < molecules.length; i++) {
+        molecules[i].style.transform = 'scale(0)';
+        molecules[i].style.opacity = '0';
+        setTimeout(() => molecules[i].remove(), 300);
+      }
+    }
+
+    function spawnToTray(tray, type, count) {
+      for (let i = 0; i < count; i++) {
+        const mol = createMolecule(type);
+        mol.classList.add('docked');
+        mol.style.transform = 'scale(0)';
+        mol.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        tray.appendChild(mol);
+        
+        // Phase 1: appear in tray
+        setTimeout(() => {
+          mol.style.transform = 'scale(0.6)';
+        }, i * 80);
+        
+        // Phase 2: fly to destination after brief staging
+        const flyDelay = 600 + i * 100;
+        setTimeout(() => {
+          flyToDestination(mol, type);
+        }, flyDelay);
+      }
+    }
+
+    function flyToDestination(mol, type) {
+      // Determine target element
+      let targetEl;
+      if (type === 'atp') {
+        targetEl = DOM.atpFill.parentElement; // ATP bar
+      } else {
+        targetEl = DOM.inventoryTray; // Everything else goes to inventory
+      }
+
+      const molRect = mol.getBoundingClientRect();
+      const targetRect = targetEl.getBoundingClientRect();
+
+      // Create a flying clone positioned absolutely on the page
+      const flyer = mol.cloneNode(true);
+      flyer.style.position = 'fixed';
+      flyer.style.left = molRect.left + 'px';
+      flyer.style.top = molRect.top + 'px';
+      flyer.style.width = molRect.width + 'px';
+      flyer.style.height = molRect.height + 'px';
+      flyer.style.transform = 'scale(1)';
+      flyer.style.zIndex = '9999';
+      flyer.style.pointerEvents = 'none';
+      flyer.style.transition = 'all 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+      document.body.appendChild(flyer);
+
+      // Remove original from tray immediately
+      mol.style.opacity = '0';
+      mol.style.transform = 'scale(0)';
+      setTimeout(() => mol.remove(), 100);
+
+      // Fly to target
+      requestAnimationFrame(() => {
+        const tx = targetRect.left + targetRect.width / 2 - molRect.width / 2;
+        const ty = targetRect.top + targetRect.height / 2 - molRect.height / 2;
+        flyer.style.left = tx + 'px';
+        flyer.style.top = ty + 'px';
+        flyer.style.transform = 'scale(0.3)';
+        flyer.style.opacity = '0.6';
+      });
+
+      // On arrival: remove flyer and deliver the molecule
+      setTimeout(() => {
+        flyer.remove();
+        
+        if (type === 'atp') {
+          // ATP: just boost the meter (already handled in doRespiration)
+          // Add a brief glow effect on the ATP bar
+          DOM.atpFill.parentElement.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+          setTimeout(() => {
+            DOM.atpFill.parentElement.style.boxShadow = '';
+          }, 300);
+        } else {
+          // CO₂, H₂O, Glucose, O₂: deposit into inventory as draggable
+          const newMol = createMolecule(type);
+          makeDraggable(newMol);
+          newMol.classList.add('docked');
+          newMol.style.left = '';
+          newMol.style.top = '';
+          newMol.style.transform = 'scale(0)';
+          newMol.style.transition = 'transform 0.3s ease';
+          newMol.style.margin = '';
+          DOM.inventoryTray.appendChild(newMol);
+          requestAnimationFrame(() => {
+            newMol.style.transform = 'scale(0.6)';
+          });
+        }
+      }, 750);
+    }
+
+    // ============================================
+    // VISUAL EFFECTS
+    // ============================================
+    function createSunParticles() {
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'sun-particle';
+        particle.style.left = (20 + Math.random() * 60) + '%';
+        particle.style.animationDelay = (Math.random() * 3) + 's';
+        DOM.sunParticles.appendChild(particle);
+      }
+    }
+
+    function createReactionParticles(container, color) {
+      const rect = container.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'reaction-particle';
+        particle.style.background = color;
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 50 + Math.random() * 50;
+        particle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+        particle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+        
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1000);
+      }
+    }
+
+    // ============================================
+    // TOAST NOTIFICATIONS
+    // ============================================
+    function showToast(message) {
+      DOM.toast.textContent = message;
+      DOM.toast.classList.add('show');
+      setTimeout(() => DOM.toast.classList.remove('show'), 3000);
+    }
+
+    // ============================================
+    // HOMEOSTASIS DASHBOARD
+    // ============================================
+    const PROCESS_THRESHOLDS = { stressed: 30, failing: 0 };
+    let lastWarningAt = -1;
+
+    function updateProcessStatuses() {
+      const atp = state.atp;
+      
+      for (const [key, proc] of Object.entries(state.processes)) {
+        let newStatus;
+        if (atp <= PROCESS_THRESHOLDS.failing) {
+          newStatus = 'failing';
+        } else if (atp <= PROCESS_THRESHOLDS.stressed) {
+          newStatus = 'stressed';
+        } else {
+          newStatus = 'active';
+        }
+
+        if (proc.status !== newStatus) {
+          proc.status = newStatus;
+          
+          const card = DOM['card' + key.charAt(0).toUpperCase() + key.slice(1)];
+          const statusEl = DOM['status' + key.charAt(0).toUpperCase() + key.slice(1)];
+          
+          card.className = 'process-card status-' + newStatus;
+          statusEl.className = 'process-status ' + newStatus;
+          
+          const labels = { active: 'Active', stressed: 'Stressed', failing: 'Failing' };
+          statusEl.textContent = labels[newStatus];
+        }
+      }
+    }
+
+    // Na+/K+ Pump animation
+    function animatePump() {
+      const proc = state.processes.pump;
+      const svg = DOM.visPump.querySelector('svg');
+      
+      if (proc.status === 'failing') {
+        svg.classList.remove('pump-rest', 'pump-cycle-out', 'pump-cycle-in');
+        svg.classList.add('pump-fail');
+        return;
+      }
+      
+      svg.classList.remove('pump-fail');
+      const speed = proc.status === 'stressed' ? 0.5 : 1;
+      proc.animPhase += speed;
+      
+      const cycle = Math.floor(proc.animPhase / 30) % 3;
+      svg.classList.remove('pump-rest', 'pump-cycle-out', 'pump-cycle-in');
+      
+      if (cycle === 0) svg.classList.add('pump-rest');
+      else if (cycle === 1) svg.classList.add('pump-cycle-out');
+      else svg.classList.add('pump-cycle-in');
+    }
+
+    // Protein folding animation
+    function animateFold() {
+      const proc = state.processes.fold;
+      const svg = DOM.visFold.querySelector('svg');
+      
+      svg.classList.remove('fold-active', 'fold-stressed', 'fold-fail');
+      
+      if (proc.status === 'failing') {
+        svg.classList.add('fold-fail');
+        return;
+      }
+      
+      if (proc.status === 'stressed') {
+        svg.classList.add('fold-stressed');
+      } else {
+        svg.classList.add('fold-active');
+      }
+      
+      // Pulse the folded protein opacity
+      const speed = proc.status === 'stressed' ? 0.3 : 1;
+      proc.animPhase += speed;
+      const pulse = 0.5 + 0.5 * Math.sin(proc.animPhase * 0.05);
+      const folded = svg.querySelector('.protein-folded');
+      if (folded && proc.status === 'active') {
+        folded.style.opacity = 0.4 + pulse * 0.6;
+      }
+    }
+
+    // DNA repair animation
+    function animateDna() {
+      const proc = state.processes.dna;
+      const svg = DOM.visDna.querySelector('svg');
+      const scanner = svg.querySelector('.repair-scanner');
+      const dmgs = svg.querySelectorAll('.dmg');
+      
+      svg.classList.remove('dna-fail');
+      
+      if (proc.status === 'failing') {
+        svg.classList.add('dna-fail');
+        proc.damages = [true, true, true];
+        dmgs.forEach(d => d.style.opacity = '0.8');
+        return;
+      }
+      
+      const speed = proc.status === 'stressed' ? 0.3 : 1;
+      proc.scanPos += speed;
+      
+      // Scanner moves across helix
+      const scanX = (proc.scanPos % 150) - 5;
+      scanner.setAttribute('x', scanX);
+      scanner.style.opacity = '0.6';
+      
+      // Damage accumulates over time
+      proc.damageTimer += 1;
+      if (proc.damageTimer > (proc.status === 'stressed' ? 40 : 80)) {
+        proc.damageTimer = 0;
+        // Add random damage
+        const idx = Math.floor(Math.random() * 3);
+        proc.damages[idx] = true;
+      }
+      
+      // Scanner repairs damage it passes over
+      const dmgPositions = [40, 70, 100];
+      dmgPositions.forEach((pos, i) => {
+        if (proc.damages[i] && Math.abs(scanX - pos) < 10) {
+          proc.damages[i] = false;
+        }
+        dmgs[i].style.opacity = proc.damages[i] ? '0.7' : '0';
+      });
+    }
+
+    // ============================================
+    // GAME LOOP
+    // ============================================
+    function startGameLoop() {
+      setInterval(() => {
+        if (!state.gameActive) return;
+        
+        // Consume ATP per process (rates are per tick at 100ms)
+        let totalDrain = 0;
+        for (const proc of Object.values(state.processes)) {
+          totalDrain += proc.rate;
+        }
+        state.atp = Math.max(0, state.atp - totalDrain);
+        updateATP();
+        
+        // Update process statuses based on ATP level
+        updateProcessStatuses();
+        
+        // Run animations
+        animatePump();
+        animateFold();
+        animateDna();
+        
+        // Warnings
+        if (state.atp <= 10 && state.atp > 9.9 && lastWarningAt !== 10) {
+          lastWarningAt = 10;
+          showToast('⚠️ ATP critical! Cellular processes degrading!');
+        } else if (state.atp <= 30 && state.atp > 29.9 && lastWarningAt !== 30) {
+          lastWarningAt = 30;
+          showToast('⚠️ ATP low. Protein folding and DNA repair stressed.');
+        } else if (state.atp > 30) {
+          lastWarningAt = -1;
+        }
+        
+        // Failure messages (once)
+        if (state.atp <= 0 && lastWarningAt !== 0) {
+          lastWarningAt = 0;
+          showToast('🚨 All processes failing! Cell death imminent!');
+        }
+      }, 100);
+    }
+
+    // Initialize day mode
+    DOM.body.classList.add('day-mode');
+  </script>
+</body>
+</html>
