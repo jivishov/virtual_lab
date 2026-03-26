@@ -3,6 +3,13 @@
 //  Game Logic & Puzzle Engine
 // ══════════════════════════════════════════
 
+// ── Theme ──
+function toggleTheme() {
+  const isLight = document.body.getAttribute('data-theme') === 'light';
+  document.body.setAttribute('data-theme', isLight ? '' : 'light');
+  localStorage.setItem('hs-theme', isLight ? 'dark' : 'light');
+}
+
 // ── Game State ──
 const state = {
   currentRoom: -1,
