@@ -3,1461 +3,346 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thermodynamics Escape Lab</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #0a1628;
-    --bg2: #111d33;
-    --text: #e8edf5;
-    --text-dim: #8899b3;
-    --card: rgba(255,255,255,0.06);
-    --card-border: rgba(255,255,255,0.1);
-    --accent: #f0a500;
-    --accent-glow: rgba(240,165,0,0.25);
-    --correct: #34d399;
-    --wrong: #f87171;
-    --room0: #f0a500;
-    --room1: #3b82f6;
-    --room2: #a855f7;
-    --room3: #22d3ee;
-  }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    line-height: 1.6;
-  }
-
-  /* ── Floating particles ── */
-  .particles {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-  }
-  .particle {
-    position: absolute;
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--accent);
-    opacity: 0.15;
-    animation: floatUp linear infinite;
-  }
-  @keyframes floatUp {
-    0% { transform: translateY(100vh) scale(1); opacity: 0; }
-    10% { opacity: 0.15; }
-    90% { opacity: 0.15; }
-    100% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
-  }
-
-  /* ── Progress bar ── */
-  .progress-bar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(10,22,40,0.92);
-    backdrop-filter: blur(12px);
-    padding: 14px 0;
-    border-bottom: 1px solid var(--card-border);
-  }
-  .progress-inner {
-    display: flex; align-items: center; justify-content: center; gap: 0;
-    max-width: 480px; margin: 0 auto;
-  }
-  .progress-line {
-    flex: 1; height: 2px; background: var(--card-border); position: relative;
-  }
-  .progress-line .fill {
-    position: absolute; inset: 0; background: var(--accent);
-    transform: scaleX(0); transform-origin: left; transition: transform 0.6s ease;
-  }
-  .progress-line.done .fill { transform: scaleX(1); }
-  .progress-node {
-    width: 36px; height: 36px; border-radius: 50%;
-    border: 2px solid var(--card-border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 700;
-    background: var(--bg2);
-    transition: all 0.5s ease;
-    position: relative; z-index: 1;
-    flex-shrink: 0;
-  }
-  .progress-node.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 16px var(--accent-glow);
-    color: var(--accent);
-  }
-  .progress-node.done {
-    border-color: var(--correct);
-    background: var(--correct);
-    color: #fff;
-    animation: nodePop 0.5s ease;
-  }
-  @keyframes nodePop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-  }
-
-  /* ── Main container ── */
-  .container {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 90px 24px 60px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ── Screens ── */
-  .screen {
-    display: none;
-    animation: fadeSlideIn 0.5s ease;
-  }
-  .screen.active { display: block; }
-  @keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── Intro screen ── */
-  .intro-title {
-    font-size: 2.4rem; font-weight: 800;
-    text-align: center;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, var(--room0), var(--room1), var(--room2), var(--room3));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .intro-subtitle {
-    text-align: center; color: var(--text-dim); font-size: 1.05rem;
-    margin-bottom: 32px;
-  }
-  .story-card {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 32px;
-    backdrop-filter: blur(12px);
-    margin-bottom: 32px;
-  }
-  .story-card p {
-    font-style: italic; font-size: 1.1rem; color: var(--text);
-    font-family: Georgia, 'Times New Roman', serif;
-    line-height: 1.8;
-  }
-
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 14px 32px;
-    border: none; border-radius: 12px;
-    font-size: 1rem; font-weight: 600;
-    cursor: pointer;
-    background: var(--accent);
-    color: #000;
-    transition: all 0.2s ease;
-    text-align: center;
-  }
-  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
-  .btn:active { transform: translateY(0); }
-  .btn-center { display: flex; justify-content: center; }
-  .btn-secondary {
-    background: var(--card);
-    color: var(--text);
-    border: 1px solid var(--card-border);
-  }
-  .btn-secondary:hover { background: rgba(255,255,255,0.1); box-shadow: none; }
-
-  /* ── Room header ── */
-  .room-badge {
-    display: inline-block;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 12px;
-    background: var(--accent-glow);
-    color: var(--accent);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .room-title {
-    font-size: 1.8rem; font-weight: 800; margin-bottom: 20px;
-  }
-
-  /* ── Law card ── */
-  .law-card {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 28px;
-    backdrop-filter: blur(12px);
-    border-left: 4px solid var(--accent);
-  }
-  .law-card .law-label {
-    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--accent); font-weight: 700; margin-bottom: 10px;
-  }
-  .law-card .law-text {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-style: italic;
-    font-size: 1.05rem;
-    line-height: 1.7;
-    color: var(--text);
-  }
-  .law-card .law-example {
-    margin-top: 14px; padding-top: 14px;
-    border-top: 1px solid var(--card-border);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-style: normal;
-    font-size: 0.92rem;
-    color: var(--text-dim);
-  }
-  .law-card .law-example strong { color: var(--accent); }
-
-  /* ── Puzzle section ── */
-  .puzzle-section {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 20px;
-    backdrop-filter: blur(12px);
-  }
-  .puzzle-title {
-    font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;
-  }
-  .puzzle-desc {
-    font-size: 0.92rem; color: var(--text-dim); margin-bottom: 20px;
-  }
-
-  /* ── Multiple choice ── */
-  .mc-options { display: flex; flex-direction: column; gap: 10px; }
-  .mc-option {
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: 1px solid var(--card-border);
-    background: rgba(255,255,255,0.03);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.95rem;
-  }
-  .mc-option:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); }
-  .mc-option.selected { border-color: var(--accent); background: var(--accent-glow); }
-  .mc-option.correct { border-color: var(--correct); background: rgba(52,211,153,0.15); }
-  .mc-option.wrong { border-color: var(--wrong); background: rgba(248,113,113,0.15); animation: shake 0.4s ease; }
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
-  }
-
-  /* ── Drag & drop zones ── */
-  .drop-zones {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-    margin-bottom: 16px;
-  }
-  .drop-zone {
-    min-height: 120px;
-    border: 2px dashed var(--card-border);
-    border-radius: 12px;
-    padding: 14px;
-    transition: all 0.2s ease;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .drop-zone-label {
-    font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1px; color: var(--accent); margin-bottom: 4px;
-    text-align: center;
-  }
-  .drop-zone.dragover { border-color: var(--accent); background: var(--accent-glow); }
-
-  .drag-items { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-  .drag-item {
-    padding: 10px 16px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid var(--card-border);
-    cursor: grab;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    user-select: none;
-  }
-  .drag-item:hover { background: rgba(255,255,255,0.14); }
-  .drag-item.dragging { opacity: 0.4; }
-  .drag-item.in-zone {
-    background: var(--accent-glow);
-    border-color: var(--accent);
-  }
-
-  /* ── Ordering puzzle ── */
-  .order-list { display: flex; flex-direction: column; gap: 10px; }
-  .order-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--card-border);
-    cursor: grab;
-    transition: all 0.2s ease;
-    user-select: none;
-  }
-  .order-item:hover { background: rgba(255,255,255,0.1); }
-  .order-item .order-num {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--accent-glow);
-    color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem; font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  /* ── True/False ── */
-  .tf-item {
-    padding: 16px 18px;
-    border-radius: 12px;
-    border: 1px solid var(--card-border);
-    background: rgba(255,255,255,0.03);
-    margin-bottom: 10px;
-    display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  }
-  .tf-text { flex: 1; font-size: 0.95rem; }
-  .tf-buttons { display: flex; gap: 8px; flex-shrink: 0; }
-  .tf-btn {
-    padding: 8px 18px; border-radius: 8px; border: 1px solid var(--card-border);
-    background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer;
-    font-size: 0.85rem; font-weight: 600; transition: all 0.2s;
-  }
-  .tf-btn:hover { background: rgba(255,255,255,0.12); }
-  .tf-btn.selected-true { background: rgba(52,211,153,0.2); border-color: var(--correct); color: var(--correct); }
-  .tf-btn.selected-false { background: rgba(248,113,113,0.2); border-color: var(--wrong); color: var(--wrong); }
-  .tf-item.answered-correct { border-color: var(--correct); }
-  .tf-item.answered-wrong { border-color: var(--wrong); animation: shake 0.4s ease; }
-
-  /* ── Slider puzzle ── */
-  .slider-container { text-align: center; padding: 20px 0; }
-  .temp-display {
-    font-size: 2.8rem; font-weight: 800; margin-bottom: 8px;
-    font-family: 'Courier New', monospace;
-    color: var(--accent);
-  }
-  .temp-label { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 20px; }
-  .temp-slider {
-    width: 100%; -webkit-appearance: none; appearance: none;
-    height: 8px; border-radius: 4px;
-    background: linear-gradient(to right, var(--room3), var(--room0));
-    outline: none; cursor: pointer;
-  }
-  .temp-slider::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 24px; height: 24px;
-    border-radius: 50%; background: var(--accent);
-    box-shadow: 0 0 12px var(--accent-glow);
-    cursor: pointer;
-  }
-  .temp-slider::-moz-range-thumb {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: var(--accent); border: none; cursor: pointer;
-  }
-  .entropy-bar-container { margin: 20px 0; }
-  .entropy-bar-bg {
-    height: 12px; border-radius: 6px;
-    background: rgba(255,255,255,0.08);
-    overflow: hidden;
-  }
-  .entropy-bar-fill {
-    height: 100%; border-radius: 6px;
-    background: linear-gradient(to right, var(--room3), var(--accent));
-    transition: width 0.3s ease;
-  }
-  .entropy-label { font-size: 0.85rem; color: var(--text-dim); margin-top: 6px; }
-
-  /* ── Feedback banner ── */
-  .feedback {
-    padding: 16px 20px;
-    border-radius: 12px;
-    margin-top: 16px;
-    font-size: 0.92rem;
-    line-height: 1.6;
-    display: none;
-  }
-  .feedback.show { display: block; animation: fadeSlideIn 0.3s ease; }
-  .feedback.correct {
-    background: rgba(52,211,153,0.1);
-    border: 1px solid rgba(52,211,153,0.3);
-    color: #a7f3d0;
-  }
-  .feedback.wrong {
-    background: rgba(248,113,113,0.1);
-    border: 1px solid rgba(248,113,113,0.3);
-    color: #fecaca;
-  }
-
-  /* ── Door splash ── */
-  .door-splash {
-    text-align: center;
-    padding: 60px 20px;
-  }
-  .door-icon {
-    font-size: 5rem;
-    margin-bottom: 20px;
-    animation: pulse 2s ease infinite;
-  }
-  @keyframes pulse {
-    0%,100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.08); opacity: 1; }
-  }
-  .door-splash h2 {
-    font-size: 1.6rem; font-weight: 800; margin-bottom: 8px;
-  }
-  .door-splash p {
-    color: var(--text-dim); font-size: 1rem; margin-bottom: 28px;
-  }
-
-  /* ── Unlock animation ── */
-  .unlock-overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(10,22,40,0.95);
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-  .unlock-overlay.show { opacity: 1; pointer-events: auto; }
-  .unlock-text {
-    font-size: 1.4rem; font-weight: 700; margin-top: 20px;
-    color: var(--correct);
-  }
-  .unlock-icon {
-    font-size: 4rem;
-    animation: unlockSpin 0.8s ease;
-  }
-  @keyframes unlockSpin {
-    0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
-    50% { transform: rotate(180deg) scale(1.2); }
-    100% { transform: rotate(360deg) scale(1); opacity: 1; }
-  }
-
-  /* ── Finale ── */
-  .finale-title {
-    font-size: 2.2rem; font-weight: 800; text-align: center;
-    margin-bottom: 8px; color: var(--correct);
-  }
-  .finale-sub {
-    text-align: center; color: var(--text-dim); margin-bottom: 32px;
-    font-size: 1.05rem;
-  }
-  .summary-card {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 12px;
-    border-left: 4px solid var(--accent);
-  }
-  .summary-card .summary-law {
-    font-weight: 700; font-size: 1rem; margin-bottom: 4px;
-  }
-  .summary-card .summary-desc {
-    font-size: 0.9rem; color: var(--text-dim);
-  }
-  .cert-area {
-    text-align: center;
-    margin-top: 32px;
-    padding: 32px;
-    border: 2px solid var(--accent);
-    border-radius: 16px;
-    background: var(--card);
-  }
-  .cert-area h3 { font-size: 1.2rem; margin-bottom: 12px; color: var(--accent); }
-  .cert-input {
-    padding: 12px 20px; border-radius: 10px;
-    border: 1px solid var(--card-border);
-    background: rgba(255,255,255,0.06);
-    color: var(--text); font-size: 1rem;
-    outline: none; width: 260px; max-width: 100%;
-    text-align: center;
-  }
-  .cert-input:focus { border-color: var(--accent); }
-  .cert-name-display {
-    font-size: 1.6rem; font-weight: 800;
-    margin: 16px 0 4px;
-    background: linear-gradient(135deg, var(--room0), var(--room3));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .cert-note { font-size: 0.85rem; color: var(--text-dim); }
-
-  /* ── Energy balance visual ── */
-  .energy-eq {
-    display: flex; align-items: center; justify-content: center;
-    gap: 12px; flex-wrap: wrap; margin: 16px 0;
-    font-size: 1.4rem; font-weight: 700;
-    font-family: 'Courier New', monospace;
-  }
-  .energy-eq .symbol { color: var(--text-dim); }
-  .energy-slot {
-    min-width: 80px; min-height: 48px;
-    border: 2px dashed var(--card-border);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-    padding: 4px 12px;
-  }
-  .energy-slot.dragover { border-color: var(--accent); background: var(--accent-glow); }
-  .energy-slot.filled { border-style: solid; border-color: var(--accent); background: var(--accent-glow); }
-  .energy-chip {
-    padding: 10px 20px; border-radius: 10px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid var(--card-border);
-    cursor: grab; font-size: 1rem;
-    font-family: 'Courier New', monospace;
-    font-weight: 700;
-    transition: all 0.2s;
-    user-select: none;
-  }
-  .energy-chip:hover { background: rgba(255,255,255,0.14); }
-
-  /* ── Helpers ── */
-  .mt-16 { margin-top: 16px; }
-  .mt-24 { margin-top: 24px; }
-  .mb-16 { margin-bottom: 16px; }
-  .text-center { text-align: center; }
-  .hidden { display: none !important; }
-
-  /* ── Responsive ── */
-  @media (max-width: 600px) {
-    .intro-title { font-size: 1.8rem; }
-    .room-title { font-size: 1.4rem; }
-    .drop-zones { grid-template-columns: 1fr; }
-    .tf-item { flex-direction: column; align-items: flex-start; }
-    .tf-buttons { align-self: flex-end; }
-    .energy-eq { font-size: 1.1rem; }
-  }
-</style>
+<title>Heat Signal — Thermodynamics Escape Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Floating particles -->
-<div class="particles" id="particles"></div>
+<!-- Wrong-answer glitch overlay -->
+<div class="glitch-overlay" id="glitchOverlay"></div>
 
-<!-- Progress bar -->
-<div class="progress-bar">
-  <div class="progress-inner">
-    <div class="progress-node active" id="pn0">0</div>
-    <div class="progress-line" id="pl0"><div class="fill"></div></div>
-    <div class="progress-node" id="pn1">1</div>
-    <div class="progress-line" id="pl1"><div class="fill"></div></div>
-    <div class="progress-node" id="pn2">2</div>
-    <div class="progress-line" id="pl2"><div class="fill"></div></div>
-    <div class="progress-node" id="pn3">3</div>
-  </div>
-</div>
+<!-- Fixed vertical progress strip -->
+<nav class="progress-strip" id="progressStrip" aria-label="Room progress">
+  <div class="ps-node active" id="pn0">0</div>
+  <div class="ps-line" id="pl0"><div class="fill"></div></div>
+  <div class="ps-node" id="pn1">1</div>
+  <div class="ps-line" id="pl1"><div class="fill"></div></div>
+  <div class="ps-node" id="pn2">2</div>
+  <div class="ps-line" id="pl2"><div class="fill"></div></div>
+  <div class="ps-node" id="pn3">3</div>
+</nav>
 
-<!-- Unlock overlay -->
+<!-- Unlock transition overlay -->
 <div class="unlock-overlay" id="unlockOverlay">
-  <div class="unlock-icon" id="unlockIcon"></div>
-  <div class="unlock-text" id="unlockText"></div>
+  <div class="unlock-big-num" id="unlockNum">✓</div>
+  <div class="unlock-text" id="unlockText">UNLOCKED</div>
 </div>
 
-<div class="container">
+<main class="main">
 
-  <!-- ═══════════ INTRO ═══════════ -->
+  <!-- ══ INTRO ══ -->
   <div class="screen active" id="intro">
-    <h1 class="intro-title">Thermodynamics Escape Lab</h1>
-    <p class="intro-subtitle">4 Rooms &middot; 4 Laws &middot; 1 Way Out</p>
-    <div class="story-card">
-      <p>"You've been accidentally locked inside Dr. Kelvin's Thermodynamics Lab! The security system runs on physics&nbsp;&mdash; the only way to unlock each door is to prove you understand the laws that govern energy and heat. Solve every challenge to escape!"</p>
-    </div>
-    <div class="btn-center">
-      <button class="btn" onclick="startGame()">Enter the Lab</button>
-    </div>
-  </div>
-
-  <!-- ═══════════ ROOM 0 — ZEROTH LAW ═══════════ -->
-  <div class="screen" id="room0-door">
-    <div class="door-splash">
-      <div class="door-icon">&#x1f512;</div>
-      <h2>Room 0 &mdash; The Temperature Bridge</h2>
-      <p>Zeroth Law of Thermodynamics</p>
-      <button class="btn" onclick="showScreen('room0')">Approach the Door</button>
-    </div>
-  </div>
-
-  <div class="screen" id="room0">
-    <span class="room-badge" style="--accent:var(--room0);background:rgba(240,165,0,0.12);color:var(--room0);">Room 0</span>
-    <h2 class="room-title" style="color:var(--room0);">The Temperature Bridge</h2>
-
-    <div class="law-card" style="border-left-color:var(--room0);">
-      <div class="law-label" style="color:var(--room0);">Zeroth Law of Thermodynamics</div>
-      <div class="law-text">If two systems are each in thermal equilibrium with a third system, then they are in thermal equilibrium with each other.</div>
-      <div class="law-example"><strong>Think of it this way:</strong> A thermometer reads 37 &deg;C when touching your forehead, and also 37 &deg;C when touching a warm cup of soup. Without touching each other, you and the soup must be at the same temperature. That's the zeroth law in action.</div>
-    </div>
-
-    <!-- Puzzle 1: Equilibrium Groups -->
-    <div class="puzzle-section" id="r0p1">
-      <div class="puzzle-title">Puzzle 1 &mdash; Equilibrium Chain</div>
-      <div class="puzzle-desc">Five objects were tested with a thermometer. The results show which pairs are in thermal equilibrium (same temperature). Drag each object into the correct temperature group.</div>
-      <p class="mb-16" style="font-size:0.88rem;color:var(--text-dim);">
-        Clues: A = B &nbsp;|&nbsp; B = D &nbsp;|&nbsp; C = E &nbsp;|&nbsp; A &ne; C
+    <div class="intro-hero">
+      <div class="intro-brand">
+        <div class="brand-solid">THERMO</div>
+        <div class="brand-outline">DYNAMICS</div>
+      </div>
+      <div class="intro-tagline">// ESCAPE LAB &nbsp;·&nbsp; HEAT SIGNAL &nbsp;·&nbsp; 4 LAWS &nbsp;·&nbsp; 1 WAY OUT</div>
+      <p class="intro-story">
+        <em>You've been locked inside Dr. Kelvin's Thermodynamics Lab.</em><br>
+        The security system runs on physics. To unlock each door you must demonstrate mastery of the laws that govern heat and energy. Solve every challenge to escape.
       </p>
-      <div class="drag-items" id="r0p1-items">
-        <div class="drag-item" draggable="true" data-id="A">Object A</div>
-        <div class="drag-item" draggable="true" data-id="B">Object B</div>
-        <div class="drag-item" draggable="true" data-id="C">Object C</div>
-        <div class="drag-item" draggable="true" data-id="D">Object D</div>
-        <div class="drag-item" draggable="true" data-id="E">Object E</div>
-      </div>
-      <div class="drop-zones">
-        <div class="drop-zone" id="r0-group1" data-group="1">
-          <div class="drop-zone-label" style="color:var(--room0);">Group 1 (same temp)</div>
-        </div>
-        <div class="drop-zone" id="r0-group2" data-group="2">
-          <div class="drop-zone-label" style="color:var(--room0);">Group 2 (same temp)</div>
-        </div>
-      </div>
-      <div class="btn-center">
-        <button class="btn" style="background:var(--room0);" onclick="checkR0P1()">Check Groups</button>
-      </div>
-      <div class="feedback" id="r0p1-fb"></div>
-    </div>
-
-    <!-- Puzzle 2: MC -->
-    <div class="puzzle-section hidden" id="r0p2">
-      <div class="puzzle-title">Puzzle 2 &mdash; Why Does a Thermometer Work?</div>
-      <div class="puzzle-desc">A mercury thermometer is placed in a cup of hot water. After a minute, the mercury level stabilizes. Which explanation best uses the Zeroth Law?</div>
-      <div class="mc-options" id="r0p2-opts">
-        <div class="mc-option" data-correct="false" onclick="checkMC(this,'r0p2')">The mercury heats up because metal conducts heat faster than glass.</div>
-        <div class="mc-option" data-correct="true" onclick="checkMC(this,'r0p2')">The mercury reaches thermal equilibrium with the water, so its temperature reading equals the water's temperature &mdash; by the Zeroth Law, if both are in equilibrium with each other, they share the same temperature.</div>
-        <div class="mc-option" data-correct="false" onclick="checkMC(this,'r0p2')">The thermometer forces the water to change temperature until they match.</div>
-        <div class="mc-option" data-correct="false" onclick="checkMC(this,'r0p2')">Mercury naturally rises when submerged in any liquid regardless of temperature.</div>
-      </div>
-      <div class="feedback" id="r0p2-fb"></div>
-    </div>
-
-    <div class="btn-center mt-24 hidden" id="r0-next-btn">
-      <button class="btn" style="background:var(--room0);" onclick="completeRoom(0)">Unlock Next Room &rarr;</button>
+      <button class="btn" onclick="startGame()">ENTER THE LAB →</button>
     </div>
   </div>
 
-  <!-- ═══════════ ROOM 1 — FIRST LAW ═══════════ -->
-  <div class="screen" id="room1-door">
-    <div class="door-splash">
-      <div class="door-icon">&#x1f512;</div>
-      <h2>Room 1 &mdash; The Energy Vault</h2>
-      <p>First Law of Thermodynamics</p>
-      <button class="btn" style="background:var(--room1);" onclick="showScreen('room1')">Approach the Door</button>
+  <!-- ══ ROOM 0 DOOR ══ -->
+  <div class="screen door-screen" id="room0-door">
+    <div class="door-bg-num" aria-hidden="true">0</div>
+    <div class="door-content">
+      <div class="door-law-num">0</div>
+      <div class="door-line"></div>
+      <div class="door-label">ZEROTH LAW OF THERMODYNAMICS</div>
+      <div class="door-name">The Temperature Bridge</div>
+      <button class="btn" onclick="showScreen('room0')">ENTER ROOM →</button>
     </div>
   </div>
 
+  <!-- ══ ROOM 0 ══ -->
+  <div class="screen" id="room0">
+    <div class="room-layout">
+      <div class="room-rail" aria-hidden="true">
+        <div class="rail-num">0</div>
+        <div class="rail-law">ZEROTH<br>LAW</div>
+      </div>
+      <div class="room-content">
+
+        <div class="law-card">
+          <div class="law-label">ZEROTH LAW OF THERMODYNAMICS</div>
+          <div class="law-text">If two systems are each in thermal equilibrium with a third system, then they are in thermal equilibrium with each other.</div>
+          <div class="law-example"><strong>Real world:</strong> A thermometer reads 37°C at your forehead, then 37°C in a cup of soup. Without touching each other, you and the soup must be at the same temperature — that's the Zeroth Law.</div>
+        </div>
+
+        <div class="puzzle-section" id="r0p1">
+          <div class="puzzle-title">PUZZLE 01 — EQUILIBRIUM CHAIN</div>
+          <div class="puzzle-desc">Five objects were tested with a thermometer. Use the clues to drag each object into the correct temperature group. (Click to select, then click a group to place.)</div>
+          <p class="clue-line">CLUES: A = B &nbsp;|&nbsp; B = D &nbsp;|&nbsp; C = E &nbsp;|&nbsp; A ≠ C</p>
+          <div class="drag-items" id="r0p1-items">
+            <div class="drag-item" draggable="true" data-id="A">OBJECT A</div>
+            <div class="drag-item" draggable="true" data-id="B">OBJECT B</div>
+            <div class="drag-item" draggable="true" data-id="C">OBJECT C</div>
+            <div class="drag-item" draggable="true" data-id="D">OBJECT D</div>
+            <div class="drag-item" draggable="true" data-id="E">OBJECT E</div>
+          </div>
+          <div class="drop-zones">
+            <div class="drop-zone" id="r0-group1" data-group="1">
+              <div class="drop-zone-label">GROUP 1 — SAME TEMP</div>
+            </div>
+            <div class="drop-zone" id="r0-group2" data-group="2">
+              <div class="drop-zone-label">GROUP 2 — SAME TEMP</div>
+            </div>
+          </div>
+          <div class="btn-center"><button class="btn" onclick="checkR0P1()">CHECK GROUPS</button></div>
+          <div class="feedback" id="r0p1-fb"></div>
+        </div>
+
+        <div class="puzzle-section hidden" id="r0p2">
+          <div class="puzzle-title">PUZZLE 02 — WHY DOES A THERMOMETER WORK?</div>
+          <div class="puzzle-desc">A mercury thermometer is placed in hot water and stabilizes. Which answer best uses the Zeroth Law?</div>
+          <div class="mc-options" id="r0p2-opts">
+            <div class="mc-option" data-correct="false" onclick="checkMC(this,'r0p2')">The mercury heats up because metal conducts heat faster than glass.</div>
+            <div class="mc-option" data-correct="true"  onclick="checkMC(this,'r0p2')">The mercury reaches thermal equilibrium with the water — by the Zeroth Law, if both are in equilibrium with each other, they share the same temperature. That's what the reading tells you.</div>
+            <div class="mc-option" data-correct="false" onclick="checkMC(this,'r0p2')">The thermometer forces the water to change temperature until they match.</div>
+            <div class="mc-option" data-correct="false" onclick="checkMC(this,'r0p2')">Mercury naturally rises when submerged in any liquid regardless of temperature.</div>
+          </div>
+          <div class="feedback" id="r0p2-fb"></div>
+        </div>
+
+        <div class="btn-center mt-32 hidden" id="r0-next-btn">
+          <button class="btn" onclick="completeRoom(0)">UNLOCK ROOM 1 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ROOM 1 DOOR ══ -->
+  <div class="screen door-screen" id="room1-door">
+    <div class="door-bg-num" aria-hidden="true">1</div>
+    <div class="door-content">
+      <div class="door-law-num">1</div>
+      <div class="door-line"></div>
+      <div class="door-label">FIRST LAW OF THERMODYNAMICS</div>
+      <div class="door-name">The Energy Vault</div>
+      <button class="btn" onclick="showScreen('room1')">ENTER ROOM →</button>
+    </div>
+  </div>
+
+  <!-- ══ ROOM 1 ══ -->
   <div class="screen" id="room1">
-    <span class="room-badge" style="background:rgba(59,130,246,0.12);color:var(--room1);">Room 1</span>
-    <h2 class="room-title" style="color:var(--room1);">The Energy Vault</h2>
-
-    <div class="law-card" style="border-left-color:var(--room1);">
-      <div class="law-label" style="color:var(--room1);">First Law of Thermodynamics</div>
-      <div class="law-text">Energy cannot be created or destroyed &mdash; only transferred or converted from one form to another. The change in internal energy equals heat added minus work done: &Delta;U = Q &minus; W.</div>
-      <div class="law-example"><strong>Think of it this way:</strong> When you pump up a bicycle tire, the pump gets warm. The work you do (pushing the pump) converts into heat, raising the air's internal energy. No energy appeared from nowhere &mdash; it all came from your muscles.</div>
-    </div>
-
-    <!-- Puzzle 1: Energy Balancer -->
-    <div class="puzzle-section" id="r1p1">
-      <div class="puzzle-title">Puzzle 1 &mdash; Energy Balancer</div>
-      <div class="puzzle-desc">A gas in a sealed piston absorbs <strong>500 J</strong> of heat and does <strong>200 J</strong> of work expanding. What is the change in internal energy (&Delta;U)?<br>Drag the correct value into the equation.</div>
-      <div class="drag-items" id="r1p1-chips">
-        <div class="energy-chip" draggable="true" data-val="300">300 J</div>
-        <div class="energy-chip" draggable="true" data-val="700">700 J</div>
-        <div class="energy-chip" draggable="true" data-val="200">200 J</div>
-        <div class="energy-chip" draggable="true" data-val="500">500 J</div>
+    <div class="room-layout">
+      <div class="room-rail" aria-hidden="true">
+        <div class="rail-num">1</div>
+        <div class="rail-law">FIRST<br>LAW</div>
       </div>
-      <div class="energy-eq">
-        <span>&Delta;U</span>
-        <span class="symbol">=</span>
-        <span>500 J</span>
-        <span class="symbol">&minus;</span>
-        <span>200 J</span>
-        <span class="symbol">=</span>
-        <div class="energy-slot" id="r1-slot1" data-correct="300"></div>
-      </div>
-      <div class="feedback" id="r1p1-fb"></div>
-    </div>
+      <div class="room-content">
 
-    <!-- Puzzle 2: Scenario Sort -->
-    <div class="puzzle-section hidden" id="r1p2">
-      <div class="puzzle-title">Puzzle 2 &mdash; Energy Detective</div>
-      <div class="puzzle-desc">For each scenario, decide: does the object's internal energy <strong>increase</strong> or <strong>decrease</strong>?</div>
-      <div id="r1p2-scenarios"></div>
-      <div class="btn-center mt-16">
-        <button class="btn" style="background:var(--room1);" onclick="checkR1P2()">Check Answers</button>
-      </div>
-      <div class="feedback" id="r1p2-fb"></div>
-    </div>
+        <div class="law-card">
+          <div class="law-label">FIRST LAW OF THERMODYNAMICS</div>
+          <div class="law-text">Energy cannot be created or destroyed — only transferred or converted. The change in internal energy equals heat added minus work done: ΔU = Q − W.</div>
+          <div class="law-example"><strong>Real world:</strong> Pump up a bicycle tire — the pump warms up. Your muscle energy converts to heat, raising the air's internal energy. No energy appears from nothing.</div>
+        </div>
 
-    <div class="btn-center mt-24 hidden" id="r1-next-btn">
-      <button class="btn" style="background:var(--room1);" onclick="completeRoom(1)">Unlock Next Room &rarr;</button>
+        <div class="puzzle-section" id="r1p1">
+          <div class="puzzle-title">PUZZLE 01 — ENERGY BALANCER</div>
+          <div class="puzzle-desc">A gas absorbs <strong>500 J</strong> of heat and does <strong>200 J</strong> of work expanding. Drag the correct ΔU value into the equation slot.</div>
+          <div class="drag-items" id="r1p1-chips">
+            <div class="energy-chip" draggable="true" data-val="300">300 J</div>
+            <div class="energy-chip" draggable="true" data-val="700">700 J</div>
+            <div class="energy-chip" draggable="true" data-val="200">200 J</div>
+            <div class="energy-chip" draggable="true" data-val="500">500 J</div>
+          </div>
+          <div class="energy-eq">
+            <span>ΔU</span>
+            <span class="symbol">=</span>
+            <span>500 J</span>
+            <span class="symbol">−</span>
+            <span>200 J</span>
+            <span class="symbol">=</span>
+            <div class="energy-slot" id="r1-slot1" data-correct="300"></div>
+          </div>
+          <div class="feedback" id="r1p1-fb"></div>
+        </div>
+
+        <div class="puzzle-section hidden" id="r1p2">
+          <div class="puzzle-title">PUZZLE 02 — ENERGY DETECTIVE</div>
+          <div class="puzzle-desc">For each scenario: does the object's internal energy <strong>increase</strong>, <strong>decrease</strong>, or stay the same?</div>
+          <div id="r1p2-scenarios"></div>
+          <div class="btn-center mt-16"><button class="btn" onclick="checkR1P2()">CHECK ANSWERS</button></div>
+          <div class="feedback" id="r1p2-fb"></div>
+        </div>
+
+        <div class="btn-center mt-32 hidden" id="r1-next-btn">
+          <button class="btn" onclick="completeRoom(1)">UNLOCK ROOM 2 →</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ═══════════ ROOM 2 — SECOND LAW ═══════════ -->
-  <div class="screen" id="room2-door">
-    <div class="door-splash">
-      <div class="door-icon">&#x1f512;</div>
-      <h2>Room 2 &mdash; The Entropy Maze</h2>
-      <p>Second Law of Thermodynamics</p>
-      <button class="btn" style="background:var(--room2);" onclick="showScreen('room2')">Approach the Door</button>
+  <!-- ══ ROOM 2 DOOR ══ -->
+  <div class="screen door-screen" id="room2-door">
+    <div class="door-bg-num" aria-hidden="true">2</div>
+    <div class="door-content">
+      <div class="door-law-num">2</div>
+      <div class="door-line"></div>
+      <div class="door-label">SECOND LAW OF THERMODYNAMICS</div>
+      <div class="door-name">The Entropy Maze</div>
+      <button class="btn" onclick="showScreen('room2')">ENTER ROOM →</button>
     </div>
   </div>
 
+  <!-- ══ ROOM 2 ══ -->
   <div class="screen" id="room2">
-    <span class="room-badge" style="background:rgba(168,85,247,0.12);color:var(--room2);">Room 2</span>
-    <h2 class="room-title" style="color:var(--room2);">The Entropy Maze</h2>
+    <div class="room-layout">
+      <div class="room-rail" aria-hidden="true">
+        <div class="rail-num">2</div>
+        <div class="rail-law">SECOND<br>LAW</div>
+      </div>
+      <div class="room-content">
 
-    <div class="law-card" style="border-left-color:var(--room2);">
-      <div class="law-label" style="color:var(--room2);">Second Law of Thermodynamics</div>
-      <div class="law-text">In any spontaneous process, the total entropy of an isolated system always increases. Heat flows naturally from hot to cold, never the reverse, without external work.</div>
-      <div class="law-example"><strong>Think of it this way:</strong> An ice cube melts in a warm room &mdash; heat flows from the warm air into the cold ice. You never see a puddle of water spontaneously freeze while warming the room around it. That one-way direction is the second law.</div>
-    </div>
-
-    <!-- Puzzle 1: Possible or Impossible -->
-    <div class="puzzle-section" id="r2p1">
-      <div class="puzzle-title">Puzzle 1 &mdash; Possible or Impossible?</div>
-      <div class="puzzle-desc">Sort each process: can it happen <strong>naturally</strong> (without outside work), or is it <strong>impossible</strong> without an external energy source?</div>
-      <div class="drag-items" id="r2p1-items"></div>
-      <div class="drop-zones">
-        <div class="drop-zone" id="r2-natural" data-group="natural">
-          <div class="drop-zone-label" style="color:#34d399;">Happens Naturally</div>
+        <div class="law-card">
+          <div class="law-label">SECOND LAW OF THERMODYNAMICS</div>
+          <div class="law-text">In any spontaneous process, the total entropy of an isolated system always increases. Heat flows naturally from hot to cold — never the reverse — without external work.</div>
+          <div class="law-example"><strong>Real world:</strong> Ice melts in a warm room. Heat flows from warm air into cold ice. You never see a puddle spontaneously freeze while warming the room. That one-way direction is the Second Law.</div>
         </div>
-        <div class="drop-zone" id="r2-impossible" data-group="impossible">
-          <div class="drop-zone-label" style="color:#f87171;">Needs External Work</div>
+
+        <div class="puzzle-section" id="r2p1">
+          <div class="puzzle-title">PUZZLE 01 — POSSIBLE OR IMPOSSIBLE?</div>
+          <div class="puzzle-desc">Sort each process: can it happen <strong>naturally</strong>, or does it need <strong>external work</strong>?</div>
+          <div class="drag-items" id="r2p1-items"></div>
+          <div class="drop-zones">
+            <div class="drop-zone" id="r2-natural" data-group="natural">
+              <div class="drop-zone-label" style="color:#39FF14;">HAPPENS NATURALLY</div>
+            </div>
+            <div class="drop-zone" id="r2-impossible" data-group="impossible">
+              <div class="drop-zone-label" style="color:#FF3333;">NEEDS EXTERNAL WORK</div>
+            </div>
+          </div>
+          <div class="btn-center"><button class="btn" onclick="checkR2P1()">CHECK SORTING</button></div>
+          <div class="feedback" id="r2p1-fb"></div>
+        </div>
+
+        <div class="puzzle-section hidden" id="r2p2">
+          <div class="puzzle-title">PUZZLE 02 — ORDER THE CHAOS</div>
+          <div class="puzzle-desc">Reorder these states of water from <strong>lowest entropy</strong> (most ordered) to <strong>highest entropy</strong> (most disordered). Drag items or click two to swap.</div>
+          <div class="order-list" id="r2-order-list"></div>
+          <div class="btn-center mt-16"><button class="btn" onclick="checkR2P2()">CHECK ORDER</button></div>
+          <div class="feedback" id="r2p2-fb"></div>
+        </div>
+
+        <div class="btn-center mt-32 hidden" id="r2-next-btn">
+          <button class="btn" onclick="completeRoom(2)">UNLOCK ROOM 3 →</button>
         </div>
       </div>
-      <div class="btn-center">
-        <button class="btn" style="background:var(--room2);" onclick="checkR2P1()">Check Sorting</button>
-      </div>
-      <div class="feedback" id="r2p1-fb"></div>
-    </div>
-
-    <!-- Puzzle 2: Order the Chaos -->
-    <div class="puzzle-section hidden" id="r2p2">
-      <div class="puzzle-title">Puzzle 2 &mdash; Order the Chaos</div>
-      <div class="puzzle-desc">Drag these states of water into order from <strong>lowest entropy</strong> (most ordered) to <strong>highest entropy</strong> (most disordered).</div>
-      <div class="order-list" id="r2-order-list"></div>
-      <div class="btn-center mt-16">
-        <button class="btn" style="background:var(--room2);" onclick="checkR2P2()">Check Order</button>
-      </div>
-      <div class="feedback" id="r2p2-fb"></div>
-    </div>
-
-    <div class="btn-center mt-24 hidden" id="r2-next-btn">
-      <button class="btn" style="background:var(--room2);" onclick="completeRoom(2)">Unlock Next Room &rarr;</button>
     </div>
   </div>
 
-  <!-- ═══════════ ROOM 3 — THIRD LAW ═══════════ -->
-  <div class="screen" id="room3-door">
-    <div class="door-splash">
-      <div class="door-icon">&#x1f512;</div>
-      <h2>Room 3 &mdash; Absolute Zero</h2>
-      <p>Third Law of Thermodynamics</p>
-      <button class="btn" style="background:var(--room3);" onclick="showScreen('room3')">Approach the Door</button>
+  <!-- ══ ROOM 3 DOOR ══ -->
+  <div class="screen door-screen" id="room3-door">
+    <div class="door-bg-num" aria-hidden="true">3</div>
+    <div class="door-content">
+      <div class="door-law-num">3</div>
+      <div class="door-line"></div>
+      <div class="door-label">THIRD LAW OF THERMODYNAMICS</div>
+      <div class="door-name">Absolute Zero</div>
+      <button class="btn" onclick="showScreen('room3')">ENTER ROOM →</button>
     </div>
   </div>
 
+  <!-- ══ ROOM 3 ══ -->
   <div class="screen" id="room3">
-    <span class="room-badge" style="background:rgba(34,211,238,0.12);color:var(--room3);">Room 3</span>
-    <h2 class="room-title" style="color:var(--room3);">Absolute Zero</h2>
-
-    <div class="law-card" style="border-left-color:var(--room3);">
-      <div class="law-label" style="color:var(--room3);">Third Law of Thermodynamics</div>
-      <div class="law-text">As the temperature of a perfect crystal approaches absolute zero (0 K, or &minus;273.15 &deg;C), its entropy approaches zero. It is impossible to reach absolute zero in a finite number of steps.</div>
-      <div class="law-example"><strong>Think of it this way:</strong> At absolute zero, particles would be in perfect order with no random motion at all &mdash; zero disorder means zero entropy. But every time you try to cool something further, it gets harder and harder, like a curve that gets closer and closer to zero but never quite touches it.</div>
-    </div>
-
-    <!-- Puzzle 1: True/False -->
-    <div class="puzzle-section" id="r3p1">
-      <div class="puzzle-title">Puzzle 1 &mdash; True or False?</div>
-      <div class="puzzle-desc">Test your understanding. Decide if each statement is true or false.</div>
-      <div id="r3p1-items"></div>
-      <div class="btn-center mt-16">
-        <button class="btn" style="background:var(--room3);color:#000;" onclick="checkR3P1()">Check Answers</button>
+    <div class="room-layout">
+      <div class="room-rail" aria-hidden="true">
+        <div class="rail-num">3</div>
+        <div class="rail-law">THIRD<br>LAW</div>
       </div>
-      <div class="feedback" id="r3p1-fb"></div>
-    </div>
+      <div class="room-content">
 
-    <!-- Puzzle 2: Cool it Down -->
-    <div class="puzzle-section hidden" id="r3p2">
-      <div class="puzzle-title">Puzzle 2 &mdash; Cool It Down</div>
-      <div class="puzzle-desc">Use the slider to try to cool the crystal to absolute zero. Watch what happens to the entropy as temperature decreases.</div>
-      <div class="slider-container">
-        <div class="temp-display" id="tempDisplay">300 K</div>
-        <div class="temp-label">Temperature</div>
-        <input type="range" class="temp-slider" id="tempSlider" min="1" max="300" value="300" oninput="updateTemp()">
-        <div class="entropy-bar-container">
-          <div class="entropy-bar-bg"><div class="entropy-bar-fill" id="entropyFill" style="width:100%"></div></div>
-          <div class="entropy-label">Entropy: <span id="entropyVal">100%</span></div>
+        <div class="law-card">
+          <div class="law-label">THIRD LAW OF THERMODYNAMICS</div>
+          <div class="law-text">As the temperature of a perfect crystal approaches absolute zero (0 K = −273.15°C), its entropy approaches zero. It is impossible to reach absolute zero in a finite number of steps.</div>
+          <div class="law-example"><strong>Real world:</strong> At 0 K, particles would be in perfect order with zero random motion. But every attempt to cool further gets harder — like a curve approaching zero, never touching it.</div>
         </div>
-        <p class="mt-16" style="font-size:0.9rem;color:var(--text-dim);" id="tempMessage">Drag the slider left to cool the crystal...</p>
-      </div>
-      <div class="mc-options mt-16 hidden" id="r3p2-question">
-        <p class="mb-16" style="font-weight:600;">Why can't you reach exactly 0 K?</p>
-        <div class="mc-option" data-correct="false" onclick="checkMC(this,'r3p2')">Because thermometers can't measure that low.</div>
-        <div class="mc-option" data-correct="true" onclick="checkMC(this,'r3p2')">Each cooling step removes less and less heat, so it would take infinitely many steps to reach 0 K.</div>
-        <div class="mc-option" data-correct="false" onclick="checkMC(this,'r3p2')">Because all materials melt before reaching 0 K.</div>
-        <div class="mc-option" data-correct="false" onclick="checkMC(this,'r3p2')">Scientists haven't built a powerful enough refrigerator yet.</div>
-      </div>
-      <div class="feedback" id="r3p2-fb"></div>
-    </div>
 
-    <div class="btn-center mt-24 hidden" id="r3-next-btn">
-      <button class="btn" style="background:var(--room3);color:#000;" onclick="completeRoom(3)">Escape the Lab! &rarr;</button>
+        <div class="puzzle-section" id="r3p1">
+          <div class="puzzle-title">PUZZLE 01 — TRUE OR FALSE?</div>
+          <div class="puzzle-desc">Test your understanding of the Third Law and absolute zero.</div>
+          <div id="r3p1-items"></div>
+          <div class="btn-center mt-16"><button class="btn" onclick="checkR3P1()">CHECK ANSWERS</button></div>
+          <div class="feedback" id="r3p1-fb"></div>
+        </div>
+
+        <div class="puzzle-section hidden" id="r3p2">
+          <div class="puzzle-title">PUZZLE 02 — COOL IT DOWN</div>
+          <div class="puzzle-desc">Drag the slider toward 0 K. Watch entropy drop — then answer why you can't reach exactly zero.</div>
+          <div class="slider-container">
+            <div class="temp-display" id="tempDisplay">300 K</div>
+            <div class="temp-label">// TEMPERATURE</div>
+            <input type="range" class="temp-slider" id="tempSlider" min="1" max="300" value="300" oninput="updateTemp()">
+            <div class="entropy-bar-container">
+              <div class="entropy-bar-bg"><div class="entropy-bar-fill" id="entropyFill" style="width:100%"></div></div>
+              <div class="entropy-label">// ENTROPY: <span id="entropyVal">100%</span></div>
+            </div>
+            <p class="temp-message" id="tempMessage">DRAG LEFT TO COOL...</p>
+          </div>
+          <div class="mc-options mt-24 hidden" id="r3p2-question">
+            <p class="q-heading">WHY CAN'T YOU REACH EXACTLY 0 K?</p>
+            <div class="mc-option" data-correct="false" onclick="checkMC(this,'r3p2')">Because thermometers can't measure that low.</div>
+            <div class="mc-option" data-correct="true"  onclick="checkMC(this,'r3p2')">Each cooling step removes less and less heat, so it would take infinitely many steps to reach 0 K.</div>
+            <div class="mc-option" data-correct="false" onclick="checkMC(this,'r3p2')">Because all materials melt before reaching 0 K.</div>
+            <div class="mc-option" data-correct="false" onclick="checkMC(this,'r3p2')">Scientists haven't built a powerful enough refrigerator yet.</div>
+          </div>
+          <div class="feedback" id="r3p2-fb"></div>
+        </div>
+
+        <div class="btn-center mt-32 hidden" id="r3-next-btn">
+          <button class="btn" onclick="completeRoom(3)">ESCAPE THE LAB →</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ═══════════ FINALE ═══════════ -->
+  <!-- ══ FINALE ══ -->
   <div class="screen" id="finale">
-    <div class="finale-title">You Escaped!</div>
-    <div class="finale-sub">You've mastered the four laws of thermodynamics.</div>
+    <div class="finale-hero">
+      <div class="finale-big">ESCAPED</div>
+      <div class="finale-sub">// MISSION COMPLETE · ALL FOUR LAWS MASTERED</div>
 
-    <div class="summary-card" style="border-left-color:var(--room0);">
-      <div class="summary-law" style="color:var(--room0);">Zeroth Law &mdash; Thermal Equilibrium</div>
-      <div class="summary-desc">If A is in thermal equilibrium with B, and B with C, then A is in equilibrium with C. This is why thermometers work.</div>
-    </div>
-    <div class="summary-card" style="border-left-color:var(--room1);">
-      <div class="summary-law" style="color:var(--room1);">First Law &mdash; Conservation of Energy</div>
-      <div class="summary-desc">Energy cannot be created or destroyed. &Delta;U = Q &minus; W. Every joule is accounted for.</div>
-    </div>
-    <div class="summary-card" style="border-left-color:var(--room2);">
-      <div class="summary-law" style="color:var(--room2);">Second Law &mdash; Entropy Increases</div>
-      <div class="summary-desc">In any spontaneous process, total entropy increases. Heat flows hot &rarr; cold. Disorder grows unless you do work.</div>
-    </div>
-    <div class="summary-card" style="border-left-color:var(--room3);">
-      <div class="summary-law" style="color:var(--room3);">Third Law &mdash; Absolute Zero</div>
-      <div class="summary-desc">As T &rarr; 0 K, entropy &rarr; 0 for a perfect crystal. Absolute zero can be approached but never reached.</div>
-    </div>
+      <div class="summary-card" style="border-left-color:#FF6B00;">
+        <div class="summary-law" style="color:#FF6B00;">00 / ZEROTH LAW — THERMAL EQUILIBRIUM</div>
+        <div class="summary-desc">If A is in thermal equilibrium with B, and B with C, then A is in equilibrium with C. This is why thermometers work.</div>
+      </div>
+      <div class="summary-card" style="border-left-color:#A8FF3E;">
+        <div class="summary-law" style="color:#A8FF3E;">01 / FIRST LAW — CONSERVATION OF ENERGY</div>
+        <div class="summary-desc">Energy cannot be created or destroyed. ΔU = Q − W. Every joule is accounted for.</div>
+      </div>
+      <div class="summary-card" style="border-left-color:#FF2D78;">
+        <div class="summary-law" style="color:#FF2D78;">02 / SECOND LAW — ENTROPY INCREASES</div>
+        <div class="summary-desc">In any spontaneous process, total entropy increases. Heat flows hot → cold. Disorder grows unless you do work.</div>
+      </div>
+      <div class="summary-card" style="border-left-color:#00E5FF;">
+        <div class="summary-law" style="color:#00E5FF;">03 / THIRD LAW — ABSOLUTE ZERO</div>
+        <div class="summary-desc">As T → 0 K, entropy → 0 for a perfect crystal. Absolute zero can be approached but never reached.</div>
+      </div>
 
-    <div class="cert-area">
-      <h3>Certificate of Escape</h3>
-      <p style="font-size:0.9rem;color:var(--text-dim);margin-bottom:16px;">Enter your name to claim your certificate:</p>
-      <input type="text" class="cert-input" id="certName" placeholder="Your Name" oninput="updateCert()">
-      <div class="cert-name-display" id="certDisplay"></div>
-      <div class="cert-note">has successfully escaped Dr. Kelvin's Thermodynamics Lab<br>by demonstrating mastery of all four laws.</div>
-    </div>
+      <div class="cert-area">
+        <h3>CERTIFICATE OF ESCAPE</h3>
+        <p class="cert-prompt">ENTER YOUR NAME</p>
+        <input type="text" class="cert-input" id="certName" placeholder="YOUR NAME" oninput="updateCert()">
+        <div class="cert-name-display" id="certDisplay"></div>
+        <div class="cert-note">HAS ESCAPED DR. KELVIN'S THERMODYNAMICS LAB<br>BY DEMONSTRATING MASTERY OF ALL FOUR LAWS</div>
+      </div>
 
-    <div class="btn-center mt-24">
-      <button class="btn btn-secondary" onclick="resetGame()">Play Again</button>
+      <div class="btn-center mt-32">
+        <button class="btn btn-secondary" onclick="resetGame()">PLAY AGAIN</button>
+      </div>
     </div>
   </div>
 
-</div>
+</main>
 
-<script>
-  // ── State ──
-  const state = {
-    currentRoom: -1,
-    completed: [false, false, false, false],
-    puzzlesDone: { r0p1: false, r0p2: false, r1p1: false, r1p2: false, r2p1: false, r2p2: false, r3p1: false, r3p2: false }
-  };
-
-  // ── Particles ──
-  (function initParticles() {
-    const c = document.getElementById('particles');
-    for (let i = 0; i < 30; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      p.style.left = Math.random() * 100 + '%';
-      p.style.animationDuration = (8 + Math.random() * 12) + 's';
-      p.style.animationDelay = (Math.random() * 10) + 's';
-      p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
-      c.appendChild(p);
-    }
-  })();
-
-  // ── Screen management ──
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const el = document.getElementById(id);
-    if (el) { el.classList.add('active'); el.style.animation = 'none'; el.offsetHeight; el.style.animation = ''; }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    updateAccentColor(id);
-  }
-
-  function updateAccentColor(screenId) {
-    const root = document.documentElement;
-    if (screenId.startsWith('room0') || screenId === 'room0-door') {
-      root.style.setProperty('--accent', 'var(--room0)');
-      root.style.setProperty('--accent-glow', 'rgba(240,165,0,0.25)');
-    } else if (screenId.startsWith('room1') || screenId === 'room1-door') {
-      root.style.setProperty('--accent', 'var(--room1)');
-      root.style.setProperty('--accent-glow', 'rgba(59,130,246,0.25)');
-    } else if (screenId.startsWith('room2') || screenId === 'room2-door') {
-      root.style.setProperty('--accent', 'var(--room2)');
-      root.style.setProperty('--accent-glow', 'rgba(168,85,247,0.25)');
-    } else if (screenId.startsWith('room3') || screenId === 'room3-door') {
-      root.style.setProperty('--accent', 'var(--room3)');
-      root.style.setProperty('--accent-glow', 'rgba(34,211,238,0.25)');
-    }
-    // Update particle colors
-    document.querySelectorAll('.particle').forEach(p => p.style.background = getComputedStyle(root).getPropertyValue('--accent'));
-  }
-
-  function updateProgress() {
-    for (let i = 0; i < 4; i++) {
-      const node = document.getElementById('pn' + i);
-      node.classList.remove('active', 'done');
-      if (state.completed[i]) {
-        node.classList.add('done');
-        node.textContent = '\u2713';
-        if (i < 3) document.getElementById('pl' + i).classList.add('done');
-      } else if (i === state.currentRoom) {
-        node.classList.add('active');
-      }
-    }
-  }
-
-  function startGame() {
-    state.currentRoom = 0;
-    updateProgress();
-    showScreen('room0-door');
-  }
-
-  function showUnlock(text, callback) {
-    const ov = document.getElementById('unlockOverlay');
-    document.getElementById('unlockIcon').textContent = '\uD83D\uDD13';
-    document.getElementById('unlockText').textContent = text;
-    ov.classList.add('show');
-    document.getElementById('unlockIcon').style.animation = 'none';
-    document.getElementById('unlockIcon').offsetHeight;
-    document.getElementById('unlockIcon').style.animation = '';
-    setTimeout(() => { ov.classList.remove('show'); callback(); }, 1800);
-  }
-
-  function completeRoom(n) {
-    state.completed[n] = true;
-    updateProgress();
-    if (n < 3) {
-      const next = n + 1;
-      state.currentRoom = next;
-      updateProgress();
-      const names = ['Temperature Bridge', 'Energy Vault', 'Entropy Maze', 'Absolute Zero'];
-      showUnlock('Room ' + n + ' Unlocked!', () => showScreen('room' + next + '-door'));
-    } else {
-      showUnlock('Lab Escaped!', () => {
-        document.querySelector('.progress-bar').style.display = 'none';
-        showScreen('finale');
-      });
-    }
-  }
-
-  function showFeedback(id, correct, msg) {
-    const fb = document.getElementById(id);
-    fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
-    fb.textContent = msg;
-  }
-
-  // ── Generic drag & drop helpers ──
-  let draggedEl = null;
-
-  function initDragDrop(itemsContainerId, zoneIds) {
-    const container = document.getElementById(itemsContainerId);
-    if (!container) return;
-    container.querySelectorAll('.drag-item').forEach(item => {
-      item.addEventListener('dragstart', e => {
-        draggedEl = item;
-        item.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      });
-      item.addEventListener('dragend', () => { item.classList.remove('dragging'); draggedEl = null; });
-      // Click-to-select fallback
-      item.addEventListener('click', () => {
-        if (item.dataset.selected === 'true') {
-          item.dataset.selected = 'false';
-          item.style.outline = '';
-        } else {
-          container.querySelectorAll('.drag-item').forEach(i => { i.dataset.selected = 'false'; i.style.outline = ''; });
-          item.dataset.selected = 'true';
-          item.style.outline = '2px solid var(--accent)';
-        }
-      });
-    });
-
-    zoneIds.forEach(zid => {
-      const zone = document.getElementById(zid);
-      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-      zone.addEventListener('drop', e => {
-        e.preventDefault();
-        zone.classList.remove('dragover');
-        if (draggedEl) { zone.appendChild(draggedEl); draggedEl.classList.add('in-zone'); }
-      });
-      // Click-to-drop
-      zone.addEventListener('click', () => {
-        const sel = container.querySelector('.drag-item[data-selected="true"]') ||
-                    document.querySelector('.drag-item[data-selected="true"]');
-        if (sel) { zone.appendChild(sel); sel.classList.add('in-zone'); sel.dataset.selected = 'false'; sel.style.outline = ''; }
-      });
-    });
-  }
-
-  // ── Energy slot drag ──
-  function initEnergySlots() {
-    document.querySelectorAll('.energy-chip').forEach(chip => {
-      chip.addEventListener('dragstart', e => { draggedEl = chip; chip.style.opacity = '0.4'; });
-      chip.addEventListener('dragend', () => { chip.style.opacity = '1'; draggedEl = null; });
-    });
-    document.querySelectorAll('.energy-slot').forEach(slot => {
-      slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('dragover'); });
-      slot.addEventListener('dragleave', () => slot.classList.remove('dragover'));
-      slot.addEventListener('drop', e => {
-        e.preventDefault(); slot.classList.remove('dragover');
-        if (draggedEl && draggedEl.classList.contains('energy-chip')) {
-          // If slot already has a chip, return it
-          const existing = slot.querySelector('.energy-chip');
-          if (existing) document.getElementById('r1p1-chips').appendChild(existing);
-          slot.appendChild(draggedEl);
-          slot.classList.add('filled');
-          // Check automatically
-          const val = draggedEl.dataset.val;
-          const correct = slot.dataset.correct;
-          if (val === correct) {
-            showFeedback('r1p1-fb', true, 'Correct! 500 J of heat in minus 200 J of work out = 300 J increase in internal energy. Energy is conserved!');
-            state.puzzlesDone.r1p1 = true;
-            document.getElementById('r1p2').classList.remove('hidden');
-          } else {
-            showFeedback('r1p1-fb', false, 'Not quite. Remember: \u0394U = Q \u2212 W. The gas absorbed 500 J and did 200 J of work. What\'s left?');
-            setTimeout(() => {
-              document.getElementById('r1p1-chips').appendChild(draggedEl);
-              slot.classList.remove('filled');
-            }, 1200);
-          }
-        }
-      });
-    });
-  }
-
-  // ── Order list drag ──
-  function initOrderList(listId) {
-    const list = document.getElementById(listId);
-    let dragItem = null;
-
-    list.querySelectorAll('.order-item').forEach(item => {
-      item.setAttribute('draggable', 'true');
-      item.addEventListener('dragstart', e => {
-        dragItem = item;
-        item.style.opacity = '0.4';
-        e.dataTransfer.effectAllowed = 'move';
-      });
-      item.addEventListener('dragend', () => { item.style.opacity = '1'; dragItem = null; });
-      item.addEventListener('dragover', e => {
-        e.preventDefault();
-        if (dragItem && dragItem !== item) {
-          const rect = item.getBoundingClientRect();
-          const mid = rect.top + rect.height / 2;
-          if (e.clientY < mid) list.insertBefore(dragItem, item);
-          else list.insertBefore(dragItem, item.nextSibling);
-        }
-      });
-      // Click to swap
-      item.addEventListener('click', () => {
-        if (item.dataset.selected === 'true') {
-          item.dataset.selected = 'false';
-          item.style.outline = '';
-        } else {
-          const prev = list.querySelector('[data-selected="true"]');
-          if (prev && prev !== item) {
-            // Swap
-            const parent = list;
-            const next1 = item.nextSibling;
-            const next2 = prev.nextSibling;
-            if (next1 === prev) { parent.insertBefore(prev, item); }
-            else if (next2 === item) { parent.insertBefore(item, prev); }
-            else { parent.insertBefore(prev, next1); parent.insertBefore(item, next2); }
-            prev.dataset.selected = 'false'; prev.style.outline = '';
-            updateOrderNums(listId);
-          } else {
-            if (prev) { prev.dataset.selected = 'false'; prev.style.outline = ''; }
-            item.dataset.selected = 'true';
-            item.style.outline = '2px solid var(--accent)';
-          }
-        }
-      });
-    });
-  }
-
-  function updateOrderNums(listId) {
-    document.getElementById(listId).querySelectorAll('.order-item').forEach((item, i) => {
-      item.querySelector('.order-num').textContent = i + 1;
-    });
-  }
-
-  // ── Multiple choice ──
-  function checkMC(opt, puzzleId) {
-    const parent = opt.parentElement;
-    if (parent.dataset.locked === 'true') return;
-    const correct = opt.dataset.correct === 'true';
-    if (correct) {
-      parent.dataset.locked = 'true';
-      opt.classList.add('correct');
-      parent.querySelectorAll('.mc-option').forEach(o => { if (o !== opt) o.style.opacity = '0.4'; o.style.pointerEvents = 'none'; });
-      if (puzzleId === 'r0p2') {
-        showFeedback('r0p2-fb', true, 'Exactly! The thermometer reaches the same temperature as the water (thermal equilibrium). By the Zeroth Law, they must share the same temperature \u2014 which is what the reading tells you.');
-        state.puzzlesDone.r0p2 = true;
-        document.getElementById('r0-next-btn').classList.remove('hidden');
-      } else if (puzzleId === 'r3p2') {
-        showFeedback('r3p2-fb', true, 'Correct! Each successive cooling step removes a smaller amount of heat, making it impossible to reach exactly 0 K in any finite process. This is the essence of the Third Law.');
-        state.puzzlesDone.r3p2 = true;
-        document.getElementById('r3-next-btn').classList.remove('hidden');
-      }
-    } else {
-      opt.classList.add('wrong');
-      setTimeout(() => opt.classList.remove('wrong'), 600);
-      if (puzzleId === 'r0p2') showFeedback('r0p2-fb', false, 'Not quite \u2014 think about what "thermal equilibrium" means and how the Zeroth Law connects two objects through a third.');
-      else if (puzzleId === 'r3p2') showFeedback('r3p2-fb', false, 'Not quite. Think about what happens to the cooling rate as you get closer and closer to 0 K.');
-    }
-  }
-
-  // ══════════════════════════════════
-  //  ROOM 0 — Zeroth Law Puzzles
-  // ══════════════════════════════════
-  function checkR0P1() {
-    const g1Items = [...document.getElementById('r0-group1').querySelectorAll('.drag-item')].map(i => i.dataset.id).sort().join('');
-    const g2Items = [...document.getElementById('r0-group2').querySelectorAll('.drag-item')].map(i => i.dataset.id).sort().join('');
-    // Correct: Group1={A,B,D}, Group2={C,E} or reversed
-    const correct = (g1Items === 'ABD' && g2Items === 'CE') || (g1Items === 'CE' && g2Items === 'ABD');
-    if (correct) {
-      showFeedback('r0p1-fb', true, 'Perfect! A, B, and D are all in thermal equilibrium (same temperature). C and E are in thermal equilibrium with each other at a different temperature. The Zeroth Law lets you build these chains!');
-      state.puzzlesDone.r0p1 = true;
-      document.getElementById('r0p2').classList.remove('hidden');
-    } else {
-      const placed = document.querySelectorAll('#r0-group1 .drag-item, #r0-group2 .drag-item').length;
-      if (placed < 5) {
-        showFeedback('r0p1-fb', false, 'Drag all 5 objects into the two groups first. Use the clues: A=B, B=D, C=E, and A\u2260C.');
-      } else {
-        showFeedback('r0p1-fb', false, 'Not quite. Re-read the clues: A=B means A and B are the same temperature. B=D links D to that group. C=E is a separate group. A\u2260C means the groups are different.');
-      }
-    }
-  }
-
-  // ══════════════════════════════════
-  //  ROOM 1 — First Law Puzzles
-  // ══════════════════════════════════
-  const r1p2Data = [
-    { text: 'A pot of water is heated on a stove (absorbs heat, no work done).', answer: 'increase' },
-    { text: 'A gas expands in a piston and pushes it outward, losing heat to surroundings.', answer: 'decrease' },
-    { text: 'You rub your hands together vigorously (friction adds heat).', answer: 'increase' },
-    { text: 'A compressed gas is released into a vacuum (expands freely, no heat exchange).', answer: 'same' }
-  ];
-
-  function buildR1P2() {
-    const el = document.getElementById('r1p2-scenarios');
-    r1p2Data.forEach((d, i) => {
-      el.innerHTML += `
-        <div class="tf-item" id="r1p2-s${i}">
-          <div class="tf-text">${d.text}</div>
-          <div class="tf-buttons">
-            <button class="tf-btn" data-choice="increase" onclick="selectR1P2(${i},'increase',this)">Increase</button>
-            <button class="tf-btn" data-choice="decrease" onclick="selectR1P2(${i},'decrease',this)">Decrease</button>
-            <button class="tf-btn" data-choice="same" onclick="selectR1P2(${i},'same',this)">No Change</button>
-          </div>
-        </div>`;
-    });
-  }
-
-  const r1p2Answers = {};
-  function selectR1P2(i, choice, btn) {
-    r1p2Answers[i] = choice;
-    const item = document.getElementById('r1p2-s' + i);
-    item.querySelectorAll('.tf-btn').forEach(b => b.className = 'tf-btn');
-    btn.classList.add(choice === r1p2Data[i].answer ? 'selected-true' : 'selected-true');
-  }
-
-  function checkR1P2() {
-    if (Object.keys(r1p2Answers).length < r1p2Data.length) {
-      showFeedback('r1p2-fb', false, 'Select an answer for every scenario before checking.');
-      return;
-    }
-    let allCorrect = true;
-    r1p2Data.forEach((d, i) => {
-      const item = document.getElementById('r1p2-s' + i);
-      item.classList.remove('answered-correct', 'answered-wrong');
-      if (r1p2Answers[i] === d.answer) {
-        item.classList.add('answered-correct');
-      } else {
-        item.classList.add('answered-wrong');
-        allCorrect = false;
-      }
-    });
-    if (allCorrect) {
-      showFeedback('r1p2-fb', true, 'All correct! You\'ve shown that energy transfers always balance out \u2014 heat in, work out, internal energy changes. That\'s the First Law in every scenario.');
-      state.puzzlesDone.r1p2 = true;
-      document.getElementById('r1-next-btn').classList.remove('hidden');
-    } else {
-      showFeedback('r1p2-fb', false, 'Some answers aren\'t right. Remember \u0394U = Q \u2212 W. If heat goes IN and no work is done, internal energy increases. If the gas does work AND loses heat, internal energy decreases. If there\'s no heat exchange and no work against anything, internal energy stays the same.');
-    }
-  }
-
-  // ══════════════════════════════════
-  //  ROOM 2 — Second Law Puzzles
-  // ══════════════════════════════════
-  const r2p1Data = [
-    { text: 'Hot coffee cooling down in a cold room', group: 'natural' },
-    { text: 'A cold room spontaneously heating a cup of coffee', group: 'impossible' },
-    { text: 'Ice melting on a warm countertop', group: 'natural' },
-    { text: 'A broken egg reassembling itself', group: 'impossible' },
-    { text: 'Perfume spreading through a room after the bottle is opened', group: 'natural' },
-  ];
-
-  function buildR2P1() {
-    const el = document.getElementById('r2p1-items');
-    // Shuffle
-    const shuffled = [...r2p1Data].sort(() => Math.random() - 0.5);
-    shuffled.forEach((d, i) => {
-      el.innerHTML += `<div class="drag-item" draggable="true" data-id="${i}" data-group="${d.group}">${d.text}</div>`;
-    });
-  }
-
-  function checkR2P1() {
-    const natItems = [...document.getElementById('r2-natural').querySelectorAll('.drag-item')];
-    const impItems = [...document.getElementById('r2-impossible').querySelectorAll('.drag-item')];
-    if (natItems.length + impItems.length < r2p1Data.length) {
-      showFeedback('r2p1-fb', false, 'Drag all scenarios into one of the two zones before checking.');
-      return;
-    }
-    const allCorrect = natItems.every(i => i.dataset.group === 'natural') && impItems.every(i => i.dataset.group === 'impossible');
-    if (allCorrect) {
-      showFeedback('r2p1-fb', true, 'Correct! Processes that increase total entropy (coffee cooling, ice melting, perfume spreading) happen naturally. Processes that would decrease total entropy (cold heating hot, broken egg reassembling) violate the Second Law and need external work.');
-      state.puzzlesDone.r2p1 = true;
-      document.getElementById('r2p2').classList.remove('hidden');
-      buildR2P2();
-    } else {
-      showFeedback('r2p1-fb', false, 'Not quite. Ask yourself: does this process spread energy out and increase disorder? If yes, it happens naturally. If it would magically concentrate energy or create order from chaos, it needs external work.');
-    }
-  }
-
-  const r2p2Data = [
-    { text: 'Ice cube (solid, rigid crystal structure)', order: 1, emoji: '\u2744\uFE0F' },
-    { text: 'Liquid water (molecules slide freely)', order: 2, emoji: '\uD83D\uDCA7' },
-    { text: 'Steam (gas, molecules fly around)', order: 3, emoji: '\u2601\uFE0F' },
-    { text: 'Steam dispersed throughout a large room', order: 4, emoji: '\uD83C\uDF2B\uFE0F' },
-  ];
-
-  function buildR2P2() {
-    const el = document.getElementById('r2-order-list');
-    if (el.children.length > 0) return; // already built
-    const shuffled = [...r2p2Data].sort(() => Math.random() - 0.5);
-    shuffled.forEach((d, i) => {
-      el.innerHTML += `<div class="order-item" data-order="${d.order}"><div class="order-num">${i + 1}</div><span>${d.emoji} ${d.text}</span></div>`;
-    });
-    initOrderList('r2-order-list');
-  }
-
-  function checkR2P2() {
-    const items = [...document.getElementById('r2-order-list').querySelectorAll('.order-item')];
-    const currentOrder = items.map(i => parseInt(i.dataset.order));
-    const correct = currentOrder.every((v, i) => v === i + 1);
-    if (correct) {
-      showFeedback('r2p2-fb', true, 'Perfect order! From ice (low entropy, highly ordered) to steam spread across a room (high entropy, maximum disorder). The Second Law tells us that natural processes move toward higher entropy.');
-      state.puzzlesDone.r2p2 = true;
-      document.getElementById('r2-next-btn').classList.remove('hidden');
-    } else {
-      showFeedback('r2p2-fb', false, 'Not in the right order. Think about molecular freedom: which state has the most ordered, rigid structure? Which has molecules spread out the most? Drag items to reorder them (or click two items to swap).');
-    }
-    updateOrderNums('r2-order-list');
-  }
-
-  // ══════════════════════════════════
-  //  ROOM 3 — Third Law Puzzles
-  // ══════════════════════════════════
-  const r3p1Data = [
-    { text: 'At absolute zero (0 K), all molecular motion stops completely.', answer: false, explain: 'False. Quantum mechanics tells us that particles retain zero-point energy even at 0 K \u2014 they never fully stop. But at 0 K, a perfect crystal has minimum possible entropy.' },
-    { text: 'The entropy of a perfect crystal at absolute zero is exactly zero.', answer: true, explain: 'True! This is the formal statement of the Third Law. A perfect crystal at 0 K has only one possible microstate, so S = k\u2022ln(1) = 0.' },
-    { text: 'It is theoretically possible to cool an object to exactly 0 K in a finite number of steps.', answer: false, explain: 'False. The Third Law implies that reaching absolute zero would require an infinite number of cooling steps. Each step removes less heat than the last.' },
-    { text: 'Absolute zero is \u2212273.15 \u00B0C (or 0 Kelvin).', answer: true, explain: 'True! 0 K = \u2212273.15 \u00B0C. This is the lowest possible temperature \u2014 the point where a system\'s entropy would reach its minimum value.' },
-  ];
-
-  function buildR3P1() {
-    const el = document.getElementById('r3p1-items');
-    r3p1Data.forEach((d, i) => {
-      el.innerHTML += `
-        <div class="tf-item" id="r3p1-s${i}">
-          <div class="tf-text">${d.text}</div>
-          <div class="tf-buttons">
-            <button class="tf-btn" onclick="selectR3TF(${i},true,this)">True</button>
-            <button class="tf-btn" onclick="selectR3TF(${i},false,this)">False</button>
-          </div>
-        </div>`;
-    });
-  }
-
-  const r3p1Answers = {};
-  function selectR3TF(i, val, btn) {
-    r3p1Answers[i] = val;
-    const item = document.getElementById('r3p1-s' + i);
-    item.querySelectorAll('.tf-btn').forEach(b => b.className = 'tf-btn');
-    btn.classList.add(val ? 'selected-true' : 'selected-false');
-  }
-
-  function checkR3P1() {
-    if (Object.keys(r3p1Answers).length < r3p1Data.length) {
-      showFeedback('r3p1-fb', false, 'Answer all four statements before checking.');
-      return;
-    }
-    let allCorrect = true;
-    let explanations = [];
-    r3p1Data.forEach((d, i) => {
-      const item = document.getElementById('r3p1-s' + i);
-      item.classList.remove('answered-correct', 'answered-wrong');
-      if (r3p1Answers[i] === d.answer) {
-        item.classList.add('answered-correct');
-      } else {
-        item.classList.add('answered-wrong');
-        allCorrect = false;
-        explanations.push(d.explain);
-      }
-    });
-    if (allCorrect) {
-      showFeedback('r3p1-fb', true, 'All correct! You have a solid understanding of the Third Law and absolute zero.');
-      state.puzzlesDone.r3p1 = true;
-      document.getElementById('r3p2').classList.remove('hidden');
-    } else {
-      showFeedback('r3p1-fb', false, explanations[0] + ' Fix your answers and try again.');
-    }
-  }
-
-  // Slider
-  function updateTemp() {
-    const val = parseInt(document.getElementById('tempSlider').value);
-    // Asymptotic feel: display actual slider value but show entropy nonlinearly
-    document.getElementById('tempDisplay').textContent = val + ' K';
-    const entropyPct = Math.round((val / 300) * 100);
-    document.getElementById('entropyFill').style.width = entropyPct + '%';
-    document.getElementById('entropyVal').textContent = entropyPct + '%';
-
-    const msg = document.getElementById('tempMessage');
-    if (val <= 1) {
-      msg.textContent = 'So close to 0 K... but you can\'t quite reach it! The Third Law says it\'s impossible in finite steps.';
-      msg.style.color = 'var(--room3)';
-      document.getElementById('r3p2-question').classList.remove('hidden');
-    } else if (val < 10) {
-      msg.textContent = 'Nearly there! Notice how the entropy is almost zero... but never exactly zero.';
-      msg.style.color = 'var(--room3)';
-    } else if (val < 50) {
-      msg.textContent = 'Very cold! Molecular motion is slowing dramatically.';
-      msg.style.color = 'var(--text-dim)';
-    } else if (val < 150) {
-      msg.textContent = 'Getting colder. Entropy is decreasing as order increases.';
-      msg.style.color = 'var(--text-dim)';
-    } else {
-      msg.textContent = 'Drag the slider left to cool the crystal...';
-      msg.style.color = 'var(--text-dim)';
-    }
-  }
-
-  // ── Finale ──
-  function updateCert() {
-    const name = document.getElementById('certName').value.trim();
-    document.getElementById('certDisplay').textContent = name || '';
-  }
-
-  function resetGame() {
-    state.currentRoom = -1;
-    state.completed = [false, false, false, false];
-    Object.keys(state.puzzlesDone).forEach(k => state.puzzlesDone[k] = false);
-
-    // Reset progress bar
-    for (let i = 0; i < 4; i++) {
-      const node = document.getElementById('pn' + i);
-      node.classList.remove('active', 'done');
-      node.textContent = i;
-      if (i < 3) document.getElementById('pl' + i).classList.remove('done');
-    }
-    document.querySelector('.progress-bar').style.display = '';
-
-    // Reset all feedback
-    document.querySelectorAll('.feedback').forEach(f => { f.className = 'feedback'; f.textContent = ''; });
-
-    // Reset hidden puzzle sections
-    ['r0p2', 'r1p2', 'r2p2', 'r3p2'].forEach(id => document.getElementById(id).classList.add('hidden'));
-    ['r0-next-btn', 'r1-next-btn', 'r2-next-btn', 'r3-next-btn'].forEach(id => document.getElementById(id).classList.add('hidden'));
-
-    // Reset drag items back to source containers
-    resetDragItems('r0p1-items', ['r0-group1', 'r0-group2']);
-    resetDragItems('r2p1-items', ['r2-natural', 'r2-impossible']);
-
-    // Reset energy slot
-    const slot = document.getElementById('r1-slot1');
-    const chipInSlot = slot.querySelector('.energy-chip');
-    if (chipInSlot) document.getElementById('r1p1-chips').appendChild(chipInSlot);
-    slot.classList.remove('filled');
-
-    // Reset R1P2 selections
-    document.querySelectorAll('[id^="r1p2-s"]').forEach(el => {
-      el.classList.remove('answered-correct', 'answered-wrong');
-      el.querySelectorAll('.tf-btn').forEach(b => b.className = 'tf-btn');
-    });
-    Object.keys(r1p2Answers).forEach(k => delete r1p2Answers[k]);
-
-    // Reset R3P1 selections
-    document.querySelectorAll('[id^="r3p1-s"]').forEach(el => {
-      el.classList.remove('answered-correct', 'answered-wrong');
-      el.querySelectorAll('.tf-btn').forEach(b => b.className = 'tf-btn');
-    });
-    Object.keys(r3p1Answers).forEach(k => delete r3p1Answers[k]);
-
-    // Reset slider
-    document.getElementById('tempSlider').value = 300;
-    updateTemp();
-    document.getElementById('r3p2-question').classList.add('hidden');
-    document.querySelectorAll('#r3p2-question .mc-option').forEach(o => {
-      o.className = 'mc-option'; o.style.opacity = ''; o.style.pointerEvents = '';
-    });
-    document.getElementById('r3p2-question').dataset.locked = '';
-
-    // Reset R2P2 order list
-    document.getElementById('r2-order-list').innerHTML = '';
-
-    // Reset MC locks
-    ['r0p2-opts', 'r3p2-question'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.dataset.locked = '';
-        el.querySelectorAll('.mc-option').forEach(o => {
-          o.className = 'mc-option'; o.style.opacity = ''; o.style.pointerEvents = '';
-        });
-      }
-    });
-
-    // Reset cert
-    document.getElementById('certName').value = '';
-    document.getElementById('certDisplay').textContent = '';
-
-    document.getElementById('pn0').classList.add('active');
-    showScreen('intro');
-  }
-
-  function resetDragItems(sourceId, zoneIds) {
-    const source = document.getElementById(sourceId);
-    zoneIds.forEach(zid => {
-      const zone = document.getElementById(zid);
-      zone.querySelectorAll('.drag-item').forEach(item => {
-        item.classList.remove('in-zone');
-        source.appendChild(item);
-      });
-    });
-  }
-
-  // ── Init ──
-  function init() {
-    buildR1P2();
-    buildR2P1();
-    buildR3P1();
-    initDragDrop('r0p1-items', ['r0-group1', 'r0-group2']);
-    initEnergySlots();
-    // R2P1 drag/drop (need to init after DOM update)
-    setTimeout(() => initDragDrop('r2p1-items', ['r2-natural', 'r2-impossible']), 100);
-  }
-
-  document.addEventListener('DOMContentLoaded', init);
-</script>
+<script src="game.js" defer></script>
 </body>
 </html>
