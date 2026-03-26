@@ -16,6 +16,12 @@
 <!-- Wrong-answer glitch overlay -->
 <div class="glitch-overlay" id="glitchOverlay"></div>
 
+<!-- Live score badge (shown only during puzzle rooms) -->
+<div class="score-badge" id="scoreBadge" style="display:none" aria-label="Current score">
+  <div class="score-badge-label">// SCORE</div>
+  <div class="score-badge-num" id="scoreBadgeNum">100 / 100</div>
+</div>
+
 <!-- Fixed vertical progress strip -->
 <nav class="progress-strip" id="progressStrip" aria-label="Room progress">
   <div class="ps-node active" id="pn0">0</div>
@@ -312,6 +318,23 @@
       <div class="finale-big">ESCAPED</div>
       <div class="finale-sub">// MISSION COMPLETE · ALL FOUR LAWS MASTERED</div>
 
+      <!-- Score panel -->
+      <div class="score-panel" id="finaleScorePanel">
+        <div class="score-panel-row">
+          <div class="score-panel-cell">
+            <div class="score-panel-label">// RAW SCORE</div>
+            <div class="score-panel-big" id="finalRaw">--</div>
+          </div>
+          <div class="score-panel-divider">/</div>
+          <div class="score-panel-cell">
+            <div class="score-panel-label">// FINAL GRADE</div>
+            <div class="score-panel-big" id="finalGradeDisplay">--</div>
+          </div>
+        </div>
+        <div class="score-panel-breakdown" id="finaleBreakdown"></div>
+        <div class="score-panel-session" id="finaleSession"></div>
+      </div>
+
       <div class="summary-card" style="border-left-color:#FF6B00;">
         <div class="summary-law" style="color:#FF6B00;">00 / ZEROTH LAW — THERMAL EQUILIBRIUM</div>
         <div class="summary-desc">If A is in thermal equilibrium with B, and B with C, then A is in equilibrium with C. This is why thermometers work.</div>
@@ -329,15 +352,50 @@
         <div class="summary-desc">As T → 0 K, entropy → 0 for a perfect crystal. Absolute zero can be approached but never reached.</div>
       </div>
 
-      <div class="cert-area">
-        <h3>CERTIFICATE OF ESCAPE</h3>
-        <p class="cert-prompt">ENTER YOUR NAME</p>
-        <input type="text" class="cert-input" id="certName" placeholder="YOUR NAME" oninput="updateCert()">
-        <div class="cert-name-display" id="certDisplay"></div>
-        <div class="cert-note">HAS ESCAPED DR. KELVIN'S THERMODYNAMICS LAB<br>BY DEMONSTRATING MASTERY OF ALL FOUR LAWS</div>
+      <!-- Name input (above cert — not part of PDF) -->
+      <div class="cert-input-area">
+        <p class="cert-prompt">ENTER YOUR NAME FOR THE CERTIFICATE</p>
+        <input type="text" class="cert-input" id="certName"
+               placeholder="YOUR NAME" oninput="updateCert()" autocomplete="off">
       </div>
 
-      <div class="btn-center mt-32">
+      <!-- Certificate card (PDF target) -->
+      <div class="cert-card" id="certCard">
+        <div class="cert-bar cert-bar-top"></div>
+        <div class="cert-inner">
+          <div class="cert-lab-tag">// HEAT SIGNAL &mdash; THERMODYNAMICS ESCAPE LAB</div>
+          <div class="cert-rule"></div>
+          <div class="cert-title">CERTIFICATE OF ESCAPE</div>
+          <div class="cert-certifies">This certifies that</div>
+          <div class="cert-student-name" id="certDisplay">YOUR NAME</div>
+          <div class="cert-achievement">
+            has successfully escaped Dr.&nbsp;Kelvin's Thermodynamics Lab<br>
+            by demonstrating mastery of all four laws of thermodynamics
+          </div>
+          <div class="cert-rule"></div>
+          <div class="cert-score-grid" id="certScoreGrid"></div>
+          <div class="cert-grade-line" id="certScoreLine">FINAL GRADE: -- / 100</div>
+          <div class="cert-rule"></div>
+          <div class="cert-footer">
+            <div class="cert-footer-left">
+              <div class="cert-foot-label">DATE</div>
+              <div class="cert-foot-value" id="certDateDisplay">&mdash;</div>
+              <div class="cert-foot-label" style="margin-top:10px">SESSION</div>
+              <div class="cert-foot-value" id="certSessionDisplay">&mdash;</div>
+            </div>
+            <div class="cert-footer-right">
+              <div class="cert-sig-line"></div>
+              <div class="cert-sig-name">Dr. Emil Jivishov</div>
+              <div class="cert-sig-role">Instructor &amp; Lab Director</div>
+            </div>
+          </div>
+        </div>
+        <div class="cert-bar cert-bar-bottom"></div>
+      </div>
+
+      <div class="btn-center mt-32" style="gap:12px; flex-wrap:wrap;">
+        <button class="btn" id="downloadPdfBtn" onclick="downloadCertPDF()">DOWNLOAD PDF ↓</button>
+        <button class="btn" id="copyReportBtn" onclick="copyReport()">COPY REPORT ↗</button>
         <button class="btn btn-secondary" onclick="resetGame()">PLAY AGAIN</button>
       </div>
     </div>
@@ -351,6 +409,7 @@
   <span class="tt-light">○</span>
 </button>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="game.js" defer></script>
 </body>
 </html>

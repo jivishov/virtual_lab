@@ -3,6 +3,221 @@
 //  Game Logic & Puzzle Engine
 // ══════════════════════════════════════════
 
+// ══════════════════════════════════════════
+//  SCORING CONFIGURATION  (teacher-editable)
+//  maxPts : full points if solved first try
+//  penalty: points lost per wrong attempt
+// ══════════════════════════════════════════
+const SCORE_CONFIG = {
+  puzzles: {
+    r0p1: { maxPts: 10, penalty: 4 },
+    r0p2: { maxPts:  8, penalty: 3 },
+    r1p1: { maxPts:  8, penalty: 3 },
+    r1p2: { maxPts: 16, penalty: 5 },
+    r2p1: { maxPts: 10, penalty: 4 },
+    r2p2: { maxPts: 12, penalty: 4 },
+    r3p1: { maxPts: 20, penalty: 7 },
+    r3p2: { maxPts: 16, penalty: 6 },
+  },
+  // transform: raw score (0-100) → displayed grade (0-100)
+  // Change this line to apply a curve. Examples:
+  //   Linear 50-100 range:  raw => 50 + raw * 0.5
+  //   Square-root boost:    raw => Math.round(Math.sqrt(raw) * 10)
+  transform: function(raw) { return raw; },   // identity — no curve
+  transformLabel: 'none (raw = final)',
+};
+// ══════════════════════════════════════════
+
+// ── Scoring helpers ──
+function initScoring() {
+  state.scoring = {
+    sessionId: 'HS-' + Date.now().toString(36).toUpperCase(),
+    startTime: Date.now(),
+    attempts: { r0p1:0, r0p2:0, r1p1:0, r1p2:0, r2p1:0, r2p2:0, r3p1:0, r3p2:0 }
+  };
+}
+
+function puzzleRawScore(id) {
+  const cfg   = SCORE_CONFIG.puzzles[id];
+  const wrong = state.scoring ? state.scoring.attempts[id] : 0;
+  return Math.max(0, cfg.maxPts - wrong * cfg.penalty);
+}
+
+function rawTotal() {
+  return Object.keys(SCORE_CONFIG.puzzles).reduce(
+    (sum, id) => sum + puzzleRawScore(id), 0
+  );
+}
+
+function finalGrade() {
+  return Math.min(100, Math.max(0, Math.round(SCORE_CONFIG.transform(rawTotal()))));
+}
+
+// Silent update — just refreshes number, NO animation (used on init/reset)
+function updateScoreBadge() {
+  const numEl = document.getElementById('scoreBadgeNum');
+  if (numEl) numEl.textContent = rawTotal() + ' / 100';
+}
+
+// Wrong-answer update — increments attempt, refreshes number, triggers red flash
+function recordWrong(puzzleId) {
+  if (!state.scoring) return;
+  state.scoring.attempts[puzzleId]++;
+  const numEl = document.getElementById('scoreBadgeNum');
+  const badge = document.getElementById('scoreBadge');
+  if (!numEl || !badge) return;
+  numEl.textContent = rawTotal() + ' / 100';
+  badge.classList.remove('score-drop');
+  badge.offsetWidth; // force reflow to restart keyframe
+  badge.classList.add('score-drop');
+  setTimeout(() => badge.classList.remove('score-drop'), 700);
+}
+
+function renderFinaleBreakdown() {
+  if (!state.scoring) return;
+  const labels = {
+    r0p1:'R0-P1', r0p2:'R0-P2', r1p1:'R1-P1', r1p2:'R1-P2',
+    r2p1:'R2-P1', r2p2:'R2-P2', r3p1:'R3-P1', r3p2:'R3-P2'
+  };
+  const el = document.getElementById('finaleBreakdown');
+  if (el) {
+    el.innerHTML = Object.keys(SCORE_CONFIG.puzzles).map(id => {
+      const cfg   = SCORE_CONFIG.puzzles[id];
+      const wrong = state.scoring.attempts[id];
+      const pts   = puzzleRawScore(id);
+      const ptsColor  = pts === cfg.maxPts ? 'color:var(--correct)' : 'color:var(--text)';
+      const wrongColor = wrong > 0 ? 'color:var(--wrong)' : 'color:var(--dim)';
+      return `<div class="breakdown-row">
+        <span class="br-id">${labels[id]}</span>
+        <span class="br-pts" style="${ptsColor}">${pts}/${cfg.maxPts}</span>
+        <span class="br-wrong" style="${wrongColor}">${wrong} wrong</span>
+      </div>`;
+    }).join('');
+  }
+  const rawEl   = document.getElementById('finalRaw');
+  const gradeEl = document.getElementById('finalGradeDisplay');
+  const sessEl  = document.getElementById('finaleSession');
+  if (rawEl)   rawEl.textContent   = rawTotal();
+  if (gradeEl) gradeEl.textContent = finalGrade();
+  if (sessEl)  sessEl.textContent  = '// SESSION: ' + state.scoring.sessionId;
+  renderCertCard();
+}
+
+function renderCertScore() {
+  const el = document.getElementById('certScoreLine');
+  if (el) el.textContent = 'FINAL GRADE: ' + finalGrade() + ' / 100';
+}
+
+function renderCertCard() {
+  if (!state.scoring) return;
+  const sc = state.scoring;
+
+  // Populate footer: date + session
+  const dateEl = document.getElementById('certDateDisplay');
+  const sessEl = document.getElementById('certSessionDisplay');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US',
+    { year: 'numeric', month: 'long', day: 'numeric' });
+  if (sessEl) sessEl.textContent = sc.sessionId;
+
+  // Build 2-column compact score grid
+  const grid = document.getElementById('certScoreGrid');
+  if (!grid) return;
+  const ids = Object.keys(SCORE_CONFIG.puzzles);
+  grid.innerHTML = '';
+  for (let i = 0; i < ids.length; i++) {
+    const id  = ids[i];
+    const cfg = SCORE_CONFIG.puzzles[id];
+    const pts = puzzleRawScore(id);
+    const cls = pts === cfg.maxPts ? 'full' : 'deducted';
+    const row = document.createElement('div');
+    row.className = 'cert-score-row';
+    row.innerHTML = `<span>${id.toUpperCase()}</span><span class="csr-pts ${cls}">${pts}/${cfg.maxPts}</span>`;
+    grid.appendChild(row);
+  }
+}
+
+function downloadCertPDF() {
+  const el  = document.getElementById('certCard');
+  const btn = document.getElementById('downloadPdfBtn');
+  if (!el) return;
+  if (btn) { btn.textContent = 'GENERATING...'; btn.disabled = true; }
+  const opt = {
+    margin:      0,
+    filename:    'heat-signal-certificate.pdf',
+    image:       { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF:       { unit: 'px', format: [el.offsetWidth, el.offsetHeight],
+                   orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(el).save().then(() => {
+    if (btn) { btn.textContent = 'DOWNLOAD PDF \u2193'; btn.disabled = false; }
+  });
+}
+
+function buildReport() {
+  if (!state.scoring) return '';
+  const sc      = state.scoring;
+  const name    = (document.getElementById('certName') || {}).value || '';
+  const elapsed = Math.round((Date.now() - sc.startTime) / 1000);
+  const mm      = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss      = String(elapsed % 60).padStart(2, '0');
+  const labels = {
+    r0p1: 'R0-P1  Equilibrium Chain     (drag-group)   ',
+    r0p2: 'R0-P2  Why Thermometers Work  (MC)           ',
+    r1p1: 'R1-P1  Energy Balancer        (drag-slot)    ',
+    r1p2: 'R1-P2  Energy Detective       (multi-scen)   ',
+    r2p1: 'R2-P1  Possible/Impossible    (drag-group)   ',
+    r2p2: 'R2-P2  Order the Chaos        (drag-reorder) ',
+    r3p1: 'R3-P1  True or False          (bulk-TF)      ',
+    r3p2: 'R3-P2  Why Can\'t Reach 0K    (MC)           ',
+  };
+  const lines = [
+    '=== HEAT SIGNAL \u2014 THERMODYNAMICS ESCAPE LAB ===',
+    'Session : ' + sc.sessionId,
+    'Student : ' + (name.trim() || '(unnamed)'),
+    'Time    : ' + mm + ':' + ss,
+    'Date    : ' + new Date().toLocaleString(),
+    '',
+    '--- PUZZLE BREAKDOWN ---',
+  ];
+  Object.keys(SCORE_CONFIG.puzzles).forEach(id => {
+    const cfg   = SCORE_CONFIG.puzzles[id];
+    const wrong = sc.attempts[id];
+    const pts   = puzzleRawScore(id);
+    lines.push(labels[id] + 'wrongs=' + wrong + '  raw=' + pts + '/' + cfg.maxPts);
+  });
+  lines.push('');
+  lines.push('--- TOTALS ---');
+  lines.push('Raw score   : ' + rawTotal() + ' / 100');
+  lines.push('Curve       : ' + SCORE_CONFIG.transformLabel);
+  lines.push('Final grade : ' + finalGrade() + ' / 100');
+  lines.push('===============================================');
+  return lines.join('\n');
+}
+
+function copyReport() {
+  const text = buildReport();
+  const btn  = document.getElementById('copyReportBtn');
+  function flash() {
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = 'COPIED \u2713';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(flash).catch(() => fallback());
+  } else { fallback(); }
+  function fallback() {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); flash(); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+}
+
 // ── Theme ──
 function toggleTheme() {
   const isLight = document.body.getAttribute('data-theme') === 'light';
@@ -44,6 +259,9 @@ function showScreen(id) {
   // Lock scroll on entrance/door/finale screens; allow scroll on puzzle content screens
   const lockScroll = (id === 'intro' || id.endsWith('-door') || id === 'finale');
   document.body.style.overflowY = lockScroll ? 'hidden' : 'auto';
+  // Show score badge only during active puzzle rooms (not on doors, intro, or finale)
+  const badge = document.getElementById('scoreBadge');
+  if (badge) badge.style.display = lockScroll ? 'none' : '';
   updateAccentColor(id);
 }
 
@@ -86,6 +304,8 @@ function updateProgress() {
 
 // ── Start ──
 function startGame() {
+  initScoring();
+  updateScoreBadge();
   state.currentRoom = 0;
   updateProgress();
   showScreen('room0-door');
@@ -143,6 +363,8 @@ function completeRoom(n) {
     showUnlock('ESCAPED', '✓', () => {
       document.getElementById('progressStrip').style.display = 'none';
       document.body.classList.add('finale');
+      renderFinaleBreakdown();
+      renderCertScore();
       showScreen('finale');
     });
   }
@@ -246,6 +468,7 @@ function checkEnergySlot(slot, chip) {
     state.puzzlesDone.r1p1 = true;
     document.getElementById('r1p2').classList.remove('hidden');
   } else {
+    recordWrong('r1p1');
     showFeedback('r1p1-fb', false,
       'Not quite. Remember: \u0394U = Q \u2212 W. The gas absorbed 500 J and did 200 J of work. What\u2019s left?');
     setTimeout(() => {
@@ -340,6 +563,7 @@ function checkMC(opt, puzzleId) {
       document.getElementById('r3-next-btn').classList.remove('hidden');
     }
   } else {
+    recordWrong(puzzleId);
     opt.classList.add('wrong');
     setTimeout(() => opt.classList.remove('wrong'), 500);
     if (puzzleId === 'r0p2')
@@ -368,6 +592,7 @@ function checkR0P1() {
     state.puzzlesDone.r0p1 = true;
     document.getElementById('r0p2').classList.remove('hidden');
   } else {
+    recordWrong('r0p1');
     const placed = document.querySelectorAll('#r0-group1 .drag-item, #r0-group2 .drag-item').length;
     if (placed < 5)
       showFeedback('r0p1-fb', false,
@@ -434,6 +659,7 @@ function checkR1P2() {
     state.puzzlesDone.r1p2 = true;
     document.getElementById('r1-next-btn').classList.remove('hidden');
   } else {
+    recordWrong('r1p2');
     showFeedback('r1p2-fb', false,
       'Some answers are off. Remember ΔU = Q − W. Heat IN with no work → increase. Work done AND heat lost → decrease. No heat exchange, no work → no change.');
   }
@@ -477,6 +703,7 @@ function checkR2P1() {
     document.getElementById('r2p2').classList.remove('hidden');
     buildR2P2();
   } else {
+    recordWrong('r2p1');
     showFeedback('r2p1-fb', false,
       'Not quite. Ask: does this process spread energy and increase disorder? If yes → natural. If it magically creates order from chaos → needs external work.');
   }
@@ -511,6 +738,7 @@ function checkR2P2() {
     state.puzzlesDone.r2p2 = true;
     document.getElementById('r2-next-btn').classList.remove('hidden');
   } else {
+    recordWrong('r2p2');
     showFeedback('r2p2-fb', false,
       'Not in the right order. Think: which state has the most rigid, ordered structure? Which has molecules spread out the most? Drag or click two items to swap.');
   }
@@ -590,6 +818,7 @@ function checkR3P1() {
     state.puzzlesDone.r3p1 = true;
     document.getElementById('r3p2').classList.remove('hidden');
   } else {
+    recordWrong('r3p1');
     showFeedback('r3p1-fb', false, hints[0] + ' Fix your answers and try again.');
   }
 }
@@ -626,7 +855,8 @@ function updateTemp() {
 // ── Finale ──
 function updateCert() {
   const name = document.getElementById('certName').value.trim();
-  document.getElementById('certDisplay').textContent = name || '';
+  document.getElementById('certDisplay').textContent = name || 'YOUR NAME';
+  renderCertScore();
 }
 
 // ── Reset ──
@@ -713,7 +943,19 @@ function resetGame() {
 
   // Certificate
   document.getElementById('certName').value = '';
-  document.getElementById('certDisplay').textContent = '';
+  document.getElementById('certDisplay').textContent = 'YOUR NAME';
+  const certScore = document.getElementById('certScoreLine');
+  if (certScore) certScore.textContent = 'FINAL GRADE: -- / 100';
+  const gridEl = document.getElementById('certScoreGrid');
+  if (gridEl) gridEl.innerHTML = '';
+  const certDateEl = document.getElementById('certDateDisplay');
+  if (certDateEl) certDateEl.textContent = '\u2014';
+  const certSessEl = document.getElementById('certSessionDisplay');
+  if (certSessEl) certSessEl.textContent = '\u2014';
+
+  // Reset scoring
+  initScoring();
+  updateScoreBadge();
 
   showScreen('intro');
 }
@@ -730,6 +972,8 @@ function resetDragItems(sourceId, zoneIds) {
 
 // ── Init on load ──
 document.addEventListener('DOMContentLoaded', () => {
+  initScoring();
+  updateScoreBadge();
   buildR1P2();
   buildR2P1();
   buildR3P1();
