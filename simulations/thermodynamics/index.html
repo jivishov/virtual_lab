@@ -10,8 +10,8 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!-- Anti-FOUC: apply saved theme before first paint -->
-<script>(function(){var t=localStorage.getItem('hs-theme');if(t==='light')document.body.setAttribute('data-theme','light');}());</script>
+<!-- Anti-FOUC: apply saved theme + lock scroll on intro before first paint -->
+<script>(function(){var t=localStorage.getItem('hs-theme');if(t==='light')document.body.setAttribute('data-theme','light');document.body.style.overflowY='hidden';}());</script>
 
 <!-- Wrong-answer glitch overlay -->
 <div class="glitch-overlay" id="glitchOverlay"></div>

@@ -41,6 +41,9 @@ function showScreen(id) {
   el.offsetHeight;
   el.style.animation = '';
   window.scrollTo({ top: 0, behavior: 'instant' });
+  // Lock scroll on entrance/door/finale screens; allow scroll on puzzle content screens
+  const lockScroll = (id === 'intro' || id.endsWith('-door') || id === 'finale');
+  document.body.style.overflowY = lockScroll ? 'hidden' : 'auto';
   updateAccentColor(id);
 }
 
