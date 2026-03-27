@@ -71,7 +71,7 @@ const translations = {
             },
             thermodynamics: {
                 title: "Thermodynamics Escape Lab",
-                description: "Locked inside Dr. Kelvin's lab. The security system runs on physics — master all 4 laws of thermodynamics to find the one way out.",
+                description: "Locked inside Dr. Kelvin's lab. The security system obeys laws of thermodynamics — master all 4 laws of thermodynamics to find the one way out.",
                 tags: ["Thermodynamics", "Escape Lab", "Chemistry"]
             }
         },
