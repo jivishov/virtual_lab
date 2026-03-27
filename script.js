@@ -60,7 +60,15 @@ const labs = [
         type: "simulation",
         icon: '<img src="simulations/mole_tycoon/assets/images/logo.png" alt="MoleTycoon Logo" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">',
         link: "simulations/mole_tycoon/index.html"
-    }
+    },
+    {
+        id: 8,
+        translationKey: "thermodynamics",
+        type: "simulation",
+        icon: "🔥",
+        link: "simulations/thermodynamics/"
+}
+
 ];
 
 // Create lab card HTML
