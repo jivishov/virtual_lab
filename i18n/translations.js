@@ -67,7 +67,12 @@ const translations = {
             moletycoon: {
                 title: "MoleTycoon",
                 description: "Become a chemistry tycoon! Fulfill contracts from Texas companies, advance your career, buy premium lab equipment, and work shifts—all while mastering chemistry problems.",
-                tags: ["Simulation", "Chemistry", "Tycoon"]
+                tags: ["Game", "Stoichiometry", "Chemistry", "Tycoon"]
+            },
+            thermodynamics: {
+                title: "Thermodynamics Escape Lab",
+                description: "Locked inside Dr. Kelvin's lab. The security system runs on physics — master all 4 laws of thermodynamics to find the one way out.",
+                tags: ["Thermodynamics", "Escape Lab", "Chemistry"]
             }
         },
 
@@ -220,6 +225,11 @@ const translations = {
                 title: "Qaz Qanunları Simulyasiyası",
                 description: "İnteraktiv simulyasiyalar vasitəsilə əsas qaz qanunlarını kəşf edin. Real vaxt təcrübələrində təzyiq, həcm, temperatur və qaz miqdarı arasındakı əlaqələri araşdırın.",
                 tags: ["Qaz Qanunları", "Kimya", "Fizika"]
+            },
+            thermodynamics: {
+                title: "Termodinamika Laboratoriyası Kvest Oyunu",
+                description: "Doktor Kelvinin laboratoriyasında baglı qalmısınız. Təhlükəsizlik sistemi termodinamika qanunları əsasında işləyir — çıxmaq üçün termodinamikanın 4 qanununu tətbiq edin.",
+                tags: ["Termodinamika", "Laboratoriyadan Qaçış", "Kimya", "Fizika", "Kvest oyunu" ]
             }
         },
 
@@ -361,7 +371,7 @@ const translations = {
             nuclearchemistry: {
                 title: "Nükleer Kimya Oyunu",
                 description: "İlgi çekici oyun içeriği ile nükleer reaksiyonları, radyoaktif bozunmayı ve nükleer kimya ilkelerini keşfeden interaktif simülasyon.",
-                tags: ["Nükleer Kimya", "Fizik", "Oyun"]
+                tags: ["Nükleer Kimya", "Fizik", "Kimya", "Oyun"]
             },
             labsafety: {
                 title: "Görevimiz Tehlike - Laboratuvar Güvenlik Protokolü",
@@ -372,6 +382,11 @@ const translations = {
                 title: "Gaz Yasaları Simülasyonu",
                 description: "İnteraktif simülasyonlarla temel gaz yasalarını keşfedin. Basınç, hacim, sıcaklık ve gaz miktarı arasındaki ilişkileri gerçek zamanlı deneylerde inceleyin.",
                 tags: ["Gaz Yasaları", "Kimya", "Fizik"]
+            },
+            thermodynamics: {
+                title: "Termodinamik: Esaretin Bedeli",
+                description: "Dr. Kelvin'in laboratuvarında hapsedildiniz. Güvenlik sistemi termodinamik kanunları ile çalışıyor — kaçmak için termodinamiğin 4 yasasını uygulayın.",
+                tags: ["Termodinamik", "Labdan kaçış", "Kimya"]
             }
         },
 
@@ -524,7 +539,13 @@ const translations = {
                 title: "Gasgesetze-Simulation",
                 description: "Erkunden Sie die grundlegenden Gasgesetze durch interaktive Simulationen. Untersuchen Sie Beziehungen zwischen Druck, Volumen, Temperatur und Gasmenge in Echtzeit-Experimenten.",
                 tags: ["Gasgesetze", "Chemie", "Physik"]
+            },
+            thermodynamics: {
+                title: "Thermodynamik: Flucht aus dem Labor",
+                description: "Sie sind in Dr. Kelvins Labor eingesperrt. Das Sicherheitssystem basiert auf den Gesetzen der Thermodynamik — wenden Sie alle 4 Gesetze an, um den einzigen Ausweg zu finden.",
+                tags: ["Thermodynamik", "Laborflucht", "Chemie"]
             }
+
         },
 
         // Buttons
