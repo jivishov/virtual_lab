@@ -28,6 +28,20 @@ const SCORE_CONFIG = {
 };
 // ══════════════════════════════════════════
 
+const THEME_STORAGE_KEY = 'hs-theme';
+const QUESTION_FONT_STORAGE_KEY = 'hs-question-font';
+const QUESTION_FONT_PRESETS = ['default', 'large', 'x-large'];
+const REPORT_LABELS = {
+  r0p1: 'R0-P1  Equilibrium Chain     (drag-group)',
+  r0p2: 'R0-P2  Why Thermometers Work (MC)',
+  r1p1: 'R1-P1  Energy Balancer      (drag-slot)',
+  r1p2: 'R1-P2  Energy Detective     (multi-scen)',
+  r2p1: 'R2-P1  Possible/Impossible  (drag-group)',
+  r2p2: 'R2-P2  Order the Chaos      (drag-reorder)',
+  r3p1: 'R3-P1  True or False        (bulk-TF)',
+  r3p2: 'R3-P2  Why Can\'t Reach 0K  (MC)'
+};
+
 // ── Scoring helpers ──
 function initScoring() {
   state.scoring = {
@@ -136,61 +150,454 @@ function renderCertCard() {
   }
 }
 
-function downloadCertPDF() {
-  const el  = document.getElementById('certCard');
-  const btn = document.getElementById('downloadPdfBtn');
-  if (!el) return;
-  if (btn) { btn.textContent = 'GENERATING...'; btn.disabled = true; }
-  const opt = {
-    margin:      0,
-    filename:    'heat-signal-certificate.pdf',
-    image:       { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF:       { unit: 'px', format: [el.offsetWidth, el.offsetHeight],
-                   orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(el).save().then(() => {
-    if (btn) { btn.textContent = 'DOWNLOAD PDF \u2193'; btn.disabled = false; }
-  });
+function getStudentName() {
+  const input = document.getElementById('certName');
+  const name = input && typeof input.value === 'string' ? input.value.trim() : '';
+  return name || '(unnamed)';
 }
 
-function buildReport() {
-  if (!state.scoring) return '';
-  const sc      = state.scoring;
-  const name    = (document.getElementById('certName') || {}).value || '';
-  const elapsed = Math.round((Date.now() - sc.startTime) / 1000);
-  const mm      = String(Math.floor(elapsed / 60)).padStart(2, '0');
-  const ss      = String(elapsed % 60).padStart(2, '0');
-  const labels = {
-    r0p1: 'R0-P1  Equilibrium Chain     (drag-group)   ',
-    r0p2: 'R0-P2  Why Thermometers Work  (MC)           ',
-    r1p1: 'R1-P1  Energy Balancer        (drag-slot)    ',
-    r1p2: 'R1-P2  Energy Detective       (multi-scen)   ',
-    r2p1: 'R2-P1  Possible/Impossible    (drag-group)   ',
-    r2p2: 'R2-P2  Order the Chaos        (drag-reorder) ',
-    r3p1: 'R3-P1  True or False          (bulk-TF)      ',
-    r3p2: 'R3-P2  Why Can\'t Reach 0K    (MC)           ',
+function formatElapsed(totalSeconds) {
+  const safeSeconds = Math.max(0, totalSeconds);
+  const mm = String(Math.floor(safeSeconds / 60)).padStart(2, '0');
+  const ss = String(safeSeconds % 60).padStart(2, '0');
+  return mm + ':' + ss;
+}
+
+function buildReportData() {
+  if (!state.scoring) return null;
+
+  const sc = state.scoring;
+  const elapsedSeconds = Math.round((Date.now() - sc.startTime) / 1000);
+  const generatedAt = new Date();
+
+  return {
+    sessionId: sc.sessionId,
+    studentName: getStudentName(),
+    elapsed: formatElapsed(elapsedSeconds),
+    generatedAt: generatedAt.toLocaleString(),
+    generatedDate: generatedAt.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }),
+    generatedTime: generatedAt.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit'
+    }),
+    rawScore: rawTotal(),
+    finalGrade: finalGrade(),
+    curveLabel: SCORE_CONFIG.transformLabel,
+    breakdown: Object.keys(SCORE_CONFIG.puzzles).map(id => {
+      const cfg = SCORE_CONFIG.puzzles[id];
+      return {
+        id: id,
+        label: REPORT_LABELS[id] || id.toUpperCase(),
+        wrongs: sc.attempts[id],
+        raw: puzzleRawScore(id),
+        max: cfg.maxPts
+      };
+    })
   };
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildReportPdf(report) {
+  const doc = new window.jspdf.jsPDF({
+    unit: 'pt',
+    format: 'letter',
+    orientation: 'portrait',
+    compress: true
+  });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const centerX = pageWidth / 2;
+  const frameInset = 24;
+  const bandInset = 40;
+  const margin = 52;
+  const contentWidth = pageWidth - margin * 2;
+  const bottomLimit = pageHeight - 86;
+  const palette = {
+    paper: [247, 243, 234],
+    paperAlt: [252, 249, 243],
+    ink: [30, 40, 58],
+    gold: [146, 112, 42],
+    goldSoft: [214, 197, 160],
+    line: [221, 212, 196],
+    muted: [95, 91, 86],
+    success: [54, 96, 76],
+    warning: [153, 61, 58]
+  };
+  const distinction = report.finalGrade >= 95
+    ? 'WITH HIGHEST DISTINCTION'
+    : report.finalGrade >= 85
+      ? 'WITH DISTINCTION'
+      : report.finalGrade >= 70
+        ? 'MISSION COMPLETE'
+        : 'ESCAPE COMPLETE';
+  const signatureName = 'Dr. Emil Jivishov';
+  const signatureTitle = 'INSTRUCTOR & LAB DIRECTOR';
+  const achievementLines = [
+    'has successfully escaped Dr. Kelvin\'s Thermodynamics Lab',
+    'and demonstrated mastery of the four laws of thermodynamics.'
+  ];
+  let y = 78;
+
+  function setDraw(rgb) {
+    doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+  }
+
+  function setFill(rgb) {
+    doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+  }
+
+  function setText(rgb) {
+    doc.setTextColor(rgb[0], rgb[1], rgb[2]);
+  }
+
+  function drawPageFrame() {
+    setFill(palette.paper);
+    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+    setDraw(palette.goldSoft);
+    doc.setLineWidth(1.15);
+    doc.rect(frameInset, frameInset, pageWidth - frameInset * 2, pageHeight - frameInset * 2);
+
+    setDraw(palette.ink);
+    doc.setLineWidth(0.8);
+    doc.rect(frameInset + 8, frameInset + 8, pageWidth - (frameInset + 8) * 2, pageHeight - (frameInset + 8) * 2);
+
+    setFill(palette.ink);
+    doc.rect(bandInset, frameInset + 14, pageWidth - bandInset * 2, 10, 'F');
+    setFill(palette.gold);
+    doc.rect(bandInset, frameInset + 30, pageWidth - bandInset * 2, 2.5, 'F');
+
+    y = 78;
+  }
+
+  function drawFooter() {
+    setDraw(palette.line);
+    doc.setLineWidth(0.9);
+    doc.line(margin, pageHeight - 42, pageWidth - margin, pageHeight - 42);
+  }
+
+  function drawPageFooter(pageNumber, totalPages) {
+    doc.setPage(pageNumber);
+    drawFooter();
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    setText(palette.muted);
+    doc.text('Heat Signal Report | ' + report.studentName, margin, pageHeight - 24);
+    doc.text(pageNumber + ' / ' + totalPages, pageWidth - margin, pageHeight - 24, { align: 'right' });
+  }
+
+  function drawCenteredLines(lines, startY, lineHeight) {
+    lines.forEach(line => {
+      doc.text(line, centerX, startY, { align: 'center' });
+      startY += lineHeight;
+    });
+    return startY;
+  }
+
+  function drawRuleLine(ruleY) {
+    setDraw(palette.goldSoft);
+    doc.setLineWidth(1);
+    doc.line(margin, ruleY, pageWidth - margin, ruleY);
+  }
+
+  function drawSummaryCard(x, cardY, w, h, label, value, detail, highlight) {
+    setFill(highlight ? [255, 249, 235] : palette.paperAlt);
+    setDraw(highlight ? palette.gold : palette.line);
+    doc.setLineWidth(0.9);
+    doc.roundedRect(x, cardY, w, h, 10, 10, 'FD');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    setText(palette.gold);
+    doc.text(label, x + 14, cardY + 16);
+
+    doc.setFont('times', 'bold');
+    doc.setFontSize(highlight ? 22 : 20);
+    setText(palette.ink);
+    doc.text(value, x + 14, cardY + 42);
+
+    if (detail) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      setText(palette.muted);
+      const detailLines = doc.splitTextToSize(detail, w - 24);
+      detailLines.slice(0, 2).forEach((line, idx) => {
+        doc.text(line, x + 14, cardY + 57 + idx * 10);
+      });
+    }
+  }
+
+  function drawBreakdownTitle(continued) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    setText(palette.ink);
+    doc.text(continued ? 'Performance Breakdown Continued' : 'Performance Breakdown', margin, y);
+    y += 11;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    setText(palette.muted);
+    doc.text('Per-puzzle scoring summary for the completed escape lab.', margin, y);
+    y += 14;
+
+    drawRuleLine(y);
+    y += 14;
+  }
+
+  function drawTableHeader() {
+    setFill(palette.ink);
+    doc.roundedRect(margin, y, contentWidth, 24, 6, 6, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    setText(palette.paper);
+    doc.text('ID', margin + 12, y + 15);
+    doc.text('PUZZLE', margin + 68, y + 15);
+    doc.text('SCORE', pageWidth - margin - 92, y + 15);
+    doc.text('WRONGS', pageWidth - margin - 14, y + 15, { align: 'right' });
+    y += 34;
+  }
+
+  function drawContinuationPage() {
+    doc.addPage();
+    drawPageFrame();
+    drawBreakdownTitle(true);
+    drawTableHeader();
+  }
+
+  function drawCertificateFooterBlock() {
+    const footerHeight = 84;
+    const footerY = Math.max(y + 12, pageHeight - 146);
+    const leftX = margin;
+    const leftWidth = 210;
+    const rightX = pageWidth - margin - 210;
+
+    setDraw(palette.goldSoft);
+    doc.setLineWidth(0.9);
+    doc.line(margin, footerY - 16, pageWidth - margin, footerY - 16);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    setText(palette.goldSoft);
+    doc.text('DATE', leftX, footerY);
+    doc.text('SESSION', leftX, footerY + 40);
+
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(13);
+    setText(palette.ink);
+    doc.text(report.generatedDate, leftX, footerY + 20);
+    doc.text(report.sessionId, leftX, footerY + 60);
+
+    setDraw(palette.line);
+    doc.setLineWidth(1);
+    doc.line(rightX, footerY + 14, pageWidth - margin, footerY + 14);
+
+    doc.setFont('times', 'italic');
+    doc.setFontSize(18);
+    setText(palette.ink);
+    doc.text(signatureName, rightX, footerY + 32);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    setText(palette.gold);
+    doc.text(signatureTitle, rightX, footerY + 56);
+
+    y = footerY + footerHeight;
+  }
+
+  drawPageFrame();
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  setText(palette.gold);
+  doc.text('HEAT SIGNAL | THERMODYNAMICS ESCAPE LAB', centerX, y, { align: 'center' });
+  y += 22;
+
+  doc.setFont('times', 'bold');
+  doc.setFontSize(28);
+  setText(palette.ink);
+  doc.text('Certificate of Escape', centerX, y, { align: 'center' });
+  y += 20;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10.5);
+  setText(palette.muted);
+  doc.text('This certifies that', centerX, y, { align: 'center' });
+  y += 14;
+
+  let nameFontSize = 32;
+  let nameLines = [];
+  do {
+    doc.setFont('times', 'bolditalic');
+    doc.setFontSize(nameFontSize);
+    nameLines = doc.splitTextToSize(report.studentName, contentWidth - 120);
+    if (nameLines.length <= 2 || nameFontSize <= 24) break;
+    nameFontSize -= 2;
+  } while (true);
+
+  setText(palette.ink);
+  y = drawCenteredLines(nameLines, y + 12, nameFontSize * 0.92);
+  y += 4;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9.5);
+  setText(palette.gold);
+  doc.text(distinction, centerX, y, { align: 'center' });
+  y += 18;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  setText(palette.muted);
+  y = drawCenteredLines(achievementLines, y, 14);
+  y += 14;
+
+  drawRuleLine(y);
+  y += 18;
+
+  const cardGap = 12;
+  const cardWidth = (contentWidth - cardGap * 2) / 3;
+  const cardHeight = 78;
+  drawSummaryCard(margin, y, cardWidth, cardHeight, 'FINAL GRADE', report.finalGrade + ' / 100', distinction, true);
+  drawSummaryCard(margin + cardWidth + cardGap, y, cardWidth, cardHeight, 'RAW SCORE', report.rawScore + ' / 100', 'Curve: ' + report.curveLabel, false);
+  drawSummaryCard(margin + (cardWidth + cardGap) * 2, y, cardWidth, cardHeight, 'ELAPSED TIME', report.elapsed, 'Completion window', false);
+  y += cardHeight + 14;
+
+  drawBreakdownTitle(false);
+  drawTableHeader();
+
+  report.breakdown.forEach((item, idx) => {
+    const labelMaxWidth = contentWidth - 210;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    const labelLines = doc.splitTextToSize(item.label, labelMaxWidth);
+    const rowHeight = Math.max(22, labelLines.length * 11 + 10);
+
+    if (y + rowHeight > bottomLimit) {
+      drawContinuationPage();
+    }
+
+    setFill(idx % 2 === 0 ? palette.paperAlt : palette.paper);
+    doc.roundedRect(margin, y - 4, contentWidth, rowHeight, 4, 4, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.2);
+    setText(palette.muted);
+    doc.text(item.id.toUpperCase(), margin + 12, y + 11);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    setText(palette.ink);
+    labelLines.forEach((line, lineIdx) => {
+      doc.text(line, margin + 68, y + 11 + lineIdx * 11);
+    });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    setText(item.raw === item.max ? palette.success : palette.ink);
+    doc.text(item.raw + '/' + item.max, pageWidth - margin - 92, y + 11);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    setText(item.wrongs > 0 ? palette.warning : palette.muted);
+    doc.text(String(item.wrongs), pageWidth - margin - 14, y + 11, { align: 'right' });
+
+    setDraw(palette.line);
+    doc.setLineWidth(0.75);
+    doc.line(margin + 2, y + rowHeight - 4, pageWidth - margin - 2, y + rowHeight - 4);
+    y += rowHeight + 4;
+  });
+
+  drawCertificateFooterBlock();
+
+  const totalPages = doc.getNumberOfPages();
+  for (let page = 1; page <= totalPages; page++) {
+    drawPageFooter(page, totalPages);
+  }
+
+  return doc;
+}
+
+function downloadCertPDF() {
+  const btn = document.getElementById('downloadPdfBtn');
+  const originalLabel = btn ? btn.dataset.defaultLabel || btn.textContent : '';
+  const report = buildReportData();
+
+  function restoreButton(delay) {
+    if (!btn) return;
+    window.setTimeout(() => {
+      btn.textContent = originalLabel;
+      btn.disabled = false;
+    }, delay || 0);
+  }
+
+  if (!report || typeof window.jspdf?.jsPDF !== 'function') {
+    console.error('Report PDF export is unavailable.', {
+      hasReport: !!report,
+      hasJsPdf: typeof window.jspdf?.jsPDF === 'function'
+    });
+    if (btn) {
+      btn.textContent = 'PDF UNAVAILABLE';
+      btn.disabled = true;
+      restoreButton(2200);
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.dataset.defaultLabel = originalLabel;
+    btn.textContent = 'BUILDING REPORT...';
+    btn.disabled = true;
+  }
+
+  Promise.resolve(document.fonts ? document.fonts.ready : null)
+    .catch(() => null)
+    .then(() => {
+      const doc = buildReportPdf(report);
+      doc.save('heat-signal-report.pdf');
+    })
+    .then(() => {
+      restoreButton();
+    })
+    .catch(err => {
+      console.error('Report PDF export failed.', err);
+      if (btn) {
+        btn.textContent = 'PDF FAILED';
+        restoreButton(2200);
+      }
+    });
+}
+
+function buildReport(report) {
+  const data = report || buildReportData();
+  if (!data) return '';
   const lines = [
     '=== HEAT SIGNAL \u2014 THERMODYNAMICS ESCAPE LAB ===',
-    'Session : ' + sc.sessionId,
-    'Student : ' + (name.trim() || '(unnamed)'),
-    'Time    : ' + mm + ':' + ss,
-    'Date    : ' + new Date().toLocaleString(),
+    'Session : ' + data.sessionId,
+    'Student : ' + data.studentName,
+    'Time    : ' + data.elapsed,
+    'Date    : ' + data.generatedAt,
     '',
     '--- PUZZLE BREAKDOWN ---',
   ];
-  Object.keys(SCORE_CONFIG.puzzles).forEach(id => {
-    const cfg   = SCORE_CONFIG.puzzles[id];
-    const wrong = sc.attempts[id];
-    const pts   = puzzleRawScore(id);
-    lines.push(labels[id] + 'wrongs=' + wrong + '  raw=' + pts + '/' + cfg.maxPts);
+  data.breakdown.forEach(item => {
+    lines.push(item.label + '  wrongs=' + item.wrongs + '  raw=' + item.raw + '/' + item.max);
   });
   lines.push('');
   lines.push('--- TOTALS ---');
-  lines.push('Raw score   : ' + rawTotal() + ' / 100');
-  lines.push('Curve       : ' + SCORE_CONFIG.transformLabel);
-  lines.push('Final grade : ' + finalGrade() + ' / 100');
+  lines.push('Raw score   : ' + data.rawScore + ' / 100');
+  lines.push('Curve       : ' + data.curveLabel);
+  lines.push('Final grade : ' + data.finalGrade + ' / 100');
   lines.push('===============================================');
   return lines.join('\n');
 }
@@ -222,7 +629,42 @@ function copyReport() {
 function toggleTheme() {
   const isLight = document.body.getAttribute('data-theme') === 'light';
   document.body.setAttribute('data-theme', isLight ? '' : 'light');
-  localStorage.setItem('hs-theme', isLight ? 'dark' : 'light');
+  localStorage.setItem(THEME_STORAGE_KEY, isLight ? 'dark' : 'light');
+}
+
+function getQuestionFontPreset() {
+  const preset = document.body.getAttribute('data-question-font');
+  return QUESTION_FONT_PRESETS.includes(preset) ? preset : 'default';
+}
+
+function syncQuestionFontControls() {
+  const preset = getQuestionFontPreset();
+  const presetIndex = QUESTION_FONT_PRESETS.indexOf(preset);
+  const decBtn = document.getElementById('fontDecreaseBtn');
+  const incBtn = document.getElementById('fontIncreaseBtn');
+
+  if (decBtn) decBtn.disabled = presetIndex <= 0;
+  if (incBtn) incBtn.disabled = presetIndex >= QUESTION_FONT_PRESETS.length - 1;
+}
+
+function setQuestionFontPreset(preset) {
+  const safePreset = QUESTION_FONT_PRESETS.includes(preset) ? preset : 'default';
+  document.body.setAttribute('data-question-font', safePreset);
+  localStorage.setItem(QUESTION_FONT_STORAGE_KEY, safePreset);
+  syncQuestionFontControls();
+}
+
+function adjustQuestionFont(direction) {
+  const currentPreset = getQuestionFontPreset();
+  const currentIndex = QUESTION_FONT_PRESETS.indexOf(currentPreset);
+  const nextIndex = Math.min(QUESTION_FONT_PRESETS.length - 1, Math.max(0, currentIndex + direction));
+
+  if (nextIndex === currentIndex) {
+    syncQuestionFontControls();
+    return;
+  }
+
+  setQuestionFontPreset(QUESTION_FONT_PRESETS[nextIndex]);
 }
 
 // ── Game State ──
@@ -255,13 +697,12 @@ function showScreen(id) {
   el.style.animation = 'none';
   el.offsetHeight;
   el.style.animation = '';
-  window.scrollTo({ top: 0, behavior: 'instant' });
-  // Lock scroll on entrance/door/finale screens; allow scroll on puzzle content screens
-  const lockScroll = (id === 'intro' || id.endsWith('-door') || id === 'finale');
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  const lockScroll = (id === 'intro' || id.endsWith('-door'));
+  const showBadge = !(id === 'intro' || id.endsWith('-door') || id === 'finale');
   document.body.style.overflowY = lockScroll ? 'hidden' : 'auto';
-  // Show score badge only during active puzzle rooms (not on doors, intro, or finale)
   const badge = document.getElementById('scoreBadge');
-  if (badge) badge.style.display = lockScroll ? 'none' : '';
+  if (badge) badge.style.display = showBadge ? '' : 'none';
   updateAccentColor(id);
 }
 
@@ -972,6 +1413,7 @@ function resetDragItems(sourceId, zoneIds) {
 
 // ── Init on load ──
 document.addEventListener('DOMContentLoaded', () => {
+  setQuestionFontPreset(localStorage.getItem(QUESTION_FONT_STORAGE_KEY) || getQuestionFontPreset());
   initScoring();
   updateScoreBadge();
   buildR1P2();
@@ -981,4 +1423,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initEnergySlots();
   // R2P1 drag needs items to exist in DOM first
   setTimeout(() => initDragDrop('r2p1-items', ['r2-natural', 'r2-impossible']), 50);
+  syncQuestionFontControls();
 });

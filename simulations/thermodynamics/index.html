@@ -9,18 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-      <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-6QQR2741ZZ');
-</script>
 <body>
 <!-- Anti-FOUC: apply saved theme + lock scroll on intro before first paint -->
-<script>(function(){var t=localStorage.getItem('hs-theme');if(t==='light')document.body.setAttribute('data-theme','light');document.body.style.overflowY='hidden';}());</script>
+<script>(function(){var t=localStorage.getItem('hs-theme');var q=localStorage.getItem('hs-question-font');if(t==='light')document.body.setAttribute('data-theme','light');document.body.setAttribute('data-question-font',q==='large'||q==='x-large'?q:'default');document.body.style.overflowY='hidden';}());</script>
 
 <!-- Wrong-answer glitch overlay -->
 <div class="glitch-overlay" id="glitchOverlay"></div>
@@ -412,12 +403,23 @@
 
 </main>
 
-<!-- Theme toggle: ◑ = observatory/dark, ○ = lab/light -->
-<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Switch theme" aria-label="Toggle light/dark theme">
-  <span class="tt-dark">◑</span>
-  <span class="tt-light">○</span>
-</button>
+<!-- Display controls -->
+<div class="control-dock" role="group" aria-label="Display controls">
+  <div class="font-size-toggle" role="group" aria-label="Question font size controls">
+    <button class="control-btn font-btn" id="fontDecreaseBtn" onclick="adjustQuestionFont(-1)" title="Decrease question font size" aria-label="Decrease question font size">
+      <span class="font-btn-label">A−</span>
+    </button>
+    <button class="control-btn font-btn" id="fontIncreaseBtn" onclick="adjustQuestionFont(1)" title="Increase question font size" aria-label="Increase question font size">
+      <span class="font-btn-label">A+</span>
+    </button>
+  </div>
+  <button class="control-btn theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Switch theme" aria-label="Toggle light/dark theme">
+    <span class="tt-dark">◑</span>
+    <span class="tt-light">○</span>
+  </button>
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="game.js" defer></script>
 </body>
