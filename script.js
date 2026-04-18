@@ -74,6 +74,13 @@ const labs = [
         type: "simulation",
         icon: "🧪",
         link: "simulations/solubility_curves/"
+    },
+    {
+        id: 10,
+        translationKey: "pharmacogenomics",
+        type: "simulation",
+        icon: "🧬",
+        link: "simulations/pharmacogenomics/"
     }
 
 ];

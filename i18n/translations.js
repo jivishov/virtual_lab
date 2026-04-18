@@ -78,6 +78,11 @@ const translations = {
                 title: "Solubility Curves Interactive Lab",
                 description: "Investigate how temperature changes the solubility of salts and gases. Analyze real KNO₃, NaCl, and O₂ curve data with interactive graphing and a dynamic beaker model.",
                 tags: ["Solubility", "Chemistry", "Data Analysis"]
+            },
+            pharmacogenomics: {
+                title: "Thiopurines & TPMT Pharmacogenomics Lab",
+                description: "Follow a full pharmacogenomics pipeline from clinical intake to DNA variant analysis, protein impact, and personalized azathioprine dosing decisions.",
+                tags: ["Pharmacogenomics", "Genetics", "Personalized Medicine"]
             }
         },
 
@@ -240,6 +245,11 @@ const translations = {
                 title: "Həllolma Əyriləri İnteraktiv Laboratoriyası",
                 description: "Temperaturun duzların və qazların həllolmasına təsirini araşdırın. KNO₃, NaCl və O₂ üçün real əyri məlumatlarını interaktiv qrafik və dinamik beker modeli ilə təhlil edin.",
                 tags: ["Həllolma", "Kimya", "Məlumat Təhlili"]
+            },
+            pharmacogenomics: {
+                title: "Tiopurinlər və TPMT Farmakogenomika Laboratoriyası",
+                description: "Klinik qəbuldan başlayaraq DNT variant analizi, zülal təsiri və fərdiləşdirilmiş azatioprin dozasına qədər tam farmakogenomika prosesini keçin.",
+                tags: ["Farmakogenomika", "Genetika", "Fərdiləşdirilmiş Tibb"]
             }
         },
 
@@ -402,6 +412,11 @@ const translations = {
                 title: "Çözünürlük Eğrileri Etkileşimli Laboratuvarı",
                 description: "Sıcaklığın tuz ve gaz çözünürlüğünü nasıl değiştirdiğini inceleyin. KNO₃, NaCl ve O₂ için gerçek eğri verilerini etkileşimli grafik ve dinamik beher modeliyle analiz edin.",
                 tags: ["Çözünürlük", "Kimya", "Veri Analizi"]
+            },
+            pharmacogenomics: {
+                title: "Tiyopürinler ve TPMT Farmakogenomik Laboratuvarı",
+                description: "Klinik değerlendirmeden DNA varyant analizine, protein etkisine ve kişiselleştirilmiş azatioprin doz kararlarına kadar tam farmakogenomik süreci izleyin.",
+                tags: ["Farmakogenomik", "Genetik", "Kişiselleştirilmiş Tıp"]
             }
         },
 
@@ -564,6 +579,11 @@ const translations = {
                 title: "Interaktives Labor zu Löslichkeitskurven",
                 description: "Untersuchen Sie, wie die Temperatur die Löslichkeit von Salzen und Gasen verändert. Analysieren Sie reale Kurvendaten für KNO₃, NaCl und O₂ mit interaktivem Diagramm und dynamischem Bechermodell.",
                 tags: ["Löslichkeit", "Chemie", "Datenanalyse"]
+            },
+            pharmacogenomics: {
+                title: "Thiopurine & TPMT Pharmakogenomik-Labor",
+                description: "Verfolgen Sie die vollständige pharmakogenomische Pipeline von der klinischen Aufnahme über die DNA-Variantenanalyse bis zur Proteinwirkung und personalisierten Azathioprin-Dosierung.",
+                tags: ["Pharmakogenomik", "Genetik", "Personalisierte Medizin"]
             }
 
         },
