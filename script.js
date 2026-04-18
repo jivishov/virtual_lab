@@ -67,7 +67,14 @@ const labs = [
         type: "simulation",
         icon: "🔥",
         link: "simulations/thermodynamics/"
-}
+    },
+    {
+        id: 9,
+        translationKey: "solubilitycurves",
+        type: "simulation",
+        icon: "🧪",
+        link: "simulations/solubility_curves/"
+    }
 
 ];
 

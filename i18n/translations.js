@@ -73,6 +73,11 @@ const translations = {
                 title: "Thermodynamics Escape Lab",
                 description: "Locked inside Dr. Kelvin's lab. The security system obeys laws of thermodynamics — master all 4 laws of thermodynamics to find the one way out.",
                 tags: ["Thermodynamics", "Escape Lab", "Chemistry"]
+            },
+            solubilitycurves: {
+                title: "Solubility Curves Interactive Lab",
+                description: "Investigate how temperature changes the solubility of salts and gases. Analyze real KNO₃, NaCl, and O₂ curve data with interactive graphing and a dynamic beaker model.",
+                tags: ["Solubility", "Chemistry", "Data Analysis"]
             }
         },
 
@@ -230,6 +235,11 @@ const translations = {
                 title: "Termodinamika Laboratoriyası Kvest Oyunu",
                 description: "Doktor Kelvinin laboratoriyasında baglı qalmısınız. Təhlükəsizlik sistemi termodinamika qanunları əsasında işləyir — çıxmaq üçün termodinamikanın 4 qanununu tətbiq edin.",
                 tags: ["Termodinamika", "Laboratoriyadan Qaçış", "Kimya", "Fizika", "Kvest oyunu" ]
+            },
+            solubilitycurves: {
+                title: "Həllolma Əyriləri İnteraktiv Laboratoriyası",
+                description: "Temperaturun duzların və qazların həllolmasına təsirini araşdırın. KNO₃, NaCl və O₂ üçün real əyri məlumatlarını interaktiv qrafik və dinamik beker modeli ilə təhlil edin.",
+                tags: ["Həllolma", "Kimya", "Məlumat Təhlili"]
             }
         },
 
@@ -387,6 +397,11 @@ const translations = {
                 title: "Termodinamik: Esaretin Bedeli",
                 description: "Dr. Kelvin'in laboratuvarında hapsedildiniz. Güvenlik sistemi termodinamik kanunları ile çalışıyor — kaçmak için termodinamiğin 4 yasasını uygulayın.",
                 tags: ["Termodinamik", "Labdan kaçış", "Kimya"]
+            },
+            solubilitycurves: {
+                title: "Çözünürlük Eğrileri Etkileşimli Laboratuvarı",
+                description: "Sıcaklığın tuz ve gaz çözünürlüğünü nasıl değiştirdiğini inceleyin. KNO₃, NaCl ve O₂ için gerçek eğri verilerini etkileşimli grafik ve dinamik beher modeliyle analiz edin.",
+                tags: ["Çözünürlük", "Kimya", "Veri Analizi"]
             }
         },
 
@@ -544,6 +559,11 @@ const translations = {
                 title: "Thermodynamik: Flucht aus dem Labor",
                 description: "Sie sind in Dr. Kelvins Labor eingesperrt. Das Sicherheitssystem basiert auf den Gesetzen der Thermodynamik — wenden Sie alle 4 Gesetze an, um den einzigen Ausweg zu finden.",
                 tags: ["Thermodynamik", "Laborflucht", "Chemie"]
+            },
+            solubilitycurves: {
+                title: "Interaktives Labor zu Löslichkeitskurven",
+                description: "Untersuchen Sie, wie die Temperatur die Löslichkeit von Salzen und Gasen verändert. Analysieren Sie reale Kurvendaten für KNO₃, NaCl und O₂ mit interaktivem Diagramm und dynamischem Bechermodell.",
+                tags: ["Löslichkeit", "Chemie", "Datenanalyse"]
             }
 
         },
