@@ -81,6 +81,13 @@ const labs = [
         type: "simulation",
         icon: "🧬",
         link: "simulations/pharmacogenomics/"
+    },
+    {
+        id: 11,
+        translationKey: "virusdefenselab",
+        type: "simulation",
+        icon: "🛡️",
+        link: "simulations/virus_defense_lab/"
     }
 
 ];

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virus vs Immune System Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">Interactive Immune Activity</p>
+        <h1>Virus vs Body Defense Lab</h1>
+        <p class="subtitle">
+          Press play to watch infection happen, then see how immune cells team up to stop it.
+        </p>
+        <a
+          class="repo-link-card"
+          href="https://github.com/jivishov/virtual_lab"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open the virtual_lab GitHub repository"
+        >
+          <span class="repo-link-kicker">Project Repository</span>
+          <span class="repo-link-title">github.com/jivishov/virtual_lab</span>
+          <span class="repo-link-meta">Made by Said Jivishov</span>
+        </a>
+      </section>
+
+      <section class="panel stage-panel">
+        <div class="stage-header">
+          <p class="stage-counter">Stage <span id="stageIndex">1</span> / <span id="stageTotal">8</span></p>
+          <h2 id="stageTitle">Viral Entry</h2>
+        </div>
+        <p id="stageDescription" class="stage-description" aria-live="polite"></p>
+        <div class="progress-track" aria-hidden="true">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div id="timelineCards" class="timeline" aria-label="Stage timeline"></div>
+      </section>
+
+      <section class="panel simulation-panel">
+        <p class="simulation-about">Vibe coded by Said Jivishov</p>
+        <div class="simulation-layout">
+          <div class="side-stack">
+            <aside class="controls-panel controls-panel-side" aria-label="Simulation controls">
+              <h3 class="controls-title">Simulation Controls</h3>
+              <div class="button-row">
+                <button id="prevBtn" class="btn ghost" type="button">Back</button>
+                <button id="nextBtn" class="btn primary" type="button">Next Step</button>
+                <button id="autoBtn" class="btn accent" type="button" aria-pressed="false">Auto Play</button>
+                <button id="resetBtn" class="btn ghost" type="button">Reset</button>
+              </div>
+              <div class="speed-wrap">
+                <label for="speedRange">Speed: <span id="speedLabel">1.0x</span></label>
+                <input id="speedRange" type="range" min="0.5" max="2" step="0.1" value="1" />
+              </div>
+            </aside>
+            <section class="epithelial-card epithelial-side-panel" aria-label="Epithelial cell reference model">
+              <p class="epithelial-card-title">Epithelial Cell Model</p>
+              <figure class="epithelial-figure">
+                <img
+                  class="epithelial-image"
+                  src="https://nigms.nih.gov/sites/nigms/files/styles/wide/public/image-and-video-gallery/Epithelial%20cells%20stitched%20together.jpg?itok=dISxsTDp"
+                  alt="Fluorescent microscopy image of cultured epithelial cells with highlighted nuclei and cellular structures"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <figcaption class="epithelial-caption">
+                  NIH/NIGMS microscopy image of epithelial cells.
+                  <a href="https://nigms.nih.gov/image-gallery/3647" target="_blank" rel="noopener noreferrer">Source</a>
+                </figcaption>
+              </figure>
+            </section>
+            <section class="legend-card" aria-label="Simulation legend">
+              <p class="legend-title">Legend</p>
+              <ul class="legend">
+                <li><span class="dot virus"></span> Virus</li>
+                <li><span class="dot neutrophil"></span> Neutrophil</li>
+                <li><span class="dot macrophage"></span> Macrophage</li>
+                <li><span class="dot dendritic"></span> Dendritic cell</li>
+                <li><span class="dot antibody"></span> Antibody</li>
+                <li><span class="dot tcell"></span> T cell</li>
+                <li><span class="dot bcell"></span> B cell</li>
+              </ul>
+              <p class="legend-subtitle">Inspector Shapes</p>
+              <ul class="legend legend-shapes">
+                <li><span class="shape-swatch swatch-nucleus"></span> Nucleus</li>
+                <li><span class="shape-swatch swatch-membrane"></span> Membrane / ER segment</li>
+                <li><span class="shape-swatch swatch-receptor"></span> Receptor / spike</li>
+                <li><span class="shape-swatch swatch-vesicle"></span> Vesicle / granule</li>
+                <li><span class="shape-swatch swatch-capsid"></span> Capsid / digestion body</li>
+              </ul>
+            </section>
+          </div>
+          <div class="sim-grid">
+            <article class="sim-box">
+              <h3>Infection Site (Nasal/Throat Tissue)</h3>
+              <div id="infectionScene" class="scene" aria-label="Infection scene simulation">
+                <div class="zone-label top">Outer airway</div>
+                <div class="zone-label bottom">Tissue interior</div>
+                <div id="epithelialLayer" class="epithelial-layer" aria-hidden="true"></div>
+                <div id="ambientCellLayer" class="ambient-cell-layer" aria-hidden="true"></div>
+                <div id="hostCell" class="host-cell">
+                  <div class="membrane-shell" aria-hidden="true"></div>
+                  <div class="rupture-seam" aria-hidden="true"></div>
+                  <div class="rupture-fragments" aria-hidden="true"></div>
+                  <span class="cell-label">Host Cell</span>
+                  <div class="nucleus"></div>
+                </div>
+                <div id="debrisLayer" class="layer"></div>
+                <div id="virusLayer" class="layer"></div>
+                <div id="immuneLayer" class="layer"></div>
+                <div id="antibodyLayer" class="layer"></div>
+                <div id="taskLayer" class="layer task-layer"></div>
+                <div id="signalPulse" class="signal-pulse" aria-hidden="true"></div>
+              </div>
+              <p id="sceneCaption" class="scene-caption"></p>
+              <div id="actionReadout" class="action-readout" aria-live="polite">
+                <p id="actionSummary" class="action-summary"></p>
+                <dl class="action-metrics">
+                  <div>
+                    <dt>Active Viruses</dt>
+                    <dd id="metricViruses">0</dd>
+                  </div>
+                  <div>
+                    <dt>Engulfment Events</dt>
+                    <dd id="metricEngulfments">0</dd>
+                  </div>
+                  <div>
+                    <dt>Neutralized/Bound</dt>
+                    <dd id="metricNeutralized">0</dd>
+                  </div>
+                </dl>
+                <ul id="actionBullets" class="action-bullets"></ul>
+              </div>
+              <section id="entityInspector" class="entity-inspector idle" aria-live="polite">
+                <div class="entity-inspector-head">
+                  <p class="entity-inspector-kicker">Cell Inspector</p>
+                  <button id="closeInspectorBtn" class="inspector-close" type="button" aria-label="Close cell inspector">
+                    Close
+                  </button>
+                </div>
+                <div class="entity-inspector-grid">
+                  <div id="inspectorVisual" class="inspector-visual virus" aria-hidden="true">
+                    <div class="inspector-shell"></div>
+                    <div id="inspectorPartLayer" class="inspector-part-layer"></div>
+                  </div>
+                  <div class="inspector-copy">
+                    <h4 id="inspectorTitle" class="inspector-title"></h4>
+                    <p id="inspectorCategory" class="inspector-category"></p>
+                    <p id="inspectorFunction" class="inspector-function"></p>
+                    <p id="inspectorPrompt" class="inspector-prompt"></p>
+                  </div>
+                </div>
+                <div class="inspector-lists">
+                  <div>
+                    <p class="inspector-list-title">Key Characteristics</p>
+                    <ul id="inspectorTraits" class="inspector-list"></ul>
+                  </div>
+                  <div>
+                    <p class="inspector-list-title">Interior Highlights</p>
+                    <ul id="inspectorParts" class="inspector-list"></ul>
+                  </div>
+                </div>
+              </section>
+            </article>
+            <div class="side-column">
+              <article class="sim-box cell-box">
+                <h3>Inside the Host Cell (Zoom)</h3>
+                <div class="cell-zoom-wrap">
+                  <div id="zoomCell" class="zoom-cell normal">
+                    <div class="zoom-nucleus">Host DNA</div>
+                    <div id="cellInjection" class="cell-injection" aria-hidden="true"></div>
+                    <div id="cellGenomeLayer" class="zoom-layer cell-genome-layer" aria-hidden="true"></div>
+                    <div id="cellFactoryLayer" class="zoom-layer cell-factory-layer" aria-hidden="true"></div>
+                    <div id="cellCopyLayer" class="zoom-layer"></div>
+                    <div id="cellEgressLayer" class="zoom-layer cell-egress-layer" aria-hidden="true"></div>
+                    <div id="cellBurstMarks" class="cell-burst-marks" aria-hidden="true"></div>
+                  </div>
+                  <span id="cellStatusBadge" class="cell-status-badge">Stable cell</span>
+                </div>
+                <p id="cellFocusText" class="cell-focus-text"></p>
+                <dl class="cell-metrics">
+                  <div>
+                    <dt>Virus copies inside cell</dt>
+                    <dd id="cellCopiesCount">0</dd>
+                  </div>
+                  <div>
+                    <dt>Cell integrity</dt>
+                    <dd id="cellIntegrityValue">100%</dd>
+                  </div>
+                  <div>
+                    <dt>Viral gene state</dt>
+                    <dd id="cellGenomeState">Outside cell</dd>
+                  </div>
+                </dl>
+                <ul id="cellChecklist" class="cell-checklist">
+                  <li data-step="1">Virus reaches the host cell membrane.</li>
+                  <li data-step="2">Viral genes enter and hijack the cell.</li>
+                  <li data-step="3">Cell builds many new virus copies.</li>
+                  <li data-step="4">Cell bursts (lysis) and releases viruses.</li>
+                  <li data-step="5">Immune cleanup removes infected debris.</li>
+                </ul>
+              </article>
+
+              <article class="sim-box">
+                <h3>Lymph Node Command Center</h3>
+                <div id="nodeScene" class="node-scene">
+                  <div id="lymphStatus" class="node-status" aria-live="polite">Waiting for dendritic cell message...</div>
+                  <div id="nodeActionText" class="node-action-text" aria-live="polite"></div>
+                  <ul id="nodeChecklist" class="node-checklist" aria-live="polite"></ul>
+                  <div id="nodeTaskLayer" class="node-task-layer" aria-hidden="true"></div>
+                  <div id="lymphCells" class="node-cells"></div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel quiz-panel">
+        <h3>Checkpoint Quiz</h3>
+        <p class="quiz-subtitle">Test your understanding after watching the simulation.</p>
+        <div id="quizCard" class="quiz-card"></div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

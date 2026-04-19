@@ -83,6 +83,11 @@ const translations = {
                 title: "Thiopurines & TPMT Pharmacogenomics Lab",
                 description: "Follow a full pharmacogenomics pipeline from clinical intake to DNA variant analysis, protein impact, and personalized azathioprine dosing decisions.",
                 tags: ["Pharmacogenomics", "Genetics", "Personalized Medicine"]
+            },
+            virusdefenselab: {
+                title: "Virus vs Body Defense Lab",
+                description: "Interactive immune-response simulation showing viral entry, host-cell rupture, phagocyte cleanup, and adaptive response. Made by Said Jivishov.",
+                tags: ["Immunology", "Biology", "Interactive", "Made by Said Jivishov"]
             }
         },
 
@@ -250,6 +255,11 @@ const translations = {
                 title: "Tiopurinlər və TPMT Farmakogenomika Laboratoriyası",
                 description: "Klinik qəbuldan başlayaraq DNT variant analizi, zülal təsiri və fərdiləşdirilmiş azatioprin dozasına qədər tam farmakogenomika prosesini keçin.",
                 tags: ["Farmakogenomika", "Genetika", "Fərdiləşdirilmiş Tibb"]
+            },
+            virusdefenselab: {
+                title: "Virus və Bədən Müdafiəsi Laboratoriyası",
+                description: "Virusun daxil olmasından başlayaraq hüceyrə partlaması, faqosit təmizlənməsi və adaptiv immun cavaba qədər bütün mərhələləri göstərən interaktiv simulyasiya. Said Jivishov tərəfindən hazırlanıb.",
+                tags: ["İmmunologiya", "Biologiya", "İnteraktiv", "Said Jivishov"]
             }
         },
 
@@ -417,6 +427,11 @@ const translations = {
                 title: "Tiyopürinler ve TPMT Farmakogenomik Laboratuvarı",
                 description: "Klinik değerlendirmeden DNA varyant analizine, protein etkisine ve kişiselleştirilmiş azatioprin doz kararlarına kadar tam farmakogenomik süreci izleyin.",
                 tags: ["Farmakogenomik", "Genetik", "Kişiselleştirilmiş Tıp"]
+            },
+            virusdefenselab: {
+                title: "Virüs ve Vücut Savunma Laboratuvarı",
+                description: "Viral giriş, konak hücre parçalanması, fagosit temizliği ve adaptif yanıtı adım adım gösteren etkileşimli bağışıklık simülasyonu. Said Jivishov tarafından yapıldı.",
+                tags: ["İmmünoloji", "Biyoloji", "Etkileşimli", "Said Jivishov"]
             }
         },
 
@@ -584,6 +599,11 @@ const translations = {
                 title: "Thiopurine & TPMT Pharmakogenomik-Labor",
                 description: "Verfolgen Sie die vollständige pharmakogenomische Pipeline von der klinischen Aufnahme über die DNA-Variantenanalyse bis zur Proteinwirkung und personalisierten Azathioprin-Dosierung.",
                 tags: ["Pharmakogenomik", "Genetik", "Personalisierte Medizin"]
+            },
+            virusdefenselab: {
+                title: "Virus-gegen-Körperabwehr-Labor",
+                description: "Interaktive Immunsimulation mit viralem Eintritt, Wirtszell-Lyse, Phagozyten-Aufräumphase und adaptiver Antwort. Erstellt von Said Jivishov.",
+                tags: ["Immunologie", "Biologie", "Interaktiv", "Said Jivishov"]
             }
 
         },
