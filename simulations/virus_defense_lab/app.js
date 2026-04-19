@@ -707,7 +707,10 @@ const refs = {
   resetBtn: document.getElementById("resetBtn"),
   speedRange: document.getElementById("speedRange"),
   speedLabel: document.getElementById("speedLabel"),
-  quizCard: document.getElementById("quizCard")
+  quizCard: document.getElementById("quizCard"),
+  openAboutDialogBtn: document.getElementById("openAboutDialogBtn"),
+  aboutDialog: document.getElementById("aboutDialog"),
+  closeAboutDialogBtn: document.getElementById("closeAboutDialogBtn")
 };
 
 const state = {
@@ -729,6 +732,10 @@ const state = {
   inspector: {
     open: false,
     entityType: null
+  },
+  aboutDialog: {
+    open: false,
+    triggerEl: null
   }
 };
 
@@ -2320,6 +2327,90 @@ function renderQuiz() {
   });
 }
 
+function getDialogFocusableElements(container) {
+  if (!container) {
+    return [];
+  }
+  const selectors = [
+    "a[href]",
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "[tabindex]:not([tabindex='-1'])"
+  ];
+  return [...container.querySelectorAll(selectors.join(","))];
+}
+
+function openAboutDialog() {
+  if (!refs.aboutDialog) {
+    return;
+  }
+
+  const activeEl = document.activeElement;
+  state.aboutDialog.triggerEl = activeEl instanceof HTMLElement ? activeEl : refs.openAboutDialogBtn;
+  refs.aboutDialog.hidden = false;
+  document.body.classList.add("dialog-open");
+  state.aboutDialog.open = true;
+
+  const focusables = getDialogFocusableElements(refs.aboutDialog);
+  if (focusables.length) {
+    focusables[0].focus();
+  }
+}
+
+function closeAboutDialog() {
+  if (!refs.aboutDialog || !state.aboutDialog.open) {
+    return;
+  }
+
+  refs.aboutDialog.hidden = true;
+  document.body.classList.remove("dialog-open");
+  state.aboutDialog.open = false;
+
+  if (state.aboutDialog.triggerEl && typeof state.aboutDialog.triggerEl.focus === "function") {
+    state.aboutDialog.triggerEl.focus();
+  }
+  state.aboutDialog.triggerEl = null;
+}
+
+function handleAboutDialogKeydown(event) {
+  if (!state.aboutDialog.open || !refs.aboutDialog) {
+    return;
+  }
+
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeAboutDialog();
+    return;
+  }
+
+  if (event.key !== "Tab") {
+    return;
+  }
+
+  const focusables = getDialogFocusableElements(refs.aboutDialog);
+  if (!focusables.length) {
+    event.preventDefault();
+    return;
+  }
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+
+  if (event.shiftKey && active === first) {
+    event.preventDefault();
+    last.focus();
+    return;
+  }
+
+  if (!event.shiftKey && active === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
 function wireControls() {
   refs.nextBtn.addEventListener("click", () => {
     stopAutoPlay();
@@ -2353,6 +2444,30 @@ function wireControls() {
     }
   });
 
+  if (refs.openAboutDialogBtn) {
+    refs.openAboutDialogBtn.addEventListener("click", () => {
+      openAboutDialog();
+    });
+  }
+
+  if (refs.closeAboutDialogBtn) {
+    refs.closeAboutDialogBtn.addEventListener("click", () => {
+      closeAboutDialog();
+    });
+  }
+
+  if (refs.aboutDialog) {
+    refs.aboutDialog.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+      if (target.dataset.aboutClose === "true") {
+        closeAboutDialog();
+      }
+    });
+  }
+
   if (refs.closeInspectorBtn) {
     refs.closeInspectorBtn.addEventListener("click", () => {
       closeEntityInspector();
@@ -2379,6 +2494,13 @@ function wireControls() {
   }
 
   document.addEventListener("keydown", (event) => {
+    if (state.aboutDialog.open) {
+      handleAboutDialogKeydown(event);
+      if (event.defaultPrevented) {
+        return;
+      }
+    }
+
     if (event.key === "Escape" && state.inspector.open) {
       closeEntityInspector();
     }

@@ -29,17 +29,17 @@
         <p class="subtitle">
           Press play to watch infection happen, then see how immune cells team up to stop it.
         </p>
-        <a
-          class="repo-link-card"
-          href="https://github.com/jivishov/virtual_lab"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Open the virtual_lab GitHub repository"
-        >
-          <span class="repo-link-kicker">Project Repository</span>
-          <span class="repo-link-title">github.com/jivishov/virtual_lab</span>
-          <span class="repo-link-meta">Made by Said Jivishov</span>
-        </a>
+        <div class="hero-actions">
+          <button
+            id="openAboutDialogBtn"
+            class="about-link-btn"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="aboutDialog"
+          >
+            About This Simulation
+          </button>
+        </div>
       </section>
 
       <section class="panel stage-panel">
@@ -240,6 +240,38 @@
         <div id="quizCard" class="quiz-card"></div>
       </section>
     </main>
+
+    <div
+      id="aboutDialog"
+      class="about-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="aboutDialogTitle"
+      aria-describedby="aboutDialogDescription"
+      hidden
+    >
+      <div class="about-dialog-backdrop" data-about-close="true" aria-hidden="true"></div>
+      <section class="about-dialog-panel" role="document">
+        <button id="closeAboutDialogBtn" class="about-dialog-close" type="button" aria-label="Close about dialog">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <p class="about-dialog-kicker">Project Credit</p>
+        <h2 id="aboutDialogTitle">Virus vs Body Defense Lab</h2>
+        <p id="aboutDialogDescription" class="about-dialog-copy">
+          This interactive simulation was vibe coded by Said Jivishov to help students understand viral infection and immune response in a visual, step-by-step way.
+        </p>
+        <div class="about-dialog-actions">
+          <a
+            class="about-dialog-link"
+            href="https://github.com/jivishov/virtual_lab"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Repository
+          </a>
+        </div>
+      </section>
+    </div>
 
     <script src="./app.js"></script>
   </body>
