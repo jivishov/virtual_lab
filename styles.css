@@ -409,56 +409,6 @@ body {
     background: rgba(255, 255, 255, 0.7);
 }
 
-.repo-highlight-section {
-    margin: -1.75rem 0 2.5rem;
-}
-
-.repo-highlight-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    text-decoration: none;
-    color: inherit;
-    background: linear-gradient(125deg, rgba(8, 145, 178, 0.12) 0%, rgba(249, 115, 22, 0.12) 100%);
-    border: 1px solid rgba(8, 145, 178, 0.28);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-}
-
-.repo-highlight-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: rgba(8, 145, 178, 0.45);
-}
-
-.repo-highlight-card:focus-visible {
-    outline: 3px solid rgba(249, 115, 22, 0.55);
-    outline-offset: 3px;
-}
-
-.repo-highlight-kicker {
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: 700;
-    color: var(--primary-dark);
-}
-
-.repo-highlight-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.3;
-}
-
-.repo-highlight-meta {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-}
-
 .section-title {
     text-align: left;
     font-size: 1.75rem;
@@ -829,14 +779,6 @@ body {
         font-size: 1.125rem;
     }
 
-    .repo-highlight-section {
-        margin: -1.5rem 0 2rem;
-    }
-
-    .repo-highlight-card {
-        padding: 0.9rem 1rem;
-    }
-
     .labs-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -884,17 +826,6 @@ body {
         padding: 0 1rem;
     }
 
-    .repo-highlight-section {
-        margin: -1.2rem 0 1.6rem;
-    }
-
-    .repo-highlight-title {
-        font-size: 0.95rem;
-    }
-
-    .repo-highlight-meta {
-        font-size: 0.84rem;
-    }
 }
 
 /* ===== Accessibility ===== */
