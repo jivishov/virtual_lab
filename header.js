@@ -42,6 +42,65 @@ const flagIcons = {
     </svg>`
 };
 
+let headerStatsObserver = null;
+let headerStatsUpdatePending = false;
+
+function countSectionItems(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return null;
+
+    // Prefer real links if present; fall back to launch buttons/cards.
+    const linkCount = section.querySelectorAll('a[href]').length;
+    if (linkCount > 0) return linkCount;
+
+    const buttonCount = section.querySelectorAll('.launch-button').length;
+    if (buttonCount > 0) return buttonCount;
+
+    return section.querySelectorAll('.lab-card').length;
+}
+
+function updateHeaderStatsFromSections() {
+    const labsCountEl = document.getElementById('labsCount');
+    const simulationsCountEl = document.getElementById('simulationsCount');
+    if (!labsCountEl || !simulationsCountEl) return;
+
+    const labsCount = countSectionItems('labsGrid');
+    const simulationsCount = countSectionItems('simulationsGrid');
+    if (labsCount === null || simulationsCount === null) return;
+
+    labsCountEl.textContent = String(labsCount);
+    simulationsCountEl.textContent = String(simulationsCount);
+}
+
+function scheduleHeaderStatsUpdate() {
+    if (headerStatsUpdatePending) return;
+    headerStatsUpdatePending = true;
+    window.requestAnimationFrame(() => {
+        headerStatsUpdatePending = false;
+        updateHeaderStatsFromSections();
+    });
+}
+
+function initializeHeaderStatsSync() {
+    const labsGrid = document.getElementById('labsGrid');
+    const simulationsGrid = document.getElementById('simulationsGrid');
+
+    if (headerStatsObserver) {
+        headerStatsObserver.disconnect();
+        headerStatsObserver = null;
+    }
+
+    if (!labsGrid || !simulationsGrid) return;
+
+    // Initial pass plus a deferred pass in case cards render just after header.
+    updateHeaderStatsFromSections();
+    window.setTimeout(updateHeaderStatsFromSections, 0);
+
+    headerStatsObserver = new MutationObserver(scheduleHeaderStatsUpdate);
+    headerStatsObserver.observe(labsGrid, { childList: true, subtree: true });
+    headerStatsObserver.observe(simulationsGrid, { childList: true, subtree: true });
+}
+
 function renderHeader(currentPage = 'home') {
     // Get current language if I18n is loaded
     const currentLang = (typeof I18n !== 'undefined') ? I18n.getCurrentLanguage() : 'en';
@@ -97,11 +156,11 @@ function renderHeader(currentPage = 'home') {
                     </nav>
                     <div class="header-stats">
                         <div class="header-stat">
-                            <span class="header-stat-number">3</span>
+                            <span class="header-stat-number" id="labsCount">0</span>
                             <span class="header-stat-label">${t('header.stats.labs')}</span>
                         </div>
                         <div class="header-stat">
-                            <span class="header-stat-number">6</span>
+                            <span class="header-stat-number" id="simulationsCount">0</span>
                             <span class="header-stat-label">${t('header.stats.simulations')}</span>
                         </div>
                     </div>
@@ -114,6 +173,7 @@ function renderHeader(currentPage = 'home') {
     if (headerElement) {
         headerElement.innerHTML = headerHTML;
         initializeLanguageSelector();
+        initializeHeaderStatsSync();
     }
 }
 
