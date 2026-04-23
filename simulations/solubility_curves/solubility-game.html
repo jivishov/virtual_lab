@@ -1,0 +1,2889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Solubility Quest — a gamified activity that teaches high-school students to read solubility curves and classify solutions as saturated, unsaturated, or supersaturated.">
+<title>Solubility Quest — Gamified Chemistry Activity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f6f4f0;
+  --surface:#ffffff;
+  --elevated:#f0eee9;
+  --border:#ddd8cf;
+  --text:#1e1b16;
+  --text-dim:#7a756c;
+  --text-mid:#5a554d;
+  --kcl:#0e7490;
+  --kcl-line:#0891b2;
+  --kcl-bg:rgba(14,116,144,.08);
+  --warn:#b45309;
+  --warn-line:#d97706;
+  --accent:#9333ea;
+  --accent-soft:rgba(147,51,234,.1);
+  --gold:#ca8a04;
+  --correct:#047857;
+  --correct-bg:rgba(4,120,87,.08);
+  --wrong:#dc2626;
+  --wrong-bg:rgba(220,38,38,.08);
+  --font:'DM Sans',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono','SF Mono','Cascadia Code',monospace;
+  --radius:12px;
+  --radius-lg:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.04);
+  --shadow-xl:0 12px 40px rgba(0,0,0,.1);
+}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.55;
+  overflow-x:hidden;
+}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(246,244,240,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.topbar-inner{
+  max-width:1140px;margin:0 auto;
+  padding:.9rem 1.5rem;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:baseline;gap:.6rem}
+.brand h1{
+  font-size:1.15rem;font-weight:700;letter-spacing:-.02em;
+}
+.brand h1 span{color:var(--accent)}
+.brand .sub{font-size:.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.level-dots{display:flex;gap:.45rem;margin-left:.8rem}
+.level-dot{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--surface);border:1.5px solid var(--border);
+  display:grid;place-items:center;
+  font:600 .68rem var(--mono);color:var(--text-dim);
+  cursor:pointer;transition:.2s;user-select:none;
+  position:relative;
+}
+.level-dot.available{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.level-dot.active{background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.08);box-shadow:0 2px 8px rgba(147,51,234,.3)}
+.level-dot.complete{background:var(--correct);border-color:var(--correct);color:#fff}
+.level-dot.locked{opacity:.5;cursor:not-allowed}
+.level-dot .stars{
+  position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+  font-size:.55rem;color:var(--gold);letter-spacing:-.04em;line-height:1;white-space:nowrap;
+}
+.topbar-stats{margin-left:auto;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.stat{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font:600 .82rem var(--mono);color:var(--text);
+  padding:.32rem .7rem;border-radius:20px;
+  background:var(--surface);border:1.5px solid var(--border);
+}
+.stat .icon{font-size:.95rem;line-height:1}
+.stat.score{color:var(--accent)}
+.stat.streak{color:var(--warn)}
+.stat.streak.cold{color:var(--text-dim);opacity:.6}
+.badge-tray{display:flex;gap:.25rem}
+.badge{
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,#fbbf24,#d97706);
+  display:grid;place-items:center;font-size:.85rem;
+  box-shadow:0 2px 6px rgba(217,119,6,.35);
+  position:relative;
+  animation:badgePop .6s cubic-bezier(.34,1.56,.64,1);
+}
+.badge::after{
+  content:attr(data-label);
+  position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(-4px);
+  background:#0f172a;color:#fff;
+  font:600 .7rem var(--font);
+  padding:.35rem .6rem;border-radius:6px;
+  white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity .15s, transform .15s;
+  box-shadow:0 6px 18px rgba(15,23,42,.28), 0 0 0 1px rgba(255,255,255,.08) inset;
+  letter-spacing:.01em;z-index:20;
+}
+.badge::before{
+  content:'';position:absolute;top:calc(100% + 2px);left:50%;transform:translateX(-50%) translateY(-4px);
+  border:6px solid transparent;border-bottom-color:#0f172a;
+  opacity:0;pointer-events:none;transition:opacity .15s, transform .15s;z-index:20;
+}
+.badge:hover::after,.badge:focus-visible::after,
+.badge:hover::before,.badge:focus-visible::before{
+  opacity:1;transform:translateX(-50%) translateY(0);
+}
+@keyframes badgePop{0%{transform:scale(0) rotate(-180deg)}60%{transform:scale(1.2) rotate(10deg)}100%{transform:scale(1) rotate(0)}}
+.settings-btn{
+  background:var(--surface);border:1.5px solid var(--border);
+  width:34px;height:34px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  font-size:1rem;color:var(--text-dim);transition:.2s;
+}
+.settings-btn:hover{color:var(--text);border-color:var(--text-dim)}
+
+/* ── LAYOUT ── */
+.stage{max-width:1140px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.screen{display:none;animation:fadeIn .3s ease-out}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── LEVEL MENU ── */
+.level-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-top:1.25rem}
+.level-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:1.25rem;
+  cursor:pointer;transition:.2s;
+  display:flex;flex-direction:column;gap:.4rem;
+  box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
+  text-align:left;font-family:inherit;color:inherit;
+}
+.level-card:hover:not(.locked){border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.level-card.locked{opacity:.55;cursor:not-allowed}
+.level-card .num{font:700 2.6rem var(--mono);color:var(--accent);letter-spacing:-.04em;line-height:1;opacity:.22;position:absolute;right:.8rem;top:.5rem}
+.level-card .tag{font:600 .6rem var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim)}
+.level-card h3{font-size:1.05rem;font-weight:700;letter-spacing:-.02em}
+.level-card p{font-size:.83rem;color:var(--text-mid);line-height:1.55}
+.level-card .stars-row{font-size:.95rem;color:var(--gold);letter-spacing:.08em;margin-top:.3rem}
+.level-card .lock-icon{position:absolute;right:1rem;bottom:1rem;font-size:1.1rem;color:var(--text-dim)}
+.level-card.complete{border-color:var(--correct);background:linear-gradient(180deg,rgba(4,120,87,.04),var(--surface))}
+
+.intro-block{
+  background:linear-gradient(180deg,rgba(196,223,245,.5),rgba(182,211,236,.4));
+  border:1px solid rgba(70,108,140,.2);
+  border-radius:var(--radius);
+  padding:1.35rem 1.5rem;margin-bottom:.5rem;
+  box-shadow:var(--shadow);
+}
+.intro-block h2{font-size:1.35rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.35rem}
+.intro-block p{color:var(--text-mid);font-size:.93rem;max-width:none;width:100%}
+.intro-actions{
+  margin-top:.9rem;
+  display:flex;
+  gap:.5rem;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.game-btn{
+  display:inline-flex;align-items:center;gap:.45rem;
+  background:linear-gradient(135deg,#f59e0b,#ea580c);
+  border:none;color:#fff;text-decoration:none;
+  border-radius:20px;padding:.4rem 1rem .4rem .85rem;
+  font-family:var(--font);font-size:.78rem;font-weight:600;
+  letter-spacing:.01em;cursor:pointer;
+  transition:transform .1s,box-shadow .2s,filter .2s;
+  box-shadow:0 2px 8px rgba(234,88,12,.28);
+}
+.game-btn:hover{filter:brightness(1.05);box-shadow:0 4px 14px rgba(234,88,12,.35)}
+.game-btn:active{transform:scale(.97)}
+.game-btn .game-ico{
+  width:1.05rem;height:1.05rem;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;
+}
+
+/* ── LEVEL HEADER ── */
+.level-head{
+  display:flex;align-items:center;gap:1rem;margin-bottom:1.1rem;flex-wrap:wrap;
+}
+.back-btn{
+  background:none;border:1.5px solid var(--border);
+  padding:.4rem .9rem;border-radius:20px;
+  font:600 .78rem var(--font);color:var(--text-mid);
+  cursor:pointer;transition:.2s;
+}
+.back-btn:hover{border-color:var(--text-dim);color:var(--text)}
+.level-head h2{font-size:1.35rem;font-weight:700;letter-spacing:-.02em}
+.level-head .subtitle{color:var(--text-dim);font-size:.85rem;margin-left:.3rem}
+
+/* ── PANELS ── */
+.panel{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:1.25rem;
+  box-shadow:var(--shadow-lg);
+}
+.panel-label{font:600 .62rem var(--mono);color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem}
+.panel h3{font-size:1.02rem;font-weight:700;margin-bottom:.45rem}
+.panel p.help{color:var(--text-mid);font-size:.86rem;margin-bottom:.8rem}
+
+.two-col{display:grid;grid-template-columns:1fr 340px;gap:1rem;align-items:start}
+@media (max-width:900px){.two-col{grid-template-columns:1fr}}
+
+/* ── CANVAS ── */
+canvas.chart{width:100%;display:block;border-radius:6px;cursor:crosshair;background:#fff}
+
+/* ── SLIDER + STEPPER ── */
+.control-row{display:flex;align-items:center;gap:.7rem;margin:.55rem 0;flex-wrap:wrap}
+.control-row label{font:600 .7rem var(--font);color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;min-width:75px}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  flex:1;min-width:120px;height:5px;border-radius:3px;
+  background:linear-gradient(90deg,#bae6fd,#0891b2 50%,#dc2626);
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--surface);border:3px solid var(--kcl);
+  box-shadow:0 1px 4px rgba(0,0,0,.15);cursor:grab;transition:.15s;
+}
+input[type=range]::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.15)}
+input[type=range]::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;border:3px solid var(--kcl);
+  background:var(--surface);cursor:grab;
+}
+.val-pill{
+  font:600 .88rem var(--mono);color:var(--text);
+  min-width:58px;text-align:right;
+}
+.stepper{display:inline-flex;align-items:center;gap:.25rem;background:var(--elevated);border-radius:20px;padding:.2rem;border:1.5px solid var(--border)}
+.stepper button{
+  width:28px;height:28px;border:none;background:var(--surface);border-radius:50%;
+  font:600 1rem var(--font);cursor:pointer;color:var(--text);
+  display:grid;place-items:center;transition:.15s;
+  box-shadow:var(--shadow);
+}
+.stepper button:hover{background:var(--accent);color:#fff}
+.stepper button:disabled{opacity:.4;cursor:not-allowed;background:var(--surface);color:var(--text-dim)}
+.stepper input{
+  width:54px;text-align:center;border:none;background:transparent;
+  font:600 .95rem var(--mono);color:var(--text);outline:none;
+}
+
+/* ── L1 TUTORIAL ── */
+.tutorial-wrap{display:grid;grid-template-columns:1fr 320px;gap:1rem;align-items:start}
+@media (max-width:900px){.tutorial-wrap{grid-template-columns:1fr}}
+.tutorial-stage{position:relative}
+#l1Chart{height:360px;min-height:360px;max-height:360px}
+.l1-match-panel{display:flex;flex-direction:column;gap:.65rem}
+.l1-match-panel .tutorial-bands{margin-top:.35rem}
+.drag-tray{
+  background:var(--elevated);border:1.5px dashed var(--border);
+  border-radius:var(--radius);padding:1rem;
+  display:flex;flex-direction:column;gap:.6rem;min-height:80px;
+}
+.drag-tray-label{font:600 .65rem var(--mono);color:var(--text-dim);text-transform:uppercase;letter-spacing:.1em}
+.drag-points-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.drag-point{
+  width:46px;height:46px;border-radius:50%;
+  display:grid;place-items:center;
+  font:700 .82rem var(--mono);color:#fff;
+  cursor:grab;user-select:none;touch-action:none;
+  box-shadow:0 3px 10px rgba(0,0,0,.2);
+  transition:transform .18s,box-shadow .18s;
+  border:3px solid #fff;
+  position:relative;
+}
+.drag-point:hover{transform:scale(1.08)}
+.drag-point:active{cursor:grabbing}
+.drag-point.placed{opacity:.3;cursor:default;transform:none}
+.drag-point.dragging{transform:scale(1.15);box-shadow:0 6px 18px rgba(0,0,0,.3);z-index:20}
+.drag-point[data-label="A"]{background:var(--correct)}
+.drag-point[data-label="B"]{background:var(--kcl)}
+.drag-point[data-label="C"]{background:var(--wrong)}
+.tutorial-bands{display:flex;flex-direction:column;gap:.5rem;margin-top:.8rem}
+.band{
+  border:1.5px dashed var(--border);border-radius:var(--radius);
+  padding:.7rem 1rem;background:var(--surface);
+  display:flex;align-items:center;gap:.55rem;
+  transition:.2s;min-height:60px;
+}
+.band.target-hover{border-color:var(--accent);border-style:solid;background:var(--accent-soft)}
+.band.correct{border-color:var(--correct);border-style:solid;background:var(--correct-bg)}
+.band.wrong{border-color:var(--wrong);border-style:solid;background:var(--wrong-bg);animation:shake .4s}
+.band-icon{
+  width:32px;height:32px;border-radius:50%;background:var(--elevated);
+  display:grid;place-items:center;font:700 .85rem var(--mono);color:var(--text-mid);flex-shrink:0;
+}
+.band-text{display:flex;flex-direction:column;line-height:1.35}
+.band-text strong{font-weight:700;color:var(--text)}
+.band-text small{font-size:.72rem;color:var(--text-dim)}
+.band .placed-point{
+  margin-left:auto;width:36px;height:36px;border-radius:50%;
+  display:grid;place-items:center;color:#fff;font:700 .75rem var(--mono);border:3px solid #fff;
+  box-shadow:var(--shadow);
+}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* ── L2 BEAKERS ── */
+.beakers-row{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+@media (max-width:720px){.beakers-row{grid-template-columns:1fr}}
+.beaker-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:1rem;
+  display:flex;flex-direction:column;gap:.55rem;
+  box-shadow:var(--shadow-lg);
+}
+.beaker-stage{
+  position:relative;height:240px;
+  display:grid;place-items:center;
+  background:linear-gradient(180deg,#f7fbff,#e3ecf5);
+  border-radius:var(--radius);overflow:hidden;
+}
+.beaker-svg{height:100%;width:100%;position:relative;display:flex;justify-content:center;align-items:flex-end;min-height:0}
+.beaker-svg svg{max-height:100%;max-width:100%;height:100%;width:auto;display:block}
+.verdict{
+  font:600 .85rem var(--mono);
+  text-align:center;letter-spacing:.02em;
+  padding:.45rem .8rem;border-radius:20px;
+  background:var(--elevated);color:var(--text-mid);
+  transition:.25s;
+}
+.verdict.saturated{background:var(--correct-bg);color:var(--correct)}
+.verdict.unsaturated{background:rgba(14,116,144,.1);color:var(--kcl)}
+.verdict.supersaturated{background:var(--wrong-bg);color:var(--wrong)}
+.prediction-row{
+  display:flex;gap:.4rem;margin-top:.25rem;
+  padding:.5rem;background:var(--elevated);border-radius:8px;
+}
+.predict-btn{
+  flex:1;border:1.5px solid var(--border);background:var(--surface);
+  padding:.45rem .3rem;border-radius:8px;cursor:pointer;
+  font:600 .72rem var(--font);color:var(--text-mid);
+  transition:.15s;text-transform:uppercase;letter-spacing:.04em;
+}
+.predict-btn:hover{border-color:var(--accent);color:var(--accent)}
+.predict-btn.selected{border-color:var(--accent);background:var(--accent);color:#fff}
+.predict-btn:disabled{cursor:not-allowed;opacity:.6}
+.predict-btn.correct{border-color:var(--correct);background:var(--correct);color:#fff}
+.predict-btn.wrong{border-color:var(--wrong);background:var(--wrong);color:#fff}
+.scenario-card{
+  background:linear-gradient(180deg,rgba(147,51,234,.06),rgba(147,51,234,.02));
+  border:1px solid rgba(147,51,234,.2);
+  border-radius:var(--radius);padding:1rem 1.1rem;
+  font-size:.88rem;line-height:1.6;color:var(--text-mid);
+}
+.scenario-card strong{color:var(--text);font-weight:600}
+.scenario-card .step{font:600 .68rem var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.2rem;display:block}
+.scenario-card .hint{color:var(--text-dim);font-size:.8rem;margin-top:.4rem}
+.l2-layout{
+  grid-template-columns:minmax(240px,1fr) minmax(240px,1fr) 320px;
+  gap:.9rem;
+}
+.l2-main{
+  grid-column:1 / span 2;
+  display:flex;
+  flex-direction:column;
+  gap:.7rem;
+  min-width:0;
+}
+.l2-rail{
+  grid-column:3;
+  display:flex;
+  flex-direction:column;
+  gap:.7rem;
+  min-width:0;
+}
+.l2-rail-task,.l2-rail-chart{padding:1rem}
+.l2-rail-chart{display:flex;flex-direction:column;gap:.45rem}
+#screen-level-2 .scenario-card{
+  padding:.85rem 1rem;
+  font-size:.84rem;
+  line-height:1.45;
+}
+#screen-level-2 .beakers-row{gap:.75rem}
+#screen-level-2 .beaker-card{
+  padding:.85rem;
+  gap:.45rem;
+}
+#screen-level-2 .beaker-stage{
+  height:200px;
+  background:
+    radial-gradient(120px 70px at 50% 96%, rgba(251,146,60,.2), rgba(251,146,60,0) 70%),
+    linear-gradient(180deg,#eef3f9,#dfe7f0 58%,#d2dbe6);
+}
+#screen-level-2 .beaker-svg{
+  height:100%;
+}
+#screen-level-2 .heater-strip{
+  display:flex;
+  align-items:center;
+  gap:.45rem;
+  margin-top:.15rem;
+  padding:.34rem .55rem;
+  border-radius:999px;
+  background:rgba(15,23,42,.08);
+  border:1px solid rgba(15,23,42,.16);
+}
+#screen-level-2 .heater-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:rgba(239,68,68,.42);
+  box-shadow:0 0 0 2px rgba(15,23,42,.2), 0 0 8px rgba(239,68,68,.4);
+  transition:background .15s, box-shadow .15s, transform .15s;
+}
+#screen-level-2 .heater-text{
+  font:600 .66rem var(--mono);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--text-mid);
+}
+#screen-level-2 .control-row{
+  margin:.38rem 0;
+  gap:.55rem;
+}
+#screen-level-2 .control-row label{
+  min-width:62px;
+  font-size:.66rem;
+}
+#screen-level-2 .l2-mass-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:.45rem;
+}
+#screen-level-2 .l2-mass-row label{
+  min-width:0;
+  white-space:nowrap;
+}
+#screen-level-2 .l2-mass-row .stepper{
+  justify-self:center;
+  gap:.2rem;
+  padding:.16rem;
+}
+#screen-level-2 .l2-mass-row .stepper button{
+  width:26px;
+  height:26px;
+  font-size:.95rem;
+}
+#screen-level-2 .l2-mass-row .stepper input{
+  width:46px;
+  font-size:.9rem;
+}
+#screen-level-2 .l2-mass-row .verdict{
+  justify-self:end;
+  white-space:nowrap;
+  font-size:.75rem;
+  padding:.34rem .56rem;
+}
+#screen-level-2 .prediction-row{
+  padding:.45rem;
+  gap:.35rem;
+}
+#screen-level-2 .predict-btn{
+  padding:.38rem .25rem;
+  font-size:.68rem;
+}
+.l2-chart-wrap{
+  width:100%;
+  height:180px;
+  min-height:180px;
+  max-height:180px;
+  border-radius:8px;
+  overflow:hidden;
+  background:#fff;
+}
+#l2Chart{
+  width:100%;
+  height:100%;
+  min-height:0;
+  max-height:none;
+}
+@media (max-width:1179px){
+  .l2-layout{
+    grid-template-columns:minmax(0,1fr) clamp(300px,32vw,320px);
+  }
+  .l2-main{grid-column:1}
+  .l2-rail{grid-column:2}
+}
+@media (max-width:900px){
+  .l2-layout{grid-template-columns:1fr}
+  .l2-main,.l2-rail{grid-column:auto}
+}
+@media (max-width:520px){
+  #screen-level-2 .l2-mass-row{
+    gap:.35rem;
+  }
+  #screen-level-2 .l2-mass-row label{
+    font-size:.62rem;
+    letter-spacing:.05em;
+  }
+  #screen-level-2 .l2-mass-row .stepper{
+    gap:.16rem;
+    padding:.12rem;
+  }
+  #screen-level-2 .l2-mass-row .stepper button{
+    width:24px;
+    height:24px;
+    font-size:.88rem;
+  }
+  #screen-level-2 .l2-mass-row .stepper input{
+    width:40px;
+    font-size:.84rem;
+  }
+  #screen-level-2 .l2-mass-row .verdict{
+    font-size:.67rem;
+    padding:.3rem .44rem;
+  }
+}
+
+/* ── L3/L4 QUESTIONS ── */
+.quest-wrap{display:grid;grid-template-columns:1fr 360px;gap:1rem;align-items:start}
+@media (max-width:900px){.quest-wrap{grid-template-columns:1fr}}
+.question-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:1.35rem 1.5rem;
+  box-shadow:var(--shadow-lg);
+  display:flex;flex-direction:column;gap:.85rem;
+}
+.q-header{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.q-num{
+  font:700 1.15rem var(--mono);color:var(--accent);
+  background:var(--accent-soft);padding:.2rem .7rem;border-radius:6px;letter-spacing:-.02em;
+}
+.q-timer{
+  margin-left:auto;
+  font:600 .82rem var(--mono);color:var(--text-mid);
+  padding:.3rem .7rem;background:var(--elevated);border-radius:20px;
+  border:1.5px solid var(--border);min-width:72px;text-align:center;
+}
+.q-timer.warn{color:var(--warn);border-color:var(--warn)}
+.q-timer.danger{color:var(--wrong);border-color:var(--wrong);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.q-text{font-size:1rem;line-height:1.6;color:var(--text)}
+.q-text .sub{color:var(--text-dim);font-size:.85rem;margin-top:.3rem;display:block}
+.mcq-options{display:flex;flex-direction:column;gap:.45rem;margin-top:.3rem}
+#l4Card .mcq-options.mcq-options--l4-two-col{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.mcq-option{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:8px;padding:.65rem 1rem;cursor:pointer;
+  font:500 .92rem var(--font);text-align:left;
+  transition:.15s;display:flex;align-items:center;gap:.65rem;color:var(--text);
+}
+.mcq-option:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft)}
+.mcq-option:disabled{cursor:not-allowed}
+.mcq-option.selected{border-color:var(--accent);background:var(--accent-soft)}
+.mcq-option.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);font-weight:600}
+.mcq-option.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong)}
+.mcq-option .bullet{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--elevated);display:grid;place-items:center;flex-shrink:0;
+  font:700 .7rem var(--mono);color:var(--text-mid);
+}
+.mcq-option.correct .bullet{background:var(--correct);color:#fff}
+.mcq-option.wrong .bullet{background:var(--wrong);color:#fff}
+
+.numeric-row{display:flex;align-items:stretch;gap:.6rem;margin-top:.3rem;flex-wrap:wrap}
+.numeric-row input{
+  flex:1;min-width:140px;
+  padding:.75rem 1rem;
+  border:1.5px solid var(--border);border-radius:8px;
+  font:600 1.05rem var(--mono);color:var(--text);background:var(--surface);
+  outline:none;transition:.15s;
+}
+.numeric-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.numeric-row .unit{font:600 .85rem var(--mono);color:var(--text-dim);align-self:center}
+.submit-btn{
+  background:var(--accent);color:#fff;border:none;
+  padding:.7rem 1.4rem;border-radius:8px;
+  font:600 .88rem var(--font);cursor:pointer;
+  transition:.15s;letter-spacing:.01em;
+  box-shadow:0 2px 8px rgba(147,51,234,.25);
+}
+.submit-btn:hover{background:#7c22c9;box-shadow:0 4px 14px rgba(147,51,234,.3)}
+.submit-btn:active{transform:scale(.98)}
+.submit-btn:disabled{background:var(--text-dim);cursor:not-allowed;box-shadow:none}
+
+.hint-btn{
+  background:var(--surface);border:1.5px solid var(--border);
+  padding:.55rem 1rem;border-radius:8px;
+  font:600 .78rem var(--font);color:var(--text-mid);
+  cursor:pointer;transition:.15s;
+  display:inline-flex;align-items:center;gap:.4rem;
+}
+.hint-btn:hover{border-color:var(--warn);color:var(--warn)}
+.hint-btn:disabled{opacity:.5;cursor:not-allowed}
+.hint-note{font:500 .75rem var(--font);color:var(--text-dim);margin-top:.2rem}
+
+.feedback-line{
+  font:500 .87rem var(--font);line-height:1.5;
+  padding:.65rem .85rem;border-radius:8px;
+  background:var(--elevated);margin-top:.3rem;
+  display:none;
+}
+.feedback-line.show{display:block;animation:fadeIn .3s}
+.feedback-line.correct{background:var(--correct-bg);color:var(--correct);border-left:3px solid var(--correct)}
+.feedback-line.wrong{background:var(--wrong-bg);color:var(--wrong);border-left:3px solid var(--wrong)}
+
+.progress-rail{display:flex;gap:.3rem;margin-top:.55rem}
+.progress-rail .pip{
+  flex:1;height:5px;border-radius:3px;background:var(--border);transition:.3s;
+}
+.progress-rail .pip.done{background:var(--accent)}
+.progress-rail .pip.correct{background:var(--correct)}
+.progress-rail .pip.wrong{background:var(--wrong)}
+
+/* ── L5 SANDBOX ── */
+.sandbox-wrap{display:grid;grid-template-columns:1fr 340px;gap:1rem;align-items:start}
+@media (max-width:900px){.sandbox-wrap{grid-template-columns:1fr}}
+.salt-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.35rem;margin:.55rem 0}
+.salt-chip{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:6px;padding:.45rem .2rem;cursor:pointer;
+  font:600 .74rem var(--mono);color:var(--text);
+  transition:.15s;text-align:center;
+}
+.salt-chip:hover{border-color:var(--accent)}
+.salt-chip.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+.challenge-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.6rem}
+.challenge{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:.75rem 1rem;
+  font-size:.83rem;line-height:1.5;color:var(--text-mid);
+  display:flex;gap:.6rem;align-items:flex-start;
+  transition:.2s;
+}
+.challenge.done{background:var(--correct-bg);border-color:var(--correct);color:var(--correct)}
+.challenge .ch-icon{
+  width:24px;height:24px;border-radius:50%;background:var(--elevated);
+  display:grid;place-items:center;flex-shrink:0;
+  font:700 .72rem var(--mono);color:var(--text-dim);
+}
+.challenge.done .ch-icon{background:var(--correct);color:#fff}
+.challenge strong{color:var(--text);font-weight:600;display:block;margin-bottom:.15rem}
+.challenge.done strong{color:var(--correct)}
+
+/* Level 5 viewport and sidebar fit */
+#screen-level-5 .sandbox-wrap{grid-template-columns:minmax(0,1fr) clamp(300px,31vw,332px);gap:.9rem}
+#screen-level-5 #l5Chart{height:clamp(432px,64.8vh,528px)}
+#screen-level-5 .l5-sidebar{display:flex;flex-direction:column;gap:.75rem}
+#screen-level-5 .l5-controls-panel{
+  position:sticky;
+  top:calc(64px + .75rem);
+  z-index:3;
+  padding:1rem;
+}
+#screen-level-5 .l5-controls-panel .salt-picker{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:.3rem;
+  margin:.45rem 0;
+}
+#screen-level-5 .l5-controls-panel .salt-chip{
+  padding:.38rem .2rem;
+  font-size:.68rem;
+}
+#screen-level-5 .l5-controls-panel .control-row{
+  margin:.45rem 0;
+  gap:.55rem;
+}
+#screen-level-5 .l5-controls-panel .control-row label{
+  min-width:68px;
+  font-size:.66rem;
+}
+#screen-level-5 .l5-controls-panel .help{margin-bottom:0}
+#screen-level-5 .l5-challenges-panel{padding:1rem}
+#screen-level-5 .l5-challenge-list{
+  max-height:min(34vh,270px);
+  overflow:auto;
+  padding-right:.2rem;
+}
+#screen-level-5 .l5-challenge-list::-webkit-scrollbar{width:8px}
+#screen-level-5 .l5-challenge-list::-webkit-scrollbar-thumb{
+  background:rgba(122,117,108,.35);
+  border-radius:999px;
+}
+@media (max-height:780px){
+  #screen-level-5 #l5Chart{height:clamp(384px,58.8vh,468px)}
+  #screen-level-5 .l5-challenge-list{max-height:min(30vh,220px)}
+}
+@media (max-width:900px){
+  #screen-level-5 .sandbox-wrap{grid-template-columns:1fr}
+  #screen-level-5 .l5-controls-panel{position:static;top:auto}
+  #screen-level-5 .l5-challenge-list{max-height:none;overflow:visible;padding-right:0}
+}
+
+/* ── COMPLETION SCREEN ── */
+.victory{
+  max-width:640px;margin:2rem auto;text-align:center;
+  padding:2.5rem 2rem;background:var(--surface);
+  border:1.5px solid var(--border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-xl);
+}
+.victory .medal{
+  width:90px;height:90px;margin:0 auto 1rem;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fde68a,#f59e0b 60%,#b45309);
+  display:grid;place-items:center;font-size:2.2rem;
+  box-shadow:0 10px 30px rgba(217,119,6,.35);
+  animation:victoryPop .7s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes victoryPop{0%{transform:scale(0) rotate(-360deg)}100%{transform:scale(1) rotate(0)}}
+.victory h2{font-size:1.6rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.4rem}
+.victory .stars-large{font-size:2rem;color:var(--gold);margin:.4rem 0}
+.victory .victory-stats{display:flex;justify-content:center;gap:1.5rem;margin-top:1rem;flex-wrap:wrap}
+.victory .vs-item{text-align:center}
+.victory .vs-item .vs-val{font:700 1.5rem var(--mono);color:var(--accent);display:block;line-height:1}
+.victory .vs-item .vs-lbl{font:500 .7rem var(--mono);color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem}
+.victory-actions{display:flex;justify-content:center;gap:.6rem;margin-top:1.4rem;flex-wrap:wrap}
+
+/* ── SETTINGS DRAWER ── */
+.settings-overlay{
+  position:fixed;inset:0;background:rgba(30,27,22,.3);backdrop-filter:blur(4px);
+  z-index:100;display:none;align-items:center;justify-content:center;
+}
+.settings-overlay.active{display:flex;animation:fadeIn .2s}
+.settings-card{
+  background:var(--surface);border-radius:var(--radius-lg);padding:1.75rem 2rem;
+  max-width:400px;width:92vw;box-shadow:var(--shadow-xl);
+}
+.settings-card h3{font-size:1.1rem;margin-bottom:.85rem;font-weight:700}
+.settings-card button{margin-top:.5rem;width:100%;padding:.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font:600 .88rem var(--font);cursor:pointer;transition:.15s;color:var(--text)}
+.settings-card button:hover{border-color:var(--text-dim)}
+.settings-card button.danger{border-color:var(--wrong);color:var(--wrong)}
+.settings-card button.danger:hover{background:var(--wrong-bg)}
+
+/* ── TOAST ── */
+.toast-layer{position:fixed;top:5rem;left:50%;transform:translateX(-50%);z-index:200;pointer-events:none;display:flex;flex-direction:column;gap:.4rem;align-items:center}
+.toast{
+  background:var(--text);color:#fff;
+  padding:.7rem 1.2rem;border-radius:24px;
+  font:600 .85rem var(--font);letter-spacing:.01em;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  animation:toastIn .4s cubic-bezier(.34,1.56,.64,1) forwards, toastOut .3s ease-out 2.6s forwards;
+  display:flex;align-items:center;gap:.5rem;
+}
+.toast.badge-toast{background:linear-gradient(135deg,#f59e0b,#b45309)}
+.toast .emoji{font-size:1.1rem}
+@keyframes toastIn{from{opacity:0;transform:translateY(-12px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-6px)}}
+
+/* ── MISC ── */
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.spacer{flex:1}
+.hidden{display:none !important}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* ── CERTIFICATE ── */
+.cert-wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;align-items:center}
+.cert-frame{
+  width:100%;aspect-ratio:10/7;background:linear-gradient(180deg,#fdf6ec,#f4e9d4);
+  border-radius:14px;box-shadow:var(--shadow-lg);
+  padding:2.2rem;position:relative;
+  border:3px double #b45309;
+}
+.cert-frame::before{
+  content:'';position:absolute;inset:14px;border:1px solid rgba(180,83,9,.45);
+  border-radius:10px;pointer-events:none;
+}
+.cert-frame::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(217,119,6,.1), transparent 14%),
+    radial-gradient(circle at 88% 14%, rgba(217,119,6,.1), transparent 14%),
+    radial-gradient(circle at 12% 86%, rgba(217,119,6,.1), transparent 14%),
+    radial-gradient(circle at 88% 86%, rgba(217,119,6,.1), transparent 14%);
+  pointer-events:none;border-radius:14px;
+}
+.cert-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;height:100%;gap:.4rem;justify-content:space-between}
+.cert-eyebrow{
+  font:700 .8rem var(--mono);color:#b45309;letter-spacing:.3em;text-transform:uppercase;
+}
+.cert-title{
+  font-family:"DM Sans",serif;font-weight:700;font-style:italic;
+  font-size:clamp(1.8rem,4.3vw,2.9rem);letter-spacing:-.02em;color:#1c1917;margin:.2rem 0;
+}
+.cert-awarded{font:400 1rem var(--font);color:#57534e}
+.cert-name{
+  font-family:"DM Sans",serif;font-style:italic;font-weight:600;
+  font-size:clamp(1.5rem,3.6vw,2.1rem);color:#1c1917;
+  background:transparent;border:none;border-bottom:1.5px solid #78716c;
+  text-align:center;padding:.25rem 1.5rem;margin:.15rem 0 .3rem;
+  max-width:520px;width:100%;outline:none;transition:border-color .15s;
+}
+.cert-name:focus{border-color:#b45309}
+.cert-body{
+  font:400 .95rem var(--font);color:#44403c;line-height:1.5;
+  max-width:560px;
+}
+.cert-grade-box{
+  display:flex;flex-direction:column;align-items:center;gap:.1rem;margin:.3rem 0 .2rem;
+}
+.cert-grade-num{
+  font:800 clamp(2rem,5.5vw,3.2rem) var(--mono);color:#b45309;letter-spacing:.05em;
+  line-height:1;
+}
+.cert-grade-label{font:600 .7rem var(--mono);color:#78716c;letter-spacing:.3em;text-transform:uppercase}
+.cert-badges{
+  display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin:.1rem 0 .15rem;
+}
+.cert-badge{display:flex;flex-direction:column;align-items:center;gap:.3rem;width:90px}
+.cert-badge-circle{
+  width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+  font-size:1.55rem;
+  box-shadow:0 3px 8px rgba(217,119,6,.28);
+  background:linear-gradient(135deg,#fbbf24,#d97706);
+  border:2px solid #92400e;color:#1c1917;
+}
+.cert-badge.locked .cert-badge-circle{
+  background:#e7e5e4;border:2px dashed #d6d3d1;color:#a8a29e;box-shadow:none;
+  font-size:1.1rem;
+}
+.cert-badge-label{font:600 .7rem var(--mono);color:#44403c;text-align:center;line-height:1.2}
+.cert-badge.locked .cert-badge-label{color:#a8a29e}
+.cert-stats{
+  display:flex;gap:1.2rem;font:600 .8rem var(--mono);color:#57534e;
+  flex-wrap:wrap;justify-content:center;letter-spacing:.04em;
+}
+.cert-stats span{display:inline-flex;align-items:center;gap:.3rem}
+.cert-stats b{color:#b45309;font-weight:800}
+.cert-signature{
+  display:flex;flex-direction:column;align-items:center;gap:.2rem;margin-top:.3rem;
+}
+.cert-sig-name{
+  font-family:"Dancing Script","Brush Script MT","DM Sans",cursive;
+  font-style:italic;font-weight:700;font-size:clamp(1.3rem,3vw,1.7rem);
+  color:#1c1917;letter-spacing:.02em;
+  transform:rotate(-2.5deg);transform-origin:center;
+  line-height:1;padding:0 .4rem .05rem;
+}
+.cert-sig-line{
+  width:min(320px,70%);height:1.5px;background:#78716c;margin-top:.1rem;
+}
+.cert-sig-role{
+  font:600 .68rem var(--mono);color:#78716c;letter-spacing:.24em;text-transform:uppercase;
+}
+.cert-footer{
+  display:flex;justify-content:space-between;width:100%;
+  font:500 .78rem var(--font);color:#78716c;margin-top:auto;
+  padding-top:.4rem;
+}
+.cert-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.cert-actions .download-btn{
+  background:linear-gradient(135deg,#f59e0b,#ea580c);color:#fff;
+  border:none;padding:.55rem 1.3rem;border-radius:999px;
+  font:600 .82rem var(--font);cursor:pointer;
+  box-shadow:0 2px 8px rgba(234,88,12,.28);transition:.2s;
+}
+.cert-actions .download-btn:hover{filter:brightness(1.05);box-shadow:0 4px 14px rgba(234,88,12,.35)}
+.cert-actions .download-btn:active{transform:scale(.97)}
+.cert-hint{font:400 .78rem var(--font);color:var(--text-dim);text-align:center;max-width:480px}
+.cert-cta{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:linear-gradient(135deg,#fde68a,#fbbf24);color:#7c2d12;
+  border:1.5px solid #b45309;padding:.45rem 1rem;border-radius:999px;
+  font:600 .8rem var(--font);cursor:pointer;text-decoration:none;
+  transition:.2s;
+}
+.cert-cta:hover{filter:brightness(1.03);transform:translateY(-1px)}
+
+/* Small screens */
+@media (max-width:640px){
+  #l4Card .mcq-options.mcq-options--l4-two-col{grid-template-columns:1fr}
+  .topbar-inner{padding:.7rem 1rem;gap:.6rem}
+  .brand h1{font-size:.98rem}
+  .brand .sub{display:none}
+  .level-dots{margin-left:0}
+  .level-dot{width:22px;height:22px;font-size:.6rem}
+  .stat{font-size:.72rem;padding:.25rem .55rem}
+  .stage{padding:1rem 1rem 2.5rem}
+  .badge-tray{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar" role="banner">
+  <div class="topbar-inner">
+    <div class="brand">
+      <h1>Solubility <span>Quest</span></h1>
+      <span class="sub">a gamified activity</span>
+    </div>
+    <div class="level-dots" id="levelDots" role="navigation" aria-label="Level selection"></div>
+    <div class="topbar-stats">
+      <div class="stat score" title="Total XP"><span class="icon">⚡</span><span id="scoreVal">0</span></div>
+      <div class="stat streak cold" id="streakStat" title="Streak multiplier"><span class="icon">🔥</span><span id="streakVal">×1</span></div>
+      <div class="badge-tray" id="badgeTray" aria-label="Earned badges"></div>
+      <button class="settings-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+    </div>
+  </div>
+</div>
+
+<main class="stage" id="stage">
+
+  <!-- LEVEL MENU -->
+  <section class="screen active" id="screen-menu">
+    <div class="intro-block">
+      <h2>Can you read a solubility curve?</h2>
+      <p>Work through five progressively harder levels: learn the rules of saturated / unsaturated / supersaturated solutions, run a real beaker experiment with KCl, then prove yourself on two quiz rounds from the textbook. Finish in the sandbox to become a Lab Master.</p>
+      <div class="intro-actions">
+        <button class="cert-cta" id="menuCert">📜 View certificate</button>
+        <a class="game-btn" href="index.html" aria-label="Back to Solubility Curves lab">
+          <span class="game-ico" aria-hidden="true">↩</span>Back to Lab
+        </a>
+      </div>
+    </div>
+    <div class="level-card-grid" id="levelGrid"></div>
+  </section>
+
+  <!-- LEVEL 1 — TUTORIAL -->
+  <section class="screen" id="screen-level-1">
+    <div class="level-head">
+      <button class="back-btn" data-back>← Back</button>
+      <h2>Level 1 · Meet the Curve</h2>
+      <span class="subtitle">Drag each lab sample onto the correct band</span>
+    </div>
+    <div class="tutorial-wrap">
+      <div class="panel tutorial-stage">
+        <div class="panel-label">KCl Solubility Curve</div>
+        <canvas class="chart" id="l1Chart" height="360" aria-label="Solubility curve for KCl"></canvas>
+        <p class="help" id="l1Help">Each sample plots a point on this chart. Compare its height against the curve: above it, below it, or exactly on it?</p>
+      </div>
+      <div>
+        <div class="panel l1-match-panel">
+          <div class="panel-label">Drop zones</div>
+          <div class="drag-tray" id="l1Tray">
+            <span class="drag-tray-label">Lab samples (drag these)</span>
+            <div class="drag-points-row" id="l1Points"></div>
+          </div>
+          <div class="tutorial-bands" id="l1Bands">
+            <div class="band" data-cat="supersaturated" role="button" tabindex="0" aria-label="Supersaturated band">
+              <div class="band-icon">↑</div>
+              <div class="band-text"><strong>Supersaturated</strong><small>Point ABOVE the curve</small></div>
+            </div>
+            <div class="band" data-cat="saturated" role="button" tabindex="0" aria-label="Saturated band">
+              <div class="band-icon">●</div>
+              <div class="band-text"><strong>Saturated</strong><small>Point ON the curve</small></div>
+            </div>
+            <div class="band" data-cat="unsaturated" role="button" tabindex="0" aria-label="Unsaturated band">
+              <div class="band-icon">↓</div>
+              <div class="band-text"><strong>Unsaturated</strong><small>Point BELOW the curve</small></div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:1rem">
+            <button class="back-btn" id="l1Reset">↻ Reset</button>
+            <div class="spacer"></div>
+            <button class="submit-btn hidden" id="l1Next">Continue →</button>
+          </div>
+          <div class="feedback-line" id="l1Feedback"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 2 — KCL CHALLENGE -->
+  <section class="screen" id="screen-level-2">
+    <div class="level-head">
+      <button class="back-btn" data-back>← Back</button>
+      <h2>Level 2 · The KCl Challenge</h2>
+      <span class="subtitle">Predict, then verify</span>
+    </div>
+    <div class="two-col l2-layout">
+      <div class="l2-main">
+        <div class="scenario-card" id="l2Scenario"></div>
+        <div class="beakers-row" id="l2Beakers">
+          <div class="beaker-card" data-beaker="A">
+            <div class="panel-label">Beaker A</div>
+            <div class="beaker-stage"><div class="beaker-svg" data-beaker-svg="A"></div></div>
+            <div class="heater-strip" data-heater-strip="A" aria-hidden="true">
+              <span class="heater-dot" data-heater-dot="A"></span>
+              <span class="heater-text" data-heater-text="A">Hotplate · 40°C</span>
+            </div>
+            <div class="control-row">
+              <label>Temp</label>
+              <input type="range" min="0" max="100" step="1" value="40" data-input="tempA" aria-label="Beaker A temperature">
+              <span class="val-pill" data-val="tempA">40°C</span>
+            </div>
+            <div class="control-row l2-mass-row">
+              <label>KCl (g)</label>
+              <div class="stepper">
+                <button data-step="gA" data-dir="-5" aria-label="Decrease KCl by 5">−</button>
+                <input type="text" data-val="gA" value="40" readonly aria-label="KCl mass">
+                <button data-step="gA" data-dir="5" aria-label="Increase KCl by 5">+</button>
+              </div>
+              <span class="verdict" data-verdict="A">—</span>
+            </div>
+          </div>
+          <div class="beaker-card" data-beaker="B">
+            <div class="panel-label">Beaker B</div>
+            <div class="beaker-stage"><div class="beaker-svg" data-beaker-svg="B"></div></div>
+            <div class="heater-strip" data-heater-strip="B" aria-hidden="true">
+              <span class="heater-dot" data-heater-dot="B"></span>
+              <span class="heater-text" data-heater-text="B">Hotplate · 90°C</span>
+            </div>
+            <div class="control-row">
+              <label>Temp</label>
+              <input type="range" min="0" max="100" step="1" value="90" data-input="tempB" aria-label="Beaker B temperature">
+              <span class="val-pill" data-val="tempB">90°C</span>
+            </div>
+            <div class="control-row l2-mass-row">
+              <label>KCl (g)</label>
+              <div class="stepper">
+                <button data-step="gB" data-dir="-5" aria-label="Decrease KCl by 5">−</button>
+                <input type="text" data-val="gB" value="55" readonly aria-label="KCl mass">
+                <button data-step="gB" data-dir="5" aria-label="Increase KCl by 5">+</button>
+              </div>
+              <span class="verdict" data-verdict="B">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="l2-rail">
+        <div class="panel l2-rail-task">
+          <div class="panel-label">Task</div>
+          <div id="l2Task"></div>
+          <div class="prediction-row hidden" id="l2Predict">
+            <button class="predict-btn" data-guess="unsaturated">Unsat</button>
+            <button class="predict-btn" data-guess="saturated">Saturated</button>
+            <button class="predict-btn" data-guess="supersaturated">Supersat</button>
+          </div>
+          <div class="feedback-line" id="l2Feedback"></div>
+          <div class="row" style="margin-top:.8rem">
+            <div class="spacer"></div>
+            <button class="submit-btn hidden" id="l2Advance">Next step →</button>
+          </div>
+        </div>
+        <div class="panel l2-rail-chart">
+          <div class="panel-label">Reference chart</div>
+          <div class="l2-chart-wrap">
+            <canvas class="chart" id="l2Chart" height="180"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 3 — TIMED QUIZ -->
+  <section class="screen" id="screen-level-3">
+    <div class="level-head">
+      <button class="back-btn" data-back>← Back</button>
+      <h2>Level 3 · Read the Chart</h2>
+      <span class="subtitle">30 s each — streak builds the multiplier</span>
+    </div>
+    <div class="quest-wrap">
+      <div class="panel">
+        <div class="panel-label">Solubility Curves</div>
+        <canvas class="chart" id="l3Chart" height="380"></canvas>
+        <p class="help" style="margin:.5rem 0 0">Use the chart to find the answer. Click a curve label to isolate it.</p>
+      </div>
+      <div class="question-card" id="l3Card"></div>
+    </div>
+  </section>
+
+  <!-- LEVEL 4 — BOSS -->
+  <section class="screen" id="screen-level-4">
+    <div class="level-head">
+      <button class="back-btn" data-back>← Back</button>
+      <h2>Level 4 · Saturation Boss</h2>
+      <span class="subtitle">Six questions, untimed — no multiplier, just accuracy</span>
+    </div>
+    <div class="quest-wrap">
+      <div class="panel">
+        <div class="panel-label">Master Solubility Chart</div>
+        <canvas class="chart" id="l4Chart" height="380"></canvas>
+      </div>
+      <div class="question-card" id="l4Card"></div>
+    </div>
+  </section>
+
+  <!-- LEVEL 5 — SANDBOX -->
+  <section class="screen" id="screen-level-5">
+    <div class="level-head">
+      <button class="back-btn" data-back>← Back</button>
+      <h2>Level 5 · Lab Master</h2>
+      <span class="subtitle">Free play — complete challenge cards for bonus stars</span>
+    </div>
+    <div class="sandbox-wrap">
+      <div class="panel">
+        <div class="panel-label">Live Plot</div>
+        <canvas class="chart" id="l5Chart" height="380"></canvas>
+      </div>
+      <div class="l5-sidebar">
+        <div class="panel l5-controls-panel">
+          <div class="panel-label">Controls</div>
+          <div class="salt-picker" id="l5SaltPicker"></div>
+          <div class="control-row">
+            <label>Temp</label>
+            <input type="range" min="0" max="100" step="1" value="25" id="l5Temp">
+            <span class="val-pill" id="l5TempVal">25°C</span>
+          </div>
+          <div class="control-row">
+            <label>Mass (g)</label>
+            <div class="stepper">
+              <button id="l5MassMinus" aria-label="Decrease mass">−</button>
+              <input type="text" id="l5Mass" value="30" readonly>
+              <button id="l5MassPlus" aria-label="Increase mass">+</button>
+            </div>
+            <div class="spacer"></div>
+            <span class="verdict" id="l5Verdict">—</span>
+          </div>
+          <p class="help" id="l5Readout" style="margin-top:.6rem"></p>
+        </div>
+        <div class="panel l5-challenges-panel">
+          <div class="panel-label">Challenge cards</div>
+          <div class="challenge-list l5-challenge-list" id="l5Challenges"></div>
+          <div class="row" style="margin-top:.6rem">
+            <div class="spacer"></div>
+            <button class="submit-btn" id="l5Finish">Finish level</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VICTORY SCREEN -->
+  <section class="screen" id="screen-victory">
+    <div class="victory">
+      <div class="medal" id="victoryMedal">🏆</div>
+      <h2 id="victoryTitle">Level Complete!</h2>
+      <div class="stars-large" id="victoryStars">★ ★ ★</div>
+      <p id="victoryMessage" style="color:var(--text-mid);margin:.5rem 0"></p>
+      <div class="victory-stats" id="victoryStats"></div>
+      <div class="victory-actions">
+        <button class="back-btn" id="victoryReplay">↻ Replay level</button>
+        <button class="submit-btn" id="victoryContinue">Continue →</button>
+      </div>
+      <button class="cert-cta" id="victoryCert" style="margin-top:.6rem;display:none">📜 View certificate</button>
+    </div>
+  </section>
+
+  <!-- CERTIFICATE -->
+  <section class="screen" id="screen-certificate">
+    <div class="level-head">
+      <button class="back-btn" data-back>← Back</button>
+      <h2>Your Certificate</h2>
+      <span class="subtitle">Earn more badges to fill the seal — download anytime</span>
+    </div>
+    <div class="cert-wrap">
+      <div class="cert-frame" id="certFrame" role="region" aria-label="Certificate of Achievement">
+        <div class="cert-inner">
+          <div>
+            <div class="cert-eyebrow">Solubility Quest · Certificate</div>
+            <h3 class="cert-title">Certificate of Achievement</h3>
+          </div>
+          <div class="cert-awarded">Awarded to</div>
+          <input class="cert-name" id="certName" type="text" maxlength="40" placeholder="Your name" aria-label="Student name">
+          <div class="cert-body">for completing <b>Solubility Quest</b> — a five-level exploration of saturation, solubility curves, and laboratory technique.</div>
+          <div class="cert-grade-box">
+            <div class="cert-grade-num" id="certGradeNum">0 / 5</div>
+            <div class="cert-grade-label">Badges earned</div>
+          </div>
+          <div class="cert-badges" id="certBadges"></div>
+          <div class="cert-stats" id="certStats"></div>
+          <div class="cert-signature">
+            <div class="cert-sig-name">Dr. Emil Jivishov</div>
+            <div class="cert-sig-line"></div>
+            <div class="cert-sig-role">Instructor · Awarded by</div>
+          </div>
+          <div class="cert-footer">
+            <span>Issued <b id="certDate">—</b></span>
+            <span>solubility-quest · chemistry activity</span>
+          </div>
+        </div>
+      </div>
+      <p class="cert-hint">Type your name above (it will be saved on this device) then download a PNG to keep or share.</p>
+      <div class="cert-actions">
+        <button class="download-btn" id="certDownload">⬇ Download PNG</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- SETTINGS -->
+<div class="settings-overlay" id="settingsOverlay" role="dialog" aria-modal="true">
+  <div class="settings-card">
+    <h3>Settings</h3>
+    <p style="color:var(--text-mid);font-size:.86rem">Manage your progress in this activity.</p>
+    <button id="settingsClose">Close</button>
+    <button class="danger" id="settingsReset">Reset all progress</button>
+  </div>
+</div>
+
+<div class="toast-layer" id="toastLayer" aria-live="polite"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   SOLUBILITY DATASET  (g per 100 g H₂O)
+   Values tuned so all video-answer checks pass.
+   ═══════════════════════════════════════════ */
+const TEMPS = [0,10,20,30,40,50,60,70,80,90,100];
+const SALTS = {
+  KCl:        { label:'KCl',        color:'#0e7490', vals:[28, 31, 34, 37, 40, 43, 46, 49, 52, 54, 56] },
+  KNO3:       { label:'KNO₃',       color:'#7c3aed', vals:[13, 21, 30, 45, 63, 83, 107, 135, 165, 200, 245] },
+  NaCl:       { label:'NaCl',       color:'#b45309', vals:[35, 36, 36, 37, 37, 39, 39, 40, 40, 40, 40] },
+  NaNO3:      { label:'NaNO₃',      color:'#be185d', vals:[73, 80, 88, 97, 106, 116, 127, 137, 150, 163, 180] },
+  CaCl2:      { label:'CaCl₂',      color:'#dc2626', vals:[59, 65, 75, 95, 115, 138, 160, 180, 200, 220, 240] },
+  PbNO32:     { label:'Pb(NO₃)₂',   color:'#ea580c', vals:[37, 48, 55, 64, 76, 85, 98, 110, 120, 130, 140] },
+  K2Cr2O7:    { label:'K₂Cr₂O₇',    color:'#4338ca', vals:[5, 7, 12, 18, 26, 33, 44, 51, 62, 73, 82] },
+  KClO3:      { label:'KClO₃',      color:'#854d0e', vals:[3, 5, 7, 10, 15, 19, 25, 32, 38, 47, 57] },
+  Ce2SO43:    { label:'Ce₂(SO₄)₃',  color:'#6b7280', vals:[20, 13, 10, 8, 6, 4, 4, 3, 3, 3, 2] },
+  NH4Cl:      { label:'NH₄Cl',      color:'#059669', vals:[29, 33, 37, 42, 46, 51, 55, 60, 66, 71, 77] },
+  KI:         { label:'KI',         color:'#2563eb', vals:[128, 136, 144, 153, 162, 176, 192, 210, 229, 248, 259] },
+  HCl:        { label:'HCl',        color:'#0891b2', vals:[82, 77, 73, 67, 60, 52, 45, 38, 31, 24, 18] }
+};
+
+// Monotone cubic interpolation (ported from index.html)
+function buildInterp(vals){
+  const xs = TEMPS, ys = vals, n = xs.length;
+  const d = [], m = [];
+  for(let i=0;i<n-1;i++) d[i] = (ys[i+1]-ys[i])/(xs[i+1]-xs[i]);
+  m[0] = d[0];
+  for(let i=1;i<n-1;i++) m[i] = (d[i-1]+d[i])/2;
+  m[n-1] = d[n-2];
+  for(let i=0;i<n-1;i++){
+    if(d[i]===0){m[i]=0;m[i+1]=0;continue;}
+    const a=m[i]/d[i], b=m[i+1]/d[i], s=a*a+b*b;
+    if(s>9){const t=3/Math.sqrt(s);m[i]=t*a*d[i];m[i+1]=t*b*d[i];}
+  }
+  return function(x){
+    if(x<=xs[0]) return ys[0];
+    if(x>=xs[n-1]) return ys[n-1];
+    let i=0; for(let j=0;j<n-1;j++){ if(x>=xs[j] && x<=xs[j+1]){ i=j; break; } }
+    const h=xs[i+1]-xs[i], t=(x-xs[i])/h, t2=t*t, t3=t2*t;
+    return (2*t3-3*t2+1)*ys[i] + (t3-2*t2+t)*h*m[i] + (-2*t3+3*t2)*ys[i+1] + (t3-t2)*h*m[i+1];
+  };
+}
+for(const k in SALTS) SALTS[k].fn = buildInterp(SALTS[k].vals);
+
+function solubility(salt, t){ return SALTS[salt].fn(t); }
+function classify(salt, t, g, tol=1.5){
+  const s = solubility(salt, t);
+  if(Math.abs(g-s) <= tol) return 'saturated';
+  if(g > s) return 'supersaturated';
+  return 'unsaturated';
+}
+
+/* ═══════════════════════════════════════════
+   STATE  /  PERSISTENCE
+   ═══════════════════════════════════════════ */
+const STORAGE_KEY = 'solubility-game.progress';
+const DEFAULT_STATE = {
+  levelStars: {1:0, 2:0, 3:0, 4:0, 5:0},
+  totalScore: 0,
+  badges: {},
+  unlocked: 1
+};
+let state = loadState();
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {...DEFAULT_STATE, levelStars:{...DEFAULT_STATE.levelStars}, badges:{}};
+    const parsed = JSON.parse(raw);
+    return {
+      levelStars:{...DEFAULT_STATE.levelStars, ...(parsed.levelStars||{})},
+      totalScore: parsed.totalScore || 0,
+      badges: parsed.badges || {},
+      unlocked: parsed.unlocked || 1,
+      studentName: (parsed.studentName || '').slice(0,40)
+    };
+  } catch { return {...DEFAULT_STATE, levelStars:{...DEFAULT_STATE.levelStars}, badges:{}}; }
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+const LEVELS = [
+  { id:1, tag:'Tutorial', title:'Meet the Curve', desc:'Learn the three zones. Drag sample points into the saturated, unsaturated, and supersaturated bands.' },
+  { id:2, tag:'Scenario', title:'The KCl Challenge', desc:'Run the two-beaker experiment. Predict what happens before the crystals settle.' },
+  { id:3, tag:'Quiz · Timed', title:'Read the Chart', desc:'Four textbook questions, 30 seconds each. Streak x3 at the top.' },
+  { id:4, tag:'Boss', title:'Saturation Boss', desc:'Six mixed-format questions on the full solubility chart.' },
+  { id:5, tag:'Sandbox', title:'Lab Master', desc:'Free play plus three randomised challenges.' }
+];
+
+const BADGES = {
+  curveReader:     { icon:'📖', label:'Curve Reader' },
+  scenarioSage:    { icon:'🧪', label:'Scenario Scientist' },
+  quickThinker:    { icon:'⚡', label:'Quick Thinker' },
+  chartChampion:   { icon:'🎯', label:'Chart Champion' },
+  labMaster:       { icon:'🏆', label:'Lab Master' }
+};
+
+/* ═══════════════════════════════════════════
+   UI HELPERS
+   ═══════════════════════════════════════════ */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+
+function showScreen(name){
+  $$('.screen').forEach(s => s.classList.remove('active'));
+  $(`#screen-${name}`).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+  renderTopbar();
+}
+
+function toast(msg, variant=''){
+  const div = document.createElement('div');
+  div.className = 'toast ' + (variant==='badge' ? 'badge-toast' : '');
+  div.innerHTML = msg;
+  $('#toastLayer').appendChild(div);
+  setTimeout(()=>div.remove(), 3000);
+}
+
+function awardBadge(key){
+  if(state.badges[key]) return;
+  state.badges[key] = true;
+  saveState();
+  renderTopbar();
+  toast(`<span class="emoji">${BADGES[key].icon}</span> Badge earned: ${BADGES[key].label}`, 'badge');
+}
+
+function addScore(n){
+  state.totalScore += n;
+  saveState();
+  renderTopbar();
+}
+
+function renderTopbar(){
+  const dots = $('#levelDots'); dots.innerHTML = '';
+  LEVELS.forEach(l => {
+    const d = document.createElement('button');
+    d.className = 'level-dot';
+    d.textContent = l.id;
+    if(l.id <= state.unlocked) d.classList.add('available');
+    else d.classList.add('locked');
+    if(state.levelStars[l.id] > 0) d.classList.add('complete');
+    const stars = state.levelStars[l.id];
+    if(stars > 0){
+      const sEl = document.createElement('span');
+      sEl.className = 'stars';
+      sEl.textContent = '★'.repeat(stars);
+      d.appendChild(sEl);
+    }
+    d.addEventListener('click', () => {
+      if(l.id > state.unlocked){ toast('🔒 Locked — complete previous level first'); return; }
+      startLevel(l.id);
+    });
+    d.title = `Level ${l.id}: ${l.title}${stars?` (${stars}★)`:''}`;
+    dots.appendChild(d);
+  });
+
+  $('#scoreVal').textContent = state.totalScore.toLocaleString();
+
+  const tray = $('#badgeTray'); tray.innerHTML = '';
+  Object.keys(state.badges).forEach(k => {
+    if(!state.badges[k]) return;
+    const b = document.createElement('span');
+    b.className = 'badge';
+    b.textContent = BADGES[k].icon;
+    b.setAttribute('data-label', BADGES[k].label);
+    tray.appendChild(b);
+  });
+}
+
+function renderLevelGrid(){
+  const grid = $('#levelGrid'); grid.innerHTML = '';
+  LEVELS.forEach(l => {
+    const locked = l.id > state.unlocked;
+    const stars = state.levelStars[l.id];
+    const btn = document.createElement('button');
+    btn.className = 'level-card' + (locked?' locked':'') + (stars>=3?' complete':'');
+    btn.type = 'button';
+    btn.innerHTML = `
+      <div class="num">${l.id}</div>
+      <div class="tag">${l.tag}</div>
+      <h3>${l.title}</h3>
+      <p>${l.desc}</p>
+      <div class="stars-row">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+      ${locked?'<span class="lock-icon">🔒</span>':''}
+    `;
+    btn.addEventListener('click', () => {
+      if(locked){ toast('🔒 Locked — complete previous level first'); return; }
+      startLevel(l.id);
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function backToMenu(){ showScreen('menu'); renderLevelGrid(); }
+
+/* ═══════════════════════════════════════════
+   CERTIFICATE
+   ═══════════════════════════════════════════ */
+function openCertificate(){
+  renderCertificate();
+  showScreen('certificate');
+  // Prompt to edit the name on first open if blank
+  const nameIn = $('#certName');
+  if(nameIn && !nameIn.value){ setTimeout(()=>nameIn.focus(), 180); }
+}
+
+function renderCertificate(){
+  const keys = Object.keys(BADGES);
+  const earned = keys.filter(k => !!state.badges[k]).length;
+  const total = keys.length;
+  $('#certGradeNum').textContent = `${earned} / ${total}`;
+
+  const nameIn = $('#certName');
+  if(nameIn && !nameIn.value && state.studentName) nameIn.value = state.studentName;
+
+  $('#certBadges').innerHTML = keys.map(k => {
+    const on = !!state.badges[k];
+    return `<div class="cert-badge ${on?'earned':'locked'}" data-key="${k}">
+      <div class="cert-badge-circle">${on?BADGES[k].icon:'🔒'}</div>
+      <div class="cert-badge-label">${BADGES[k].label}</div>
+    </div>`;
+  }).join('');
+
+  const starsEarned = [1,2,3,4,5].reduce((a,n)=>a + (state.levelStars[n]||0), 0);
+  const starsMax = LEVELS.length * 3;
+  $('#certStats').innerHTML = `
+    <span>⚡ <b>${state.totalScore.toLocaleString()}</b> XP</span>
+    <span>★ <b>${starsEarned}</b>/${starsMax} stars</span>
+    <span>🏅 <b>${earned}</b>/${total} badges</span>
+  `;
+
+  const d = new Date();
+  const opts = { year:'numeric', month:'long', day:'numeric' };
+  $('#certDate').textContent = d.toLocaleDateString(undefined, opts);
+}
+
+function saveCertName(){
+  const nameIn = $('#certName');
+  if(!nameIn) return;
+  const v = nameIn.value.trim().slice(0,40);
+  state.studentName = v;
+  saveState();
+}
+
+function drawCertificateCanvas(){
+  const w = 1400, h = 980;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+
+  // Paper background
+  const bg = ctx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0, '#fdf6ec');
+  bg.addColorStop(1, '#f4e9d4');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
+
+  // Subtle corner ornaments
+  [[80,80],[w-80,80],[80,h-80],[w-80,h-80]].forEach(([x,y])=>{
+    const rg = ctx.createRadialGradient(x,y,0,x,y,180);
+    rg.addColorStop(0, 'rgba(217,119,6,0.12)');
+    rg.addColorStop(1, 'rgba(217,119,6,0)');
+    ctx.fillStyle = rg; ctx.fillRect(x-180,y-180,360,360);
+  });
+
+  // Double border
+  ctx.strokeStyle = '#b45309'; ctx.lineWidth = 6;
+  ctx.strokeRect(36,36,w-72,h-72);
+  ctx.strokeStyle = 'rgba(180,83,9,.55)'; ctx.lineWidth = 2;
+  ctx.strokeRect(58,58,w-116,h-116);
+
+  // Corner dots
+  ctx.fillStyle = '#b45309';
+  [[70,70],[w-70,70],[70,h-70],[w-70,h-70]].forEach(([x,y])=>{
+    ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fill();
+  });
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+
+  // Eyebrow
+  ctx.fillStyle = '#b45309';
+  ctx.font = '700 26px "IBM Plex Mono","Consolas",monospace';
+  ctx.fillText('SOLUBILITY QUEST · CERTIFICATE', w/2, 140);
+
+  // Title
+  ctx.fillStyle = '#1c1917';
+  ctx.font = 'bold italic 78px "DM Sans","Georgia",serif';
+  ctx.fillText('Certificate of Achievement', w/2, 230);
+
+  // Ornamental divider
+  ctx.strokeStyle = '#b45309'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(w/2-170, 258); ctx.lineTo(w/2-20, 258); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w/2+20, 258); ctx.lineTo(w/2+170, 258); ctx.stroke();
+  ctx.fillStyle = '#b45309';
+  ctx.beginPath(); ctx.arc(w/2, 258, 5, 0, Math.PI*2); ctx.fill();
+
+  // Awarded to
+  ctx.font = '500 22px "DM Sans",sans-serif';
+  ctx.fillStyle = '#57534e';
+  ctx.fillText('Awarded to', w/2, 310);
+
+  // Name
+  ctx.fillStyle = '#1c1917';
+  ctx.font = 'italic 600 58px "DM Sans","Georgia",serif';
+  const rawName = ($('#certName')?.value || state.studentName || '').trim();
+  const name = rawName || 'Curious Chemist';
+  ctx.fillText(name, w/2, 380);
+  // underline
+  ctx.strokeStyle = '#78716c'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(w/2-320, 400); ctx.lineTo(w/2+320, 400); ctx.stroke();
+
+  // Body
+  ctx.fillStyle = '#44403c';
+  ctx.font = '400 22px "DM Sans",sans-serif';
+  ctx.fillText('for completing Solubility Quest — a five-level exploration of', w/2, 450);
+  ctx.fillText('saturation, solubility curves, and laboratory technique.', w/2, 482);
+
+  // Grade
+  const keys = Object.keys(BADGES);
+  const earned = keys.filter(k => !!state.badges[k]).length;
+  const total = keys.length;
+  ctx.fillStyle = '#b45309';
+  ctx.font = '800 78px "IBM Plex Mono",monospace';
+  ctx.fillText(`${earned} / ${total}`, w/2, 590);
+  ctx.font = '700 16px "IBM Plex Mono",monospace';
+  ctx.fillStyle = '#78716c';
+  ctx.fillText('BADGES EARNED', w/2, 620);
+
+  // Badges row
+  const badgeR = 40;
+  const slotW = 170;
+  const startX = w/2 - ((keys.length-1) * slotW) / 2;
+  const badgeY = 720;
+  ctx.textBaseline = 'middle';
+  keys.forEach((k, i) => {
+    const x = startX + i * slotW;
+    const on = !!state.badges[k];
+    if(on){
+      const grad = ctx.createLinearGradient(x-badgeR, badgeY-badgeR, x+badgeR, badgeY+badgeR);
+      grad.addColorStop(0, '#fbbf24');
+      grad.addColorStop(1, '#d97706');
+      ctx.beginPath(); ctx.arc(x, badgeY, badgeR, 0, Math.PI*2);
+      ctx.fillStyle = grad; ctx.fill();
+      ctx.strokeStyle = '#92400e'; ctx.lineWidth = 2.5; ctx.stroke();
+      // soft inner ring
+      ctx.beginPath(); ctx.arc(x, badgeY, badgeR-5, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(255,255,255,.38)'; ctx.lineWidth = 1.5; ctx.stroke();
+      // icon
+      ctx.font = '40px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+      ctx.fillStyle = '#1c1917';
+      ctx.fillText(BADGES[k].icon, x, badgeY+2);
+    } else {
+      ctx.beginPath(); ctx.arc(x, badgeY, badgeR, 0, Math.PI*2);
+      ctx.fillStyle = '#e7e5e4'; ctx.fill();
+      ctx.setLineDash([6,5]);
+      ctx.strokeStyle = '#a8a29e'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = '32px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+      ctx.fillStyle = '#a8a29e';
+      ctx.fillText('🔒', x, badgeY+2);
+    }
+    // label
+    ctx.textBaseline = 'top';
+    ctx.font = '700 13px "IBM Plex Mono",monospace';
+    ctx.fillStyle = on ? '#44403c' : '#a8a29e';
+    ctx.fillText(BADGES[k].label, x, badgeY + badgeR + 12);
+    ctx.textBaseline = 'middle';
+  });
+
+  // Stats line
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#57534e';
+  ctx.font = '600 18px "IBM Plex Mono",monospace';
+  const starsEarned = [1,2,3,4,5].reduce((a,n)=>a + (state.levelStars[n]||0), 0);
+  const starsMax = LEVELS.length * 3;
+  const statsLine = `${state.totalScore.toLocaleString()} XP   ·   ${starsEarned}/${starsMax} stars   ·   ${earned}/${total} badges`;
+  ctx.fillText(statsLine, w/2, 848);
+
+  // Signature block (Awarded by)
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.translate(w/2, 892);
+  ctx.rotate(-2.5 * Math.PI / 180);
+  ctx.fillStyle = '#1c1917';
+  ctx.font = 'italic 700 40px "Brush Script MT","Dancing Script","Segoe Script","DM Sans",cursive';
+  ctx.fillText('Dr. Emil Jivishov', 0, 0);
+  ctx.restore();
+  // Signature line
+  ctx.strokeStyle = '#78716c'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(w/2-210, 910); ctx.lineTo(w/2+210, 910); ctx.stroke();
+  // Role label
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#78716c';
+  ctx.font = '700 13px "IBM Plex Mono",monospace';
+  ctx.fillText('INSTRUCTOR  ·  AWARDED BY', w/2, 932);
+
+  // Footer
+  const d = new Date();
+  const dateStr = d.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+  ctx.font = '500 15px "DM Sans",sans-serif';
+  ctx.fillStyle = '#78716c';
+  ctx.textAlign = 'left';
+  ctx.fillText('Issued: ' + dateStr, 110, 950);
+  ctx.textAlign = 'right';
+  ctx.fillText('solubility-quest · chemistry activity', w-110, 950);
+
+  return c;
+}
+
+function downloadCertificate(){
+  saveCertName();
+  const canvas = drawCertificateCanvas();
+  canvas.toBlob(blob => {
+    if(!blob){ toast('❌ Download failed — try a different browser'); return; }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const safeName = ((state.studentName||'student').trim().replace(/\s+/g,'-').replace(/[^a-zA-Z0-9_\-]/g,'').toLowerCase() || 'student');
+    a.href = url;
+    a.download = `solubility-quest-certificate-${safeName}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1200);
+    toast('✅ Certificate downloaded');
+  }, 'image/png');
+}
+
+function startLevel(n){
+  window._activeLevel = n;
+  if(n===1) startL1();
+  else if(n===2) startL2();
+  else if(n===3) startL3();
+  else if(n===4) startL4();
+  else if(n===5) startL5();
+}
+
+function completeLevel(n, stars, summary){
+  stars = Math.max(1, Math.min(3, stars));
+  if(stars > (state.levelStars[n]||0)) state.levelStars[n] = stars;
+  if(state.unlocked < n+1 && n < 5) state.unlocked = n+1;
+  saveState();
+  showVictory(n, stars, summary);
+}
+
+function showVictory(n, stars, summary){
+  $('#victoryMedal').textContent = stars===3 ? '🏆' : (stars===2 ? '🥈' : '🥉');
+  $('#victoryTitle').textContent = `Level ${n} Complete!`;
+  $('#victoryStars').textContent = '★'.repeat(stars) + '☆'.repeat(3-stars);
+  $('#victoryMessage').textContent = summary.message || '';
+  const stats = $('#victoryStats'); stats.innerHTML = '';
+  (summary.stats||[]).forEach(s => {
+    const d = document.createElement('div');
+    d.className = 'vs-item';
+    d.innerHTML = `<span class="vs-val">${s.val}</span><span class="vs-lbl">${s.lbl}</span>`;
+    stats.appendChild(d);
+  });
+  $('#victoryReplay').onclick = () => startLevel(n);
+  $('#victoryContinue').onclick = () => {
+    if(n===5){
+      const allThree = [1,2,3,4,5].every(i => state.levelStars[i]>=3);
+      if(allThree) awardBadge('labMaster');
+    }
+    backToMenu();
+  };
+  // Show certificate CTA once L5 has been completed at least once
+  const certBtn = $('#victoryCert');
+  if(certBtn) certBtn.style.display = (state.levelStars[5]>0) ? 'inline-flex' : 'none';
+  showScreen('victory');
+}
+
+/* ═══════════════════════════════════════════
+   CHART DRAWING
+   ═══════════════════════════════════════════ */
+const MARGIN = {top:16, right:24, bottom:44, left:52};
+function sizeCanvas(cv){
+  const parent = cv.parentElement;
+  const rect = cv.getBoundingClientRect();
+  const boxW = rect.width || cv.clientWidth || (parent ? parent.clientWidth : 0) || 320;
+  const boxH = rect.height || cv.clientHeight || parseInt(cv.getAttribute('height'),10) || 320;
+  const w = Math.max(220, Math.round(boxW));
+  const hAttr = Math.max(120, Math.round(boxH));
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(w * dpr); cv.height = Math.round(hAttr * dpr);
+  cv.style.width = w + 'px';
+  cv.style.height = hAttr + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return { ctx, w, h:hAttr };
+}
+
+function drawChart(cv, opts){
+  const { ctx, w, h } = sizeCanvas(cv);
+  const yMax = opts.yMax || 260;
+  const plotW = w - MARGIN.left - MARGIN.right;
+  const plotH = h - MARGIN.top - MARGIN.bottom;
+  const xToC = t => MARGIN.left + (t/100)*plotW;
+  const yToC = s => MARGIN.top + plotH - Math.min(s, yMax)/yMax*plotH;
+  const yMajorStep = yMax <= 100 ? 10 : (yMax <= 200 ? 20 : 25);
+  const yMinorStep = yMax <= 100 ? 5 : 10;
+  const buildTicks = step => {
+    const vals = [];
+    for(let s=0; s<=yMax + 1e-6; s+=step) vals.push(Number(s.toFixed(6)));
+    if(Math.abs(vals[vals.length-1] - yMax) > 1e-6) vals.push(yMax);
+    return vals;
+  };
+  const yMajorTicks = buildTicks(yMajorStep);
+  const yMinorTicks = buildTicks(yMinorStep).filter(s => {
+    if(Math.abs(s - yMax) < 1e-6) return false;
+    return !yMajorTicks.some(m => Math.abs(m - s) < 1e-6);
+  });
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,w,h);
+
+  // grid
+  ctx.strokeStyle = 'rgba(0,0,0,.05)'; ctx.lineWidth = 1;
+  for(let t=0;t<=100;t+=10){ const x=xToC(t); ctx.beginPath(); ctx.moveTo(x,MARGIN.top); ctx.lineTo(x,MARGIN.top+plotH); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(0,0,0,.03)'; ctx.lineWidth = 1;
+  yMinorTicks.forEach(s => {
+    const y = yToC(s);
+    ctx.beginPath(); ctx.moveTo(MARGIN.left,y); ctx.lineTo(MARGIN.left+plotW,y); ctx.stroke();
+  });
+  ctx.strokeStyle = 'rgba(0,0,0,.055)';
+  yMajorTicks.forEach(s => {
+    const y = yToC(s);
+    ctx.beginPath(); ctx.moveTo(MARGIN.left,y); ctx.lineTo(MARGIN.left+plotW,y); ctx.stroke();
+  });
+
+  // axes
+  ctx.strokeStyle='rgba(0,0,0,.2)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(MARGIN.left,MARGIN.top+plotH); ctx.lineTo(MARGIN.left+plotW,MARGIN.top+plotH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(MARGIN.left,MARGIN.top); ctx.lineTo(MARGIN.left,MARGIN.top+plotH); ctx.stroke();
+
+  // axis labels
+  ctx.fillStyle='#7a756c'; ctx.font='500 10px "DM Sans",system-ui'; ctx.textAlign='center';
+  for(let t=0;t<=100;t+=20) ctx.fillText(t+'°',xToC(t),MARGIN.top+plotH+16);
+  ctx.fillStyle='#9a958d'; ctx.fillText('Temperature (°C)',MARGIN.left+plotW/2,h-4);
+  ctx.strokeStyle='rgba(0,0,0,.22)'; ctx.lineWidth=1;
+  yMajorTicks.forEach(s => {
+    const y = yToC(s);
+    ctx.beginPath(); ctx.moveTo(MARGIN.left-5,y); ctx.lineTo(MARGIN.left,y); ctx.stroke();
+  });
+  ctx.strokeStyle='rgba(0,0,0,.14)';
+  yMinorTicks.forEach(s => {
+    const y = yToC(s);
+    ctx.beginPath(); ctx.moveTo(MARGIN.left-3,y); ctx.lineTo(MARGIN.left,y); ctx.stroke();
+  });
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  ctx.fillStyle='#7a756c';
+  yMajorTicks.forEach(s => ctx.fillText(Number.isInteger(s) ? s : s.toFixed(1), MARGIN.left-7, yToC(s)));
+  ctx.save(); ctx.translate(11,MARGIN.top+plotH/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center'; ctx.fillStyle='#9a958d'; ctx.font='500 10px "DM Sans",system-ui';
+  ctx.fillText('Solubility (g / 100 g H₂O)',0,0); ctx.restore();
+  ctx.textBaseline='alphabetic';
+
+  // curves + shaded regions for focus salt
+  const salts = opts.salts || Object.keys(SALTS);
+  const focus = opts.focus || null;
+  const faded = opts.faded || [];
+
+  if(focus && opts.shade){
+    // shade above/below curve
+    const fn = SALTS[focus].fn;
+    ctx.save();
+    ctx.fillStyle = 'rgba(220,38,38,.07)'; // above = supersat (red tint)
+    ctx.beginPath();
+    ctx.moveTo(xToC(0), MARGIN.top);
+    for(let t=0;t<=100;t+=2) ctx.lineTo(xToC(t), yToC(fn(t)));
+    ctx.lineTo(xToC(100), MARGIN.top);
+    ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = 'rgba(14,116,144,.05)'; // below = unsat (blue tint)
+    ctx.beginPath();
+    ctx.moveTo(xToC(0), MARGIN.top+plotH);
+    for(let t=0;t<=100;t+=2) ctx.lineTo(xToC(t), yToC(fn(t)));
+    ctx.lineTo(xToC(100), MARGIN.top+plotH);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // draw curves
+  salts.forEach(k => {
+    const data = SALTS[k]; if(!data) return;
+    const isFaded = faded.includes(k) || (focus && k !== focus && !opts.showAll);
+    ctx.save();
+    ctx.strokeStyle = data.color;
+    ctx.lineWidth = (focus===k) ? 3 : 1.8;
+    ctx.globalAlpha = isFaded ? 0.18 : 1;
+    ctx.beginPath();
+    for(let t=0;t<=100;t+=1){
+      const x = xToC(t), y = yToC(data.fn(t));
+      if(t===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // label
+    if(!isFaded){
+      const labelT = k==='HCl' ? 10 : (k==='Ce2SO43' ? 80 : (k==='KI' ? 82 : (k==='NaCl' ? 75 : (k==='KCl' ? 72 : (k==='KClO3' ? 70 : (k==='Ce2SO43' ? 85 : 60))))));
+      const lx = xToC(labelT), ly = yToC(data.fn(labelT)) - 4;
+      ctx.fillStyle = data.color;
+      ctx.font = '600 10.5px "DM Sans",system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText(data.label, lx+2, ly);
+    }
+    ctx.restore();
+  });
+
+  // points to plot
+  (opts.points||[]).forEach(p => {
+    const x = xToC(p.t), y = yToC(p.g);
+    ctx.save();
+    // halo
+    ctx.beginPath(); ctx.arc(x,y,10,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fillStyle = p.color || '#1e1b16'; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    if(p.label){
+      ctx.fillStyle = '#1e1b16';
+      ctx.font = '600 11px "IBM Plex Mono",monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(p.label, x+10, y-8);
+    }
+    ctx.restore();
+  });
+
+  // annotations (e.g., intersection marker)
+  (opts.annot||[]).forEach(a => {
+    if(a.type==='vline'){
+      ctx.save();
+      ctx.strokeStyle = a.color || 'rgba(147,51,234,.5)';
+      ctx.setLineDash([4,3]); ctx.lineWidth=1;
+      const x = xToC(a.t);
+      ctx.beginPath(); ctx.moveTo(x, MARGIN.top); ctx.lineTo(x, MARGIN.top+plotH); ctx.stroke();
+      ctx.restore();
+    }
+  });
+
+  return { xToC, yToC, plotW, plotH };
+}
+
+/* ═══════════════════════════════════════════
+   BEAKER SVG  (simplified from beaker-lab.svg style)
+   ═══════════════════════════════════════════ */
+function beakerSVG(state){
+  // state: { saturation: 'unsaturated'|'saturated'|'supersaturated', temp, g, salt }
+  const sat = state.saturation;
+  const temp = state.temp || 25;
+  const hotFactor = Math.max(0, Math.min(1, (temp-20)/80));
+  const showBubbles = temp >= 60;
+  const crystalsOpacity = sat==='supersaturated' ? 1 : (sat==='saturated' ? 0.22 : 0);
+  const heatGlow = hotFactor > 0.3 ? hotFactor * 0.5 : 0;
+  const heaterIntensity = (0.35 + hotFactor * 0.65).toFixed(2);
+  const heaterLampColor = temp > 55 ? '#ef4444' : (temp > 25 ? '#fb7185' : '#fca5a5');
+  const shimmerOpacity = (0.3 + hotFactor * 0.55).toFixed(2);
+  // Knob pointer rotates with temperature (from -135° at cold to +135° at max)
+  const knobAng = (hotFactor - 0.5) * (Math.PI * 1.5);
+  const knobPX = (Math.cos(knobAng - Math.PI/2) * 3.6).toFixed(2);
+  const knobPY = (Math.sin(knobAng - Math.PI/2) * 3.6).toFixed(2);
+  const tempText = String(Math.round(temp)).padStart(2,'0');
+  const coilGlowAlpha = (hotFactor * 0.95).toFixed(2);
+
+  return `
+<svg viewBox="0 0 200 232" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="waterGrad_${state.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dbeafe" stop-opacity=".92"/>
+      <stop offset="100%" stop-color="#93c5fd" stop-opacity=".8"/>
+    </linearGradient>
+    <linearGradient id="glassGrad_${state.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,.45)"/>
+      <stop offset="100%" stop-color="rgba(200,215,230,.2)"/>
+    </linearGradient>
+    <radialGradient id="heatGlow_${state.id}" cx="50%" cy="90%" r="60%">
+      <stop offset="0%" stop-color="rgba(251,146,60,${heatGlow})"/>
+      <stop offset="100%" stop-color="rgba(251,146,60,0)"/>
+    </radialGradient>
+    <linearGradient id="heaterBody_${state.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="35%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="heaterPanel_${state.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="55%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="heaterBezel_${state.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <radialGradient id="coilGlow_${state.id}" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(253,224,71,1)"/>
+      <stop offset="45%" stop-color="rgba(239,68,68,.9)"/>
+      <stop offset="100%" stop-color="rgba(239,68,68,0)"/>
+    </radialGradient>
+    <linearGradient id="knobFace_${state.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <!-- heat glow rising from hotplate -->
+  <rect x="0" y="0" width="200" height="220" fill="url(#heatGlow_${state.id})"/>
+  <ellipse cx="100" cy="184" rx="72" ry="14" fill="rgba(249,115,22,${(hotFactor*0.24).toFixed(2)})"/>
+  <!-- heat shimmer (wavy lines above plate) -->
+  ${hotFactor>0.2?`<path d="M62 180 Q64 172 62 164 M88 180 Q90 172 88 164 M112 180 Q114 172 112 164 M138 180 Q140 172 138 164" stroke="rgba(249,115,22,${shimmerOpacity})" stroke-width="2.2" fill="none" stroke-linecap="round">
+    <animate attributeName="opacity" values="0.4;.95;0.4" dur="1.4s" repeatCount="indefinite"/>
+  </path>`:''}
+
+  <!-- ═══ ELECTRIC HOTPLATE ═══ -->
+  <!-- Ground shadow -->
+  <ellipse cx="100" cy="213" rx="74" ry="3.6" fill="rgba(15,23,42,.32)"/>
+  <!-- Power cord (exits back-right to mains) -->
+  <path d="M168 196 Q180 200 186 208 Q188 211 192 212" stroke="#0f172a" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+  <path d="M168 196 Q180 200 186 208 Q188 211 192 212" stroke="#475569" stroke-width=".6" fill="none" stroke-linecap="round" opacity=".7"/>
+
+  <!-- Plate housing (top tier, beaker sits on) -->
+  <rect x="28" y="180" width="144" height="11" rx="2" fill="url(#heaterBody_${state.id})" stroke="#0f172a" stroke-width="1"/>
+  <!-- Brushed steel top edge -->
+  <rect x="28" y="180" width="144" height="2" rx="1" fill="url(#heaterBezel_${state.id})"/>
+  <line x1="30" y1="181" x2="170" y2="181" stroke="rgba(255,255,255,.45)" stroke-width=".4"/>
+
+  <!-- Heating element spirals (visible on left and right of beaker base) -->
+  <g stroke="#1e293b" stroke-width="1.4" fill="none" stroke-linecap="round">
+    <path d="M33 186 Q37 182 41 186 Q45 190 49 186"/>
+    <path d="M151 186 Q155 182 159 186 Q163 190 167 186"/>
+  </g>
+  <g stroke="#ca8a04" stroke-width=".9" fill="none" stroke-linecap="round" opacity="${(0.55 + hotFactor*0.45).toFixed(2)}">
+    <path d="M33 186 Q37 182 41 186 Q45 190 49 186"/>
+    <path d="M151 186 Q155 182 159 186 Q163 190 167 186"/>
+  </g>
+  ${hotFactor>0.15?`
+  <ellipse cx="41" cy="186" rx="10" ry="3.2" fill="url(#coilGlow_${state.id})" opacity="${coilGlowAlpha}">
+    <animate attributeName="opacity" values="${(coilGlowAlpha*0.8).toFixed(2)};${coilGlowAlpha};${(coilGlowAlpha*0.8).toFixed(2)}" dur="2.1s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="159" cy="186" rx="10" ry="3.2" fill="url(#coilGlow_${state.id})" opacity="${coilGlowAlpha}">
+    <animate attributeName="opacity" values="${(coilGlowAlpha*0.8).toFixed(2)};${coilGlowAlpha};${(coilGlowAlpha*0.8).toFixed(2)}" dur="2.3s" repeatCount="indefinite"/>
+  </ellipse>`:''}
+
+  <!-- Control panel (front face) -->
+  <rect x="28" y="191" width="144" height="16" rx="2" fill="url(#heaterPanel_${state.id})" stroke="#0f172a" stroke-width="1"/>
+  <!-- Panel seam highlight -->
+  <line x1="28" y1="191.3" x2="172" y2="191.3" stroke="rgba(148,163,184,.35)" stroke-width=".4"/>
+
+  <!-- Power LED (left) with label -->
+  <circle cx="40" cy="199" r="2.8" fill="#0a0e18" stroke="#1e293b" stroke-width=".5"/>
+  <circle cx="40" cy="199" r="1.8" fill="${heaterLampColor}" opacity="${heaterIntensity}"/>
+  <circle cx="39.3" cy="198.3" r=".6" fill="rgba(255,255,255,.95)" opacity="${heaterIntensity}"/>
+  ${hotFactor>0.12?`<circle cx="40" cy="199" r="4.5" fill="${heaterLampColor}" opacity="${(hotFactor*0.4).toFixed(2)}">
+    <animate attributeName="opacity" values="${(hotFactor*0.28).toFixed(2)};${(hotFactor*0.5).toFixed(2)};${(hotFactor*0.28).toFixed(2)}" dur="1.8s" repeatCount="indefinite"/>
+  </circle>`:''}
+  <text x="40" y="205.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="2.8" fill="#94a3b8" font-weight="600" letter-spacing=".3">PWR</text>
+
+  <!-- Digital LCD temperature readout -->
+  <rect x="54" y="194.5" width="38" height="9" rx="1.2" fill="#05070d" stroke="#0f172a" stroke-width=".5"/>
+  <rect x="55" y="195.3" width="36" height="1.8" fill="rgba(253,224,71,.12)"/>
+  <text x="73" y="201.3" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.8" fill="#fde047" font-weight="700" letter-spacing=".3">${tempText}°C</text>
+  <!-- LCD tick marker -->
+  <circle cx="59" cy="199" r=".55" fill="#fde047" opacity=".7"/>
+
+  <!-- Ventilation slots -->
+  <g stroke="#020617" stroke-width=".7" opacity=".95">
+    <line x1="98" y1="196" x2="112" y2="196"/>
+    <line x1="98" y1="198.4" x2="112" y2="198.4"/>
+    <line x1="98" y1="200.8" x2="112" y2="200.8"/>
+    <line x1="98" y1="203.2" x2="112" y2="203.2"/>
+  </g>
+  <!-- Vent highlight -->
+  <g stroke="rgba(148,163,184,.3)" stroke-width=".3">
+    <line x1="98" y1="196.3" x2="112" y2="196.3"/>
+    <line x1="98" y1="198.7" x2="112" y2="198.7"/>
+    <line x1="98" y1="201.1" x2="112" y2="201.1"/>
+    <line x1="98" y1="203.5" x2="112" y2="203.5"/>
+  </g>
+
+  <!-- Brand plate -->
+  <text x="122" y="205.5" font-family="IBM Plex Mono,monospace" font-size="2.6" fill="#64748b" font-weight="700" letter-spacing=".4">LAB·HEAT</text>
+
+  <!-- Temperature knob (right) -->
+  <g transform="translate(154 199)">
+    <!-- Scale arc tick dots -->
+    <g fill="#94a3b8">
+      <circle cx="-6.3" cy="3.2" r=".4"/>
+      <circle cx="-6.8" cy="0" r=".4"/>
+      <circle cx="-5.6" cy="-3.8" r=".4"/>
+      <circle cx="-2.8" cy="-6.2" r=".4"/>
+      <circle cx="0" cy="-6.8" r=".4"/>
+      <circle cx="2.8" cy="-6.2" r=".4"/>
+      <circle cx="5.6" cy="-3.8" r=".4"/>
+      <circle cx="6.8" cy="0" r=".4"/>
+      <circle cx="6.3" cy="3.2" r=".4"/>
+    </g>
+    <!-- HI / LO labels -->
+    <text x="-6.5" y="5.4" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="2.2" fill="#64748b" font-weight="700">LO</text>
+    <text x="6.5" y="5.4" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="2.2" fill="#ef4444" font-weight="700">HI</text>
+    <!-- Knob bezel/body -->
+    <circle r="5.6" fill="#0f172a"/>
+    <circle r="5" fill="url(#knobFace_${state.id})" stroke="#1e293b" stroke-width=".4"/>
+    <!-- Knurled grip marks -->
+    <g stroke="#0f172a" stroke-width=".35" opacity=".75">
+      <line x1="-4.6" y1="0" x2="-3.6" y2="0"/>
+      <line x1="3.6" y1="0" x2="4.6" y2="0"/>
+      <line x1="0" y1="-4.6" x2="0" y2="-3.6"/>
+      <line x1="0" y1="3.6" x2="0" y2="4.6"/>
+      <line x1="-3.3" y1="-3.3" x2="-2.6" y2="-2.6"/>
+      <line x1="3.3" y1="3.3" x2="2.6" y2="2.6"/>
+      <line x1="-3.3" y1="3.3" x2="-2.6" y2="2.6"/>
+      <line x1="3.3" y1="-3.3" x2="2.6" y2="-2.6"/>
+    </g>
+    <!-- Pointer indicator (rotates with temperature) -->
+    <line x1="0" y1="0" x2="${knobPX}" y2="${knobPY}" stroke="#fde047" stroke-width="1.2" stroke-linecap="round"/>
+    <circle r="1.1" fill="#94a3b8" stroke="#0f172a" stroke-width=".3"/>
+  </g>
+
+  <!-- Rubber feet -->
+  <rect x="32" y="207" width="10" height="4" rx="1.2" fill="#0f172a"/>
+  <rect x="158" y="207" width="10" height="4" rx="1.2" fill="#0f172a"/>
+  <rect x="33" y="210.2" width="8" height=".9" fill="rgba(148,163,184,.2)"/>
+  <rect x="159" y="210.2" width="8" height=".9" fill="rgba(148,163,184,.2)"/>
+  <!-- beaker glass body -->
+  <path d="M52 52 L52 176 Q52 180 56 180 L144 180 Q148 180 148 176 L148 52 L154 48 L154 44 L46 44 L46 48 Z"
+        fill="url(#glassGrad_${state.id})" stroke="#64748b" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- scale marks -->
+  <g stroke="#64748b" stroke-width=".7" opacity=".6">
+    <line x1="58" y1="72" x2="68" y2="72"/>
+    <line x1="58" y1="92" x2="68" y2="92"/>
+    <line x1="58" y1="112" x2="68" y2="112"/>
+    <line x1="58" y1="132" x2="64" y2="132"/>
+    <line x1="58" y1="152" x2="68" y2="152"/>
+  </g>
+  <!-- water -->
+  <path d="M54 90 L54 176 Q54 178 56 178 L144 178 Q146 178 146 176 L146 90 Z"
+        fill="url(#waterGrad_${state.id})"/>
+  <!-- water surface shine -->
+  <ellipse cx="100" cy="91" rx="46" ry="2.2" fill="rgba(255,255,255,.55)"/>
+  <!-- dissolved salt tint if saturated / supersaturated -->
+  ${sat!=='unsaturated' && state.g>0 ? `<rect x="54" y="92" width="92" height="86" fill="rgba(147,197,253,.${sat==='supersaturated'?'25':'18'})"/>`:''}
+  <!-- crystal pile at bottom (supersaturated) -->
+  <g opacity="${crystalsOpacity}">
+    <ellipse cx="100" cy="175" rx="34" ry="4" fill="rgba(71,85,105,.35)"/>
+    <path d="M70 175 L76 164 L84 170 L88 160 L94 168 L100 158 L106 168 L112 162 L118 170 L126 164 L130 175 Z"
+          fill="#e5e7eb" stroke="#64748b" stroke-width=".7" stroke-linejoin="round"/>
+    <path d="M78 170 L82 163 L86 168 Z M94 167 L98 160 L102 166 Z M110 167 L114 161 L118 167 Z"
+          fill="#f9fafb" opacity=".8"/>
+  </g>
+  <!-- bubbles if hot -->
+  ${showBubbles ? Array.from({length:6}).map((_,i)=>{
+    const bx = 62 + i*14 + (i%2===0?3:-3);
+    const bdur = (1.2 + (i%3)*0.3).toFixed(1);
+    const bdelay = (i*0.18).toFixed(2);
+    return `<circle cx="${bx}" cy="170" r="${2 + (i%3)*0.8}" fill="rgba(255,255,255,.7)" stroke="rgba(147,197,253,.6)" stroke-width=".6">
+      <animate attributeName="cy" values="170;95" dur="${bdur}s" begin="${bdelay}s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;.8;0" dur="${bdur}s" begin="${bdelay}s" repeatCount="indefinite"/>
+    </circle>`;
+  }).join('') : ''}
+  <!-- glass highlight -->
+  <path d="M58 55 L58 174" stroke="rgba(255,255,255,.55)" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- salt label badge -->
+  <g transform="translate(100, 30)">
+    <rect x="-26" y="-12" width="52" height="22" rx="11" fill="#1e1b16" opacity=".85"/>
+    <text x="0" y="3" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600">${state.g}g ${SALTS[state.salt].label}</text>
+  </g>
+</svg>`;
+}
+
+/* ═══════════════════════════════════════════
+   LEVEL 1 — TUTORIAL (drag points into bands)
+   ═══════════════════════════════════════════ */
+const L1_POINTS = [
+  { label:'A', t:60, g:20, cat:'unsaturated', color:'var(--correct)', colorHex:'#047857', explain:'At 60 °C, KCl can hold ~46 g. Only 20 g is dissolved, so the point sits below the curve — unsaturated.' },
+  { label:'B', t:40, g:40, cat:'saturated', color:'var(--kcl)', colorHex:'#0e7490', explain:'At 40 °C, KCl solubility is exactly ~40 g. The point lands on the curve — saturated.' },
+  { label:'C', t:20, g:50, cat:'supersaturated', color:'var(--wrong)', colorHex:'#dc2626', explain:'At 20 °C, KCl can only hold ~34 g. 50 g is way too much — the point is above the curve, supersaturated.' }
+];
+let l1State = null;
+
+function startL1(){
+  l1State = { placed:{}, dragging:null };
+  showScreen('level-1');
+  renderL1Chart();
+  renderL1Board();
+}
+function renderL1Chart(){
+  drawChart($('#l1Chart'), {
+    salts: ['KCl'], focus:'KCl', showAll:false, shade:true, yMax:100,
+    points: L1_POINTS.map(p => ({ t:p.t, g:p.g, label:p.label, color:p.colorHex }))
+  });
+}
+function renderL1Board(){
+  const tray = $('#l1Points'); tray.innerHTML = '';
+  L1_POINTS.forEach(p => {
+    if(l1State.placed[p.label]) return;
+    const d = document.createElement('div');
+    d.className = 'drag-point';
+    d.setAttribute('data-label', p.label);
+    d.setAttribute('role','button');
+    d.setAttribute('tabindex','0');
+    d.setAttribute('aria-label', `Point ${p.label} at ${p.t}°C with ${p.g} grams KCl. Press Enter to cycle target band.`);
+    d.textContent = p.label;
+    attachDrag(d, p);
+    attachKey(d, p);
+    tray.appendChild(d);
+  });
+  $$('#l1Bands .band').forEach(b => {
+    b.classList.remove('target-hover','correct','wrong');
+    const cat = b.getAttribute('data-cat');
+    const existing = b.querySelector('.placed-point'); if(existing) existing.remove();
+    const hitLabel = Object.keys(l1State.placed).find(k => l1State.placed[k]===cat);
+    if(hitLabel){
+      const p = L1_POINTS.find(x=>x.label===hitLabel);
+      const pd = document.createElement('div');
+      pd.className = 'placed-point';
+      pd.style.background = p.colorHex;
+      pd.textContent = p.label;
+      b.appendChild(pd);
+      b.classList.add(p.cat===cat?'correct':'wrong');
+    }
+  });
+
+  const done = Object.keys(l1State.placed).length === 3;
+  $('#l1Next').classList.toggle('hidden', !done);
+  if(done){
+    const allCorrect = L1_POINTS.every(p => l1State.placed[p.label]===p.cat);
+    const fb = $('#l1Feedback');
+    if(allCorrect){
+      fb.className = 'feedback-line show correct';
+      fb.innerHTML = '🎉 All three points correctly classified. You understand the curve!';
+    } else {
+      const wrongP = L1_POINTS.find(p => l1State.placed[p.label] !== p.cat);
+      fb.className = 'feedback-line show wrong';
+      fb.innerHTML = `✗ Point ${wrongP.label} is actually <strong>${wrongP.cat}</strong>. ${wrongP.explain}`;
+    }
+  } else {
+    $('#l1Feedback').className = 'feedback-line';
+  }
+}
+function attachDrag(el, point){
+  let startX=0,startY=0,origX=0,origY=0;
+  const onDown = (e) => {
+    if(l1State.placed[point.label]) return;
+    e.preventDefault();
+    const pt = e.touches ? e.touches[0] : e;
+    startX = pt.clientX; startY = pt.clientY;
+    const rect = el.getBoundingClientRect();
+    origX = rect.left; origY = rect.top;
+    el.classList.add('dragging');
+    el.style.position = 'fixed';
+    el.style.left = origX + 'px';
+    el.style.top = origY + 'px';
+    el.style.zIndex = 50;
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, { passive:false });
+    document.addEventListener('touchend', onUp);
+  };
+  const onMove = (e) => {
+    e.preventDefault();
+    const pt = e.touches ? e.touches[0] : e;
+    el.style.left = (origX + (pt.clientX - startX)) + 'px';
+    el.style.top = (origY + (pt.clientY - startY)) + 'px';
+    $$('#l1Bands .band').forEach(b => b.classList.remove('target-hover'));
+    const target = bandUnder(pt.clientX, pt.clientY);
+    if(target) target.classList.add('target-hover');
+  };
+  const onUp = (e) => {
+    const pt = e.changedTouches ? e.changedTouches[0] : e;
+    const target = bandUnder(pt.clientX, pt.clientY);
+    el.classList.remove('dragging');
+    el.style.position = '';
+    el.style.left = ''; el.style.top = ''; el.style.zIndex = '';
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onUp);
+    $$('#l1Bands .band').forEach(b => b.classList.remove('target-hover'));
+    if(target){
+      const cat = target.getAttribute('data-cat');
+      l1State.placed[point.label] = cat;
+      renderL1Board();
+    }
+  };
+  el.addEventListener('mousedown', onDown);
+  el.addEventListener('touchstart', onDown, { passive:false });
+}
+function attachKey(el, point){
+  // keyboard alternative: press Enter to cycle through bands, Space to place
+  let idx = 0;
+  const bands = ['supersaturated','saturated','unsaturated'];
+  el.addEventListener('keydown', e => {
+    if(l1State.placed[point.label]) return;
+    if(e.key==='Enter' || e.key===' '){
+      e.preventDefault();
+      l1State.placed[point.label] = bands[idx];
+      renderL1Board();
+    } else if(e.key==='ArrowDown' || e.key==='ArrowRight'){
+      e.preventDefault();
+      idx = (idx+1) % bands.length;
+      $$('#l1Bands .band').forEach(b => b.classList.remove('target-hover'));
+      $$(`#l1Bands .band[data-cat="${bands[idx]}"]`).forEach(b => b.classList.add('target-hover'));
+    } else if(e.key==='ArrowUp' || e.key==='ArrowLeft'){
+      e.preventDefault();
+      idx = (idx-1+bands.length) % bands.length;
+      $$('#l1Bands .band').forEach(b => b.classList.remove('target-hover'));
+      $$(`#l1Bands .band[data-cat="${bands[idx]}"]`).forEach(b => b.classList.add('target-hover'));
+    }
+  });
+}
+function bandUnder(x,y){
+  return [...$$('#l1Bands .band')].find(b => {
+    const r = b.getBoundingClientRect();
+    return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
+  });
+}
+$('#l1Reset').addEventListener('click', () => { l1State.placed = {}; renderL1Board(); });
+$('#l1Next').addEventListener('click', () => {
+  const allCorrect = L1_POINTS.every(p => l1State.placed[p.label]===p.cat);
+  if(allCorrect){
+    addScore(300);
+    awardBadge('curveReader');
+    completeLevel(1, 3, {
+      message:'You nailed all three samples — tutorial complete.',
+      stats:[{val:'3/3', lbl:'Correct'},{val:'+300', lbl:'XP'}]
+    });
+  } else {
+    // allow retry
+    toast('Nearly there — tap a mis-placed point to pick it up again');
+    // reset wrong points
+    const wrong = {};
+    Object.entries(l1State.placed).forEach(([k,v]) => {
+      const p = L1_POINTS.find(x=>x.label===k);
+      if(p.cat !== v){ /* wrong — release */ } else { wrong[k]=v; }
+    });
+    l1State.placed = wrong;
+    renderL1Board();
+  }
+});
+
+/* ═══════════════════════════════════════════
+   LEVEL 2 — KCL CHALLENGE
+   ═══════════════════════════════════════════ */
+const L2_STEPS = [
+  {
+    title:'Step 1 — Classic scenario (40 °C, 40 g)',
+    body:'Set <strong>Beaker A</strong> to <strong>40 °C</strong> and add <strong>40 g</strong> of KCl (it starts there). At this temperature, the KCl solubility curve reads ~40 g per 100 g water.',
+    ask:'What will the solution be?',
+    targetBeaker:'A', targetT:40, targetG:40, answer:'saturated'
+  },
+  {
+    title:'Step 2 — Heat it up (90 °C, 55 g)',
+    body:'Now look at <strong>Beaker B</strong> at <strong>90 °C</strong> with <strong>55 g</strong> of KCl. At 90 °C the curve is higher — around 54 g. Slight difference, but close enough.',
+    ask:'At 90 °C with 55 g, the solution is?',
+    targetBeaker:'B', targetT:90, targetG:55, answer:'saturated'
+  },
+  {
+    title:'Step 3 — Your turn (Beaker A at 20 °C, 50 g)',
+    body:'Adjust <strong>Beaker A</strong> to <strong>20 °C</strong> with <strong>50 g</strong> of KCl. Check the curve: what can 100 g of water hold at 20 °C?',
+    ask:'Prediction?',
+    targetBeaker:'A', targetT:20, targetG:50, answer:'supersaturated'
+  },
+  {
+    title:'Step 4 — Cool and empty (Beaker B at 10 °C, 15 g)',
+    body:'Set <strong>Beaker B</strong> to <strong>10 °C</strong> with only <strong>15 g</strong> KCl. The curve at 10 °C is near 31 g.',
+    ask:'Prediction?',
+    targetBeaker:'B', targetT:10, targetG:15, answer:'unsaturated'
+  }
+];
+let l2State = null;
+let l2ChartFrame = null;
+
+function startL2(){
+  l2State = {
+    tempA:40, gA:40, tempB:90, gB:55,
+    step:0, predicted:null, score:0, correctCount:0
+  };
+  l2ChartFrame = null;
+  showScreen('level-2');
+  hookupL2Controls();
+  renderL2Scenario();
+  renderL2();
+}
+function hookupL2Controls(){
+  // range inputs
+  const inA = document.querySelector('[data-input="tempA"]');
+  const inB = document.querySelector('[data-input="tempB"]');
+  inA.oninput = e => { l2State.tempA = +e.target.value; renderL2Live(); };
+  inB.oninput = e => { l2State.tempB = +e.target.value; renderL2Live(); };
+  // steppers
+  $$('[data-step]').forEach(btn => {
+    btn.onclick = () => {
+      const key = btn.getAttribute('data-step');
+      const dir = +btn.getAttribute('data-dir');
+      l2State[key] = Math.max(0, Math.min(200, l2State[key] + dir));
+      renderL2Live();
+    };
+  });
+  // prediction buttons
+  $$('#l2Predict .predict-btn').forEach(b => {
+    b.onclick = () => {
+      if(l2State.predicted) return;
+      l2State.predicted = b.getAttribute('data-guess');
+      renderL2TaskPanel();
+    };
+  });
+  $('#l2Advance').onclick = () => {
+    l2State.step++;
+    l2State.predicted = null;
+    if(l2State.step >= L2_STEPS.length){
+      finishL2();
+    } else {
+      const st = L2_STEPS[l2State.step];
+      if(st.targetBeaker==='A'){ l2State.tempA = st.targetT; l2State.gA = st.targetG; }
+      else { l2State.tempB = st.targetT; l2State.gB = st.targetG; }
+      renderL2();
+    }
+  };
+}
+function renderL2(){
+  renderL2ControlsAndBeakers();
+  renderL2TaskPanel();
+  queueL2ChartRender();
+}
+function renderL2Live(){
+  renderL2ControlsAndBeakers();
+  if(l2State.predicted) renderL2TaskPanel();
+  queueL2ChartRender();
+}
+function renderL2ControlsAndBeakers(){
+  document.querySelector('[data-input="tempA"]').value = l2State.tempA;
+  document.querySelector('[data-input="tempB"]').value = l2State.tempB;
+  document.querySelector('[data-val="tempA"]').textContent = l2State.tempA + '°C';
+  document.querySelector('[data-val="tempB"]').textContent = l2State.tempB + '°C';
+  document.querySelector('[data-val="gA"]').value = l2State.gA;
+  document.querySelector('[data-val="gB"]').value = l2State.gB;
+
+  ['A','B'].forEach(k => {
+    const t = l2State['temp'+k], g = l2State['g'+k];
+    const sat = classify('KCl', t, g, 1.5);
+    const verd = document.querySelector(`[data-verdict="${k}"]`);
+    verd.className = 'verdict ' + sat;
+    verd.textContent = sat[0].toUpperCase() + sat.slice(1);
+    const holder = document.querySelector(`[data-beaker-svg="${k}"]`);
+    holder.innerHTML = beakerSVG({ id:k, salt:'KCl', temp:t, g:g, saturation:sat });
+    const heaterStrip = document.querySelector(`[data-heater-strip="${k}"]`);
+    const heaterDot = document.querySelector(`[data-heater-dot="${k}"]`);
+    const heaterText = document.querySelector(`[data-heater-text="${k}"]`);
+    const hotFactor = Math.max(0, Math.min(1, (t-20)/80));
+    const alpha = (0.35 + hotFactor * 0.65).toFixed(2);
+    const glow = (6 + hotFactor * 10).toFixed(1);
+    const scale = (1 + hotFactor * 0.12).toFixed(3);
+    if(heaterStrip){
+      heaterStrip.style.borderColor = `rgba(239,68,68,${(0.12 + hotFactor*0.35).toFixed(2)})`;
+      heaterStrip.style.background = `rgba(15,23,42,${(0.06 + hotFactor*0.16).toFixed(2)})`;
+    }
+    if(heaterDot){
+      heaterDot.style.background = `rgba(239,68,68,${alpha})`;
+      heaterDot.style.boxShadow = `0 0 0 2px rgba(15,23,42,.2), 0 0 ${glow}px rgba(239,68,68,${alpha})`;
+      heaterDot.style.transform = `scale(${scale})`;
+    }
+    if(heaterText){
+      heaterText.textContent = `Hotplate · ${t}°C`;
+    }
+  });
+}
+function renderL2Chart(){
+  if(!l2State) return;
+  drawChart($('#l2Chart'), {
+    salts:['KCl'], focus:'KCl', showAll:false, shade:true, yMax:80,
+    points:[
+      { t:l2State.tempA, g:l2State.gA, label:'A', color:'#0e7490' },
+      { t:l2State.tempB, g:l2State.gB, label:'B', color:'#b45309' }
+    ]
+  });
+}
+function queueL2ChartRender(){
+  if(l2ChartFrame!==null) return;
+  l2ChartFrame = requestAnimationFrame(() => {
+    l2ChartFrame = null;
+    if(!l2State || !$('#screen-level-2').classList.contains('active')) return;
+    renderL2Chart();
+  });
+}
+function renderL2TaskPanel(){
+  const step = L2_STEPS[l2State.step];
+  if(!step) return;
+
+  const task = $('#l2Task');
+  task.innerHTML = `
+    <span class="step">${step.title}</span>
+    <p style="margin:.3rem 0 .5rem">${step.body}</p>
+    <p style="font-weight:600">${step.ask}</p>
+    <p class="hint" style="color:var(--text-dim);font-size:.78rem;margin-top:.25rem">Focus beaker: <strong style="color:var(--text)">${step.targetBeaker}</strong> — ${step.targetT}°C, ${step.targetG} g</p>
+  `;
+  $('#l2Predict').classList.remove('hidden');
+  const fb = $('#l2Feedback');
+  $$('#l2Predict .predict-btn').forEach(b => {
+    b.disabled = !!l2State.predicted;
+    b.classList.remove('selected','correct','wrong');
+    const g = b.getAttribute('data-guess');
+    if(l2State.predicted){
+      if(g===step.answer) b.classList.add('correct');
+      if(g===l2State.predicted && g!==step.answer) b.classList.add('wrong');
+    }
+  });
+  if(l2State.predicted){
+    const beakerCorrect = (step.targetBeaker==='A' ? (l2State.tempA===step.targetT && l2State.gA===step.targetG) : (l2State.tempB===step.targetT && l2State.gB===step.targetG));
+    const predCorrect = l2State.predicted === step.answer;
+    if(predCorrect){
+      fb.className = 'feedback-line show correct';
+      fb.innerHTML = `✓ Right — the solution is <strong>${step.answer}</strong>. ${explainBeaker('KCl', step.targetT, step.targetG, step.answer)}`;
+      if(!l2State._scored || !l2State._scored.includes(l2State.step)){
+        l2State._scored = l2State._scored || [];
+        l2State._scored.push(l2State.step);
+        l2State.correctCount++; l2State.score += 200;
+        addScore(200);
+      }
+    } else {
+      fb.className = 'feedback-line show wrong';
+      fb.innerHTML = `✗ Actually <strong>${step.answer}</strong>. ${explainBeaker('KCl', step.targetT, step.targetG, step.answer)}`;
+      if(!l2State._scored || !l2State._scored.includes(l2State.step)){
+        l2State._scored = l2State._scored || [];
+        l2State._scored.push(l2State.step);
+      }
+    }
+    if(!beakerCorrect){
+      fb.innerHTML += ` <em style="color:var(--text-dim)">(Beaker ${step.targetBeaker} is currently at ${step.targetBeaker==='A'?l2State.tempA:l2State.tempB}°C / ${step.targetBeaker==='A'?l2State.gA:l2State.gB}g — set it to match.)</em>`;
+    }
+    $('#l2Advance').classList.remove('hidden');
+  } else {
+    fb.className = 'feedback-line';
+    $('#l2Advance').classList.add('hidden');
+  }
+}
+
+function renderL2Scenario(){
+  $('#l2Scenario').innerHTML = `
+    <span class="step">Scenario</span>
+    You have two identical beakers, each with 100 mL of water. Add KCl, change the temperature, and watch what happens. Predict the state of the solution <em>before</em> it settles.
+  `;
+}
+function explainBeaker(salt, t, g, cat){
+  const s = Math.round(solubility(salt, t));
+  if(cat==='saturated') return `At ${t}°C, ${SALTS[salt].label} dissolves up to ~${s} g/100 g water. With ${g} g the point lands on the curve.`;
+  if(cat==='unsaturated') return `At ${t}°C, ${s} g can dissolve — ${g} g is below that, so the water could hold more.`;
+  return `At ${t}°C only ~${s} g can dissolve. ${g-s} g extra will sit as crystals at the bottom.`;
+}
+function finishL2(){
+  const pct = l2State.correctCount / L2_STEPS.length;
+  const stars = pct===1 ? 3 : (pct>=0.75 ? 2 : 1);
+  if(stars >= 2) awardBadge('scenarioSage');
+  completeLevel(2, stars, {
+    message: stars===3 ? 'Perfect — all four predictions correct.' : 'Scenario cleared — try again for three stars.',
+    stats:[
+      { val: `${l2State.correctCount}/${L2_STEPS.length}`, lbl:'Predicted' },
+      { val: `+${l2State.score}`, lbl:'XP' }
+    ]
+  });
+}
+
+/* ═══════════════════════════════════════════
+   LEVEL 3 — READ THE CHART (timed)
+   ═══════════════════════════════════════════ */
+const L3_QUESTIONS = [
+  {
+    type:'numeric',
+    prompt:'What is the solubility of <strong>NH₄Cl</strong> per 100 g of water at <strong>50 °C</strong>?',
+    sub:'Read the chart — find where the NH₄Cl curve crosses the 50 °C gridline.',
+    answer:51, unit:'g', tolerance:2, salt:'NH4Cl',
+    explain:'At 50 °C, the NH₄Cl curve reads ~51 g per 100 g water.'
+  },
+  {
+    type:'mcq',
+    prompt:'If <strong>145 g of KI</strong> is dissolved in 100 g of water at <strong>10 °C</strong>, the solution will be:',
+    sub:'Compare 145 g against the KI curve at 10 °C.',
+    salt:'KI',
+    options:[
+      { label:'Unsaturated', correct:false, explain:'Nope — unsaturated means below the curve.' },
+      { label:'Saturated', correct:false, explain:'Saturated means ON the curve — 145 g is above it at 10 °C.' },
+      { label:'Supersaturated', correct:true, explain:'Right — KI at 10 °C only holds ~136 g, so 145 g is above the curve.' }
+    ]
+  },
+  {
+    type:'numeric',
+    prompt:'If <strong>20 g of NaCl</strong> is dissolved in 100 g of water at <strong>50 °C</strong>, how much <em>more</em> NaCl is needed to make it saturated?',
+    sub:'Find NaCl solubility at 50 °C, then subtract what\u2019s already dissolved.',
+    answer:19, unit:'g', tolerance:2, salt:'NaCl',
+    explain:'NaCl at 50 °C ≈ 39 g. 39 − 20 = 19 g more to saturate.'
+  },
+  {
+    type:'numeric',
+    prompt:'At what temperature are the solubilities of <strong>KNO₃</strong> and <strong>HCl</strong> the same?',
+    sub:'Look for where the two curves cross.',
+    answer:39, unit:'°C', tolerance:2, salts:['KNO3','HCl'],
+    explain:'The KNO₃ and HCl curves intersect near 39 °C (both around 58 g per 100 g water).'
+  }
+];
+let l3State = null;
+function startL3(){
+  l3State = { idx:0, answers:[], streak:0, bestStreak:0, score:0, hintUsed:{}, timerId:null, timeLeft:30 };
+  showScreen('level-3');
+  renderL3();
+}
+function renderL3(){
+  clearInterval(l3State.timerId);
+  const q = L3_QUESTIONS[l3State.idx];
+  if(!q){ finishL3(); return; }
+
+  // determine focus
+  const focus = q.salt || (q.salts && q.salts[0]);
+  const showSalts = q.salts || (q.salt ? [q.salt] : Object.keys(SALTS));
+  const hinted = !!l3State.hintUsed[l3State.idx];
+  drawChart($('#l3Chart'), {
+    salts: hinted ? showSalts : ['KCl','KNO3','NaCl','NaNO3','KNO3','NH4Cl','KI','HCl','KClO3','Ce2SO43'],
+    focus: hinted ? focus : null,
+    faded: hinted ? [] : [],
+    showAll: !hinted,
+    yMax: 260
+  });
+
+  const card = $('#l3Card');
+  card.innerHTML = `
+    <div class="q-header">
+      <span class="q-num">Q ${l3State.idx+1} / ${L3_QUESTIONS.length}</span>
+      <span class="q-timer" id="l3Timer">0:30</span>
+    </div>
+    <div class="q-text">${q.prompt}<span class="sub">${q.sub||''}</span></div>
+    <div id="l3Answer"></div>
+    <div class="row" style="margin-top:.4rem">
+      <button class="hint-btn" id="l3Hint" ${hinted?'disabled':''}>💡 Hint (isolate curve, −25%)</button>
+    </div>
+    <div class="hint-note">Streak: <strong>${l3State.streak}</strong> · Multiplier: <strong>×${streakMult(l3State.streak)}</strong></div>
+    <div class="feedback-line" id="l3Feedback"></div>
+    <div class="progress-rail">${L3_QUESTIONS.map((_,i)=>`<div class="pip ${i<l3State.idx?'done':''} ${l3State.answers[i]==='right'?'correct':''} ${l3State.answers[i]==='wrong'?'wrong':''}"></div>`).join('')}</div>
+  `;
+
+  if(q.type==='mcq'){
+    $('#l3Answer').innerHTML = `<div class="mcq-options">${q.options.map((o,i)=>`
+      <button class="mcq-option" data-idx="${i}"><span class="bullet">${String.fromCharCode(65+i)}</span>${o.label}</button>
+    `).join('')}</div>`;
+    $$('#l3Answer .mcq-option').forEach(b => b.onclick = () => submitL3({ idx:+b.getAttribute('data-idx') }));
+  } else {
+    $('#l3Answer').innerHTML = `
+      <div class="numeric-row">
+        <input type="number" id="l3Input" placeholder="Your answer" step="0.1" autofocus>
+        <span class="unit">${q.unit||''}</span>
+        <button class="submit-btn" id="l3Submit">Submit</button>
+      </div>
+    `;
+    $('#l3Submit').onclick = () => submitL3({ val: parseFloat($('#l3Input').value) });
+    $('#l3Input').addEventListener('keydown', e => { if(e.key==='Enter') $('#l3Submit').click(); });
+    $('#l3Input').focus();
+  }
+  $('#l3Hint').onclick = useL3Hint;
+
+  // start timer
+  l3State.timeLeft = 30;
+  updateL3Timer();
+  l3State.timerId = setInterval(() => {
+    l3State.timeLeft--;
+    updateL3Timer();
+    if(l3State.timeLeft <= 0){
+      clearInterval(l3State.timerId);
+      submitL3({ timedOut: true });
+    }
+  }, 1000);
+}
+function updateL3Timer(){
+  const t = $('#l3Timer'); if(!t) return;
+  const s = l3State.timeLeft;
+  t.textContent = '0:' + String(Math.max(0,s)).padStart(2,'0');
+  t.className = 'q-timer' + (s<=5 ? ' danger' : s<=15 ? ' warn' : '');
+}
+function streakMult(s){ if(s>=5) return 3; if(s>=3) return 2; if(s>=1) return 1.5; return 1; }
+function useL3Hint(){
+  if(l3State.hintUsed[l3State.idx]) return;
+  l3State.hintUsed[l3State.idx] = true;
+  renderL3();
+}
+function submitL3(input){
+  clearInterval(l3State.timerId);
+  const q = L3_QUESTIONS[l3State.idx];
+  let correct = false, explain = '';
+  if(input.timedOut){
+    explain = `⏱ Time\u2019s up — ${q.explain}`;
+  } else if(q.type==='mcq'){
+    correct = q.options[input.idx].correct;
+    explain = q.options[input.idx].explain;
+  } else {
+    const v = input.val;
+    correct = !isNaN(v) && Math.abs(v - q.answer) <= q.tolerance;
+    explain = correct ? `✓ ${q.explain}` : `Answer: ${q.answer} ${q.unit}. ${q.explain}`;
+  }
+  l3State.answers[l3State.idx] = correct ? 'right' : 'wrong';
+  if(correct){
+    l3State.streak++;
+    l3State.bestStreak = Math.max(l3State.bestStreak, l3State.streak);
+    const mult = streakMult(l3State.streak);
+    const timeBonus = Math.max(0, Math.round(l3State.timeLeft * 3));
+    const hintPenalty = l3State.hintUsed[l3State.idx] ? 0.75 : 1;
+    const pts = Math.round((200 * mult + timeBonus) * hintPenalty);
+    l3State.score += pts;
+    addScore(pts);
+    explain += ` <strong style="color:var(--accent)">+${pts} XP (×${mult}${l3State.hintUsed[l3State.idx]?', hint −25%':''})</strong>`;
+  } else {
+    l3State.streak = 0;
+  }
+  // disable inputs
+  $$('#l3Answer button').forEach(b => {
+    b.disabled = true;
+    if(q.type==='mcq'){
+      const i = +b.getAttribute('data-idx');
+      if(q.options[i].correct) b.classList.add('correct');
+      if(!input.timedOut && i===input.idx && !q.options[i].correct) b.classList.add('wrong');
+    }
+  });
+  const fb = $('#l3Feedback');
+  fb.className = 'feedback-line show ' + (correct?'correct':'wrong');
+  fb.innerHTML = explain;
+  // auto advance after 1.8s
+  setTimeout(() => {
+    l3State.idx++;
+    if(l3State.idx >= L3_QUESTIONS.length) finishL3();
+    else renderL3();
+  }, 2400);
+}
+function finishL3(){
+  const correctCount = l3State.answers.filter(a=>a==='right').length;
+  const stars = correctCount===4 ? 3 : (correctCount>=3 ? 2 : 1);
+  if(l3State.bestStreak >= 4) awardBadge('quickThinker');
+  completeLevel(3, stars, {
+    message: stars===3 ? 'Four for four — a true chart reader.' : `${correctCount} of 4 correct — keep at it!`,
+    stats:[
+      { val:`${correctCount}/4`, lbl:'Correct' },
+      { val:`×${streakMult(l3State.bestStreak)}`, lbl:'Best streak' },
+      { val:`+${l3State.score}`, lbl:'XP' }
+    ]
+  });
+}
+
+/* ═══════════════════════════════════════════
+   LEVEL 4 — SATURATION BOSS
+   ═══════════════════════════════════════════ */
+const L4_TWO_COL_MIN_OPTIONS = 7;
+const L4_SALT_LIST = ['NaNO3','CaCl2','PbNO32','KNO3','K2Cr2O7','KCl','NaCl','KClO3','Ce2SO43'];
+const L4_QUESTIONS = [
+  {
+    type:'mcq',
+    prompt:'Which salt is <strong>least soluble at 50 °C</strong>?',
+    options: L4_SALT_LIST.map(k => ({ label: SALTS[k].label, key:k, correct: k==='Ce2SO43' })),
+    explain:'At 50 °C the Ce₂(SO₄)₃ curve is lowest — only ~4 g dissolves.'
+  },
+  {
+    type:'mcq',
+    prompt:'When <strong>50 g of potassium chloride (KCl)</strong> is dissolved in 100 g of water at <strong>50 °C</strong>, the solution is:',
+    options:[
+      { label:'Unsaturated', correct:false },
+      { label:'Saturated', correct:false },
+      { label:'Supersaturated', correct:true }
+    ],
+    explain:'KCl at 50 °C holds ~43 g — 50 g is above the curve, supersaturated.'
+  },
+  {
+    type:'mcq',
+    prompt:'When <strong>30 g of potassium nitrate (KNO₃)</strong> is dissolved in 100 g of water at <strong>20 °C</strong>, the solution is:',
+    options:[
+      { label:'Unsaturated', correct:false },
+      { label:'Saturated', correct:true },
+      { label:'Supersaturated', correct:false }
+    ],
+    explain:'KNO₃ at 20 °C reads ~30 g — the point sits on the curve, saturated.'
+  },
+  {
+    type:'mcq',
+    prompt:'When <strong>20 g of potassium chlorate (KClO₃)</strong> is dissolved in 100 g of water at <strong>80 °C</strong>, the solution is:',
+    options:[
+      { label:'Unsaturated', correct:true },
+      { label:'Saturated', correct:false },
+      { label:'Supersaturated', correct:false }
+    ],
+    explain:'KClO₃ at 80 °C holds ~38 g — 20 g is below that, so unsaturated.'
+  },
+  {
+    type:'mcq',
+    prompt:'Which salt is <strong>LEAST soluble at 0 °C</strong>?',
+    options:[
+      { label:'KCl', key:'KCl', correct:false },
+      { label:'KClO₃', key:'KClO3', correct:true },
+      { label:'NaCl', key:'NaCl', correct:false },
+      { label:'Ce₂(SO₄)₃', key:'Ce2SO43', correct:false }
+    ],
+    explain:'At 0 °C, KClO₃ reads ~3 g — lower than KCl (28), NaCl (35), and even Ce₂(SO₄)₃ (20).'
+  },
+  {
+    type:'mcq',
+    prompt:'Which of these salts <strong>decreases in solubility</strong> as temperature increases?',
+    options:[
+      { label:'NaNO₃', key:'NaNO3', correct:false },
+      { label:'KNO₃', key:'KNO3', correct:false },
+      { label:'Ce₂(SO₄)₃', key:'Ce2SO43', correct:true },
+      { label:'KCl', key:'KCl', correct:false }
+    ],
+    explain:'Ce₂(SO₄)₃ is the odd one out — its curve slopes downward as T rises.'
+  }
+];
+let l4State = null;
+function startL4(){
+  l4State = { idx:0, answers:[], score:0 };
+  showScreen('level-4');
+  renderL4();
+}
+function renderL4(){
+  const q = L4_QUESTIONS[l4State.idx];
+  if(!q){ finishL4(); return; }
+  const optionsClass = q.options.length >= L4_TWO_COL_MIN_OPTIONS ? ' mcq-options--l4-two-col' : '';
+
+  // highlight relevant curves
+  const relevantKeys = q.options.filter(o=>o.key).map(o=>o.key);
+  drawChart($('#l4Chart'), {
+    salts: L4_SALT_LIST,
+    focus: null,
+    faded: [],
+    showAll: true,
+    yMax: 260
+  });
+
+  $('#l4Card').innerHTML = `
+    <div class="q-header">
+      <span class="q-num">Q ${l4State.idx+1} / ${L4_QUESTIONS.length}</span>
+    </div>
+    <div class="q-text">${q.prompt}</div>
+    <div class="mcq-options${optionsClass}" id="l4Opts">${q.options.map((o,i)=>`
+      <button class="mcq-option" data-idx="${i}"><span class="bullet">${String.fromCharCode(65+i)}</span>${o.label}</button>
+    `).join('')}</div>
+    <div class="feedback-line" id="l4Feedback"></div>
+    <div class="progress-rail">${L4_QUESTIONS.map((_,i)=>`<div class="pip ${i<l4State.idx?'done':''} ${l4State.answers[i]==='right'?'correct':''} ${l4State.answers[i]==='wrong'?'wrong':''}"></div>`).join('')}</div>
+  `;
+  $$('#l4Opts .mcq-option').forEach(b => b.onclick = () => submitL4(+b.getAttribute('data-idx')));
+}
+function submitL4(i){
+  const q = L4_QUESTIONS[l4State.idx];
+  const correct = q.options[i].correct;
+  l4State.answers[l4State.idx] = correct ? 'right' : 'wrong';
+  if(correct){ l4State.score += 250; addScore(250); }
+  $$('#l4Opts .mcq-option').forEach(b => {
+    b.disabled = true;
+    const idx = +b.getAttribute('data-idx');
+    if(q.options[idx].correct) b.classList.add('correct');
+    if(idx===i && !q.options[idx].correct) b.classList.add('wrong');
+  });
+  const fb = $('#l4Feedback');
+  fb.className = 'feedback-line show ' + (correct?'correct':'wrong');
+  fb.innerHTML = (correct?'✓ ':'✗ ') + q.explain + (correct ? ` <strong style="color:var(--accent)">+250 XP</strong>` : '');
+  setTimeout(() => {
+    l4State.idx++;
+    if(l4State.idx >= L4_QUESTIONS.length) finishL4();
+    else renderL4();
+  }, 2400);
+}
+function finishL4(){
+  const correctCount = l4State.answers.filter(a=>a==='right').length;
+  const stars = correctCount===6 ? 3 : (correctCount>=5 ? 2 : 1);
+  if(correctCount===6) awardBadge('chartChampion');
+  completeLevel(4, stars, {
+    message: stars===3 ? 'Flawless — Chart Champion!' : `${correctCount} of 6 correct.`,
+    stats:[
+      { val:`${correctCount}/6`, lbl:'Correct' },
+      { val:`+${l4State.score}`, lbl:'XP' }
+    ]
+  });
+}
+
+/* ═══════════════════════════════════════════
+   LEVEL 5 — LAB MASTER
+   ═══════════════════════════════════════════ */
+const L5_SALTS = ['KCl','KNO3','NaCl','NaNO3','CaCl2','PbNO32','K2Cr2O7','KClO3','Ce2SO43','NH4Cl','KI','HCl'];
+function genChallenges(){
+  const pool = [
+    { text:'Make a <strong>supersaturated KNO₃</strong> solution below 60 °C.', test:(s,t,g)=> s==='KNO3' && t<60 && classify('KNO3',t,g,1.5)==='supersaturated' },
+    { text:'Find a temperature where <strong>Ce₂(SO₄)₃</strong> solubility drops below 5 g.', test:(s,t,g)=> s==='Ce2SO43' && solubility('Ce2SO43',t) < 5 },
+    { text:'Create an <strong>exactly saturated KCl</strong> solution between 30 °C and 60 °C.', test:(s,t,g)=> s==='KCl' && t>=30 && t<=60 && classify('KCl',t,g,1.5)==='saturated' },
+    { text:'Make an <strong>unsaturated NaCl</strong> solution at or below 20 °C.', test:(s,t,g)=> s==='NaCl' && t<=20 && classify('NaCl',t,g,1.5)==='unsaturated' && g > 0 },
+    { text:'Find a temperature where <strong>KClO₃</strong> solubility beats <strong>KCl</strong>.', test:(s,t,g)=> solubility('KClO3',t) > solubility('KCl',t) }
+  ];
+  const shuffled = [...pool].sort(()=>Math.random()-.5).slice(0,3);
+  return shuffled.map(c => ({ ...c, done:false }));
+}
+let l5State = null;
+function startL5(){
+  l5State = { salt:'KCl', temp:25, mass:30, challenges: genChallenges(), score:0 };
+  showScreen('level-5');
+  const picker = $('#l5SaltPicker'); picker.innerHTML = '';
+  L5_SALTS.forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'salt-chip';
+    b.textContent = SALTS[k].label;
+    b.onclick = () => { l5State.salt = k; renderL5(); };
+    b.setAttribute('data-salt', k);
+    picker.appendChild(b);
+  });
+  $('#l5Temp').oninput = e => { l5State.temp = +e.target.value; renderL5(); };
+  $('#l5MassMinus').onclick = () => { l5State.mass = Math.max(0, l5State.mass - 5); renderL5(); };
+  $('#l5MassPlus').onclick = () => { l5State.mass = Math.min(300, l5State.mass + 5); renderL5(); };
+  $('#l5Finish').onclick = finishL5;
+  renderL5();
+}
+function renderL5(){
+  $$('#l5SaltPicker .salt-chip').forEach(c => c.classList.toggle('selected', c.getAttribute('data-salt')===l5State.salt));
+  $('#l5Temp').value = l5State.temp;
+  $('#l5TempVal').textContent = l5State.temp + '°C';
+  $('#l5Mass').value = l5State.mass;
+  const sat = classify(l5State.salt, l5State.temp, l5State.mass, 1.5);
+  const verd = $('#l5Verdict'); verd.className = 'verdict ' + sat;
+  verd.textContent = sat[0].toUpperCase() + sat.slice(1);
+  const curveG = solubility(l5State.salt, l5State.temp);
+  $('#l5Readout').innerHTML = `At <strong>${l5State.temp} °C</strong>, <strong>${SALTS[l5State.salt].label}</strong> solubility ≈ <strong>${curveG.toFixed(1)} g</strong> / 100 g H₂O. Your point: ${l5State.mass} g → <strong>${sat}</strong>.`;
+  drawChart($('#l5Chart'), {
+    salts: L5_SALTS, focus:l5State.salt, showAll:true, yMax:260,
+    points:[{ t:l5State.temp, g:curveG, color:SALTS[l5State.salt].color }]
+  });
+  // challenges
+  const cList = $('#l5Challenges'); cList.innerHTML = '';
+  l5State.challenges.forEach((c,i) => {
+    if(!c.done && c.test(l5State.salt, l5State.temp, l5State.mass)){
+      c.done = true; l5State.score += 150; addScore(150);
+      toast('⭐ Challenge complete — +150 XP');
+    }
+    const div = document.createElement('div');
+    div.className = 'challenge' + (c.done?' done':'');
+    div.innerHTML = `<div class="ch-icon">${c.done?'✓':(i+1)}</div><div><strong>${c.done?'Done':'Goal'}:</strong> ${c.text}</div>`;
+    cList.appendChild(div);
+  });
+}
+function finishL5(){
+  const done = l5State.challenges.filter(c => c.done).length;
+  const stars = done===3 ? 3 : (done>=2 ? 2 : 1);
+  completeLevel(5, stars, {
+    message: stars===3 ? 'All challenges solved — Lab Master!' : `${done} of 3 challenges complete.`,
+    stats:[
+      { val:`${done}/3`, lbl:'Challenges' },
+      { val:`+${l5State.score}`, lbl:'XP' }
+    ]
+  });
+}
+
+/* ═══════════════════════════════════════════
+   WIRING
+   ═══════════════════════════════════════════ */
+$$('[data-back]').forEach(b => b.addEventListener('click', backToMenu));
+$('#settingsBtn').addEventListener('click', () => $('#settingsOverlay').classList.add('active'));
+$('#settingsClose').addEventListener('click', () => $('#settingsOverlay').classList.remove('active'));
+$('#settingsReset').addEventListener('click', () => {
+  if(confirm('Reset all progress, stars, badges and XP?')){
+    localStorage.removeItem(STORAGE_KEY);
+    state = loadState();
+    $('#settingsOverlay').classList.remove('active');
+    backToMenu();
+    toast('Progress reset');
+  }
+});
+$('#settingsOverlay').addEventListener('click', e => { if(e.target===$('#settingsOverlay')) $('#settingsOverlay').classList.remove('active'); });
+
+// Certificate wiring
+$('#menuCert').addEventListener('click', openCertificate);
+$('#victoryCert').addEventListener('click', openCertificate);
+$('#certDownload').addEventListener('click', downloadCertificate);
+$('#certName').addEventListener('input', saveCertName);
+$('#certName').addEventListener('blur', saveCertName);
+
+// resize handler — redraw the visible chart
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if($('#screen-level-1').classList.contains('active')) renderL1Chart();
+    if($('#screen-level-2').classList.contains('active')) renderL2Chart();
+    if($('#screen-level-3').classList.contains('active')) renderL3();
+    if($('#screen-level-4').classList.contains('active')) renderL4();
+    if($('#screen-level-5').classList.contains('active')) renderL5();
+  }, 200);
+});
+
+// initial render
+renderTopbar();
+renderLevelGrid();
+</script>
+</body>
+</html>

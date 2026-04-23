@@ -7,15 +7,6 @@
 <title>Solubility Curves — Interactive Chemistry Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-6QQR2741ZZ');
-</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -57,7 +48,7 @@ body{
 
 /* ── HEADER ── */
 .page-header{
-  max-width:1140px;margin:0 auto;padding:2rem 1.5rem 0;
+  max-width:1140px;margin:0 auto;padding:1.25rem 1.5rem 0;
   display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;
 }
 .page-header h1{
@@ -75,20 +66,20 @@ body{
 .accent-dots i:nth-child(3){background:var(--gas)}
 
 /* ── LAYOUT ── */
-.main-wrap{max-width:1140px;margin:0 auto;padding:1rem 1.5rem 1.6rem}
+.main-wrap{max-width:1140px;margin:0 auto;padding:.75rem 1.5rem 2rem}
 
 .graph-section{
   display:grid;
   grid-template-columns:1fr 280px;
-  gap:1.25rem;
-  margin-bottom:.9rem;
+  gap:1rem;
+  margin-bottom:.75rem;
 }
 
 /* ── CONTROLS BAR ── */
 .controls-bar{
   display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;
-  margin-bottom:.75rem;
-  padding-top:.25rem;
+  margin-bottom:.5rem;
+  padding-top:.15rem;
 }
 .toggle-group{display:flex;gap:.4rem;flex-wrap:wrap}
 .curve-toggle{
@@ -134,12 +125,31 @@ body{
 .quiz-btn:hover{background:#7c22c9;box-shadow:0 4px 14px rgba(147,51,234,.25)}
 .quiz-btn:active{transform:scale(.97)}
 
+.game-btn{
+  display:inline-flex;align-items:center;gap:.45rem;
+  background:linear-gradient(135deg,#f59e0b,#ea580c);
+  border:none;color:#fff;text-decoration:none;
+  border-radius:20px;padding:.4rem 1rem .4rem .85rem;
+  font-family:var(--font);font-size:.78rem;font-weight:600;
+  letter-spacing:.01em;cursor:pointer;
+  transition:transform .1s,box-shadow .2s,filter .2s;
+  box-shadow:0 2px 8px rgba(234,88,12,.28);
+}
+.game-btn:hover{filter:brightness(1.05);box-shadow:0 4px 14px rgba(234,88,12,.35)}
+.game-btn:active{transform:scale(.97)}
+.game-btn .game-ico{
+  width:1.05rem;height:1.05rem;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;
+}
+
 /* ── GRAPH PANEL ── */
 .graph-panel{
   background:var(--surface);
   border:1.5px solid var(--border);
   border-radius:var(--radius);
-  padding:1rem 1rem .65rem;
+  padding:1.25rem 1.25rem .75rem;
   position:relative;
   box-shadow:var(--shadow-lg);
 }
@@ -228,14 +238,14 @@ body{
   background:var(--surface);
   border:1.5px solid var(--border);
   border-radius:var(--radius);
-  padding:1rem;
+  padding:1.25rem;
   display:flex;flex-direction:column;
   box-shadow:var(--shadow-lg);
 }
 .beaker-svg-wrap{
-  flex:1;width:100%;min-height:270px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  flex:1;width:100%;min-height:300px;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
-.beaker-svg-wrap svg{width:100%;height:100%;max-height:390px;display:block}
+.beaker-svg-wrap svg{width:100%;height:100%;max-height:420px;display:block}
 .beaker-svg-wrap .crystal-cluster,
 .beaker-svg-wrap .crystal-fragment,
 .beaker-svg-wrap .crystal-shadow,
@@ -251,18 +261,18 @@ body{
 .beaker-status.dissolved{color:#047857}
 .beaker-status.undissolved{color:#b45309}
 .beaker-info{
-  margin-top:.55rem;font-size:.7rem;color:var(--text-dim);line-height:1.45;
+  margin-top:.65rem;font-size:.72rem;color:var(--text-dim);line-height:1.55;
 }
 .beaker-info strong{color:var(--text);font-weight:600}
 
 /* ── CAPTION ── */
 .caption-block{
-  padding:.9rem 1.2rem;
+  padding:1.15rem 1.5rem;
   background:linear-gradient(180deg,rgba(196,223,245,.66),rgba(182,211,236,.62));
   border:1px solid rgba(70,108,140,.24);
   border-radius:var(--radius);
-  font-size:.9rem;color:var(--text-mid);
-  line-height:1.62;
+  font-size:.85rem;color:var(--text-mid);
+  line-height:1.7;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.7),
     inset 0 -1px 0 rgba(56,87,118,.16),
@@ -360,22 +370,6 @@ body{
 .quiz-restart:hover{opacity:.88}
 
 /* ── RESPONSIVE ── */
-@media(min-width:861px) and (max-height:930px){
-  .page-header{padding:1.15rem 1.25rem 0}
-  .main-wrap{padding:.6rem 1.25rem .75rem}
-  .controls-bar{margin-bottom:.6rem;padding-top:0}
-  .graph-section{gap:.9rem;margin-bottom:.7rem}
-  .graph-panel{padding:.8rem .8rem .55rem}
-  .slider-row{margin-top:.45rem;padding:.25rem 0}
-  .readouts{margin-top:.5rem}
-  .beaker-panel{padding:.8rem}
-  .beaker-svg-wrap{min-height:235px}
-  .beaker-svg-wrap svg{max-height:340px}
-  .beaker-status{margin-top:.4rem}
-  .beaker-info{margin-top:.45rem;font-size:.68rem;line-height:1.4}
-  .caption-block{padding:.65rem .9rem;font-size:.84rem;line-height:1.5}
-}
-
 @media(max-width:860px){
   .graph-section{grid-template-columns:1fr !important;gap:1rem}
   .page-header{padding:1.5rem 1rem .5rem}
@@ -421,6 +415,9 @@ body{
       <button class="curve-toggle nacl" data-curve="nacl"><span class="dot"></span>NaCl</button>
       <button class="curve-toggle gas" data-curve="gas"><span class="dot"></span>O₂ Gas</button>
     </div>
+    <a class="game-btn" href="solubility-game.html" aria-label="Play the Solubility Curves game">
+      <span class="game-ico" aria-hidden="true">★</span>Play the Game
+    </a>
     <button class="quiz-btn" id="quizBtn">Quiz Mode</button>
   </div>
 
@@ -871,10 +868,7 @@ let gW, gH, plotW, plotH, dpr;
 function sizeGraph(){
   const container = graphCanvas.parentElement;
   const w = container.clientWidth - 40;
-  const compactDesktop = window.innerWidth > 860 && window.innerHeight <= 930;
-  const h = compactDesktop
-    ? Math.max(220, Math.min(340, w * 0.44))
-    : Math.max(280, Math.min(420, w * 0.52));
+  const h = Math.max(280, Math.min(420, w * 0.52));
   dpr = window.devicePixelRatio||1;
   graphCanvas.width = w*dpr; graphCanvas.height = h*dpr;
   graphCanvas.style.height = h+'px';
