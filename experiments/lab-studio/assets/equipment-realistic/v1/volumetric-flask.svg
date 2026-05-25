@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="1254" viewBox="0 0 1254 1254" role="img" aria-label="volumetric flask">
+  <defs>
+    <linearGradient id="flask-glass-fill" x1="420" x2="820" y1="70" y2="1175" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="0.42" stop-color="#f7fbfb" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#d9eef6" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="flask-edge" x1="435" x2="820" y1="150" y2="1150" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7d9096" stop-opacity="0.52"/>
+      <stop offset="0.52" stop-color="#cfdde1" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#2e6f8b" stop-opacity="0.72"/>
+    </linearGradient>
+    <radialGradient id="flask-bulb-shade" cx="0.5" cy="0.6" r="0.58">
+      <stop offset="0" stop-color="#eef8fb" stop-opacity="0.28"/>
+      <stop offset="0.68" stop-color="#d7edf5" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#9ccfe2" stop-opacity="0.28"/>
+    </radialGradient>
+    <linearGradient id="flask-highlight" x1="485" x2="650" y1="180" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.72"/>
+      <stop offset="0.44" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.64"/>
+    </linearGradient>
+    <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#174b5d" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#soft-shadow)">
+    <path
+      d="M573 89c0-18 107-18 108 0 24 5 30 24 8 35l-12 523c0 35 31 65 63 109 78 108 103 238 41 330-38 57-96 76-155 76s-117-19-155-76c-62-92-37-222 41-330 32-44 63-74 63-109l-12-523c-22-11-16-30 10-35Z"
+      fill="url(#flask-glass-fill)"
+      stroke="url(#flask-edge)"
+      stroke-width="15"
+    />
+    <path
+      d="M605 106h42c17 0 31 6 31 14s-14 14-31 14h-42c-17 0-31-6-31-14s14-14 31-14Z"
+      fill="#ffffff"
+      fill-opacity="0.5"
+      stroke="#6d838a"
+      stroke-opacity="0.42"
+      stroke-width="7"
+    />
+    <path
+      d="M591 137c16 9 52 10 69 1"
+      stroke="#ffffff"
+      stroke-opacity="0.72"
+      stroke-width="8"
+    />
+    <path
+      d="M588 124l11 522c1 45-35 82-72 132-67 92-87 202-38 278 31 48 81 63 137 63s106-15 137-63c49-76 29-186-38-278-37-50-73-87-72-132l11-522"
+      fill="url(#flask-bulb-shade)"
+      stroke="#ffffff"
+      stroke-opacity="0.38"
+      stroke-width="8"
+    />
+    <path
+      d="M596 656c-5 28-29 52-56 88-62 84-84 182-45 251"
+      stroke="url(#flask-highlight)"
+      stroke-width="23"
+      stroke-opacity="0.72"
+    />
+    <path
+      d="M695 748c61 90 75 187 35 248"
+      stroke="#ffffff"
+      stroke-width="30"
+      stroke-opacity="0.46"
+    />
+    <path
+      d="M475 1063c51 44 251 44 302 0"
+      stroke="#2e6f8b"
+      stroke-opacity="0.46"
+      stroke-width="11"
+    />
+    <ellipse cx="626" cy="1090" rx="122" ry="24" stroke="#2e6f8b" stroke-opacity="0.36" stroke-width="9"/>
+    <ellipse cx="626" cy="1092" rx="72" ry="12" stroke="#ffffff" stroke-opacity="0.54" stroke-width="7"/>
+    <path d="M560 409h132" stroke="#355a65" stroke-opacity="0.68" stroke-width="9"/>
+    <path d="M585 650c23 13 60 13 83 0" stroke="#4a9cc1" stroke-opacity="0.42" stroke-width="8"/>
+  </g>
+</svg>

@@ -49,6 +49,11 @@ const translations = {
                 description: "Determine the amount of copper in a brass sample using spectrophotometric methods. Apply quantitative analysis techniques.",
                 tags: ["Spectrophotometry", "Chemistry", "Metals"]
             },
+            labstudio: {
+                title: "Lab Studio",
+                description: "Author chemistry process maps and run the same structured definitions in a student-facing virtual lab simulator.",
+                tags: ["Lab Authoring", "Chemistry", "Simulation"]
+            },
             nuclearchemistry: {
                 title: "Nuclear Chemistry Game",
                 description: "Interactive simulation exploring nuclear reactions, radioactive decay, and nuclear chemistry principles through engaging gameplay.",
@@ -231,6 +236,11 @@ const translations = {
                 description: "Spektrofotometrik üsullardan istifadə edərək bürünc nümunəsindəki mis miqdarını müəyyən edin. Kəmiyyət analizi üsullarını tətbiq edin.",
                 tags: ["Spektrofotometriya", "Kimya", "Metallar"]
             },
+            labstudio: {
+                title: "Laboratoriya Studiyası",
+                description: "Kimya proses xəritələri yaradın və eyni strukturlaşdırılmış tərifləri tələbə yönümlü virtual laboratoriya simulyatorunda işə salın.",
+                tags: ["Laboratoriya Müəllifliyi", "Kimya", "Simulyasiya"]
+            },
             nuclearchemistry: {
                 title: "Nüvə Kimyası Oyunu",
                 description: "Maraqlı oyun vasitəsilə nüvə reaksiyalarını, radioaktiv parçalanmanı və nüvə kimyası prinsiplərini araşdıran interaktiv simulyasiya.",
@@ -408,6 +418,11 @@ const translations = {
                 description: "Spektrofotometrik yöntemler kullanarak bir pirinç numunesindeki bakır miktarını belirleyin. Nicel analiz tekniklerini uygulayın.",
                 tags: ["Spektrofotometri", "Kimya", "Metaller"]
             },
+            labstudio: {
+                title: "Laboratuvar Stüdyosu",
+                description: "Kimya süreç haritaları oluşturun ve aynı yapılandırılmış tanımları öğrenciye yönelik sanal laboratuvar simülatöründe çalıştırın.",
+                tags: ["Laboratuvar Yazarlığı", "Kimya", "Simülasyon"]
+            },
             nuclearchemistry: {
                 title: "Nükleer Kimya Oyunu",
                 description: "İlgi çekici oyun içeriği ile nükleer reaksiyonları, radyoaktif bozunmayı ve nükleer kimya ilkelerini keşfeden interaktif simülasyon.",
@@ -584,6 +599,11 @@ const translations = {
                 title: "Kupfer in Messing-Analyse",
                 description: "Bestimmen Sie die Kupfermenge in einer Messingprobe mit spektrophotometrischen Methoden. Wenden Sie quantitative Analysetechniken an.",
                 tags: ["Spektrophotometrie", "Chemie", "Metalle"]
+            },
+            labstudio: {
+                title: "Lab Studio",
+                description: "Erstellen Sie Chemie-Prozesskarten und führen Sie dieselben strukturierten Definitionen in einem virtuellen Labor für Lernende aus.",
+                tags: ["Laborerstellung", "Chemie", "Simulation"]
             },
             nuclearchemistry: {
                 title: "Kernchemie-Spiel",

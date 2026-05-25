@@ -1,0 +1,337 @@
+{
+  "id": "weighing",
+  "title": "Weigh a Solid",
+  "learningGoal": "Use an analytical balance to collect reproducible mass evidence.",
+  "requiredEquipment": [
+    "analytical-balance",
+    "watch-glass",
+    "reagent-bottle",
+    "spatula"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "analytical-balance-1",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "watch-glass-1",
+        "definitionId": "watch-glass",
+        "label": "Watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "reagent-bottle-1",
+        "definitionId": "reagent-bottle",
+        "label": "Reagent bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Sodium carbonate",
+          "massG": 2.5,
+          "solutes": [
+            {
+              "id": "sodium-carbonate",
+              "label": "Sodium carbonate",
+              "amount": 2.5,
+              "unit": "g"
+            }
+          ],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "powder"
+        }
+      },
+      {
+        "id": "spatula-1",
+        "definitionId": "spatula",
+        "label": "Spatula",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "place-watch-glass",
+      "verb": "place",
+      "label": "Place watch glass",
+      "parameters": {
+        "equipmentDefinitionId": "watch-glass",
+        "location": "workbench"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "place updates runtime state through structured equipment contents."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The watch glass is on the workbench.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "weigh-solid",
+      "verb": "weigh",
+      "label": "Weigh sodium carbonate",
+      "parameters": {
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "watch-glass",
+        "measurementId": "solid-mass",
+        "expectedMassG": 2.5,
+        "tolerance": 0.005
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "weigh updates runtime state through structured equipment contents."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Mass recorded from the analytical balance.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "weigh",
+        "measurement"
+      ]
+    },
+    {
+      "id": "record-solid-mass",
+      "verb": "record",
+      "label": "Record mass",
+      "parameters": {
+        "measurementId": "solid-mass",
+        "label": "Solid mass",
+        "unit": "g"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "record updates runtime state through structured equipment contents."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Mass evidence recorded in the notebook.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "notebook"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "place-watch-glass-node",
+    "nodes": [
+      {
+        "id": "place-watch-glass-node",
+        "type": "action",
+        "title": "Place watch glass",
+        "description": "Place the watch glass on the workbench.",
+        "actionId": "place-watch-glass",
+        "config": {},
+        "validation": [
+          {
+            "id": "placed-watch-glass",
+            "type": "actionEvidence",
+            "label": "Action place-watch-glass was completed.",
+            "actionId": "place-watch-glass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place watch glass complete.",
+          "retry": "Review Place watch glass and try again."
+        }
+      },
+      {
+        "id": "weigh-solid-node",
+        "type": "action",
+        "title": "Weigh solid",
+        "description": "Weigh 2.5 g of sodium carbonate from the reagent bottle on the watch glass.",
+        "actionId": "weigh-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "weighed-solid",
+            "type": "actionEvidence",
+            "label": "Action weigh-solid was completed.",
+            "actionId": "weigh-solid"
+          },
+          {
+            "id": "solid-mass-recorded",
+            "type": "measurementRecorded",
+            "label": "Measurement solid-mass was recorded.",
+            "measurementId": "solid-mass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh solid complete.",
+          "retry": "Review Weigh solid and try again."
+        }
+      },
+      {
+        "id": "record-mass-node",
+        "type": "observation",
+        "title": "Record mass",
+        "description": "Record the sodium carbonate mass in the lab notebook.",
+        "actionId": "record-solid-mass",
+        "config": {},
+        "validation": [
+          {
+            "id": "recorded-solid-mass",
+            "type": "actionEvidence",
+            "label": "Action record-solid-mass was completed.",
+            "actionId": "record-solid-mass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record mass complete.",
+          "retry": "Review Record mass and try again."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "place-watch-glass-node",
+        "to": "weigh-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "weigh-solid-node",
+        "to": "record-mass-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "solid-mass-success",
+      "type": "measurementRecorded",
+      "label": "Measurement solid-mass was recorded.",
+      "measurementId": "solid-mass"
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "wrong-order",
+      "when": "current node expects a different action",
+      "message": "That action is out of sequence for the current technique step.",
+      "recovery": "Check the process map and perform the highlighted step first."
+    },
+    {
+      "id": "missing-source",
+      "when": "source equipment or contents are missing",
+      "message": "The selected source does not contain the material required for this action.",
+      "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+    },
+    {
+      "id": "overflow",
+      "when": "target capacity would be exceeded",
+      "message": "The target equipment cannot hold the requested volume.",
+      "recovery": "Use a larger container or transfer a smaller measured amount."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.0.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-05-12T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "weighing"
+    ]
+  }
+}

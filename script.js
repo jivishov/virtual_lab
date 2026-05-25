@@ -34,6 +34,13 @@ const labs = [
         link: "experiments/copperinbrass/"
     },
     {
+        id: 13,
+        translationKey: "labstudio",
+        type: "lab",
+        icon: "🧪",
+        link: "experiments/lab-studio/"
+    },
+    {
         id: 4,
         translationKey: "nuclearchemistry",
         type: "simulation",

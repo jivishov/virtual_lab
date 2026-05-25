@@ -1,0 +1,35 @@
+[
+  {
+    "id": "intro-filtration-demo",
+    "title": "Precipitate and Filter Calcium Carbonate",
+    "description": "An authored lab that precipitates calcium carbonate, prepares a funnel, filters the mixture, and collects filtrate evidence.",
+    "file": "intro-filtration-demo.json",
+    "tags": [
+      "lab",
+      "demo",
+      "filtration"
+    ]
+  },
+  {
+    "id": "hard-water-demo",
+    "title": "Hard-Water Reference Demo",
+    "description": "A schema-authored gravimetric hard-water workflow used as reference content for reusable Lab Studio techniques.",
+    "file": "hard-water-demo.json",
+    "tags": [
+      "lab",
+      "demo",
+      "hard-water-reference"
+    ]
+  },
+  {
+    "id": "acid-base-titration",
+    "title": "Acid-Base Titration",
+    "description": "A complete schema-authored titration lab with diagram layout, endpoint evidence, and molarity calculation.",
+    "file": "acid-base-titration.json",
+    "tags": [
+      "lab",
+      "diagram-authored",
+      "titration"
+    ]
+  }
+]

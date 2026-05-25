@@ -1,0 +1,83 @@
+[
+  {
+    "id": "weighing",
+    "title": "Weigh a Solid",
+    "description": "Use an analytical balance to collect reproducible mass evidence.",
+    "file": "weighing.json",
+    "tags": [
+      "technique",
+      "weighing"
+    ]
+  },
+  {
+    "id": "measuring-volume",
+    "title": "Measure Liquid Volume",
+    "description": "Measure a fixed liquid volume using a calibrated cylinder.",
+    "file": "measuring-volume.json",
+    "tags": [
+      "technique",
+      "volume"
+    ]
+  },
+  {
+    "id": "making-solution",
+    "title": "Make a Solution",
+    "description": "Dissolve a weighed solid in solvent and track concentration state.",
+    "file": "making-solution.json",
+    "tags": [
+      "technique",
+      "solution"
+    ]
+  },
+  {
+    "id": "dilution",
+    "title": "Dilute a Stock Solution",
+    "description": "Create a target dilution from an aliquot and final volume.",
+    "file": "dilution.json",
+    "tags": [
+      "technique",
+      "dilution"
+    ]
+  },
+  {
+    "id": "transfer",
+    "title": "Transfer Liquid",
+    "description": "Move a measured liquid volume between containers without overflow.",
+    "file": "transfer.json",
+    "tags": [
+      "technique",
+      "transfer"
+    ]
+  },
+  {
+    "id": "filtration",
+    "title": "Filter a Precipitate",
+    "description": "Collect a precipitate with filter paper, rinse it, and preserve evidence.",
+    "file": "filtration.json",
+    "tags": [
+      "technique",
+      "filtration"
+    ]
+  },
+  {
+    "id": "drying",
+    "title": "Dry and Weigh a Precipitate",
+    "description": "Dry a precipitate to stable mass and record the calculation evidence.",
+    "file": "drying.json",
+    "tags": [
+      "technique",
+      "drying"
+    ]
+  },
+  {
+    "id": "hard-water-calculation",
+    "title": "Calculate Hardness",
+    "description": "Calculate mg/L hardness as CaCO3 from precipitate mass and sample volume.",
+    "file": "hard-water-calculation.json",
+    "tags": [
+      "technique",
+      "calculation",
+      "hard-water-reference"
+    ]
+  }
+]
