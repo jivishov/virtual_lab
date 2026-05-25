@@ -88,6 +88,11 @@ const translations = {
                 title: "Virus vs Body Defense Lab",
                 description: "Interactive immune-response simulation showing viral entry, host-cell rupture, phagocyte cleanup, and adaptive response. Made by Said Jivishov.",
                 tags: ["Immunology", "Biology", "Interactive", "Made by Said Jivishov"]
+            },
+            acidbasesolutions: {
+                title: "3D Acid-Base Solutions",
+                description: "Explore pH, equilibrium, conductivity, and particle-level behavior in a 3D acid-base lab with draggable measurement tools.",
+                tags: ["Acids & Bases", "pH", "Equilibrium", "3D"]
             }
         },
 
@@ -260,6 +265,11 @@ const translations = {
                 title: "Virus və Bədən Müdafiəsi Laboratoriyası",
                 description: "Virusun daxil olmasından başlayaraq hüceyrə partlaması, faqosit təmizlənməsi və adaptiv immun cavaba qədər bütün mərhələləri göstərən interaktiv simulyasiya. Said Jivishov tərəfindən hazırlanıb.",
                 tags: ["İmmunologiya", "Biologiya", "İnteraktiv", "Said Jivishov"]
+            },
+            acidbasesolutions: {
+                title: "3D Turşu-Qələvi Məhlulları",
+                description: "pH, tarazlıq, keçiricilik və hissəcik səviyyəsində davranışı sürüklənə bilən ölçmə alətləri olan 3D turşu-qələvi laboratoriyasında araşdırın.",
+                tags: ["Turşular və Qələvilər", "pH", "Tarazlıq", "3D"]
             }
         },
 
@@ -432,6 +442,11 @@ const translations = {
                 title: "Virüs ve Vücut Savunma Laboratuvarı",
                 description: "Viral giriş, konak hücre parçalanması, fagosit temizliği ve adaptif yanıtı adım adım gösteren etkileşimli bağışıklık simülasyonu. Said Jivishov tarafından yapıldı.",
                 tags: ["İmmünoloji", "Biyoloji", "Etkileşimli", "Said Jivishov"]
+            },
+            acidbasesolutions: {
+                title: "3B Asit-Baz Çözeltileri",
+                description: "Sürüklenebilir ölçüm araçlarıyla 3B asit-baz laboratuvarında pH, denge, iletkenlik ve parçacık düzeyindeki davranışı keşfedin.",
+                tags: ["Asitler ve Bazlar", "pH", "Denge", "3B"]
             }
         },
 
@@ -604,6 +619,11 @@ const translations = {
                 title: "Virus-gegen-Körperabwehr-Labor",
                 description: "Interaktive Immunsimulation mit viralem Eintritt, Wirtszell-Lyse, Phagozyten-Aufräumphase und adaptiver Antwort. Erstellt von Said Jivishov.",
                 tags: ["Immunologie", "Biologie", "Interaktiv", "Said Jivishov"]
+            },
+            acidbasesolutions: {
+                title: "3D-Säure-Base-Lösungen",
+                description: "Erkunden Sie pH-Wert, Gleichgewicht, Leitfähigkeit und Teilchenverhalten in einem 3D-Säure-Base-Labor mit ziehbaren Messwerkzeugen.",
+                tags: ["Säuren & Basen", "pH", "Gleichgewicht", "3D"]
             }
 
         },

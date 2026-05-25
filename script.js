@@ -88,6 +88,13 @@ const labs = [
         type: "simulation",
         icon: "🛡️",
         link: "simulations/virus_defense_lab/"
+    },
+    {
+        id: 12,
+        translationKey: "acidbasesolutions",
+        type: "simulation",
+        icon: "🧪",
+        link: "simulations/acid_base_solutions/"
     }
 
 ];
