@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RenalShift — model card</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ctext y=%2713%27 font-size=%2713%27%3E%E2%97%90%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="ui.css">
+</head>
+<body>
+<div class="doc">
+
+<p class="back"><a href="index.html">&larr; Back to the simulator</a></p>
+
+<h1>RenalShift model card</h1>
+<p class="lede">Last reviewed 2026-07-25. Schema version 1.0.0.</p>
+
+<h2>What the model is</h2>
+<p>
+  A one- or two-compartment mammillary pharmacokinetic model with first-order
+  elimination from the central compartment, integrated across a user-defined
+  therapy timeline. Total clearance is treated as a step function of time:
+</p>
+<p><code>CL_total(t) = CL_nonrenal + CL_residual(t) + CL_extracorporeal(t)</code></p>
+<p>
+  Extracorporeal clearance is computed from the prescribed circuit
+  configuration rather than from a single lumped effluent term:
+</p>
+<pre><code>Qp  = Qblood x (1 - haematocrit)          plasma water flow
+Qf  = Qpre + Qpost + Qnet                 filtration across the membrane
+DF  = Qp / (Qp + Qpre)                    pre-dilution correction
+CLd = SA x Qdialysate x saturation        diffusive
+CLc = SC x Qf                             convective
+CL  = DF x (CLd + CLc)</code></pre>
+<p>
+  <code>SC</code> is the sieving coefficient and <code>SA</code> the
+  saturation coefficient. The interface currently sets both equal to the
+  unbound fraction, which is an approximation: they are distinct measured
+  quantities.
+</p>
+
+<h2>Population it applies to</h2>
+<p>
+  <strong>None is defined.</strong> No qualified population pharmacokinetic
+  model is bundled with this application. The parameters are supplied by the
+  user, so the applicable population is whatever population the user's source
+  describes — and it is the user's responsibility to know what that is.
+</p>
+<p>
+  The presets shipped in <code>data/drugs.js</code> are illustrative
+  placeholders carrying an <code>illustrative</code> quality flag. They exist
+  so the interface can be exercised. They are not traceable to any published
+  model and must not be used to draw conclusions about a patient.
+</p>
+<p>
+  The reason no model is bundled is recorded in full in
+  <a href="../../governance/model-selection.md">model-selection.md</a>: a
+  suitable prospective cefepime CRRT model was identified, but its full text
+  was not retrievable in the environment where this was built, and
+  reconstructing the missing parameters from typical literature values would
+  have been fabrication.
+</p>
+
+<h2>Assumptions</h2>
+<ul>
+  <li>Linear, time-invariant pharmacokinetics within each interval between events.</li>
+  <li>Constant sieving and saturation coefficients.</li>
+  <li>Constant protein binding, independent of concentration and time.</li>
+  <li>Instantaneous distribution within each compartment.</li>
+  <li>The pre-dilution correction is applied to the whole filter clearance
+      rather than only to the pre-diluted stream — the standard simplification,
+      which slightly under-predicts clearance when post-dilution replacement
+      also runs. The application warns when both are non-zero.</li>
+  <li>Prescribed flows are delivered flows. Real circuits deliver less.</li>
+</ul>
+
+<h2>Not modelled</h2>
+<ul>
+  <li>Membrane adsorption of drug, which is agent- and membrane-specific and
+      can dominate for some combinations.</li>
+  <li>Filter performance decay over the life of the circuit.</li>
+  <li>Concentration- or time-dependent changes in protein binding.</li>
+  <li>Regional citrate anticoagulation effects on effective solute transport.</li>
+  <li>Sequestration by any concurrent extracorporeal circuit, including ECMO.</li>
+  <li>Between-patient variability of any kind. There is no population layer.</li>
+</ul>
+
+<h2>Known failure modes</h2>
+<ul>
+  <li><strong>Highly protein-bound drugs.</strong> Setting the sieving
+      coefficient equal to the unbound fraction becomes unreliable, and
+      adsorption is more likely to matter.</li>
+  <li><strong>High filtration fraction.</strong> Above roughly 20–25% of
+      plasma water flow, haemoconcentration invalidates the constant-sieving
+      assumption. The application warns but still computes.</li>
+  <li><strong>High dialysate flow relative to plasma water flow.</strong>
+      Complete dialysate saturation stops being a reasonable default.</li>
+  <li><strong>Recovering or deteriorating renal function.</strong> Residual
+      renal clearance is entered as a single constant. Time-varying residual
+      function is a planned extension and is not implemented.</li>
+</ul>
+
+<h2>Verification status</h2>
+<table>
+  <thead><tr><th>Claim</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>The code solves the stated equations correctly</td><td>Verified — 110 automated checks; independent Dormand-Prince cross-check agreeing to 3.7e-12 relative</td></tr>
+    <tr><td>Numerical behaviour at event boundaries, degenerate inputs, mass balance</td><td>Verified — same suite</td></tr>
+    <tr><td>Bundled parameters represent a real population</td><td>Not established — none bundled</td></tr>
+    <tr><td>Predictions match independent clinical observations</td><td>Not established — no external evaluation</td></tr>
+    <tr><td>Using this improves clinical decisions or outcomes</td><td>Not established, not claimed</td></tr>
+  </tbody>
+</table>
+<p>
+  The verification suite was mutation-tested to confirm it is not vacuous:
+  removing the pre-dilution correction produced two failures, and transposing
+  two rate constants in the compartment matrix produced six.
+</p>
+
+<h2>Intended use, restated</h2>
+<p>
+  Teaching, exploration and scenario comparison. This application produces
+  <strong>no dosing recommendation</strong>. It does not select a dose, rank
+  scenarios, or judge a regimen adequate or inadequate. Where two scenarios
+  differ it describes the difference and stops.
+</p>
+<p>
+  Full statement: <a href="../../governance/intended-use.md">intended-use.md</a>.
+</p>
+
+<h2>Data handling</h2>
+<p>
+  All computation happens in the page. There are no network requests after
+  load, no analytics, no third-party scripts and no external assets. No
+  identifying field exists: the application asks only for the physiological
+  parameters the equations consume.
+</p>
+<p>
+  Serving any web page reveals ordinary request metadata to the host. The
+  claim made here is about the application, not the network.
+</p>
+
+<p class="back"><a href="index.html">&larr; Back to the simulator</a></p>
+
+</div>
+</body>
+</html>

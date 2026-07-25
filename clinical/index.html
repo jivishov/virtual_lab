@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clinical pharmacology model explorers</title>
+<meta name="description" content="Open, browser-based pharmacokinetic model explorers. Equations, parameters and assumptions are visible; no dosing recommendations are produced.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ctext y=%2713%27 font-size=%2713%27%3E%E2%97%90%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="apps/renal-shift/ui.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Open tools</p>
+    <h1>Clinical pharmacology model explorers</h1>
+    <p class="lede">
+      Browser-based pharmacokinetic models with their equations, parameters and
+      assumptions on the surface. Built to be checked, not trusted.
+    </p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="doc">
+
+    <h2>Principles</h2>
+    <ul>
+      <li>No machine learning. Every result is a closed-form or numerically
+          exact solution of stated equations.</li>
+      <li>No dosing recommendations. These tools display calculations; they do
+          not tell anyone what to do.</li>
+      <li>No hidden parameters. Values are user-supplied or explicitly flagged
+          as illustrative, and provenance travels with the results.</li>
+      <li>No unearned confidence. Verification, external validation and
+          clinical impact are tracked as separate claims, and only the first
+          is currently established for anything here.</li>
+      <li>Nothing entered is transmitted. All computation happens in the page;
+          there are no requests after load, no analytics and no third-party
+          code.</li>
+    </ul>
+
+    <h2>Tools</h2>
+
+    <h3><a href="apps/renal-shift/index.html">RenalShift</a></h3>
+    <p>
+      Antimicrobial exposure when continuous renal replacement therapy starts,
+      stops, or changes. Static dosing tables assume a stable circuit; real
+      circuits clot, get paused for procedures, and get represcribed. This
+      shows the concentration-time consequences, decomposes total clearance
+      into non-renal, residual renal and extracorporeal components, and
+      attributes the effect of each event by counterfactual comparison.
+    </p>
+    <p>
+      <a href="apps/renal-shift/model-card.html">Model card</a> ·
+      <a href="apps/renal-shift/index.html">Open the simulator</a>
+    </p>
+
+    <h2>Governance</h2>
+    <p>
+      Each tool passes through an evidence gate before any interface work
+      begins, and the outcome is recorded whether or not it is favourable.
+      RenalShift failed its model-availability gate; the intended use was
+      narrowed rather than the evidence invented, and the reasoning is written
+      down.
+    </p>
+    <ul>
+      <li><a href="governance/intended-use.md">Intended use</a> — what these
+          tools are and are not for</li>
+      <li><a href="governance/landscape.md">Landscape review</a> — what already
+          exists, including five corrections to an earlier, overstated draft</li>
+      <li><a href="governance/model-selection.md">Model selection</a> — the
+          evidence gate and why no population model is bundled</li>
+      <li><a href="governance/validation-plan.md">Validation plan</a> — five
+          levels, two complete, three blocked with reasons</li>
+      <li><a href="governance/claim-language.md">Claim language</a> — the
+          wording rules, including banned phrasings</li>
+      <li><a href="governance/risk-register.md">Risk register</a></li>
+    </ul>
+
+    <h2>Verification</h2>
+    <p>
+      The numerical core is checked by 110 automated assertions, including
+      agreement between the production matrix-exponential solver and an
+      independently written Dormand-Prince integrator to about 4&nbsp;parts in
+      10<sup>12</sup>, closed-form checks on every exposure metric, and
+      mass-balance and degenerate-input cases. The suite is mutation-tested to
+      confirm it is not vacuous. Run it with <code>node tests/tests.js</code>.
+    </p>
+    <p>
+      This establishes that the code solves the equations it claims to solve.
+      It establishes nothing about whether those equations describe any real
+      patient.
+    </p>
+
+    <p class="back">
+      <a href="../index.html">&larr; Back to Virtual Lab</a>
+    </p>
+
+  </div>
+</div>
+
+</body>
+</html>

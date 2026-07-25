@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RenalShift — antimicrobial exposure across CRRT changes</title>
+<meta name="description" content="An open pharmacokinetic model explorer showing how drug exposure and clearance change when CRRT is interrupted, restarted, or reconfigured. Educational tool; issues no dosing recommendation.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ctext y=%2713%27 font-size=%2713%27%3E%E2%97%90%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="ui.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Clinical pharmacology model explorers</p>
+    <h1>RenalShift</h1>
+    <p class="lede">Antimicrobial exposure when continuous renal replacement therapy starts, stops, or changes.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="status-strip" aria-label="Validation status">
+    <div class="status-item ok">
+      <span class="status-label">Software verification</span>
+      <span class="status-value">Verified — 110 automated checks</span>
+    </div>
+    <div class="status-item warn">
+      <span class="status-label">Bundled population model</span>
+      <span class="status-value">None — parameters are user-supplied</span>
+    </div>
+    <div class="status-item warn">
+      <span class="status-label">External validation</span>
+      <span class="status-value">Not established</span>
+    </div>
+    <div class="status-item warn">
+      <span class="status-label">Clinical impact</span>
+      <span class="status-value">Not established, not claimed</span>
+    </div>
+  </section>
+
+  <p class="notice">
+    <strong>This tool issues no dosing recommendation.</strong> It integrates a
+    compartmental model across a timeline you define and shows the result. It
+    does not select a dose, rank scenarios, or judge a regimen adequate. The
+    parameters below are <em>illustrative placeholders</em>, not a validated
+    model — replace them with values from a source you can cite before drawing
+    any conclusion. <a href="model-card.html">Read the model card</a> before use.
+  </p>
+
+  <main class="layout">
+
+    <!-- ------------------------------------------------------ inputs -->
+    <form class="panel inputs" id="controls" autocomplete="off">
+
+      <fieldset>
+        <legend>Drug and system parameters</legend>
+        <p class="hint">
+          Every value here is an input, not a bundled fact. Record where yours
+          came from — the provenance note travels with the results.
+        </p>
+
+        <label class="row">
+          <span>Parameter set</span>
+          <select id="drugPreset"></select>
+        </label>
+
+        <div class="grid2">
+          <label><span>Unbound fraction <em>f<sub>u</sub></em></span>
+            <input type="number" id="fu" step="0.01" min="0.01" max="1" value="0.8"></label>
+          <label><span>Non-renal clearance (L/h)</span>
+            <input type="number" id="clNonrenal" step="0.1" min="0" value="1.0"></label>
+          <label><span>Central volume V<sub>1</sub> (L)</span>
+            <input type="number" id="v1" step="0.5" min="0.1" value="18"></label>
+          <label><span>Intercompartmental Q (L/h)</span>
+            <input type="number" id="q2" step="0.5" min="0" value="6"></label>
+          <label><span>Peripheral volume V<sub>2</sub> (L)</span>
+            <input type="number" id="v2" step="0.5" min="0" value="12"></label>
+          <label><span>Residual renal clearance (L/h)</span>
+            <input type="number" id="clResidual" step="0.1" min="0" value="0.3"></label>
+        </div>
+
+        <label class="row">
+          <span>Provenance note for these parameters</span>
+          <input type="text" id="provenanceNote" placeholder="e.g. Smith 2023, Table 2, adult ICU CVVHDF cohort">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Patient parameters used by the model</legend>
+        <p class="hint">
+          Only what the equations consume. No identifiers are collected, and
+          nothing entered here leaves the page.
+        </p>
+        <div class="grid2">
+          <label><span>Weight (kg)</span>
+            <input type="number" id="weight" step="1" min="20" max="300" value="70"></label>
+          <label><span>Haematocrit (fraction)</span>
+            <input type="number" id="hct" step="0.01" min="0.05" max="0.7" value="0.30"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Regimen</legend>
+        <div class="grid2">
+          <label><span>Dose (mg)</span>
+            <input type="number" id="dose" step="100" min="0" value="1000"></label>
+          <label><span>Infusion duration (h)</span>
+            <input type="number" id="infDur" step="0.25" min="0" value="1"></label>
+          <label><span>Interval (h)</span>
+            <input type="number" id="interval" step="1" min="1" value="12"></label>
+          <label><span>Number of doses</span>
+            <input type="number" id="nDoses" step="1" min="1" max="60" value="4"></label>
+          <label><span>Loading dose (mg, 0 = none)</span>
+            <input type="number" id="loadDose" step="100" min="0" value="0"></label>
+          <label><span>Loading infusion (h)</span>
+            <input type="number" id="loadDur" step="0.25" min="0" value="0.5"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>CRRT timeline</legend>
+        <p class="hint">
+          The point of this tool. Add the events that actually happened — a
+          clotted filter, a trip to theatre, a change of prescription.
+        </p>
+        <div id="crrtEvents" class="events"></div>
+        <button type="button" class="secondary" id="addEvent">Add CRRT event</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>Pharmacodynamic scenario</legend>
+        <div class="grid2">
+          <label><span>MIC (mg/L)</span>
+            <input type="number" id="mic" step="0.5" min="0.06" value="16"></label>
+          <label><span>Target multiple of MIC</span>
+            <input type="number" id="targetMult" step="1" min="1" value="1"></label>
+          <label><span>Simulation duration (h)</span>
+            <input type="number" id="duration" step="4" min="4" max="336" value="48"></label>
+          <label><span>Evaluation window start (h)</span>
+            <input type="number" id="evalStart" step="1" min="0" value="24"></label>
+        </div>
+        <p class="hint">
+          Whether 40%, 60% or 100% of the interval above target is the right
+          goal is contested and setting-specific. This tool computes what you
+          ask it to; it does not choose the target for you.
+        </p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="button" id="pin" class="secondary">Pin current as comparison</button>
+        <button type="button" id="clearPin" class="secondary" disabled>Clear comparison</button>
+      </div>
+    </form>
+
+    <!-- ----------------------------------------------------- outputs -->
+    <div class="panel outputs">
+
+      <div id="errorBox" class="error" hidden></div>
+
+      <section>
+        <h2>Unbound concentration</h2>
+        <p class="caption" id="chartCaption"></p>
+        <svg id="concChart" class="chart"></svg>
+        <div class="legend" id="concLegend"></div>
+      </section>
+
+      <section>
+        <h2>Where the clearance is going</h2>
+        <p class="caption">
+          Total clearance decomposed into its components. The extracorporeal
+          band is stacked on top, so it appears and disappears exactly at the
+          events you entered.
+        </p>
+        <svg id="clChart" class="chart"></svg>
+        <div class="legend">
+          <span class="key"><i class="sw-nonrenal"></i>Non-renal</span>
+          <span class="key"><i class="sw-residual"></i>Residual renal</span>
+          <span class="key"><i class="sw-crrt"></i>Extracorporeal</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Exposure over the evaluation window</h2>
+        <div class="table-scroll">
+          <table id="metricsTable">
+            <thead><tr><th scope="col">Metric</th><th scope="col">Current</th><th scope="col">Comparison</th><th scope="col">Difference</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="caption" id="comparisonNote"></p>
+      </section>
+
+      <section id="eventSection">
+        <h2>Effect of each CRRT change</h2>
+        <p class="caption">
+          Each event is compared against a counterfactual in which that one
+          event did not happen and the previous circuit state simply continued.
+          Dose timing is identical on both sides, so the difference isolates
+          the event rather than confounding it with where the window happens to
+          fall in the dosing cycle. Windows are truncated at the next event. The percentage-of-time metric saturates once a profile sits wholly above or below target, so the unbound AUC change is shown alongside it.
+        </p>
+        <div class="table-scroll">
+          <table id="eventTable">
+            <thead><tr><th scope="col">Event and window</th><th scope="col">Actual</th><th scope="col">Had it not happened</th><th scope="col">Difference</th><th scope="col">Unbound AUC change</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="warningSection" hidden>
+        <h2>Warnings from the model</h2>
+        <ul id="warningList" class="warnings"></ul>
+      </section>
+
+      <details class="provenance">
+        <summary>Provenance and assumptions</summary>
+        <div id="provenanceBody"></div>
+      </details>
+
+    </div>
+  </main>
+
+  <footer class="foot">
+    <p>
+      <a href="model-card.html">Model card</a> ·
+      <a href="../../governance/intended-use.md">Intended use</a> ·
+      <a href="../../governance/validation-plan.md">Validation plan</a> ·
+      <a href="../../governance/landscape.md">Landscape review</a> ·
+      <a href="../../governance/risk-register.md">Risk register</a>
+    </p>
+    <p class="small">
+      Educational model explorer. Not a medical device and not clinical
+      decision support. No dosing recommendation is produced. All computation
+      happens in this page; values you enter are not transmitted by the
+      application.
+    </p>
+  </footer>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
