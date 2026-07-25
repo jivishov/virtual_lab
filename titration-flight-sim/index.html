@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Titration Flight Simulator — HCl vs NaOH</title>
+<meta name="description" content="A 3D procedural trainer for acid–base titration: full lab bench, real burette, real chemistry, graded debrief.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>⚗️</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.min.js"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <canvas id="view"></canvas>
+  <div id="hoverLabel" class="hover-label" hidden></div>
+  <div id="crosshair" hidden><span class="ch-line"></span><span class="ch-tag">EYE LEVEL</span></div>
+
+  <!-- ---------------------------------------------------------------- HUD -->
+  <header id="topbar">
+    <div class="brand"><span class="lamp"></span>TITRATION&nbsp;<em>FLIGHT SIM</em></div>
+    <div class="tb-item"><label>Sample</label><b id="tbSample">—</b></div>
+    <div class="tb-item"><label>Titrant</label><b>0.1000 M NaOH</b></div>
+    <div class="tb-item"><label>Aliquot</label><b>25.00 mL</b></div>
+    <div class="tb-item"><label>Clock</label><b id="tbClock">00:00</b></div>
+    <div class="tb-item tb-trial"><label>Trial</label><b id="tbTrial">–/3</b></div>
+    <div class="tb-item tb-task"><label>Current task</label><b id="tbStep">standby</b></div>
+    <div class="tb-spacer"></div>
+    <div class="tb-actions">
+      <button class="ghost" data-ui="notebook">Notebook<kbd>Tab</kbd></button>
+      <button class="ghost" data-ui="help">Help<kbd>H</kbd></button>
+      <button class="ghost" data-ui="mute" title="Toggle sound">Sound<kbd>M</kbd></button>
+    </div>
+  </header>
+
+  <aside id="checklist" class="panel">
+    <div class="panel-head">
+      <h2>Procedure checklist</h2>
+      <button class="collapse" data-collapse="checklist">–</button>
+    </div>
+    <ol id="checklistItems" class="checklist"></ol>
+    <div class="brief">
+      <div id="stepBrief"></div>
+      <div id="stepHint" class="hint"></div>
+    </div>
+  </aside>
+
+  <aside id="instruments" class="panel">
+    <div class="panel-head">
+      <h2>Instruments</h2>
+      <button class="collapse" data-collapse="instruments">–</button>
+    </div>
+    <div class="gauges">
+      <div class="gauge wide">
+        <label>Titre — last logged</label>
+        <b id="gTitre">—</b><span class="unit">mL</span>
+      </div>
+      <div class="gauge">
+        <label>Initial reading</label><b id="gInitial">—</b>
+      </div>
+      <div class="gauge">
+        <label>Drops this trial</label><b id="gDrops">0</b>
+      </div>
+      <div class="gauge wide">
+        <label>Flow</label>
+        <div class="bar"><i id="gFlowBar"></i></div>
+        <b id="gFlow">0.00</b><span class="unit">mL/s</span>
+      </div>
+      <div class="gauge">
+        <label>pH <small id="gPhSrc">probe out</small></label><b id="gPh">—</b>
+      </div>
+      <div class="gauge">
+        <label>Indicator</label>
+        <b class="swatch-row"><i id="gSwatch" class="swatch"></i><span id="gPink">colourless</span></b>
+      </div>
+      <div class="gauge wide assist">
+        <label>Digital burette readout <small>training aid — logged in debrief</small></label>
+        <div class="assist-row">
+          <button id="assistBtn" class="ghost small">OFF</button>
+          <b id="gAssist">––.–– mL</b>
+        </div>
+      </div>
+    </div>
+    <div class="views">
+      <label>Camera stations</label>
+      <div class="view-buttons">
+        <button data-view="bench"><kbd>1</kbd>Bench</button>
+        <button data-view="tip"><kbd>2</kbd>Tip</button>
+        <button data-view="meniscus"><kbd>3</kbd>Meniscus</button>
+        <button data-view="flask"><kbd>4</kbd>Flask</button>
+        <button data-view="wide"><kbd>5</kbd>Wide</button>
+      </div>
+    </div>
+  </aside>
+
+  <section id="chartPanel" class="panel">
+    <div class="panel-head">
+      <h2>Titration curve <small id="chartHint">live</small></h2>
+      <button class="collapse" data-collapse="chartPanel">–</button>
+    </div>
+    <canvas id="chart" width="380" height="200"></canvas>
+  </section>
+
+  <footer id="dock">
+    <div id="dockButtons"></div>
+    <div id="dockNote">Left-drag orbit · wheel zoom · right-drag pan · drag the white stopcock handle to open it</div>
+  </footer>
+
+  <div id="toasts"></div>
+
+  <!-- ------------------------------------------------------------- modals -->
+  <div class="modal" id="briefing">
+    <div class="modal-card wide-card">
+      <h1>Determination of hydrochloric acid by titration</h1>
+      <p class="lede">
+        You have an unknown solution of hydrochloric acid, <b id="bSample">—</b>, and a burette of
+        sodium hydroxide standardised at <b>0.1000 mol/L</b>. Find the molarity of the acid to
+        three significant figures.
+      </p>
+      <div class="two-col">
+        <div>
+          <h3>The reaction</h3>
+          <p class="eq">HCl(aq) + NaOH(aq) → NaCl(aq) + H<sub>2</sub>O(l)</p>
+          <p>One mole of acid per mole of base, so at the equivalence point</p>
+          <p class="eq">c<sub>acid</sub> · V<sub>acid</sub> = c<sub>base</sub> · V<sub>base</sub></p>
+          <h3>How you will know</h3>
+          <p>
+            Phenolphthalein is colourless in acid and magenta above about pH 8.2. The endpoint is
+            the <b>first faint pink that survives swirling</b> — not the deep pink that follows.
+          </p>
+          <h3>Why three trials</h3>
+          <p>
+            The first is a scouting run to find the endpoint roughly. The next two are the real
+            measurements, delivered drop by drop, and they should agree within about 0.05 mL.
+          </p>
+        </div>
+        <div>
+          <h3>Flight controls</h3>
+          <table class="keys">
+            <tr><td><kbd>Space</kbd></td><td>stopcock wide open</td></tr>
+            <tr><td><kbd>S</kbd></td><td>trickle — drop by drop</td></tr>
+            <tr><td><kbd>D</kbd> / <kbd>F</kbd></td><td>one drop / half a drop</td></tr>
+            <tr><td><kbd>W</kbd></td><td>swirl the flask</td></tr>
+            <tr><td><kbd>E</kbd></td><td>rinse the flask walls</td></tr>
+            <tr><td><kbd>R</kbd></td><td>read the meniscus</td></tr>
+            <tr><td><kbd>P</kbd></td><td>pH electrode in / out</td></tr>
+            <tr><td><kbd>1</kbd>–<kbd>5</kbd></td><td>camera stations</td></tr>
+          </table>
+          <div class="safety">
+            <h3>Before you touch anything</h3>
+            <p>Goggles, gloves, coat. The simulator will stop you otherwise, and it keeps score.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="primary" data-ui="beginRun">Begin the experiment</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="readingModal">
+    <div class="modal-card narrow-card">
+      <h1 id="readTitle">Read the burette</h1>
+      <p id="readCopy" class="lede"></p>
+      <div class="read-row">
+        <input id="readInput" type="text" inputmode="decimal" autocomplete="off" placeholder="00.00">
+        <span class="unit-big">mL</span>
+      </div>
+      <p class="hint" id="readAssist"></p>
+      <p class="hint">
+        The graduations are every 0.10 mL. Read the <b>bottom of the meniscus</b>, eye level with
+        the surface, and estimate the final hundredth.
+      </p>
+      <div class="modal-actions">
+        <button class="ghost" data-ui="closeReading">Look again</button>
+        <button class="primary" data-ui="submitReading">Log this reading</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="notebookModal">
+    <div class="modal-card">
+      <h1>Lab notebook</h1>
+      <div id="notebookBody"></div>
+      <div class="modal-actions"><button class="ghost" data-ui="closeNotebook">Close</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="calcModal">
+    <div class="modal-card">
+      <h1>Calculate the molarity of the unknown</h1>
+      <div id="calcBody"></div>
+      <div class="read-row">
+        <input id="calcInput" type="text" inputmode="decimal" autocomplete="off" placeholder="0.000">
+        <span class="unit-big">mol/L</span>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" data-ui="closeCalc">Back to the bench</button>
+        <button class="primary" data-ui="submitCalc">Submit result</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="reportModal">
+    <div class="modal-card wide-card">
+      <h1>Debrief</h1>
+      <div id="reportBody"></div>
+      <div class="modal-actions">
+        <button class="primary" data-ui="restart">Run it again with a new unknown</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="helpModal">
+    <div class="modal-card wide-card">
+      <h1>Controls &amp; what is being simulated</h1>
+      <div class="two-col">
+        <div>
+          <h3>Controls</h3>
+          <table class="keys">
+            <tr><td><kbd>Space</kbd></td><td>stopcock wide open (hold)</td></tr>
+            <tr><td><kbd>S</kbd></td><td>trickle, forms drops (hold)</td></tr>
+            <tr><td><kbd>D</kbd></td><td>release one drop (~0.05 mL)</td></tr>
+            <tr><td><kbd>F</kbd></td><td>half a drop — the endgame trick</td></tr>
+            <tr><td><kbd>W</kbd></td><td>swirl the flask</td></tr>
+            <tr><td><kbd>E</kbd></td><td>rinse the flask walls with DI water</td></tr>
+            <tr><td><kbd>R</kbd> / <kbd>Enter</kbd></td><td>read the meniscus</td></tr>
+            <tr><td><kbd>P</kbd></td><td>pH electrode in / out</td></tr>
+            <tr><td><kbd>1</kbd>–<kbd>5</kbd></td><td>camera stations</td></tr>
+            <tr><td><kbd>Tab</kbd></td><td>notebook</td></tr>
+            <tr><td><kbd>M</kbd></td><td>mute</td></tr>
+            <tr><td>mouse</td><td>left-drag orbit, wheel zoom, right-drag pan</td></tr>
+            <tr><td>stopcock</td><td>drag the white handle up and down</td></tr>
+          </table>
+        </div>
+        <div>
+          <h3>The chemistry is not scripted</h3>
+          <p>
+            The colour of the solution comes from the phenolphthalein equilibrium, which comes from
+            the pH, which is solved exactly from a charge balance on the flask contents including
+            water autoionisation. Nothing says “turn pink at 25 mL”.
+          </p>
+          <h3>Errors that behave like real errors</h3>
+          <ul class="tight">
+            <li>An unconditioned burette holds a film of water that dilutes your titrant.</li>
+            <li>Air trapped below the stopcock escapes mid-run and moves the reading without titrant reaching the flask.</li>
+            <li>A water-wet pipette delivers 25.00 mL of slightly diluted sample.</li>
+            <li>Excess indicator consumes measurable titrant.</li>
+            <li>Your <em>recorded</em> readings are what your answer is built from — misread the meniscus and the error propagates, exactly as it would on the bench.</li>
+          </ul>
+          <h3>Deliberately not automated</h3>
+          <p>
+            Reading the meniscus, deciding the endpoint, and doing the arithmetic are yours. The
+            digital readout in the instrument panel is a training aid and is reported as one.
+          </p>
+        </div>
+      </div>
+      <div class="modal-actions"><button class="ghost" data-ui="closeHelp">Back to the bench</button></div>
+    </div>
+  </div>
+
+  <div id="loading"><div class="spinner"></div><p>Setting up the bench…</p></div>
+  <div id="fatal" hidden>
+    <div>
+      <h1>This browser cannot run the simulator</h1>
+      <p>WebGL2 is required. Try a current version of Chrome, Edge, Firefox or Safari on a device with hardware acceleration enabled.</p>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
