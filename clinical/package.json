@@ -1,0 +1,9 @@
+{
+  "name": "clinical-pharmacology-explorers",
+  "private": true,
+  "type": "module",
+  "description": "Scopes ES-module resolution for Node-based verification runs. The apps are plain static files and require no build step.",
+  "scripts": {
+    "test": "node tests/tests.js"
+  }
+}
