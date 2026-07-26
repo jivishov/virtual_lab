@@ -359,8 +359,15 @@ table.data tfoot td { border-bottom: none; color: var(--cyan); font-weight: 650;
 
 .score-bars { display: grid; gap: 7px; margin: 6px 0 14px; }
 .score-bars .sb { display: grid; grid-template-columns: 92px 1fr 44px; gap: 9px; align-items: center; font-size: 12px; }
-.score-bars .track { height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
-.score-bars .fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--green)); }
+.score-bars .track {
+  display: block; height: 8px; border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08); overflow: hidden;
+}
+/* must be block: an inline element ignores height, leaving an empty track */
+.score-bars .fill {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+}
 .score-bars .val { font-family: var(--mono); text-align: right; color: var(--ink-dim); }
 
 ul.tech { list-style: none; margin: 0; padding: 0; font-size: 12.5px; }

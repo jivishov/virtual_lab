@@ -511,11 +511,12 @@ export class UI {
     if (r.notes.includes('dilutedAliquot')) notes.push('The pipette still held rinse water, so the 25.00 mL aliquot contained slightly less acid than it should have — your answer comes out low.');
     if (r.notes.includes('tooMuchIndicator')) notes.push('More indicator than the method calls for. Phenolphthalein is itself a weak acid and consumes titrant.');
     if (r.notes.includes('overshoot')) notes.push('At least one endpoint was overshot to a deep pink. The colour change is your only signal — approach it a drop at a time.');
-    if (r.notes.includes('halfDrop')) notes.push('Nice touch: you used a half drop to land the endpoint.');
     if (r.notes.includes('skipped:condition')) notes.push('You chose to skip the conditioning rinses. Everything downstream of that was titrated with a slightly weaker base than the label claims.');
     if (r.notes.includes('skipped:purge')) notes.push('You chose to leave the air below the stopcock. It came out during a titration and took a slice of your titre with it.');
     if (r.notes.includes('usedDigitalReadout')) notes.push('The digital burette readout was switched on. On the bench you read the meniscus by eye — try the next run without it.');
     if (r.usedProbe) notes.push('You used the pH electrode. Worth doing once to see the curve, but the method itself is an indicator titration.');
+    // credit last, so the list reads problems-first
+    if (r.notes.includes('halfDrop')) notes.push('Nice touch: you used a half drop to land the endpoint.');
 
     $('#reportBody').innerHTML = `
       <div class="grade-row">
@@ -669,14 +670,16 @@ function drawCurve(canvas, {
     g.fill();
   }
 
-  marks.forEach((m) => {
+  // Concordant titres land almost on top of each other — which is the point —
+  // so stagger the labels rather than letting them overprint.
+  marks.forEach((m, i) => {
     g.fillStyle = m.rough ? 'rgba(150,175,195,0.85)' : '#52e0a3';
     g.beginPath();
     g.arc(X(m.x), Y(m.y), 4, 0, Math.PI * 2);
     g.fill();
     g.fillStyle = m.rough ? 'rgba(150,175,195,0.9)' : '#52e0a3';
     g.textAlign = 'left';
-    g.fillText(m.label, X(m.x) + 6, Y(m.y) - 5);
+    g.fillText(m.label, X(m.x) + 7, Y(m.y) - 6 - i * 12);
   });
 
   if (label) {
