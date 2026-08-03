@@ -585,6 +585,33 @@ body {
     box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
+/* Cards for labs published in more than one version render a row of buttons */
+.launch-button-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.launch-button-group .launch-button {
+    flex: 1 1 8rem;
+    box-sizing: border-box;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: 0.875rem;
+}
+
+.launch-button-secondary {
+    background: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.launch-button-secondary:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
 /* ===== Footer ===== */
 .footer {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);

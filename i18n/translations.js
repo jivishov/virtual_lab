@@ -105,6 +105,8 @@ const translations = {
         buttons: {
             launchLab: "Launch Experiment",
             launchSimulation: "Launch Simulation",
+            launchV2: "Launch v2 (New)",
+            launchV1: "Launch v1 (Classic)",
             backToLabs: "Back to Virtual Experiments",
             connectLinkedIn: "Connect on LinkedIn"
         },
@@ -287,6 +289,8 @@ const translations = {
         buttons: {
             launchLab: "Təcrübəyə Başla",
             launchSimulation: "Simulyasiyanı Aç",
+            launchV2: "v2-ni Aç (Yeni)",
+            launchV1: "v1-i Aç (Klassik)",
             backToLabs: "Virtual Təcrübələrə Qayıt",
             connectLinkedIn: "LinkedIn-də Əlaqə"
         },
@@ -469,6 +473,8 @@ const translations = {
         buttons: {
             launchLab: "Deneyi Başlat",
             launchSimulation: "Simülasyonu Başlat",
+            launchV2: "v2'yi Başlat (Yeni)",
+            launchV1: "v1'i Başlat (Klasik)",
             backToLabs: "Sanal Deneylere Dön",
             connectLinkedIn: "LinkedIn'de Bağlan"
         },
@@ -652,6 +658,8 @@ const translations = {
         buttons: {
             launchLab: "Experiment Starten",
             launchSimulation: "Simulation Starten",
+            launchV2: "v2 Starten (Neu)",
+            launchV1: "v1 Starten (Klassisch)",
             backToLabs: "Zurück zu Virtuellen Experimenten",
             connectLinkedIn: "Auf LinkedIn Verbinden"
         },
