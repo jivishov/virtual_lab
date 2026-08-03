@@ -321,18 +321,13 @@
   --sci-ring-w: 2.5px;
 }
 
-/* Once the run starts, every column of the bench is occupied — there is no
-   empty margin left for ambient artwork to live in, and a flask outline
-   crossing the checklist is exactly the distraction we were asked to remove.
-   So the glassware belongs to the briefing screen: it sets the scene, then
-   steps aside and leaves the lit surface for the actual work.
-   (main.js adds .run-started when it reveals the bench.) */
-:root[data-theme="laboratory"] body.run-started {
-  --bench-pattern: var(--lab-wash), var(--lab-mat);
-  --bench-size: auto, 22px 22px;
-  --bench-pos: center, center;
-  --bench-repeat: no-repeat, repeat;
-}
+/* The glassware used to be dropped once the run started, on the grounds that a
+   flask outline crossing the checklist was a distraction.  It is kept for the
+   whole session now: the briefing screen and the bench should be the same room,
+   and Notebook and Night Bench already hold their motif throughout — Laboratory
+   was the only theme that changed identity mid-run.
+   The three outlines are viewport-fixed, anchored to the screen edges and
+   bleeding off them, so they stay in the margins where content is not. */
 
 /* =============================================================================
  * THEME 3 — NIGHT BENCH  (warm dark done right: warm near-black, amber, NO cyan)
