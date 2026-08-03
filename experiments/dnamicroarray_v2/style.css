@@ -1,0 +1,814 @@
+/* =============================================================================
+ * DNA Microarray Lab — components.
+ *
+ * Requires css/tokens.css (loaded first).  No colour literal should appear in
+ * this file; everything resolves through a token so the three themes and the
+ * darkroom mode all work from one set of rules.
+ *
+ * THE ORGANISING RULE
+ *   Information is typographic.  Apparatus is physical.
+ * Instructions, status, checklist and analysis are NOT boxes — they are
+ * typographic sections separated by rules and space.  Only things that stand
+ * for real objects (the card, the plate, the shelf) get material, edges and
+ * elevation.  That is what stops this reading as a dashboard.
+ * ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  color: var(--ink-1);
+  background-color: var(--bg-app);
+  background-image: var(--bench-pattern);
+  background-size: var(--bench-size, auto);
+  background-position: var(--bench-pos, 0 0);
+  background-repeat: var(--bench-repeat, repeat);
+  /* anchored to the viewport, so the bench surface reads as room lighting
+     rather than a wash stretched over the whole scroll height */
+  background-attachment: fixed;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--dur-3) var(--ease-out), color var(--dur-3) var(--ease-out);
+}
+
+/* line-height is tokenised because --cap-offset is derived from it: the shelf
+   column's alignment with the microarray card depends on this exact value */
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: var(--lh-tight); margin: 0; }
+p { margin: 0; }
+em { font-style: italic; }
+
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* A section label, not a card header — no bar, no gradient, just a rule. */
+.minihead {
+  font-family: var(--font-ui);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 var(--sp-2);
+  padding-bottom: var(--sp-1);
+  border-bottom: var(--hairline) solid var(--line);
+}
+
+/* ---- masthead ----------------------------------------------------------- */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-5);
+  padding: var(--sp-5) clamp(var(--sp-4), 3vw, var(--sp-6)) var(--sp-4);
+  max-width: 1560px;
+  margin: 0 auto;
+}
+.masthead__title {
+  font-size: var(--step-4);
+  letter-spacing: -.02em;
+  margin-top: var(--sp-1);
+}
+.masthead__title em { color: var(--accent); font-style: italic; }
+
+/* theme picker — visible, not hidden behind a gear */
+.themepick { display: flex; align-items: center; gap: var(--sp-3); }
+.themepick__label {
+  font-size: var(--step--2); font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.themepick__set {
+  display: flex;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.themepick__btn {
+  font: inherit;
+  font-size: var(--step--1);
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  border-left: var(--hairline) solid var(--line);
+  background: var(--surface-1);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.themepick__btn:first-child { border-left: 0; }
+.themepick__btn:hover { background: var(--surface-2); color: var(--ink-1); }
+.themepick__btn[aria-checked="true"] {
+  background: var(--accent);
+  color: var(--ink-on-accent);
+  font-weight: 600;
+}
+.themepick__btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+
+/* ---- layout ------------------------------------------------------------- */
+.lab {
+  padding: 0 clamp(var(--sp-3), 2.4vw, var(--sp-6)) var(--sp-6);
+  max-width: 1560px;
+  margin: 0 auto;
+}
+/* the hidden attribute must beat display:grid */
+.bench[hidden] { display: none; }
+.bench {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    clamp(238px, 20vw, 310px)
+    minmax(340px, 640px)
+    clamp(180px, 15vw, 238px);
+  justify-content: center;
+  gap: clamp(var(--sp-3), 1.6vw, var(--sp-5));
+  align-items: start;
+}
+
+/* ---- case file (the front door — an inline panel, not a modal) ---------- */
+.casefile {
+  max-width: 1180px;
+  margin: 0 auto var(--sp-4);
+  padding: var(--sp-4) clamp(var(--sp-4), 2.4vw, var(--sp-5));
+  background: var(--surface-1);
+  border: var(--hairline) solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-2);
+}
+.casefile[hidden] { display: none; }
+.casefile.closing { animation: casefold var(--dur-3) var(--ease-in) forwards; }
+@keyframes casefold { to { opacity: 0; transform: translateY(-8px); } }
+
+/* No --measure cap here.  `ch` resolves against the element's OWN font-size,
+   so a 62ch cap on this 16px container computed to ~496px and then squeezed
+   the 31px heading inside it — breaking "One question:" mid-sentence with
+   half the card empty.  The card's own 1180px is the measure; text should
+   only wrap when it actually reaches the edge. */
+.casefile__head { max-width: none; }
+.casefile__head h2 {
+  font-size: var(--step-3);
+  margin: var(--sp-1) 0 var(--sp-2);
+  letter-spacing: -.015em;
+  text-wrap: balance;          /* if it must wrap, split it evenly */
+}
+.casefile__head h2 em { color: var(--accent); }
+.casefile__lede {
+  color: var(--ink-2);
+  font-size: var(--step-1);
+  line-height: 1.45;
+  text-wrap: pretty;           /* no orphaned last word */
+}
+
+.casefile__body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-3) var(--sp-5);
+  margin-top: var(--sp-4);
+}
+.casefile__how { color: var(--ink-2); font-size: var(--step--1); margin-bottom: var(--sp-2); }
+
+/* the cohort — these are people, so give them room */
+.cohort { list-style: none; margin: 0; padding: 0; }
+.cohort li { padding: var(--sp-2) 0; border-bottom: var(--hairline) solid var(--line); }
+.cohort li:last-child { border-bottom: 0; }
+.cohort__name { font-weight: 600; font-size: var(--step-0); }
+.cohort__row {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--accent);
+  margin-left: var(--sp-1);
+}
+.cohort__note {
+  display: block;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+  line-height: 1.35;
+}
+
+.protocol { margin: 0; padding-left: 1.15em; color: var(--ink-2); font-size: var(--step--1); }
+.protocol li { margin-bottom: var(--sp-1); }
+.protocol li::marker { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+.casefile__actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-4); }
+
+/* bench record / progress-reset line under the actions */
+.casefile__record {
+  margin-top: var(--sp-2);
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+.casefile__record:empty { display: none; }
+.casefile__record b { color: var(--ink-2); font-weight: 600; }
+
+/* a text button — for a destructive-ish action that must not look primary */
+.linkbtn {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.linkbtn:hover { color: var(--ink-1); }
+.linkbtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---- sidebar: typographic, not cards ------------------------------------ */
+.sidebar { display: flex; flex-direction: column; gap: var(--sp-5); }
+.pane { min-width: 0; }
+
+#instruction {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.35;
+  color: var(--ink-1);
+  min-height: 3em;
+}
+.hud-phase {
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: var(--sp-2);
+}
+
+.hud-row { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.chip {
+  font-size: var(--step--2);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-sm);
+  border: var(--hairline) solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink-3);
+}
+.chip-on { border-color: var(--state-ok); color: var(--state-ok); background: transparent; }
+.chip-off { color: var(--ink-3); }
+.chip-reagent {
+  color: var(--ink-1);
+  background: transparent;
+  border-color: var(--chip, var(--line));
+  box-shadow: inset 3px 0 0 var(--chip, var(--line));
+}
+
+.gauge-wrap { display: flex; align-items: center; gap: var(--sp-3); margin: var(--sp-3) 0; }
+.vol-gauge {
+  width: 22px; height: 64px; flex: 0 0 auto;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  position: relative; overflow: hidden;
+}
+#vol-fill {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 0;
+  background: var(--ink-3);
+  transition: height var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease-out);
+}
+.vol-gauge::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 12px, var(--line) 12px 13px);
+  opacity: .7;
+}
+.gauge-meta { font-size: var(--step--2); color: var(--ink-3); }
+.gauge-meta b { color: var(--ink-1); font-family: var(--font-mono); font-size: var(--step--1); }
+
+.progress {
+  height: 3px; background: var(--surface-3);
+  border-radius: 0; overflow: hidden; margin-top: var(--sp-3);
+}
+#prog-fill { height: 100%; width: 0; background: var(--accent); transition: width var(--dur-2) var(--ease-out); }
+#prog-text {
+  font-size: var(--step--2); color: var(--ink-3); margin-top: var(--sp-1);
+  font-family: var(--font-mono);
+}
+
+/* checklist */
+#checklist { list-style: none; margin: 0; padding: 0; }
+#checklist li {
+  display: flex; align-items: baseline; gap: var(--sp-2);
+  padding: var(--sp-1) 0;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+  transition: color var(--dur-2) var(--ease-out);
+}
+#checklist li .chk-mark {
+  width: 9px; height: 9px; flex: 0 0 auto;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: 50%;
+  position: relative;
+  transform-origin: 50% 50%;
+}
+#checklist li.done { color: var(--ink-1); }
+#checklist li.done .chk-mark { background: var(--state-ok); border-color: var(--state-ok); }
+
+/* ---- apparatus: this is the physical half ------------------------------- */
+.surfaces, .shelf {
+  display: flex; flex-direction: column;
+  gap: clamp(var(--sp-3), 1.4vw, var(--sp-4));
+  min-width: 0; width: 100%;
+}
+/* The shelf blocks caption themselves internally, so their border starts one
+   caption-height above the microarray card, whose caption is external.  This
+   drops the shelf into line — and gives the column some air under the theme
+   picker, which was only 4px clear. */
+.shelf { padding-top: var(--cap-offset); }
+.apparatus__cap {
+  font-family: var(--font-ui);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: flex; align-items: center; gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.apparatus__cap small {
+  font-weight: 400; letter-spacing: .04em; text-transform: none;
+  color: var(--ink-3); opacity: .8;
+}
+.apparatus__cap .dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); flex: 0 0 auto;
+}
+.card-host, .plate-host { width: 100%; }
+.card-svg, .plate-svg {
+  width: 100%; height: auto; display: block; touch-action: none;
+  filter: var(--elev-svg);
+}
+.card-host.lifting { cursor: grabbing; }
+.card-host { transition: filter var(--dur-2) var(--ease-out); }
+.card-host.drying { animation: shimmer 1.2s var(--ease-out) infinite; }
+@keyframes shimmer { 0%,100% { filter: var(--elev-svg); } 50% { filter: var(--elev-svg) brightness(1.1); } }
+
+.shelf-block {
+  background: var(--surface-2);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-1);
+  padding: var(--sp-3);
+}
+.shelf-block .apparatus__cap { justify-content: center; }
+#instrument-tray {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  align-items: flex-end; gap: var(--sp-2) var(--sp-3);
+}
+.tray-item { display: flex; align-items: flex-end; }
+.tray-item svg { height: 74px; width: auto; filter: var(--elev-svg); }
+.tip-box { height: 50px !important; }
+#incubator-host { display: flex; justify-content: center; }
+#incubator-host svg { width: 100%; max-width: 168px; height: auto; filter: var(--elev-svg); }
+
+/* ---- SVG material hooks (Tier A) ---------------------------------------
+   assets.js emits structure + class only; every colour resolves here, which
+   is what makes the SVG themeable in Firefox and Safari too (var() inside a
+   presentation ATTRIBUTE is Chromium-only — do not rely on it).            */
+
+/* gradient stops */
+.g-plastic-0 { stop-color: var(--mat-plastic-0); }
+.g-plastic-1 { stop-color: var(--mat-plastic-1); }
+.g-plastic-2 { stop-color: var(--mat-plastic-2); }
+.g-plastic-3 { stop-color: var(--mat-plastic-3); }
+.g-steel-0   { stop-color: var(--mat-steel-0); }
+.g-steel-1   { stop-color: var(--mat-steel-1); }
+.g-steel-2   { stop-color: var(--mat-steel-2); }
+.g-grip-0    { stop-color: var(--accent); }
+.g-grip-1    { stop-color: var(--accent-2); }
+.g-grip-2    { stop-color: var(--mat-tool-grip-2); }
+.g-glass-0   { stop-color: var(--mat-glass-sheen); stop-opacity: .30; }
+.g-glass-1   { stop-color: var(--mat-glass-sheen); stop-opacity: .70; }
+.g-glass-2   { stop-color: var(--mat-glass-tint); }
+.g-slide-0   { stop-color: var(--mat-glass-tint); }
+.g-slide-1   { stop-color: var(--mat-glass-sheen); }
+.g-slide-2   { stop-color: var(--mat-steel-0); stop-opacity: .6; }
+.g-foil-0    { stop-color: var(--mat-foil-0); }
+.g-foil-1    { stop-color: var(--mat-foil-1); }
+.g-foil-2    { stop-color: var(--mat-foil-2); }
+.g-foil-3    { stop-color: var(--mat-foil-3); }
+.g-foil-4    { stop-color: var(--mat-foil-4); }
+.g-polymer-0 { stop-color: var(--mat-polymer-0); }
+.g-polymer-1 { stop-color: var(--mat-polymer-1); }
+.g-appliance-0 { stop-color: var(--mat-appliance-hi); }
+.g-appliance-1 { stop-color: var(--mat-appliance-lo); }
+.g-door-0    { stop-color: var(--mat-door-0); }
+.g-door-1    { stop-color: var(--mat-door-1); }
+.g-heat-on   { stop-color: var(--mat-heat-on); }
+.g-heat-off  { stop-color: var(--mat-heat-off); }
+.g-uv-0      { stop-color: var(--mat-uv-hi); }
+.g-uv-1      { stop-color: var(--mat-led-uv); }
+.g-uv-2      { stop-color: var(--mat-uv-lo); }
+.g-waste-0   { stop-color: var(--sci-hazard-lo); }
+.g-waste-1   { stop-color: var(--sci-hazard-hi); }
+.g-waste-2   { stop-color: var(--sci-hazard-lo); }
+.g-tipbox-0  { stop-color: var(--mat-consumable); }
+.g-tipbox-1  { stop-color: var(--mat-consumable); stop-opacity: .75; }
+
+/* solid materials */
+.m-plastic   { fill: var(--mat-plastic-0); }
+.m-plastic-hi{ fill: var(--mat-plastic-1); }
+.m-steel     { fill: var(--mat-steel-0); }
+.m-steel-dk  { fill: var(--mat-steel-2); }
+.m-lcd-bg    { fill: var(--mat-lcd-bg); }
+.m-lcd-ink   { fill: var(--mat-lcd-ink); }
+.m-cavity    { fill: var(--mat-cavity); }
+.m-cavity-lip{ fill: var(--mat-cavity-lip); }
+.m-bezel     { fill: var(--mat-bezel); }
+.m-label     { fill: var(--mat-label-paper); stroke: var(--mat-label-edge); }
+/* stroke ONLY — never set fill here.  A CSS rule beats a presentation
+   attribute, so `fill:none` would strip fill="url(#pip-body)" off every
+   gradient-filled shape that also needs an outline. */
+.m-line      { stroke: var(--mat-line); }
+.m-nostroke  { stroke: none; }
+.m-coil      { stroke: var(--mat-coil); fill: none; }
+.m-appliance { fill: var(--mat-appliance-lo); }
+.m-consumable{ fill: var(--mat-consumable); }
+.m-tip-poly  { fill: var(--mat-tip-poly); stroke: var(--mat-line); }
+.m-sheen     { fill: var(--mat-glass-sheen); }
+.m-hazard    { fill: var(--sci-hazard); }
+.m-uv-glass  { fill: var(--mat-glass-tint); stroke: var(--mat-steel-0); }
+.waste-mark  { stroke: var(--mat-plastic-1); }
+.waste-mark circle:last-child { fill: var(--mat-plastic-1); }
+
+/* reagent tubes: science colours arrive as custom properties on the <svg> */
+.tube-liquid { fill: var(--tube-paint, var(--mat-cavity)); }
+.tube-cap    { fill: var(--tube-cap, var(--mat-steel-2)); }
+.tube-abbr   { font-family: var(--font-ui); fill: var(--tube-cap, var(--ink-1)); }
+
+/* pipette liquid — custom property, not an inline fill */
+#pip-liquid, #pip-liquid-top { fill: var(--pip-paint, transparent); }
+
+/* SVG typography */
+.svg-label   { font-family: var(--font-ui); fill: var(--ink-2); }
+.svg-label-strong { font-family: var(--font-ui); font-weight: 600; fill: var(--ink-1); }
+.svg-readout { font-family: var(--font-mono); fill: var(--mat-lcd-ink); }
+/* printed on the slide, not shown on a display */
+.card-id     { font-family: var(--font-mono); fill: var(--ink-3); }
+.station-caption { font-family: var(--font-ui); fill: var(--ink-3); }
+/* the plate carries light-on-dark labels regardless of theme */
+.plate-svg .svg-label, .plate-svg .svg-label-strong { fill: var(--mat-foil-1); }
+
+/* ---- spots & wells (Tier C: dynamic paint) ------------------------------
+   CRITICAL: the runtime paints these by setting a CUSTOM PROPERTY on the
+   element (--spot-paint / --well-paint), never an inline `style="fill:…"`.
+   An inline fill would outrank the darkroom rules below and the UV reveal
+   would silently show nothing.                                             */
+.spot, .well { cursor: pointer; outline: none; }
+.spot-etch  { fill: var(--mat-etch); stroke: var(--mat-line); }
+.spot-well  { fill: var(--mat-spot-empty); }
+.spot-fill  { fill: var(--spot-paint, var(--mat-spot-empty)); }
+.spot-sheen { fill: var(--mat-glass-sheen); }
+.spot-id    { fill: var(--ink-3); font-family: var(--font-mono); }
+.spot-ring  { stroke: var(--accent); }
+.well-rim   { fill: var(--mat-cavity-lip); }
+.well-bore  { fill: var(--mat-cavity); }
+.well-liquid{ fill: var(--well-paint, var(--mat-cavity)); }
+.well-foil-x{ stroke: var(--mat-foil-4); }
+.well-ring  { stroke: var(--accent); }
+.spot-fill, .well-liquid, .well-foil, .well-foil-x, .spot-well, .spot-etch, .spot-id {
+  transition: fill var(--dur-2) var(--ease-out), fill-opacity var(--dur-2) var(--ease-out);
+}
+.spot:focus-visible, .well:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---- drag must not paint a text selection ------------------------------
+   interact.js only moves the element; the browser still begins a native
+   selection at the mousedown point and drags it across the whole page,
+   streaking highlight over every label.  `touch-action:none` does not help —
+   that governs touch gestures, not mouse selection.
+
+   A selection starts at its mousedown TARGET, so making the grabbable things
+   unselectable prevents it at the source; the body rule then stops an
+   already-live selection from extending while a drag is in flight. */
+.pipette, .uv-lamp-holder, .card-svg, .plate-svg, .station, .tray-item {
+  -webkit-user-select: none;
+  user-select: none;
+}
+body.pipette-active,
+body.dragging {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* stations */
+.station { cursor: pointer; transition: transform var(--dur-1) var(--ease-out); outline: none; }
+.station:hover { transform: translateY(-2px); }
+.station:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+/* ---- guidance: a drawn ring, not a neon blur ---------------------------- */
+.next-target .spot-ring, .next-target .well-ring {
+  stroke: var(--accent);
+  stroke-width: 3;
+  animation: ringdraw 1.6s var(--ease-out) infinite;
+}
+@keyframes ringdraw {
+  0%   { opacity: 0; transform: scale(.94); }
+  35%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+.spot-ring, .well-ring { transform-box: fill-box; transform-origin: 50% 50%; }
+/* non-spot targets (tubes, tip box, incubator) get a tight accent edge */
+.next-target:not(.spot):not(.well) {
+  animation: edgepulse 1.6s var(--ease-out) infinite;
+}
+@keyframes edgepulse {
+  0%,100% { filter: drop-shadow(0 0 0 transparent); }
+  50%     { filter: drop-shadow(0 0 3px var(--accent)); }
+}
+.hot-ok { filter: drop-shadow(0 0 3px var(--state-ok)); }
+.hot-no { filter: drop-shadow(0 0 3px var(--state-warn)); }
+.dwelling { animation: dwellcharge .4s var(--ease-out) forwards; }
+@keyframes dwellcharge {
+  from { filter: drop-shadow(0 0 1px var(--state-ok)); }
+  to   { filter: drop-shadow(0 0 7px var(--state-ok)); }
+}
+
+/* ---- pipette overlay ---------------------------------------------------- */
+#pipette-layer { position: absolute; inset: 0; pointer-events: none; z-index: 50; overflow: visible; }
+.pipette {
+  position: absolute; top: 0; left: 0; width: 54px; height: 180px;
+  pointer-events: auto; cursor: grab;
+  filter: var(--elev-tool);
+  touch-action: none; will-change: transform;
+}
+.pipette.grabbing { cursor: grabbing; }
+.droplet { z-index: 60; }
+#pip-liquid { fill: var(--pip-paint, transparent); }
+
+/* ---- UV darkroom -------------------------------------------------------- */
+#blackout {
+  position: fixed; inset: 0; z-index: 100;
+  background: oklch(4% .006 250);
+  opacity: 0; pointer-events: none;
+}
+.uv-beam {
+  position: absolute; width: 240px; height: 240px; margin: -122px 0 0 -120px;
+  border-radius: 50%; pointer-events: none; opacity: 0; z-index: 49;
+  mix-blend-mode: screen; transition: opacity var(--dur-2) var(--ease-out);
+  background: radial-gradient(circle,
+    var(--mat-led-uv) 0%, transparent 70%);
+}
+.uv-lamp-holder {
+  position: absolute; top: 0; left: 0; pointer-events: auto; cursor: grab;
+  z-index: 51; filter: var(--elev-tool); touch-action: none;
+}
+.uv-lamp-holder:active { cursor: grabbing; }
+.uv-lamp { width: 40px; height: 100px; display: block; }
+#uv-power-led { animation: uvpulse .7s var(--ease-out) infinite alternate; }
+@keyframes uvpulse { from { fill: var(--mat-led-off); } to { fill: var(--mat-led-uv); } }
+
+#card-night { transition: opacity var(--dur-3) var(--ease-out); }
+
+/* darkroom: the bench goes dark, the read-out stays lit */
+:root[data-mode="darkroom"] .dimmable {
+  opacity: .32; filter: saturate(.7); transition: opacity var(--dur-3) var(--ease-out);
+}
+/* The shelf is bench apparatus, so it goes dark with the room.  Dimming alone
+   was not enough: its surface token is deliberately NOT rebound in darkroom
+   (that exemption exists to keep the analysis panel lit), so a light shelf
+   stayed brighter than the card it sits next to. */
+:root[data-mode="darkroom"] .shelf-block {
+  background: var(--bench-bg);
+  border-color: var(--mat-line);
+  box-shadow: none;
+}
+:root[data-mode="darkroom"] #card-night { opacity: .9; }
+:root[data-mode="darkroom"] .spot:not(.revealed) .spot-fill { fill: var(--mat-cavity); fill-opacity: 1; }
+:root[data-mode="darkroom"] .spot:not(.revealed) .spot-well { fill: var(--mat-cavity); }
+:root[data-mode="darkroom"] .spot:not(.revealed) .spot-etch { fill: var(--mat-etch); stroke: var(--mat-line); }
+:root[data-mode="darkroom"] .spot:not(.revealed) .spot-id   { fill: var(--mat-line); }
+:root[data-mode="darkroom"] .spot:not(.revealed) .spot-sheen { opacity: 0; }
+.spot.revealed .spot-fill { filter: var(--fx-spot-glow, drop-shadow(0 0 5px var(--spot-paint))); }
+.spot.revealed .spot-id { fill: oklch(100% 0 0 / .85); }
+
+/* opt-in colour-vision assist: redundant symbol on each revealed spot */
+.spot .spot-glyph {
+  display: none;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  fill: oklch(100% 0 0 / .92);
+  paint-order: stroke;
+  stroke: oklch(0% 0 0 / .55);
+  stroke-width: 3px;
+}
+body.cvd-assist .spot.revealed .spot-glyph { display: block; }
+body.cvd-assist .spot.revealed .spot-id { opacity: 0; }
+
+/* ---- analysis -----------------------------------------------------------
+   The read-out sheet is the one piece of "information" that gets a surface,
+   and it earns it twice over: a printed record sheet is a physical object,
+   and the whole analysis phase happens with the room lights OUT.  Darkroom
+   deliberately leaves the chrome tokens (surface, ink) alone, so this panel
+   stays lit while the bench around it goes dark — correct physics, correct UX.
+   Without it the worksheet renders dark ink on a blacked-out background. */
+.analysis {
+  margin-top: var(--sp-6);
+  max-width: 1180px;
+  background: var(--surface-1);
+  color: var(--ink-1);
+  border: var(--hairline) solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: var(--sp-5) clamp(var(--sp-4), 3vw, var(--sp-5));
+  box-shadow: var(--elev-2);
+}
+.analysis[hidden] { display: none; }
+/* same `ch`-vs-own-font-size trap as the case file — let the panel bound it */
+.analysis__head { max-width: none; margin-bottom: var(--sp-4); }
+.analysis__head h2 { font-size: var(--step-2); margin: var(--sp-1) 0 var(--sp-2); text-wrap: balance; }
+.analysis__lede { color: var(--ink-2); text-wrap: pretty; }
+
+#legend {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-3); margin-bottom: var(--sp-5);
+  padding: var(--sp-3) 0;
+  border-top: var(--hairline) solid var(--line);
+  border-bottom: var(--hairline) solid var(--line);
+}
+.legend-item { display: flex; gap: var(--sp-3); align-items: flex-start; }
+.legend-swatch {
+  width: 20px; height: 20px; flex: 0 0 auto; margin-top: 3px;
+  border-radius: var(--radius-sm);
+  /* a same-hue darker rim carries the boundary contrast (WCAG 1.4.11) —
+     a translucent black inset does not, especially for yellow */
+  border: var(--sci-ring-w) solid var(--swatch-ring, var(--line-strong));
+}
+.legend-sym { font-family: var(--font-mono); font-weight: 500; color: var(--ink-1); }
+.legend-item b { color: var(--ink-1); font-size: var(--step-0); font-weight: 600; }
+.legend-keys, .legend-desc { display: block; font-size: var(--step--2); color: var(--ink-3); }
+.legend-keys { color: var(--accent); font-family: var(--font-mono); }
+
+.table-scroll { overflow-x: auto; }
+#results-table { border-collapse: collapse; width: 100%; min-width: 660px; }
+#results-table th, #results-table td {
+  border: var(--hairline) solid var(--line);
+  padding: var(--sp-1); text-align: center;
+}
+#results-table thead th {
+  background: var(--surface-2);
+  font-family: var(--font-ui);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--ink-1);
+  vertical-align: top;
+  padding: var(--sp-2) var(--sp-1);
+}
+#results-table thead th .col-n { font-family: var(--font-mono); color: var(--ink-3); }
+#results-table thead th .col-gene { display: block; font-weight: 600; }
+#results-table thead th .col-desc {
+  display: block; font-weight: 400; text-transform: none; letter-spacing: 0;
+  color: var(--ink-3); font-size: var(--step--2); max-width: 12ch; margin: 2px auto 0;
+  line-height: 1.25;
+}
+.patient-cell {
+  text-align: left !important; white-space: nowrap;
+  background: var(--surface-2); font-weight: 600; font-size: var(--step--1);
+}
+.patient-cell .p-row { font-family: var(--font-mono); color: var(--ink-3); font-weight: 400; }
+#results-table input {
+  width: 38px; height: 34px; text-align: center;
+  font-family: var(--font-mono); font-size: var(--step-0); font-weight: 500;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1); color: var(--ink-1);
+}
+#results-table input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+#results-table input.right { border-color: var(--state-ok); box-shadow: inset 0 0 0 2px var(--state-ok); }
+#results-table input.wrong { border-color: var(--state-warn); box-shadow: inset 0 0 0 2px var(--state-warn); }
+#results-table input.na { background: var(--surface-2); color: var(--ink-3); }
+
+.analysis-actions {
+  margin-top: var(--sp-4); display: flex; gap: var(--sp-3);
+  align-items: center; flex-wrap: wrap;
+}
+.cvd-toggle {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--step--1); color: var(--ink-2); cursor: pointer;
+}
+.feedback { margin-top: var(--sp-3); font-size: var(--step-0); max-width: var(--measure); }
+.feedback.good { color: var(--state-ok); font-weight: 600; }
+.feedback.bad { color: var(--ink-1); }
+/* plain bold, not the warn colour: the diagnostic says "green is ↓ down",
+   and rendering that phrase in red actively works against the point */
+.feedback b { color: inherit; font-weight: 600; }
+
+/* ---- buttons: hierarchy, not three primaries ---------------------------- */
+.btn {
+  font: inherit; font-size: var(--step-0); font-weight: 600;
+  border: var(--hairline) solid transparent;
+  border-radius: var(--radius);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.btn:disabled { opacity: .42; cursor: not-allowed; }
+.btn-quiet:disabled:hover { background: transparent; color: var(--ink-2); }
+.btn-primary { background: var(--accent); color: var(--ink-on-accent); }
+.btn-primary:hover { background: color-mix(in oklab, var(--accent) 86%, var(--ink-1)); }
+.btn-quiet { background: transparent; color: var(--ink-2); border-color: var(--line-strong); }
+.btn-quiet:hover { background: var(--surface-2); color: var(--ink-1); }
+
+/* ---- toast -------------------------------------------------------------- */
+#toast {
+  position: fixed; left: 50%; bottom: var(--sp-4); transform: translateX(-50%);
+  background: var(--ink-1); color: var(--surface-1);
+  padding: var(--sp-2) var(--sp-4); border-radius: var(--radius);
+  font-size: var(--step--1); box-shadow: var(--elev-2);
+  opacity: 0; pointer-events: none; z-index: 210; max-width: 90vw;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+#toast.show { opacity: 1; }
+
+/* ---- responsive --------------------------------------------------------- */
+@media (max-width: 900px) {
+  .bench { grid-template-columns: 1fr; }
+  /* stacked: there is no column to align against, so drop the offset */
+  .shelf { flex-direction: row; flex-wrap: wrap; padding-top: 0; }
+  .shelf-block { flex: 1 1 240px; }
+  .masthead { align-items: flex-start; }
+}
+@media (max-width: 560px) {
+  .lab { padding: 0 var(--sp-3) var(--sp-5); }
+  .masthead { padding: var(--sp-4) var(--sp-3) var(--sp-3); }
+  .themepick { flex-wrap: wrap; }
+}
+
+/* ---- short viewports: 15" laptops --------------------------------------
+   A 15" laptop is roughly 600–730px of viewport once browser chrome is gone
+   (1366×768, or 1536×864 at 125% scaling).  The case file is the entire first
+   screen, so reaching "Begin the run" must not require scrolling.
+
+   Compress the vertical rhythm and step the type down — do NOT hide columns.
+   The cohort, the protocol and the bench instructions are all things a student
+   needs before starting.  Tall monitors keep the generous spacing. */
+/* Tier 1 — trim the CHROME, never the content.
+   A 15" laptop at 125% scaling is ~683px of viewport, which has room to spare.
+   The height to reclaim is in the wrappers: masthead padding and the dead
+   space under the card.  Type sizes, column gaps and the cohort rows are left
+   alone, because shrinking those is what makes a page feel crammed. */
+@media (max-height: 820px) {
+  /* sp-1 left the theme picker almost touching the bench below it */
+  .masthead { padding-top: var(--sp-3); padding-bottom: var(--sp-3); }
+  .masthead__title { font-size: var(--step-3); }
+  .lab { padding-bottom: var(--sp-3); }
+  .casefile { margin-bottom: var(--sp-2); }
+  .casefile__head h2 { margin-top: 0; }
+  /* internal gaps, still chrome rather than content */
+  .casefile__body { margin-top: var(--sp-3); }
+  .casefile__actions { margin-top: var(--sp-3); }
+  .casefile__record { margin-top: var(--sp-1); }
+}
+
+/* Tier 2 — genuinely short windows (<630px): now the content has to give.
+   Tier 1 alone lands at ~604px, so anything above this still fits comfortably
+   without shrinking type. */
+@media (max-height: 630px) {
+  .casefile { padding: var(--sp-3) clamp(var(--sp-3), 2vw, var(--sp-4)); }
+  .casefile__head h2 { font-size: var(--step-2); }
+  .casefile__lede { font-size: var(--step-0); }
+  .casefile__body { gap: var(--sp-2) var(--sp-4); }   /* margins come from tier 1 */
+  .cohort li { padding: var(--sp-1) 0; }
+  .minihead { margin-bottom: var(--sp-1); padding-bottom: 2px; }
+}
+
+/* Tier 3 — last resort for very short windows. */
+@media (max-height: 560px) {
+  .masthead { padding-top: var(--sp-2); }
+  .masthead__title { font-size: var(--step-2); }
+  .casefile__head h2 { font-size: var(--step-1); }
+  .casefile__lede { font-size: var(--step--1); }
+  .cohort__note, .protocol, .casefile__how { font-size: var(--step--2); }
+  .cohort li { padding: 2px 0; }
+}
+
+/* ---- reduced motion -----------------------------------------------------
+   The two AFFORDANCE animations are replaced, never removed: .next-target is
+   the only cue telling a student what to do next, and .dwelling is the sole
+   feedback that hover-to-act is charging.  Deleting them would break the
+   simulator for exactly the students who set this preference.              */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .next-target .spot-ring, .next-target .well-ring {
+    animation: none; opacity: 1; transform: none; stroke-width: 3;
+  }
+  .next-target:not(.spot):not(.well) {
+    animation: none; filter: drop-shadow(0 0 3px var(--accent));
+  }
+  .dwelling { animation: none; filter: drop-shadow(0 0 7px var(--state-ok)); }
+  .card-host.drying { animation: none; }
+  #uv-power-led { animation: none; fill: var(--mat-led-uv); }
+}

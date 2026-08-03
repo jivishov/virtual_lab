@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNA Microarray Lab — Gene Expression Study</title>
+  <meta name="description" content="A hands-on, drag-and-drop DNA microarray simulator: pipette reagents, spot patient samples, dry, hybridise and read gene-expression results under UV.">
+
+  <link rel="stylesheet" href="css/tokens.css?v=3">
+  <link rel="stylesheet" href="style.css?v=3">
+  <!-- blocking, and first: puts [data-theme] on <html> before the first paint -->
+  <script src="js/theme.js?v=3"></script>
+</head>
+<body>
+
+  <!-- ===== Masthead =================================================== -->
+  <!-- `dimmable` sits on the title block, not the whole masthead: the theme
+       picker must stay usable once the lights go out for the UV read. -->
+  <header class="masthead">
+    <div class="masthead__id dimmable">
+      <p class="eyebrow">Gene expression study · Assay LC-ARRAY-001</p>
+      <h1 class="masthead__title">DNA Microarray <em>Lab</em></h1>
+    </div>
+
+    <div class="masthead__tools">
+      <div class="themepick" role="radiogroup" aria-label="Bench appearance">
+        <span class="themepick__label" id="themepick-label">Bench</span>
+        <!-- buttons injected by ui.js from Lab.theme.THEMES -->
+        <div class="themepick__set" id="themepick" aria-labelledby="themepick-label"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="lab">
+
+    <!-- ===== Case file (replaces the intro modal) ====================== -->
+    <!-- Keeps the id/behaviour main.js expects, but it is an inline panel:
+         it occupies the bench before you start, then recedes. -->
+    <section id="intro-modal" class="casefile" aria-labelledby="casefile-h">
+      <div class="casefile__head">
+        <p class="eyebrow">Case file</p>
+        <h2 id="casefile-h">Four patients. Thirty-six readings. One question:
+          <em>which genes have changed?</em></h2>
+        <p class="casefile__lede">
+          You are the technician on this run. Process every patient's sample across
+          the microarray, then read which genes are switched <b>up</b>, <b>down</b>,
+          or left unchanged.
+        </p>
+      </div>
+
+      <div class="casefile__body">
+        <div class="casefile__col">
+          <h3 class="minihead">The cohort</h3>
+          <!-- rendered from Lab.config.PATIENTS -->
+          <ul class="cohort" id="cohort"></ul>
+        </div>
+
+        <div class="casefile__col">
+          <h3 class="minihead">Procedure</h3>
+          <ol class="protocol">
+            <li><b>Equilibration Buffer</b> — coat every spot on the card.</li>
+            <li><b>Dry</b> the card in the incubator.</li>
+            <li><b>Sample prep</b> — add control cDNA to each well, mix, spot it.</li>
+            <li><b>Dry</b> again.</li>
+            <li><b>Hybridisation Buffer</b> — coat the sample spots.</li>
+            <li><b>Dry</b>, then <b>reveal under UV</b> and read the colours.</li>
+          </ol>
+        </div>
+
+        <div class="casefile__col">
+          <h3 class="minihead">At the bench</h3>
+          <p class="casefile__how">
+            <b>Drag the micropipette</b> and rest its tip over a target for a moment
+            to act — the tip box to load a tip, a reagent tube to draw one dose, a
+            well or spot to dispense.
+          </p>
+          <p class="casefile__how">
+            Like the real bench, you work <b>one well at a time</b>. Follow the
+            highlighted target for your next move; clicking also works.
+          </p>
+        </div>
+      </div>
+
+      <div class="casefile__actions">
+        <button id="start-btn" class="btn btn-primary">Begin the run</button>
+        <!-- disabled until a full run has been completed once; ui.js unlocks it
+             from Lab.progress -->
+        <button id="demo-btn" class="btn btn-quiet" disabled>Skip to UV &amp; analysis</button>
+      </div>
+      <!-- bench record: explains the lock, and offers the reset once earned -->
+      <p class="casefile__record" id="record"></p>
+    </section>
+
+    <!-- ===== Bench =====================================================
+         Hidden until the run begins: the case file is the whole first screen,
+         so the briefing is read rather than scrolled past.  main.js reveals it
+         from both the "Begin the run" and the demo-skip paths. -->
+    <div class="bench" hidden>
+
+      <aside class="sidebar dimmable">
+        <section class="pane pane--now">
+          <h2 class="minihead">Next step</h2>
+          <p id="instruction">Press “Begin the run” to enter the lab.</p>
+        </section>
+
+        <section class="pane pane--status">
+          <h2 class="minihead">Status</h2>
+          <p class="hud-phase" id="hud-phase">Ready</p>
+          <div class="hud-row">
+            <span class="chip chip-off" id="hud-tip">Tip: none</span>
+            <span class="chip chip-off" id="hud-reagent">empty</span>
+          </div>
+          <div class="gauge-wrap">
+            <div class="vol-gauge" title="Volume in pipette tip"><div id="vol-fill"></div></div>
+            <p class="gauge-meta">Pipette load<br><b id="vol-text">0 µL</b></p>
+          </div>
+          <div class="progress"><div id="prog-fill"></div></div>
+          <p id="prog-text">—</p>
+        </section>
+
+        <section class="pane pane--steps">
+          <h2 class="minihead">Procedure</h2>
+          <ul id="checklist"></ul>
+        </section>
+      </aside>
+
+      <div class="surfaces">
+        <section class="apparatus">
+          <h3 class="apparatus__cap"><span class="dot"></span>Microarray card
+            <small>drag onto the incubator to dry</small></h3>
+          <div class="card-host" id="card-host"></div>
+        </section>
+        <section class="apparatus dimmable">
+          <h3 class="apparatus__cap"><span class="dot"></span>QuickStrip plate
+            <small>patient sample wells</small></h3>
+          <div class="plate-host" id="plate-host"></div>
+        </section>
+      </div>
+
+      <div class="shelf dimmable">
+        <div class="shelf-block">
+          <h3 class="apparatus__cap">Incubator</h3>
+          <div id="incubator-host"></div>
+        </div>
+        <div class="shelf-block">
+          <h3 class="apparatus__cap">Reagents &amp; tools</h3>
+          <div id="instrument-tray"></div>
+        </div>
+      </div>
+
+      <div id="pipette-layer"></div>
+    </div>
+
+    <!-- ===== Analysis ================================================= -->
+    <section id="analysis" class="analysis" hidden>
+      <header class="analysis__head">
+        <p class="eyebrow">Read-out</p>
+        <h2>Record your readings</h2>
+        <p class="analysis__lede">
+          Read each spot's colour under UV and type the matching symbol.
+          Columns 1–4 are controls: Normal, Up, Down, Blank.
+        </p>
+      </header>
+
+      <div id="legend"></div>
+
+      <div class="table-scroll"><table id="results-table"></table></div>
+
+      <div class="analysis-actions">
+        <button id="check-btn" class="btn btn-primary">Check my results</button>
+        <button id="erase-btn" class="btn btn-quiet">Erase table</button>
+        <label class="cvd-toggle">
+          <input type="checkbox" id="cvd-toggle">
+          <span>Show symbols on spots</span>
+        </label>
+      </div>
+      <p id="feedback" class="feedback" role="status"></p>
+    </section>
+  </main>
+
+  <!-- lights-out veil for the UV reveal -->
+  <div id="blackout" aria-hidden="true"></div>
+  <div id="toast" role="status"></div>
+
+  <!-- ===== Scripts (order matters) =================================== -->
+  <script src="vendor/interact.min.js"></script>
+  <script src="vendor/gsap.min.js"></script>
+  <script src="js/config.js?v=3"></script>
+  <script src="js/progress.js?v=3"></script>
+  <script src="js/state.js?v=3"></script>
+  <script src="js/assets.js?v=3"></script>
+  <script src="js/ui.js?v=3"></script>
+  <script src="js/surfaces.js?v=3"></script>
+  <script src="js/stations.js?v=3"></script>
+  <script src="js/pipette.js?v=3"></script>
+  <script src="js/engine.js?v=3"></script>
+  <script src="js/analysis.js?v=3"></script>
+  <script src="js/repaint.js?v=3"></script>
+  <script src="js/main.js?v=3"></script>
+</body>
+</html>

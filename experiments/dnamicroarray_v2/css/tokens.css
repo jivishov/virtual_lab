@@ -1,0 +1,489 @@
+/* =============================================================================
+ * tokens.css — type, space, motion and the three student-selectable themes.
+ *
+ * Loaded BEFORE style.css.  Nothing here selects a component; this file only
+ * binds custom properties.  Components consume them in style.css, and the SVG
+ * builders in js/assets.js consume them through CSS classes.
+ *
+ * Token tiers
+ *   0  --p-*     private ramps, never referenced by a component
+ *   1  --bg/--surface/--ink/--line/--accent…   semantic chrome
+ *   2  --mat-*   material vocabulary for the apparatus (steel, glass, foil…)
+ *   3  --sci-*   science tuning.  HUE IS NEVER AN INPUT — see the note below.
+ *
+ * Themes bind on  :root[data-theme=…].
+ * Darkroom is a MODE, not a theme:  :root[data-theme][data-mode="darkroom"]
+ * has specificity (0,3,0) and therefore beats any single-theme (0,2,0) rule
+ * regardless of source order.
+ * ========================================================================== */
+
+/* ---- fonts (self-hosted, latin subset, SIL OFL 1.1) --------------------- */
+@font-face {
+  font-family: "Fraunces";
+  src: url("../assets/fonts/fraunces-var.woff2") format("woff2-variations");
+  font-weight: 400 700;
+  font-stretch: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../assets/fonts/plex-sans-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../assets/fonts/plex-sans-500.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../assets/fonts/plex-sans-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("../assets/fonts/plex-mono-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("../assets/fonts/plex-mono-500.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+
+/* =============================================================================
+ * Theme-independent: type, space, motion
+ * ========================================================================== */
+:root {
+  /* Fraunces carries the editorial-journal voice; Plex Sans is the working
+     UI face; Plex Mono is diegetic — real LCD readouts and the symbol grid,
+     not decoration.  System stacks trail each one so file:// never blanks. */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-ui: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, "SF Mono", monospace;
+
+  /* fluid modular scale (~1.25) — replaces the old flat 11.5–15px band */
+  --step--2: clamp(.69rem, .67rem + .08vw, .74rem);
+  --step--1: clamp(.78rem, .76rem + .10vw, .84rem);
+  --step-0:  clamp(.94rem, .90rem + .20vw, 1.00rem);
+  --step-1:  clamp(1.13rem, 1.05rem + .35vw, 1.25rem);
+  --step-2:  clamp(1.35rem, 1.20rem + .60vw, 1.56rem);
+  --step-3:  clamp(1.62rem, 1.40rem + 1.00vw, 1.95rem);
+  --step-4:  clamp(1.94rem, 1.60rem + 1.60vw, 2.44rem);
+
+  /* spacing is a RHYTHM, not one padding value: tight inside a group,
+     generous between zones */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;
+  --sp-4: 20px; --sp-5: 32px; --sp-6: 52px;
+
+  /* motion — exponential deceleration, never bounce/elastic */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);      /* quint-ish */
+  --ease-in:  cubic-bezier(.64, 0, .78, 0);
+  --dur-1: .16s; --dur-2: .28s; --dur-3: .5s;
+  --dur-lightsout: .9s;                           /* per-theme below */
+
+  --measure: 62ch;
+  --lh-tight: 1.12;            /* headings, incl. .apparatus__cap */
+
+  /* Exact height of an .apparatus__cap plus its margin.  The surfaces column
+     puts its caption OUTSIDE the card, so the card's top edge starts this far
+     down; the shelf column captions its blocks internally and would otherwise
+     sit ~21px higher.  Offsetting the shelf by this keeps the incubator lined
+     up with the microarray card at every step of the fluid type scale. */
+  --cap-offset: calc(var(--step--2) * var(--lh-tight) + var(--sp-2));
+
+  /* Hue-locked semantics — identical in every theme because they encode a
+     real-world fact, not a style choice:
+       hazard red  = biohazard waste (safety signage)
+       UV violet   = what a 365 nm lamp actually looks like               */
+  --sci-hazard:    oklch(52% .180 27);
+  --sci-hazard-hi: oklch(60% .200 27);
+  --sci-hazard-lo: oklch(42% .170 27);
+  --mat-uv-hi:     oklch(94% .030 300);
+  --mat-uv-lo:     oklch(38% .160 300);
+}
+
+/* =============================================================================
+ * THEME 1 — NOTEBOOK  (hero; warm light, bone paper, fountain-pen indigo)
+ * Also the :root default so a no-JS load still looks designed.
+ * ========================================================================== */
+:root,
+:root[data-theme="notebook"] {
+  color-scheme: light;
+
+  --bg-app:      oklch(93.5% .018 82);
+  --bench-bg:    oklch(96.8% .014 85);
+  --surface-1:   oklch(98.6% .008 85);
+  --surface-2:   oklch(94.2% .016 82);
+  --surface-3:   oklch(90.5% .020 80);
+
+  --ink-1:       oklch(27% .022 55);
+  --ink-2:       oklch(44% .022 58);
+  --ink-3:       oklch(60% .018 62);
+  --ink-on-accent: oklch(97% .010 265);
+
+  --line:        oklch(87% .016 80);
+  --line-strong: oklch(76% .022 78);
+
+  --accent:      oklch(42% .130 265);
+  --accent-soft: oklch(92% .035 265);
+  --accent-2:    oklch(52% .130 45);
+
+  --state-ok:    oklch(52% .120 150);
+  --state-warn:  oklch(55% .160 30);
+  --focus:       oklch(52% .170 265);
+
+  --radius: 3px;
+  --radius-sm: 2px;
+  --hairline: 1px;
+
+  --elev-1: 0 1px 2px oklch(35% .03 60 / .10);
+  --elev-2: 0 2px 6px oklch(35% .03 60 / .13);
+  --elev-svg: drop-shadow(0 1px 2px oklch(35% .03 60 / .18));
+  --elev-tool: drop-shadow(0 3px 5px oklch(30% .03 60 / .28));
+
+  /* signature: faint blueprint grid on the bench */
+  --bench-pattern:
+    repeating-linear-gradient(0deg,  transparent 0 23px, oklch(70% .03 250 / .07) 23px 24px),
+    repeating-linear-gradient(90deg, transparent 0 23px, oklch(70% .03 250 / .07) 23px 24px);
+  --dur-lightsout: .9s;
+
+  /* --- Tier 2: materials ------------------------------------------------ */
+  --mat-plastic-0: oklch(96% .004 85);
+  --mat-plastic-1: oklch(99% .002 85);
+  --mat-plastic-2: oklch(87% .008 240);
+  --mat-plastic-3: oklch(72% .014 240);
+  --mat-steel-0:   oklch(78% .012 240);
+  --mat-steel-1:   oklch(93% .006 240);
+  --mat-steel-2:   oklch(62% .016 240);
+  --mat-glass-tint:  oklch(95% .010 150 / .55);
+  --mat-glass-sheen: oklch(100% 0 0 / .70);
+  --mat-foil-0: oklch(85% .008 240);
+  --mat-foil-1: oklch(97% .003 240);
+  --mat-foil-2: oklch(78% .012 240);
+  --mat-foil-3: oklch(92% .006 240);
+  --mat-foil-4: oklch(68% .016 240);
+  --mat-polymer-0: oklch(42% .016 250);
+  --mat-polymer-1: oklch(26% .014 250);
+  --mat-bezel:      oklch(32% .014 250);
+  --mat-cavity:     oklch(22% .012 250);
+  --mat-cavity-lip: oklch(28% .014 250);
+  --mat-lcd-bg:  oklch(22% .028 235);
+  --mat-lcd-ink: oklch(84% .150 165);
+  --mat-led-off:  oklch(62% .012 240);
+  --mat-led-ok:   oklch(70% .150 150);
+  --mat-led-warn: oklch(80% .150 80);
+  --mat-led-uv:   oklch(70% .160 300);
+  --mat-appliance-hi: oklch(94% .006 240);
+  --mat-appliance-lo: oklch(76% .012 240);
+  --mat-door-0: oklch(42% .016 245);
+  --mat-door-1: oklch(28% .014 245);
+  --mat-heat-on:  oklch(70% .170 45 / .35);
+  --mat-heat-off: oklch(70% .170 45 / 0);
+  --mat-coil:     oklch(72% .150 45);
+  --mat-label-paper: oklch(98.5% .012 95);
+  --mat-label-edge:  oklch(84% .030 95);
+  --mat-etch:       oklch(95% .005 85);
+  --mat-line:       oklch(78% .012 240);
+  --mat-spot-empty: oklch(87% .008 240);
+  --mat-tip-poly:   oklch(100% 0 0 / .55);
+  --mat-consumable: oklch(88% .060 200);
+  --mat-tool-grip-0: oklch(42% .016 250);
+  --mat-tool-grip-1: oklch(56% .014 250);
+  --mat-tool-grip-2: oklch(30% .014 250);
+  --mat-shadow-tint: oklch(30% .030 250);
+
+  /* --- Tier 3: science tuning (numbers, not colours) -------------------- */
+  --sci-s-delta: 0;
+  --sci-l-delta: 0;
+  --sci-ring-l-delta: -35;
+  --sci-ring-w: 2px;
+}
+
+/* =============================================================================
+ * THEME 2 — LABORATORY  (bright bench, ultramarine, faded glassware motif)
+ * Was "cleanroom"; theme.js keeps that id working for saved prefs and links.
+ * ========================================================================== */
+:root[data-theme="laboratory"] {
+  color-scheme: light;
+
+  --bg-app:      oklch(95.5% .005 230);
+  --bench-bg:    oklch(98.2% .004 230);
+  --surface-1:   oklch(99.3% .003 230);
+  --surface-2:   oklch(96.4% .005 230);
+  --surface-3:   oklch(93.5% .007 230);
+
+  --ink-1:       oklch(28% .016 250);
+  --ink-2:       oklch(46% .014 250);
+  --ink-3:       oklch(62% .012 250);
+  --ink-on-accent: oklch(98% .005 258);
+
+  --line:        oklch(90.5% .007 235);
+  --line-strong: oklch(80% .012 240);
+
+  --accent:      oklch(48% .170 258);
+  --accent-soft: oklch(94% .030 258);
+  --accent-2:    oklch(55% .120 195);
+
+  --state-ok:    oklch(52% .120 150);
+  --state-warn:  oklch(54% .170 28);
+  --focus:       oklch(52% .180 258);
+
+  --radius: 2px;
+  --radius-sm: 1px;
+  --hairline: 1px;
+
+  /* near-shadowless: the clean room separates with rules, not elevation */
+  --elev-1: 0 0 0 1px oklch(88% .008 235);
+  --elev-2: 0 1px 2px oklch(50% .02 250 / .08);
+  --elev-svg: drop-shadow(0 .5px 1px oklch(50% .02 250 / .12));
+  --elev-tool: drop-shadow(0 2px 3px oklch(45% .02 250 / .20));
+
+  /* Laboratory presence without clutter.  The first attempt tiled small
+     glassware every 340px, which put figures directly behind body text — the
+     distracting part was the REPETITION and the scale, not the subject.
+     So: three oversized outlines, each anchored to a screen edge and bleeding
+     off it, none repeating.  Because the background is viewport-fixed they
+     stay in the margins where content is not, and at ~14% they read as a
+     room you are standing in rather than as wallpaper.
+       1-3  flask (bottom-left), helix (right), petri dish (bottom-right)
+       4    soft wash from above, as if under bench lighting
+       5    bench matting, barely perceptible surface texture             */
+  --bench-pattern:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 260'%3E%3Cg fill='none' stroke='%237d92ae' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' opacity='.15'%3E%3Cpath d='M70 18h60M80 18v72L34 206a16 16 0 0 0 14 24h104a16 16 0 0 0 14-24L120 90V18'/%3E%3Cpath d='M52 174h96'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 400'%3E%3Cg fill='none' stroke='%237d92ae' stroke-width='3' stroke-linecap='round' opacity='.14'%3E%3Cpath d='M80 0Q180 50 80 100Q-20 150 80 200Q180 250 80 300Q-20 350 80 400'/%3E%3Cpath d='M80 0Q-20 50 80 100Q180 150 80 200Q-20 250 80 300Q180 350 80 400'/%3E%3Cpath d='M58 25h44M58 75h44M58 125h44M58 175h44M58 225h44M58 275h44M58 325h44M58 375h44'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%237d92ae' stroke-width='3' opacity='.12'%3E%3Ccircle cx='120' cy='120' r='104'/%3E%3Ccircle cx='120' cy='120' r='88'/%3E%3C/g%3E%3C/svg%3E"),
+    var(--lab-wash),
+    var(--lab-mat);
+  --bench-size: 300px auto, 168px auto, 250px auto, auto, 22px 22px;
+  --bench-pos:
+    left -46px bottom -34px,
+    right -34px top 20%,
+    right 8% bottom -108px,
+    center, center;
+  --bench-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+
+  /* the two tonal layers, named once and reused by the in-use variant below */
+  --lab-wash: radial-gradient(135% 75% at 50% -8%, oklch(100% 0 0 / .8), transparent 58%);
+  --lab-mat:  radial-gradient(oklch(60% .020 240 / .07) 1px, transparent 1.4px);
+  --dur-lightsout: .9s;
+
+  --mat-plastic-0: oklch(97% .003 235);
+  --mat-plastic-1: oklch(99.5% .001 235);
+  --mat-plastic-2: oklch(89% .010 250);
+  --mat-plastic-3: oklch(74% .016 250);
+  --mat-steel-0:   oklch(82% .008 235);
+  --mat-steel-1:   oklch(95% .004 235);
+  --mat-steel-2:   oklch(66% .012 235);
+  --mat-glass-tint:  oklch(97% .006 220 / .50);
+  --mat-glass-sheen: oklch(100% 0 0 / .78);
+  --mat-foil-0: oklch(88% .005 235);
+  --mat-foil-1: oklch(98.5% .002 235);
+  --mat-foil-2: oklch(82% .008 235);
+  --mat-foil-3: oklch(94% .004 235);
+  --mat-foil-4: oklch(72% .012 235);
+  --mat-polymer-0: oklch(46% .012 250);
+  --mat-polymer-1: oklch(30% .010 250);
+  --mat-bezel:      oklch(36% .010 250);
+  --mat-cavity:     oklch(25% .010 250);
+  --mat-cavity-lip: oklch(32% .010 250);
+  --mat-lcd-bg:  oklch(25% .022 240);
+  --mat-lcd-ink: oklch(86% .140 168);
+  --mat-led-off:  oklch(68% .008 235);
+  --mat-led-ok:   oklch(68% .150 150);
+  --mat-led-warn: oklch(78% .150 80);
+  --mat-led-uv:   oklch(68% .165 300);
+  --mat-appliance-hi: oklch(97% .003 235);
+  --mat-appliance-lo: oklch(81% .008 235);
+  --mat-door-0: oklch(46% .012 248);
+  --mat-door-1: oklch(31% .010 248);
+  --mat-heat-on:  oklch(70% .170 45 / .32);
+  --mat-heat-off: oklch(70% .170 45 / 0);
+  --mat-coil:     oklch(70% .150 45);
+  --mat-label-paper: oklch(99.5% .002 235);
+  --mat-label-edge:  oklch(86% .010 235);
+  --mat-etch:       oklch(97% .003 235);
+  --mat-line:       oklch(82% .008 235);
+  --mat-spot-empty: oklch(90% .005 235);
+  --mat-tip-poly:   oklch(100% 0 0 / .58);
+  --mat-consumable: oklch(90% .050 205);
+  --mat-tool-grip-0: oklch(46% .012 250);
+  --mat-tool-grip-1: oklch(60% .010 250);
+  --mat-tool-grip-2: oklch(33% .010 250);
+  --mat-shadow-tint: oklch(45% .020 250);
+
+  /* a near-white bench crushes yellow and light green: darken and saturate
+     the science colours, and carry the heaviest ring weight */
+  --sci-s-delta: 6;
+  --sci-l-delta: -14;
+  --sci-ring-l-delta: -38;
+  --sci-ring-w: 2.5px;
+}
+
+/* Once the run starts, every column of the bench is occupied — there is no
+   empty margin left for ambient artwork to live in, and a flask outline
+   crossing the checklist is exactly the distraction we were asked to remove.
+   So the glassware belongs to the briefing screen: it sets the scene, then
+   steps aside and leaves the lit surface for the actual work.
+   (main.js adds .run-started when it reveals the bench.) */
+:root[data-theme="laboratory"] body.run-started {
+  --bench-pattern: var(--lab-wash), var(--lab-mat);
+  --bench-size: auto, 22px 22px;
+  --bench-pos: center, center;
+  --bench-repeat: no-repeat, repeat;
+}
+
+/* =============================================================================
+ * THEME 3 — NIGHT BENCH  (warm dark done right: warm near-black, amber, NO cyan)
+ * ========================================================================== */
+:root[data-theme="instrument"] {
+  color-scheme: dark;
+
+  /* Lifted ~6 L-points off the original near-black: still an unmistakably
+     dark console, but the warm charcoal now reads as a material rather than
+     as an absence of light.  Ink is unchanged, so text contrast stays high. */
+  --bg-app:      oklch(21% .009 50);
+  --bench-bg:    oklch(25% .010 50);
+  --surface-1:   oklch(29.5% .011 50);
+  --surface-2:   oklch(33.5% .012 50);
+  --surface-3:   oklch(37.5% .013 50);
+
+  --ink-1:       oklch(94% .008 70);
+  --ink-2:       oklch(80% .010 68);
+  --ink-3:       oklch(66% .012 65);
+  --ink-on-accent: oklch(20% .020 60);
+
+  --line:        oklch(39% .013 50);
+  --line-strong: oklch(51% .017 52);
+
+  --accent:      oklch(76% .140 68);
+  --accent-soft: oklch(36% .045 68);
+  --accent-2:    oklch(66% .110 40);
+
+  --state-ok:    oklch(72% .140 152);
+  --state-warn:  oklch(68% .160 30);
+  --focus:       oklch(78% .150 68);
+
+  --radius: 6px;
+  --radius-sm: 4px;
+  --hairline: 1px;
+
+  --elev-1: 0 1px 2px oklch(8% .01 50 / .55);
+  --elev-2: 0 4px 12px oklch(8% .01 50 / .60);
+  --elev-svg: drop-shadow(0 2px 4px oklch(8% .01 50 / .60));
+  --elev-tool: drop-shadow(0 6px 10px oklch(6% .01 50 / .70));
+
+  --bench-pattern:
+    repeating-linear-gradient(0deg,  transparent 0 23px, oklch(74% .02 60 / .05) 23px 24px),
+    repeating-linear-gradient(90deg, transparent 0 23px, oklch(74% .02 60 / .05) 23px 24px);
+  --dur-lightsout: .6s;   /* already dark — a shorter beat reads better */
+
+  --mat-plastic-0: oklch(72% .008 60);
+  --mat-plastic-1: oklch(84% .006 60);
+  --mat-plastic-2: oklch(52% .014 250);
+  --mat-plastic-3: oklch(38% .016 250);
+  --mat-steel-0:   oklch(56% .010 240);
+  --mat-steel-1:   oklch(74% .008 240);
+  --mat-steel-2:   oklch(40% .012 240);
+  --mat-glass-tint:  oklch(60% .012 200 / .30);
+  --mat-glass-sheen: oklch(96% .004 60 / .38);
+  --mat-foil-0: oklch(58% .008 240);
+  --mat-foil-1: oklch(80% .005 240);
+  --mat-foil-2: oklch(50% .010 240);
+  --mat-foil-3: oklch(68% .007 240);
+  --mat-foil-4: oklch(42% .012 240);
+  /* lifted with the bench, so the card and plate read as dark objects on a
+     dark bench rather than as holes punched in it */
+  --mat-polymer-0: oklch(35% .012 250);
+  --mat-polymer-1: oklch(24% .010 250);
+  --mat-bezel:      oklch(21% .010 250);
+  --mat-cavity:     oklch(16% .008 250);
+  --mat-cavity-lip: oklch(22% .010 250);
+  --mat-lcd-bg:  oklch(20% .024 235);
+  --mat-lcd-ink: oklch(84% .150 165);
+  --mat-led-off:  oklch(42% .010 240);
+  --mat-led-ok:   oklch(74% .150 150);
+  --mat-led-warn: oklch(82% .150 80);
+  --mat-led-uv:   oklch(74% .165 300);
+  --mat-appliance-hi: oklch(48% .010 240);
+  --mat-appliance-lo: oklch(32% .012 240);
+  --mat-door-0: oklch(30% .014 248);
+  --mat-door-1: oklch(19% .012 248);
+  --mat-heat-on:  oklch(72% .175 45 / .45);
+  --mat-heat-off: oklch(72% .175 45 / 0);
+  --mat-coil:     oklch(74% .160 45);
+  --mat-label-paper: oklch(88% .014 95);
+  --mat-label-edge:  oklch(66% .030 95);
+  --mat-etch:       oklch(43% .010 240);
+  --mat-line:       oklch(57% .012 240);
+  --mat-spot-empty: oklch(49% .010 240);
+  --mat-tip-poly:   oklch(90% .004 60 / .40);
+  --mat-consumable: oklch(58% .060 200);
+  --mat-tool-grip-0: oklch(34% .012 250);
+  --mat-tool-grip-1: oklch(48% .010 250);
+  --mat-tool-grip-2: oklch(24% .012 250);
+  --mat-shadow-tint: oklch(8% .010 50);
+
+  --sci-s-delta: 10;
+  --sci-l-delta: 6;
+  --sci-ring-l-delta: -30;
+  --sci-ring-w: 2px;
+}
+
+/* =============================================================================
+ * DARKROOM MODE — rebinds the BENCH/STAGE family on top of any theme.
+ *
+ * Specificity (0,3,0) beats every single-theme block (0,2,0), so source order
+ * is irrelevant.  Deliberately leaves the chrome family (surface, ink, accent)
+ * alone: #analysis is not .dimmable and must stay lit — the student reads
+ * results from a bright panel in a dark room, which is both correct physics
+ * and correct UX.
+ * ========================================================================== */
+:root[data-theme][data-mode="darkroom"] {
+  color-scheme: dark;
+
+  --bg-app:   oklch(8% .010 250);
+  --bench-bg: oklch(10% .012 250);
+
+  --mat-bezel:      oklch(9% .010 250);
+  --mat-cavity:     oklch(7% .008 250);
+  --mat-cavity-lip: oklch(11% .010 250);
+  --mat-etch:       oklch(13% .010 250);
+  --mat-line:       oklch(20% .012 250);
+  --mat-spot-empty: oklch(10% .010 250);
+  --mat-glass-tint:  oklch(30% .015 220 / .20);
+  --mat-glass-sheen: oklch(80% .010 250 / .12);
+  --mat-polymer-0: oklch(18% .012 250);
+  --mat-polymer-1: oklch(11% .010 250);
+
+  --bench-pattern: none;
+
+  /* revealed spots should genuinely fluoresce, not merely be drawn brighter */
+  --sci-s-delta: 14;
+  --sci-l-delta: 10;
+  --sci-ring-l-delta: -18;
+}
+
+/* =============================================================================
+ * Reduced motion.
+ *
+ * Decorative loops are disabled outright.  The two AFFORDANCE animations are
+ * NOT removed — .next-target is the only signal telling a student what to do
+ * next, and .dwelling is the sole feedback that hover-to-act is charging.
+ * They are swapped for static equivalents in style.css.
+ * ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  /* `:root[data-theme]` is required, not decorative: every theme block sets
+     --dur-lightsout at (0,2,0), which outranks a bare `:root` at (0,1,0).
+     Without the attribute here the override silently never applies and the
+     lights-out sequence keeps its full length. Equal specificity + last in
+     the file means this wins. */
+  :root,
+  :root[data-theme] {
+    --dur-1: .01s; --dur-2: .01s; --dur-3: .01s;
+    --dur-lightsout: .2s;   /* shortened, never zero: an instantaneous
+                               full-page inversion is exactly what this
+                               media query exists to prevent */
+  }
+}

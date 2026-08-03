@@ -24,7 +24,12 @@ const labs = [
         translationKey: "dnamicroarray",
         type: "lab",
         icon: "🧬",
-        link: "experiments/dnamicroarray/"
+        // Two published versions. The first entry is the default target for a
+        // card-body click and for the Enter key.
+        versions: [
+            { labelKey: "buttons.launchV2", link: "experiments/dnamicroarray_v2/" },
+            { labelKey: "buttons.launchV1", link: "experiments/dnamicroarray/" }
+        ]
     },
     {
         id: 3,
@@ -126,6 +131,21 @@ function createLabCard(lab) {
     const tagsHTML = tags.map(tag => `<span class="tag">${tag}</span>`).join('');
     const buttonText = lab.type === 'simulation' ? t('buttons.launchSimulation') : t('buttons.launchLab');
 
+    // A lab may publish several versions. When it does, render one button per
+    // version instead of the single launch button.
+    const footerHTML = lab.versions
+        ? `<div class="launch-button-group">
+                ${lab.versions.map((version, index) => `
+                <button class="${index === 0 ? buttonClass : buttonClass + ' launch-button-secondary'}" onclick="launchLab(${lab.id}, ${index})">
+                    <span>${t(version.labelKey)}</span>
+                    <span>→</span>
+                </button>`).join('')}
+            </div>`
+        : `<button class="${buttonClass}" onclick="launchLab(${lab.id})">
+                <span>${buttonText}</span>
+                <span>→</span>
+            </button>`;
+
     card.innerHTML = `
         <div class="${headerClass}">
             <div class="lab-icon">${lab.icon}</div>
@@ -138,10 +158,7 @@ function createLabCard(lab) {
             </div>
         </div>
         <div class="lab-card-footer">
-            <button class="${buttonClass}" onclick="launchLab(${lab.id})">
-                <span>${buttonText}</span>
-                <span>→</span>
-            </button>
+            ${footerHTML}
         </div>
     `;
 
@@ -174,7 +191,7 @@ function renderLabs() {
 }
 
 // Launch lab function
-function launchLab(labId) {
+function launchLab(labId, versionIndex = 0) {
     const lab = labs.find(l => l.id === labId);
 
     if (!lab) {
@@ -182,14 +199,17 @@ function launchLab(labId) {
         return;
     }
 
+    // Multi-version labs carry a versions array; everything else has a plain link
+    const link = lab.versions ? (lab.versions[versionIndex] || lab.versions[0]).link : lab.link;
+
     // If the link is set to '#', show an alert (for demo purposes)
-    if (lab.link === '#') {
+    if (link === '#') {
         alert(`${lab.title} will be available soon!\n\nThis is where the virtual lab would launch. Update the 'link' property in the labs array to point to your actual lab files.`);
         return;
     }
 
     // Navigate to the lab
-    window.location.href = lab.link;
+    window.location.href = link;
 }
 
 // Add smooth scroll behavior
@@ -226,7 +246,10 @@ function makeCardsAccessible() {
         card.setAttribute('tabindex', '0');
         card.setAttribute('role', 'button');
         card.addEventListener('click', function (e) {
-            if (e.target.tagName !== 'BUTTON') {
+            // closest() rather than tagName: the labels sit in spans inside the
+            // button, so a click on a label must not be forwarded to the card's
+            // first button (which would launch the wrong version).
+            if (!e.target.closest('button')) {
                 const button = this.querySelector('.launch-button');
                 if (button) {
                     button.click();
