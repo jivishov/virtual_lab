@@ -755,8 +755,15 @@ body.cvd-assist .spot.revealed .spot-id { opacity: 0; }
    A 15" laptop at 125% scaling is ~683px of viewport, which has room to spare.
    The height to reclaim is in the wrappers: masthead padding and the dead
    space under the card.  Type sizes, column gaps and the cohort rows are left
-   alone, because shrinking those is what makes a page feel crammed. */
-@media (max-height: 820px) {
+   alone, because shrinking those is what makes a page feel crammed.
+
+   The threshold is set by the BENCH, not the case file.  Untrimmed, the bench
+   column runs to 866px (masthead 118 + surfaces 696 + the 52px gutter under
+   the card), so every window between 820 and 866 scrolled — a 1920x1080
+   monitor with normal browser chrome lands right in that band.  Trimming here
+   brings the bench to 789px, so 900 covers the whole gap with room to spare
+   and still leaves genuinely tall monitors on the generous spacing. */
+@media (max-height: 900px) {
   /* sp-1 left the theme picker almost touching the bench below it */
   .masthead { padding-top: var(--sp-3); padding-bottom: var(--sp-3); }
   .masthead__title { font-size: var(--step-3); }
