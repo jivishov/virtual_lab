@@ -3,12 +3,27 @@
 // Main Game Engine
 // ===================================
 
+const BASE_POINTS = 10;
+const STREAK_BONUS = 5;
+const SPEED_BONUS = 5;
+const WRONG_PENALTY = 5;
+const HINT_COST = 3;
+
+// A speed bonus needs a real read, not a fast guess: at least this long on the
+// question, and no longer than the upper bound.
+const SPEED_MIN_MS = 3000;
+const SPEED_MAX_MS = 9000;
+
 class LabSafetyGame {
     constructor() {
-        // Game state
-        this.state = {
+        this.state = this.freshState();
+        this.init();
+    }
+
+    freshState() {
+        return {
             agentName: '',
-            agentLevel: 0,
+            tierIndex: 0,
             currentScenario: 0,
             score: 0,
             streak: 0,
@@ -16,23 +31,43 @@ class LabSafetyGame {
             correctAnswers: 0,
             incorrectAnswers: 0,
             quickAnswers: 0,
+            hintsUsed: 0,
+            hintsLeft: 0,
             correctScenarios: [],
+            answers: [],
+            activeScenario: null,
+            hintUsedThisScenario: false,
+            answered: false,
             timerInterval: null,
             questionStartTime: null
         };
+    }
 
-        this.init();
+    get tier() {
+        return DIFFICULTY_TIERS[this.state.tierIndex] || DIFFICULTY_TIERS[0];
+    }
+
+    get percentCorrect() {
+        return Math.round((this.state.correctAnswers / MISSION_SCENARIOS.length) * 100);
     }
 
     init() {
-        // Initialize intro screen
         this.setupIntroScreen();
+        this.setupKeyboardShortcuts();
+        this.setupResultsButtons();
+        this.setupCertificate();
 
-        // Debug: Global click listener
-        document.addEventListener('click', (e) => {
-            console.log('GLOBAL CLICK:', e.target);
+        // A backgrounded tab throttles timers, which would silently eat a
+        // student's clock while they are in another window.
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) this.pauseTimer();
+            else this.resumeTimer();
         });
     }
+
+    // ===================================
+    // INTRO / BRIEFING
+    // ===================================
 
     setupIntroScreen() {
         const agentNameInput = document.getElementById('agentName');
@@ -40,10 +75,7 @@ class LabSafetyGame {
 
         if (agentNameInput) {
             agentNameInput.addEventListener('input', (e) => {
-                const name = e.target.value.trim();
-                if (acceptBtn) {
-                    acceptBtn.disabled = name.length < 2;
-                }
+                if (acceptBtn) acceptBtn.disabled = e.target.value.trim().length < 2;
             });
 
             agentNameInput.addEventListener('keypress', (e) => {
@@ -54,9 +86,7 @@ class LabSafetyGame {
         }
 
         if (acceptBtn) {
-            acceptBtn.addEventListener('click', () => {
-                this.startBriefing();
-            });
+            acceptBtn.addEventListener('click', () => this.startBriefing());
         }
     }
 
@@ -68,7 +98,6 @@ class LabSafetyGame {
 
         this.state.agentName = name.toUpperCase();
 
-        // Switch to briefing screen
         window.animations.switchScreen('introScreen', 'briefingScreen', () => {
             this.showBriefing();
         });
@@ -76,110 +105,110 @@ class LabSafetyGame {
 
     showBriefing() {
         const briefingText = document.getElementById('briefingText');
+        const countdownElement = document.getElementById('countdown');
+        const skipBtn = document.getElementById('skipBriefingBtn');
 
-        setTimeout(() => {
-            const countdownElement = document.getElementById('countdown');
+        this.briefingSpent = false;
+
+        const advance = () => {
+            if (this.briefingSpent) return;
+            this.briefingSpent = true;
+            if (this.countdownInterval) clearInterval(this.countdownInterval);
+            if (skipBtn) skipBtn.onclick = null;
+            this.showSelfDestruct();
+        };
+
+        if (skipBtn) skipBtn.onclick = advance;
+
+        // Lines reveal, then the countdown starts — no dead 2s pause on a
+        // static "5" like the previous build.
+        window.animations.revealLines(briefingText, () => {
             if (countdownElement) {
-                window.animations.startCountdown(countdownElement, 5, () => {
-                    this.showSelfDestruct();
-                });
+                this.countdownInterval =
+                    window.animations.startCountdown(countdownElement, 5, advance);
+            } else {
+                advance();
             }
-        }, 2000);
+        });
     }
 
     showSelfDestruct() {
         window.animations.switchScreen('briefingScreen', 'destructScreen', () => {
-            // Trigger explosion animation
-            setTimeout(() => {
-                window.animations.createExplosion();
-            }, 500);
-
-            // Move to agent selection after explosion
-            setTimeout(() => {
+            window.animations.runViolationSequence(() => {
                 window.animations.switchScreen('destructScreen', 'agentSelectScreen', () => {
                     this.setupAgentSelection();
                 });
-            }, 5000);
+            });
         });
     }
+
+    // ===================================
+    // DIFFICULTY SELECTION
+    // ===================================
 
     setupAgentSelection() {
-        console.log('=== SETUP AGENT SELECTION CALLED ===');
+        const grid = document.getElementById('agentGrid');
+        if (!grid) return;
 
-        // Small delay to ensure DOM is ready
-        setTimeout(() => {
-            const agentCards = document.querySelectorAll('.agent-card');
-            console.log('Found agent cards:', agentCards.length);
+        grid.innerHTML = DIFFICULTY_TIERS.map((tier, index) => `
+            <div class="agent-card" data-tier="${index}" role="button" tabindex="0"
+                 aria-label="Select ${tier.name} clearance">
+                <div class="agent-silhouette">${tier.icon}</div>
+                <h3>${tier.name}</h3>
+                <div class="agent-stats">
+                    <p><span class="stat-strong">${tier.timerSeconds}s</span> per scenario</p>
+                    <p><span class="stat-strong">${tier.hints || 'No'}</span> intel request${tier.hints === 1 ? '' : 's'}</p>
+                    <p>${tier.blurb}</p>
+                </div>
+                <button class="select-agent-btn" type="button" tabindex="-1">SELECT</button>
+            </div>
+        `).join('');
 
-            agentCards.forEach((card, index) => {
-                console.log(`Setting up card ${index}`);
-
-                // SOLUTION: Add listener to the ENTIRE CARD, not just the button
-                card.onclick = (e) => {
-                    console.log('=== CARD CLICKED ===', index);
-                    this.selectAgent(index);
-                };
-
-                card.style.cursor = 'pointer';
-
-                const selectBtn = card.querySelector('.select-agent-btn');
-                console.log(`Button ${index}:`, selectBtn);
-
-                if (selectBtn) {
-                    // Also add to button for redundancy
-                    selectBtn.onclick = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('=== BUTTON CLICKED ===', index);
-                        this.selectAgent(index);
-                    };
-
-                    console.log(`Listeners attached to card and button ${index}`);
+        grid.querySelectorAll('.agent-card').forEach(card => {
+            const index = Number(card.dataset.tier);
+            card.addEventListener('click', () => this.selectTier(index));
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectTier(index);
                 }
             });
-
-            console.log('=== SETUP COMPLETE ===');
-        }, 100);
+        });
     }
 
-    selectAgent(levelIndex) {
-        console.log('selectAgent called with level:', levelIndex);
+    selectTier(tierIndex) {
+        if (this.tierChosen) return;
+        this.tierChosen = true;
 
-        this.state.agentLevel = levelIndex;
-        this.state.score = AGENT_LEVELS[levelIndex].startingPoints;
+        this.state.tierIndex = tierIndex;
+        this.state.score = 0;            // everybody starts on zero
+        this.state.hintsLeft = DIFFICULTY_TIERS[tierIndex].hints;
 
-        // Start music (user interaction allows autoplay)
-        if (window.audioManager) {
-            console.log('Starting music...');
-            window.audioManager.playMusic();
-        }
+        // First real user gesture — safe to start audio here.
+        if (window.audioManager) window.audioManager.playMusic();
 
-        // Give visual feedback
-        const agentCards = document.querySelectorAll('.agent-card');
-        agentCards.forEach((card, index) => {
-            if (index === levelIndex) {
-                card.style.transform = 'scale(1.1)';
-                card.style.boxShadow = '0 0 40px var(--accent-blue)';
-            }
-        });
+        const card = document.querySelector(`.agent-card[data-tier="${tierIndex}"]`);
+        if (card) card.classList.add('chosen');
 
-        // Small delay for feedback, then switch
         setTimeout(() => {
-            // Switch to game screen
             window.animations.switchScreen('agentSelectScreen', 'gameScreen', () => {
                 this.initializeHUD();
                 this.loadScenario(0);
             });
-        }, 600);
+        }, 450);
     }
 
     initializeHUD() {
-        window.animations.updateHUD('Agent', this.state.agentName);
-        window.animations.updateHUD('Level', AGENT_LEVELS[this.state.agentLevel].name);
-        window.animations.updateHUD('Points', this.state.score);
-        window.animations.updateHUD('Streak', this.state.streak);
+        window.animations.updateHUD('Agent', this.state.agentName, false);
+        window.animations.updateHUD('Level', this.tier.name, false);
+        window.animations.updateHUD('Points', this.state.score, false);
+        window.animations.updateHUD('Streak', this.state.streak, false);
         window.animations.updateAlertLevel('secure');
     }
+
+    // ===================================
+    // SCENARIO LOOP
+    // ===================================
 
     loadScenario(index) {
         if (index >= MISSION_SCENARIOS.length) {
@@ -187,16 +216,23 @@ class LabSafetyGame {
             return;
         }
 
+        // A pending feedback dialog from the previous scenario must never
+        // surface over the new one.
+        this.clearPendingFeedback();
+
         this.state.currentScenario = index;
         this.state.questionStartTime = Date.now();
+        this.state.hintUsedThisScenario = false;
+        this.state.answered = false;
 
-        const scenario = MISSION_SCENARIOS[index];
+        // Options are shuffled per attempt; correctIndex comes from the
+        // `correct` flag, so position carries no signal.
+        const scenario = prepareScenario(MISSION_SCENARIOS[index]);
+        this.state.activeScenario = scenario;
 
-        // Update HUD
-        window.animations.updateHUD('Scenario', `${index + 1}/${MISSION_SCENARIOS.length}`);
+        window.animations.updateHUD('Scenario', `${index + 1}/${MISSION_SCENARIOS.length}`, false);
         window.animations.updateAlertLevel('secure');
 
-        // Update scenario info
         const scenarioTitle = document.getElementById('scenarioTitle');
         const threatLevel = document.getElementById('threatLevel');
         const situationText = document.getElementById('situationText');
@@ -210,14 +246,10 @@ class LabSafetyGame {
 
         if (situationText) situationText.textContent = scenario.situation;
 
-        // Render scene
-        window.animations.renderScene(scenario.sceneHTML);
-
-        // Render options
+        window.animations.renderScene(window.graphics.sceneArt(scenario.art));
         this.renderOptions(scenario.options);
-
-        // Start timer
-        this.startTimer(15);
+        this.renderHintButton();
+        this.startTimer(this.tier.timerSeconds);
     }
 
     renderOptions(options) {
@@ -227,334 +259,645 @@ class LabSafetyGame {
         optionsContainer.innerHTML = '';
 
         options.forEach((option, index) => {
-            const optionCard = document.createElement('div');
-            optionCard.className = 'option-card';
-            optionCard.dataset.index = index;
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = 'option-card';
+            card.dataset.index = index;
 
-            optionCard.innerHTML = `
-                <div class="option-icon">${option.icon}</div>
-                <div class="option-text">${option.text}</div>
-                <div class="option-description">${option.description}</div>
+            card.innerHTML = `
+                <span class="option-key">${index + 1}</span>
+                <span class="option-icon">${window.graphics.icon(option.icon)}</span>
+                <span class="option-body">
+                    <span class="option-text">${option.text}</span>
+                    <span class="option-description">${option.description}</span>
+                </span>
+                <span class="option-state" aria-hidden="true"></span>
             `;
 
-            optionCard.addEventListener('click', () => {
-                this.selectOption(index);
-            });
-
-            optionsContainer.appendChild(optionCard);
+            card.addEventListener('click', () => this.selectOption(index));
+            optionsContainer.appendChild(card);
         });
+    }
+
+    renderHintButton() {
+        const hintBtn = document.getElementById('hintBtn');
+        const hintCount = document.getElementById('hintCount');
+        if (!hintBtn) return;
+
+        if (this.tier.hints === 0) {
+            hintBtn.hidden = true;
+            return;
+        }
+
+        hintBtn.hidden = false;
+        hintBtn.disabled = this.state.hintsLeft <= 0;
+        if (hintCount) hintCount.textContent = `(${this.state.hintsLeft})`;
+        hintBtn.onclick = () => this.useHint();
+    }
+
+    // Greys out one wrong option at a cost.
+    useHint() {
+        if (this.state.hintsLeft <= 0 || this.state.hintUsedThisScenario) return;
+
+        const scenario = this.state.activeScenario;
+        if (!scenario) return;
+
+        const candidates = Array.from(document.querySelectorAll('.option-card'))
+            .filter(card => Number(card.dataset.index) !== scenario.correctIndex)
+            .filter(card => !card.classList.contains('eliminated'));
+
+        if (!candidates.length) return;
+
+        candidates[Math.floor(Math.random() * candidates.length)]
+            .classList.add('eliminated');
+
+        this.state.hintsLeft--;
+        this.state.hintsUsed++;
+        this.state.hintUsedThisScenario = true;
+        this.state.score = Math.max(0, this.state.score - HINT_COST);
+
+        window.animations.updateHUD('Points', this.state.score);
+        this.renderHintButton();
+    }
+
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            const gameScreen = document.getElementById('gameScreen');
+            const dialog = document.getElementById('feedbackArea');
+
+            if (!gameScreen || !gameScreen.classList.contains('active')) return;
+            if (dialog && !dialog.classList.contains('hidden')) return;   // dialog owns keys
+
+            if (!['1', '2', '3', '4'].includes(e.key)) return;
+
+            const card = document.querySelector(`.option-card[data-index="${Number(e.key) - 1}"]`);
+            if (card && !card.classList.contains('disabled') && !card.classList.contains('eliminated')) {
+                card.click();
+            }
+        });
+    }
+
+    clearPendingFeedback() {
+        if (this.pendingFeedback) {
+            clearTimeout(this.pendingFeedback);
+            this.pendingFeedback = null;
+        }
     }
 
     selectOption(optionIndex) {
-        // Clear timer
-        if (this.state.timerInterval) {
-            clearInterval(this.state.timerInterval);
-            this.state.timerInterval = null;
-        }
+        const scenario = this.state.activeScenario;
 
-        const scenario = MISSION_SCENARIOS[this.state.currentScenario];
-        const isCorrect = optionIndex === scenario.correctAnswer;
+        // One answer per scenario. Without this, a click landing in the same
+        // tick as the timer hitting zero scores the scenario twice.
+        if (!scenario || this.state.answered) return;
+        this.state.answered = true;
+
+        this.stopTimer();
+
+        const isCorrect = optionIndex === scenario.correctIndex;
         const timeElapsed = Date.now() - this.state.questionStartTime;
 
-        // Mark selected option
-        const optionCards = document.querySelectorAll('.option-card');
-        optionCards.forEach((card, index) => {
-            card.classList.add('disabled');
+        this.markCards(optionIndex, scenario.correctIndex);
 
-            if (index === optionIndex) {
-                card.classList.add('selected');
-            }
-
-            // Highlight correct answer
-            if (index === scenario.correctAnswer) {
-                setTimeout(() => {
-                    card.classList.add('correct');
-                }, 300);
-            } else if (index === optionIndex && !isCorrect) {
-                setTimeout(() => {
-                    card.classList.add('incorrect');
-                }, 300);
-            }
+        this.state.answers.push({
+            id: scenario.id,
+            title: scenario.title,
+            chosen: scenario.options[optionIndex].text,
+            chosenFeedback: scenario.options[optionIndex].feedback || '',
+            answer: scenario.options[scenario.correctIndex].text,
+            explanation: scenario.explanation,
+            protocol: scenario.protocol,
+            isCorrect,
+            timedOut: false,
+            ms: timeElapsed
         });
 
-        // Process answer
-        this.processAnswer(isCorrect, timeElapsed, scenario);
+        this.processAnswer(isCorrect, timeElapsed, scenario, optionIndex);
     }
 
-    processAnswer(isCorrect, timeElapsed, scenario) {
+    markCards(chosenIndex, correctIndex) {
+        document.querySelectorAll('.option-card').forEach(card => {
+            const index = Number(card.dataset.index);
+            card.classList.add('disabled');
+            card.setAttribute('aria-disabled', 'true');
+
+            if (index === chosenIndex) card.classList.add('selected');
+            if (index === correctIndex) card.classList.add('correct');
+            else if (index === chosenIndex) card.classList.add('incorrect');
+        });
+    }
+
+    processAnswer(isCorrect, timeElapsed, scenario, chosenIndex) {
+        let earned = 0;
+        let whyFailed = '';
+
         if (isCorrect) {
             this.state.correctAnswers++;
             this.state.streak++;
             this.state.correctScenarios.push(scenario.id);
+            this.state.maxStreak = Math.max(this.state.maxStreak, this.state.streak);
 
-            // Update max streak
-            if (this.state.streak > this.state.maxStreak) {
-                this.state.maxStreak = this.state.streak;
-            }
+            earned = BASE_POINTS;
+            if (this.state.streak >= 3) earned += STREAK_BONUS;
 
-            // Calculate points
-            let points = 10; // Base points
-
-            // Streak bonus
-            if (this.state.streak >= 3) {
-                points += 5;
-            }
-
-            // Speed bonus (under 8 seconds)
-            if (timeElapsed < 8000) {
-                points += 5;
+            // Deliberate speed, not blind clicking.
+            if (timeElapsed >= SPEED_MIN_MS && timeElapsed <= SPEED_MAX_MS) {
+                earned += SPEED_BONUS;
                 this.state.quickAnswers++;
             }
 
-            this.state.score += points;
-
-            // Show feedback
-            setTimeout(() => {
-                window.animations.showFeedback(
-                    true,
-                    '✅ PROTOCOL EXECUTED',
-                    `+${points} POINTS | STREAK: ${this.state.streak}`,
-                    scenario.explanation
-                );
-            }, 800);
-
+            this.state.score += earned;
         } else {
             this.state.incorrectAnswers++;
             this.state.streak = 0;
-            this.state.score = Math.max(0, this.state.score - 5); // Lose 5 points
+            this.state.score = Math.max(0, this.state.score - WRONG_PENALTY);
+            whyFailed = scenario.options[chosenIndex].feedback || '';
 
-            if (window.audioManager) {
-                window.audioManager.playAlarm();
-            }
-
-            // Show feedback
-            setTimeout(() => {
-                window.animations.showFeedback(
-                    false,
-                    '❌ PROTOCOL BREACH',
-                    `-5 POINTS | STREAK RESET`,
-                    scenario.explanation
-                );
-            }, 800);
+            if (window.audioManager) window.audioManager.playAlarm();
         }
 
-        // Update HUD
-        window.animations.updateHUD('Points', this.state.score, true);
-        window.animations.updateHUD('Streak', this.state.streak, true);
+        window.animations.updateHUD('Points', this.state.score);
+        window.animations.updateHUD('Streak', this.state.streak);
 
-        // Setup next button
-        const nextBtn = document.getElementById('nextBtn');
-        if (nextBtn) {
-            nextBtn.onclick = () => this.nextScenario();
-
-            // Update button text for last scenario
-            if (this.state.currentScenario === MISSION_SCENARIOS.length - 1) {
-                nextBtn.textContent = 'MISSION COMPLETE ➤';
-            }
-        }
+        this.pendingFeedback = setTimeout(() => {
+            this.pendingFeedback = null;
+            window.animations.showFeedback({
+                isCorrect,
+                title: isCorrect ? '✅ PROTOCOL EXECUTED' : '❌ PROTOCOL BREACH',
+                text: isCorrect
+                    ? `+${earned} POINTS · STREAK ${this.state.streak}`
+                    : `−${WRONG_PENALTY} POINTS · STREAK RESET`,
+                explanation: scenario.explanation,
+                whyFailed,
+                chosen: scenario.options[chosenIndex],
+                correct: scenario.options[scenario.correctIndex],
+                onAdvance: () => this.nextScenario()
+            });
+            this.bindNextButton();
+        }, 650);
     }
 
     handleTimeout() {
-        // Auto-fail on timeout
-        const scenario = MISSION_SCENARIOS[this.state.currentScenario];
+        const scenario = this.state.activeScenario;
+        if (!scenario || this.state.answered) return;
+        this.state.answered = true;
 
         this.state.incorrectAnswers++;
         this.state.streak = 0;
-        this.state.score = Math.max(0, this.state.score - 5);
+        this.state.score = Math.max(0, this.state.score - WRONG_PENALTY);
 
-        // Mark all options as disabled
-        const optionCards = document.querySelectorAll('.option-card');
-        optionCards.forEach((card, index) => {
+        document.querySelectorAll('.option-card').forEach(card => {
             card.classList.add('disabled');
-
-            if (index === scenario.correctAnswer) {
+            card.setAttribute('aria-disabled', 'true');
+            if (Number(card.dataset.index) === scenario.correctIndex) {
                 card.classList.add('correct');
             }
         });
 
-        if (window.audioManager) {
-            window.audioManager.playAlarm();
-        }
+        this.state.answers.push({
+            id: scenario.id,
+            title: scenario.title,
+            chosen: 'No response',
+            chosenFeedback: '',
+            answer: scenario.options[scenario.correctIndex].text,
+            explanation: scenario.explanation,
+            protocol: scenario.protocol,
+            isCorrect: false,
+            timedOut: true,
+            ms: this.tier.timerSeconds * 1000
+        });
 
-        // Show timeout feedback
-        window.animations.showFeedback(
-            false,
-            '⏱️ MISSION COMPROMISED',
-            'TIME EXPIRED | -5 POINTS',
-            scenario.explanation
-        );
+        if (window.audioManager) window.audioManager.playAlarm();
 
-        // Update HUD
-        window.animations.updateHUD('Points', this.state.score, true);
-        window.animations.updateHUD('Streak', 0, true);
+        window.animations.updateHUD('Points', this.state.score);
+        window.animations.updateHUD('Streak', 0);
 
-        // Setup next button
-        const nextBtn = document.getElementById('nextBtn');
-        if (nextBtn) {
-            nextBtn.onclick = () => this.nextScenario();
-        }
+        window.animations.showFeedback({
+            isCorrect: false,
+            title: '⏱️ MISSION COMPROMISED',
+            text: `TIME EXPIRED · −${WRONG_PENALTY} POINTS`,
+            explanation: scenario.explanation,
+            whyFailed: 'No protocol was executed. In a real incident, hesitation is itself the hazard — decide, then act.',
+            chosen: { text: 'No response', description: 'The clock ran out' },
+            correct: scenario.options[scenario.correctIndex],
+            onAdvance: () => this.nextScenario()
+        });
+        this.bindNextButton();
     }
 
-    startTimer(duration) {
-        this.state.timerInterval = window.animations.animateTimer(duration, () => {
-            this.handleTimeout();
-        });
+    bindNextButton() {
+        const nextBtn = document.getElementById('nextBtn');
+        if (!nextBtn) return;
+
+        nextBtn.textContent = this.state.currentScenario === MISSION_SCENARIOS.length - 1
+            ? 'MISSION COMPLETE ➤'
+            : 'NEXT CASE ➤';
+
+        nextBtn.onclick = () => this.nextScenario();
     }
 
     nextScenario() {
+        this.clearPendingFeedback();
         window.animations.hideFeedback();
-
-        // Glitch transition
         window.animations.glitchTransition(() => {
             this.loadScenario(this.state.currentScenario + 1);
         });
     }
 
-    endMission() {
-        // Calculate final stats
-        const finalLevel = getAgentLevel(this.state.score);
-        const successRate = (this.state.correctAnswers / MISSION_SCENARIOS.length) * 100;
-        const isSuccess = this.state.correctAnswers >= 7;
+    // ===================================
+    // TIMER
+    // ===================================
 
-        // Check for earned badges
-        const earnedBadges = BADGES.filter(badge => badge.requirement(this.state));
-
-        // Show badge notifications
-        earnedBadges.forEach((badge, index) => {
-            setTimeout(() => {
-                window.animations.showBadgeEarned(badge);
-            }, 1000 + (index * 3500));
+    startTimer(duration) {
+        this.stopTimer();
+        window.animations.resetTimerScale(duration);
+        this.state.timerInterval = window.animations.animateTimer(duration, () => {
+            this.handleTimeout();
         });
-
-        // Switch to complete screen
-        setTimeout(() => {
-            window.animations.switchScreen('gameScreen', 'completeScreen', () => {
-                this.showResults(finalLevel, isSuccess, earnedBadges);
-            });
-        }, earnedBadges.length * 3500 + 1500);
     }
 
-    showResults(finalLevel, isSuccess, earnedBadges) {
-        // Update completion screen
-        const missionStatusIcon = document.getElementById('missionStatusIcon');
-        const missionStatus = document.getElementById('missionStatus');
-        const completionTitle = document.getElementById('completionTitle');
-        const finalLevelEl = document.getElementById('finalLevel');
-        const finalPointsEl = document.getElementById('finalPoints');
-        const protocolsExecutedEl = document.getElementById('protocolsExecuted');
-        const breachCountEl = document.getElementById('breachCount');
-        const badgesListEl = document.getElementById('badgesList');
-        const debriefingTextEl = document.getElementById('debriefingText');
-
-        if (missionStatusIcon) {
-            missionStatusIcon.textContent = isSuccess ? '✓' : '✗';
+    stopTimer() {
+        if (this.state.timerInterval) {
+            clearInterval(this.state.timerInterval);
+            this.state.timerInterval = null;
         }
+    }
+
+    pauseTimer() {
+        if (!this.state.timerInterval) return;
+        this.pausedTimer = window.animations.pauseTimer();
+        this.state.timerInterval = null;
+    }
+
+    resumeTimer() {
+        if (!this.pausedTimer) return;
+        const remaining = this.pausedTimer;
+        this.pausedTimer = null;
+        this.state.timerInterval = window.animations.animateTimer(remaining, () => {
+            this.handleTimeout();
+        });
+    }
+
+    // ===================================
+    // RESULTS
+    // ===================================
+
+    endMission() {
+        this.stopTimer();
+        this.clearPendingFeedback();
+        window.animations.hideFeedback();
+
+        const percent = this.percentCorrect;
+        const rank = getRank(percent);
+        const isSuccess = percent >= PASS_THRESHOLD;
+        const earnedBadges = BADGES.filter(badge => badge.requirement(this.state));
+
+        this.lastResult = { percent, rank, isSuccess, earnedBadges };
+
+        // Straight to the debriefing. Badges used to be shown as up to four
+        // unskippable full-screen overlays, delaying this screen by 15.5s.
+        window.animations.switchScreen('gameScreen', 'completeScreen', () => {
+            this.showResults(rank, isSuccess, earnedBadges, percent);
+        });
+    }
+
+    showResults(rank, isSuccess, earnedBadges, percent) {
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
+
+        const missionStatusIcon = document.getElementById('missionStatusIcon');
+        const completionTitle = document.getElementById('completionTitle');
+        const badgesListEl = document.getElementById('badgesList');
+
+        if (missionStatusIcon) missionStatusIcon.textContent = isSuccess ? '✓' : '✗';
 
         if (completionTitle) {
             completionTitle.textContent = isSuccess ? 'MISSION SUCCESS' : 'MISSION FAILED';
             completionTitle.className = 'completion-title ' + (isSuccess ? 'success' : 'failure');
         }
 
-        if (finalLevelEl) finalLevelEl.textContent = finalLevel.name;
-        if (finalPointsEl) finalPointsEl.textContent = this.state.score;
-        if (protocolsExecutedEl) {
-            protocolsExecutedEl.textContent = `${this.state.correctAnswers}/${MISSION_SCENARIOS.length}`;
-        }
-        if (breachCountEl) breachCountEl.textContent = this.state.incorrectAnswers;
+        setText('finalLevel', rank.title);
+        setText('finalPoints', this.state.score);
+        setText('protocolsExecuted', `${this.state.correctAnswers}/${MISSION_SCENARIOS.length}`);
+        setText('breachCount', this.state.incorrectAnswers);
 
-        // Show badges
         if (badgesListEl) {
-            if (earnedBadges.length > 0) {
-                badgesListEl.innerHTML = earnedBadges.map(badge => `
-                    <div class="badge-item">
+            badgesListEl.innerHTML = earnedBadges.length
+                ? earnedBadges.map((badge, i) => `
+                    <div class="badge-item" style="--i:${i}">
                         <div class="badge-icon">${badge.icon}</div>
                         <div class="badge-name">${badge.name}</div>
                         <div class="badge-description">${badge.description}</div>
                     </div>
-                `).join('');
-            } else {
-                badgesListEl.innerHTML = '<p style="text-align: center; color: var(--text-dim);">No commendations earned this mission</p>';
-            }
+                `).join('')
+                : '<p style="text-align:center;color:var(--text-dim)">No commendations earned this mission</p>';
         }
 
-        // Debriefing text
-        if (debriefingTextEl) {
-            let debriefing = '';
-
-            if (this.state.correctAnswers === MISSION_SCENARIOS.length) {
-                debriefing = 'OUTSTANDING PERFORMANCE! Perfect execution of all safety protocols. You are cleared for advanced laboratory operations.';
-            } else if (this.state.correctAnswers >= 8) {
-                debriefing = 'EXCELLENT WORK! Strong understanding of lab safety demonstrated. Review any errors to achieve perfection.';
-            } else if (this.state.correctAnswers >= 5) {
-                debriefing = 'SATISFACTORY. You grasp basic protocols but require additional training on emergency procedures. Review critical scenarios.';
-            } else {
-                debriefing = 'CRITICAL DEFICIENCIES DETECTED. Major gaps in safety knowledge pose serious risk. Mandatory retraining required before lab clearance.';
-            }
-
-            debriefingTextEl.textContent = debriefing;
+        if (earnedBadges.length && window.audioManager) {
+            window.audioManager.playSuccess();
         }
 
-        // Setup buttons
+        setText('debriefingText', this.debriefingFor(percent));
+    }
+
+    debriefingFor(percent) {
+        if (percent === 100) {
+            return 'OUTSTANDING. Every protocol executed correctly. You are cleared for advanced laboratory operations.';
+        }
+        if (percent >= 90) {
+            return 'EXCELLENT WORK. Strong command of laboratory safety. Review the one or two misses to reach a perfect record.';
+        }
+        if (percent >= PASS_THRESHOLD) {
+            return 'MISSION PASSED. Core protocols are sound, but emergency response needs sharpening. Use REVIEW PROTOCOLS on the scenarios you lost.';
+        }
+        if (percent >= 50) {
+            return 'BELOW STANDARD. You grasp the basics but not the emergency procedures that matter most. Review every breach before your next attempt.';
+        }
+        return 'CRITICAL DEFICIENCIES. The gaps in these answers would cause real injury in a real laboratory. Mandatory retraining before lab clearance.';
+    }
+
+    setupResultsButtons() {
+        // Bound once at construction. These used to be re-bound on every
+        // results screen, so a replay fired every handler twice.
         const newMissionBtn = document.getElementById('newMissionBtn');
         const reviewBtn = document.getElementById('reviewBtn');
+        const reviewBackBtn = document.getElementById('reviewBackBtn');
+        const certificateBtn = document.getElementById('certificateBtn');
 
-        if (newMissionBtn) {
-            newMissionBtn.addEventListener('click', () => {
-                this.resetGame();
+        if (newMissionBtn) newMissionBtn.addEventListener('click', () => this.resetGame());
+        if (reviewBtn) reviewBtn.addEventListener('click', () => this.showReview());
+        if (reviewBackBtn) {
+            reviewBackBtn.addEventListener('click', () => {
+                window.animations.switchScreen('reviewScreen', 'completeScreen');
             });
         }
+        if (certificateBtn) certificateBtn.addEventListener('click', () => this.showCertificate());
+    }
 
-        if (reviewBtn) {
-            reviewBtn.addEventListener('click', () => {
-                alert('Review feature coming soon! For now, start a new mission to practice protocols again.');
+    // ===================================
+    // PROTOCOL REVIEW
+    // ===================================
+
+    showReview() {
+        const list = document.getElementById('reviewList');
+        const summary = document.getElementById('reviewSummary');
+
+        if (summary) {
+            summary.textContent =
+                `${this.state.correctAnswers}/${MISSION_SCENARIOS.length} PASSED · ${this.percentCorrect}%`;
+        }
+
+        if (list) {
+            list.innerHTML = this.state.answers.map(entry => `
+                <div class="review-item ${entry.isCorrect ? 'pass' : 'fail'}">
+                    <div class="review-head">
+                        <span class="review-title">${entry.title}</span>
+                        <span class="review-verdict ${entry.isCorrect ? 'pass' : 'fail'}">
+                            ${entry.isCorrect ? 'PASSED' : (entry.timedOut ? 'NO RESPONSE' : 'BREACH')}
+                        </span>
+                    </div>
+                    ${entry.isCorrect ? `
+                        <p class="review-row"><b>YOUR ANSWER:</b>
+                           <span class="answer">${entry.chosen}</span></p>
+                    ` : `
+                        <p class="review-row"><b>YOU CHOSE:</b>
+                           <span class="chose">${entry.chosen}</span></p>
+                        <p class="review-row"><b>CORRECT PROTOCOL:</b>
+                           <span class="answer">${entry.answer}</span></p>
+                        ${entry.chosenFeedback
+                            ? `<p class="review-row">${entry.chosenFeedback}</p>`
+                            : ''}
+                    `}
+                    <p class="review-protocol"><strong>${entry.protocol}</strong></p>
+                </div>
+            `).join('');
+        }
+
+        window.animations.switchScreen('completeScreen', 'reviewScreen');
+    }
+
+    // ===================================
+    // CERTIFICATE
+    // ===================================
+
+    setupCertificate() {
+        const input = document.getElementById('instructorName');
+        const printBtn = document.getElementById('printCertBtn');
+        const backBtn = document.getElementById('certBackBtn');
+
+        // A teacher hands out one link for the whole class, built on
+        // teacher.html: ?instructor=Ms.%20Rivera
+        //
+        // When the link supplies a name it is authoritative and the field
+        // locks. The point of the whole mechanism is that the student — who has
+        // no reason to know how their teacher spells their name, and every
+        // reason to type something else — is not the one filling it in.
+        const fromUrl = (new URLSearchParams(window.location.search).get('instructor') || '').trim();
+        const note = document.getElementById('instructorNote');
+
+        if (input) {
+            if (fromUrl) {
+                input.value = fromUrl;
+                // readOnly, not disabled: the value stays selectable and
+                // copyable, and it is still submitted and read back.
+                input.readOnly = true;
+                input.classList.add('is-locked');
+                if (note) note.hidden = false;
+                // Persist it. input.value = … fires no 'input' event, so this
+                // used to be lost — and because the no-param path falls back to
+                // storage, a shared lab machine would keep serving the PREVIOUS
+                // class's teacher. Writing it here self-heals that.
+                this.writeStoredInstructor(fromUrl);
+            } else {
+                input.value = this.readStoredInstructor();
+                input.addEventListener('input', () => {
+                    this.writeStoredInstructor(input.value.trim());
+                    this.paintInstructor(input.value.trim());
+                });
+            }
+            // Paint once now rather than relying on showCertificate() being the
+            // only way onto the certificate screen.
+            this.paintInstructor(input.value.trim());
+        }
+
+        const downloadBtn = document.getElementById('downloadCertBtn');
+
+        if (printBtn) printBtn.addEventListener('click', () => window.print());
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => {
+                if (!this.lastResult || !window.certificatePdf) return;
+                window.certificatePdf.downloadCertificatePdf(this.certificateData());
+            });
+        }
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                document.body.classList.remove('paper-mode');
+                window.animations.switchScreen('certificateScreen', 'completeScreen');
             });
         }
     }
 
-    resetGame() {
-        // Stop music
-        if (window.audioManager) {
-            window.audioManager.stopMusic();
+    readStoredInstructor() {
+        try {
+            return window.localStorage.getItem('labSafetyInstructor') || '';
+        } catch (e) {
+            return '';
         }
+    }
 
-        // Clear any intervals
-        if (this.state.timerInterval) {
-            clearInterval(this.state.timerInterval);
+    writeStoredInstructor(value) {
+        try {
+            window.localStorage.setItem('labSafetyInstructor', value);
+        } catch (e) {
+            /* private browsing — the field still works for this session */
         }
+    }
 
-        // Reset state
-        this.state = {
-            agentName: '',
-            agentLevel: 0,
-            currentScenario: 0,
-            score: 0,
-            streak: 0,
-            maxStreak: 0,
-            correctAnswers: 0,
-            incorrectAnswers: 0,
-            quickAnswers: 0,
-            correctScenarios: [],
-            timerInterval: null,
-            questionStartTime: null
+    paintInstructor(name) {
+        const el = document.getElementById('certInstructor');
+        if (el) el.textContent = name || '';
+    }
+
+    // Single description of the certificate, so the screen and the PDF can
+    // never state different things.
+    certificateData() {
+        const result = this.lastResult || { percent: 0, rank: getRank(0), isSuccess: false, earnedBadges: [] };
+        const passed = result.isSuccess;
+        const tier = DIFFICULTY_TIERS[this.state.tierIndex];
+        const input = document.getElementById('instructorName');
+
+        return {
+            passed,
+            name: this.state.agentName,
+            percent: result.percent,
+            rank: result.rank.title,
+            tier: tier.name,
+            correct: this.state.correctAnswers,
+            total: MISSION_SCENARIOS.length,
+            instructor: input ? input.value.trim() : '',
+            date: new Date().toLocaleDateString(undefined, {
+                year: 'numeric', month: 'long', day: 'numeric'
+            }),
+            badges: result.earnedBadges.map(b => b.name),
+            stats: [
+                { value: `${result.percent}%`, label: 'SUCCESS RATE' },
+                { value: `${this.state.correctAnswers}/${MISSION_SCENARIOS.length}`, label: 'PROTOCOLS PASSED' },
+                { value: tier.name, label: 'CLEARANCE' }
+            ],
+            // pre-wrapped for the PDF, which has no line-breaking of its own
+            body: passed
+                ? [
+                    'has completed the Laboratory Protocol mission, demonstrating command of personal',
+                    'protective equipment, hazard identification, emergency response, chemical handling',
+                    `and laboratory conduct at ${tier.name} clearance.`
+                  ]
+                : [
+                    `attempted the Laboratory Protocol mission at ${tier.name} clearance and did not reach`,
+                    `the ${PASS_THRESHOLD}% standard required for laboratory clearance.`,
+                    'Retraining and a further attempt are required.'
+                  ]
+        };
+    }
+
+    showCertificate() {
+        const result = this.lastResult;
+        if (!result) return;
+
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
         };
 
-        // Return to intro
-        window.animations.switchScreen('completeScreen', 'introScreen', () => {
-            // Reset intro screen
-            const agentNameInput = document.getElementById('agentName');
-            if (agentNameInput) {
-                agentNameInput.value = '';
-            }
+        const passed = result.isSuccess;
+        const seal = document.getElementById('certSeal');
+        const badgeList = document.getElementById('certBadges');
+        const input = document.getElementById('instructorName');
 
+        setText('certTitle', passed
+            ? 'Certificate of Laboratory Safety'
+            : 'Laboratory Safety — Retraining Notice');
+
+        setText('certPreamble', passed
+            ? 'This certifies that operative'
+            : 'This records that operative');
+
+        setText('certName', this.state.agentName);
+
+        setText('certBody', passed
+            ? `has completed the Laboratory Protocol mission, demonstrating command of personal protective equipment, hazard identification, emergency response, chemical handling and laboratory conduct at ${DIFFICULTY_TIERS[this.state.tierIndex].name} clearance.`
+            : `attempted the Laboratory Protocol mission at ${DIFFICULTY_TIERS[this.state.tierIndex].name} clearance and did not reach the ${PASS_THRESHOLD}% standard required for laboratory clearance. Retraining and a further attempt are required.`);
+
+        setText('certRate', `${result.percent}%`);
+        setText('certScenarios', `${this.state.correctAnswers}/${MISSION_SCENARIOS.length}`);
+        setText('certTier', DIFFICULTY_TIERS[this.state.tierIndex].name);
+        setText('certRank', result.rank.title);
+
+        if (seal) {
+            // The seal carries the grade, not just pass/fail: bands at 90 and
+            // 80 give a distinction and a merit something to aim at above the
+            // 70% clearance bar.
+            const band = result.percent >= 90 ? ['gold', 'HONOURS']
+                       : result.percent >= 80 ? ['silver', 'MERIT']
+                       : ['bronze', 'PASS'];
+            seal.className = passed ? `cert-seal is-pass tier-${band[0]}` : 'cert-seal is-fail';
+            seal.innerHTML = passed
+                ? `<span class="seal-top">IMF</span>
+                   <span class="seal-mark">${result.percent}%</span>
+                   <span class="seal-band">${band[1]}</span>`
+                : `<span class="seal-top">&#9888;</span>
+                   <span class="seal-mark">RETRAIN</span>
+                   <span class="seal-band">NOT CLEARED</span>`;
+        }
+
+        if (badgeList) {
+            badgeList.innerHTML = result.earnedBadges
+                .map(badge => `<li>${badge.icon} ${badge.name}</li>`)
+                .join('');
+        }
+
+        setText('certDate', new Date().toLocaleDateString(undefined, {
+            year: 'numeric', month: 'long', day: 'numeric'
+        }));
+
+        this.paintInstructor(input ? input.value.trim() : '');
+
+        document.body.classList.add('paper-mode');
+        window.animations.switchScreen('completeScreen', 'certificateScreen');
+    }
+
+    // ===================================
+    // RESET
+    // ===================================
+
+    resetGame() {
+        if (window.audioManager) window.audioManager.stopMusic();
+
+        this.stopTimer();
+        if (this.countdownInterval) clearInterval(this.countdownInterval);
+
+        this.state = this.freshState();
+        this.lastResult = null;
+        this.tierChosen = false;
+        this.pausedTimer = null;
+        document.body.classList.remove('paper-mode');
+
+        document.querySelectorAll('.agent-card.chosen')
+            .forEach(card => card.classList.remove('chosen'));
+
+        window.animations.hideFeedback();
+
+        window.animations.switchScreen('completeScreen', 'introScreen', () => {
+            const agentNameInput = document.getElementById('agentName');
             const acceptBtn = document.getElementById('acceptMissionBtn');
-            if (acceptBtn) {
-                acceptBtn.disabled = true;
-            }
+
+            if (agentNameInput) agentNameInput.value = '';
+            if (acceptBtn) acceptBtn.disabled = true;
         });
     }
 }
 
-// Initialize game when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.game = new LabSafetyGame();
 });

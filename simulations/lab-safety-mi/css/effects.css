@@ -4,316 +4,603 @@
    =================================== */
 
 /* ===================================
-   BEAKER EXPLOSION SEQUENCE
+   PROTOCOL VIOLATION SEQUENCE
+   Water poured INTO concentrated acid — the violation the
+   briefing warns about. Every beat is driven by a state class
+   on .hazard-bench (running > pouring > reacting > erupting >
+   aftermath) so CSS, sound and screen shake share one clock.
+   No fixed animation-delays on beats: they cannot be skipped.
    =================================== */
 
 .lab-scene {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+    gap: clamp(8px, 1.6vh, 20px);
+    padding: clamp(12px, 2vh, 28px);
+    background:
+        radial-gradient(ellipse at 50% 14%, rgba(120, 165, 225, 0.10), transparent 62%),
+        linear-gradient(135deg, #141a2e 0%, #080a14 100%);
     position: relative;
     overflow: hidden;
 }
 
-.beaker-container {
+.skip-sequence {
+    position: absolute;
+    top: clamp(10px, 2vh, 22px);
+    left: clamp(10px, 2vw, 24px);
+    z-index: 30;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(0, 243, 255, 0.4);
+    color: var(--accent-blue);
+    font-family: var(--font-header);
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.skip-sequence:hover {
+    background: rgba(0, 243, 255, 0.18);
+    box-shadow: 0 0 14px rgba(0, 243, 255, 0.35);
+}
+
+.skip-sequence.inline {
+    position: static;
+    display: block;
+    margin: 14px auto 0;
+}
+
+.skip-sequence[hidden] {
+    display: none;
+}
+
+/* --- bench --- */
+
+/* Sized so bench + caption + warning panel all fit inside 100dvh down to
+   ~600px of viewport height without the panel being clipped. */
+.hazard-bench {
     position: relative;
-    width: 300px;
-    height: 400px;
+    flex: none;
+    width: clamp(260px, 40vh, 400px);
+    height: clamp(196px, 34vh, 320px);
+}
+
+.hazard-bench::after {
+    /* bench surface the glassware stands on */
+    content: '';
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: 22px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(150, 190, 235, 0.5), transparent);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75);
+}
+
+.bench-caption {
+    font-family: var(--font-header);
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    color: rgba(136, 153, 170, 0.6);
+    text-align: center;
+}
+
+/* --- the acid beaker (glassware) --- */
+
+.beaker-wrap {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(110px, 17vh, 150px);
+    height: clamp(132px, 21vh, 190px);
+}
+
+.beaker-wrap::before {
+    /* rim, drawn as an ellipse so the mouth reads as an opening */
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -3px;
+    right: -3px;
+    height: 13px;
+    border: 3px solid rgba(198, 228, 255, 0.6);
+    border-radius: 50%;
+    background: rgba(198, 228, 255, 0.05);
+    box-shadow: 0 0 12px rgba(150, 205, 255, 0.25);
+    z-index: 6;
+}
+
+.beaker-wrap::after {
+    /* thick base / contact shadow */
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: -8%;
+    right: -8%;
+    height: 9px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(198, 228, 255, 0.3), transparent 72%);
 }
 
 .beaker {
     position: absolute;
-    bottom: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 300px;
-    border: 4px solid #4a90e2;
+    inset: 0;
+    border: 3px solid rgba(198, 228, 255, 0.55);
     border-top: none;
-    border-radius: 0 0 20px 20px;
-    background: rgba(74, 144, 226, 0.1);
-    overflow: hidden;
+    border-radius: 3px 3px 18px 18px / 3px 3px 30px 30px;
+    background: linear-gradient(100deg,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.015) 45%,
+        rgba(255, 255, 255, 0.1));
     box-shadow:
-        inset 0 0 30px rgba(74, 144, 226, 0.3),
-        0 0 40px rgba(74, 144, 226, 0.5);
+        inset 0 0 26px rgba(150, 200, 255, 0.14),
+        0 16px 36px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
 }
 
-/* Liquids in beaker */
-.liquid {
+.glass-highlight {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    transition: all 0.5s ease;
+    top: 5%;
+    bottom: 8%;
+    left: 11%;
+    width: 11%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.06));
+    filter: blur(1px);
+    z-index: 5;
+    pointer-events: none;
 }
 
-.liquid.water {
-    height: 100px;
-    background: linear-gradient(180deg, rgba(100, 200, 255, 0.6), rgba(100, 200, 255, 0.8));
+.graduations {
+    position: absolute;
+    top: 20%;
+    right: 13%;
+    width: 16px;
+    height: 52%;
+    z-index: 5;
+    pointer-events: none;
+    background: repeating-linear-gradient(180deg,
+        rgba(225, 242, 255, 0.5) 0 1px,
+        transparent 1px 25%);
+}
+
+/* liquids: dense amber acid, with the added water floating on top */
+
+.acid-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 52%;
+    background: linear-gradient(180deg, #f0b13a 0%, #d98b16 55%, #a9650a 100%);
+    box-shadow: inset 0 12px 20px rgba(255, 224, 158, 0.25);
+    transition: filter 0.6s ease;
     z-index: 1;
-    animation: waterLevel 0.5s ease forwards;
 }
 
-.liquid.acid {
+.acid-layer::after {
+    /* meniscus */
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    height: 13px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ffd97e, #eeab2d);
+}
+
+.water-film {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 52%;
     height: 0;
-    background: linear-gradient(180deg, rgba(255, 200, 0, 0.7), rgba(255, 150, 0, 0.9));
+    background: linear-gradient(180deg, rgba(196, 233, 255, 0.8), rgba(126, 196, 246, 0.5));
+    transition: height 0.9s ease-out;
+    transform-origin: bottom center;
     z-index: 2;
-    animation: acidDrop 2s ease forwards;
 }
 
-@keyframes waterLevel {
-    from {
-        height: 0;
-    }
-    to {
-        height: 100px;
-    }
-}
-
-@keyframes acidDrop {
-    0% {
-        height: 0;
-        opacity: 0;
-    }
-    10% {
-        height: 0;
-        opacity: 1;
-    }
-    50% {
-        height: 80px;
-    }
-    100% {
-        height: 150px;
-    }
-}
-
-/* Pour animation */
-.pour-animation {
+.water-film::after {
+    content: '';
     position: absolute;
-    top: -50px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 200px;
-    opacity: 0;
-    animation: pourLiquid 2s ease forwards;
-}
-
-.pouring-liquid {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(255, 200, 0, 0.9), rgba(255, 150, 0, 0.7));
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(255, 200, 0, 0.8);
-}
-
-@keyframes pourLiquid {
-    0% {
-        opacity: 0;
-        height: 0;
-    }
-    10% {
-        opacity: 1;
-        height: 50px;
-    }
-    80% {
-        opacity: 1;
-        height: 200px;
-    }
-    100% {
-        opacity: 0;
-        height: 200px;
-    }
-}
-
-/* Bubbles animation */
-.bubbles {
-    position: absolute;
-    bottom: 0;
+    top: -5px;
     left: 0;
-    width: 100%;
-    height: 100%;
+    right: 0;
+    height: 11px;
+    border-radius: 50%;
+    background: rgba(210, 240, 255, 0.85);
+}
+
+/* the reaction happens in a thin layer at the interface, not throughout */
+.boil-zone {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 42%;
+    height: 26%;
     z-index: 3;
-    pointer-events: none;
-}
-
-.bubbles::before,
-.bubbles::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    animation: bubbleRise 2s ease-in-out infinite;
-}
-
-.bubbles::before {
-    width: 20px;
-    height: 20px;
-    left: 30%;
-    bottom: 0;
-    animation-delay: 2.2s;
-}
-
-.bubbles::after {
-    width: 15px;
-    height: 15px;
-    left: 70%;
-    bottom: 0;
-    animation-delay: 2.5s;
-}
-
-@keyframes bubbleRise {
-    0% {
-        transform: translateY(0) scale(1);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-300px) scale(1.5);
-        opacity: 0;
-    }
-}
-
-/* Add more bubbles with JS or pseudo-elements */
-.bubble {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.6);
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5);
-    animation: bubbleRise 3s ease-in-out forwards;
-}
-
-/* Steam effect */
-.steam {
-    position: absolute;
-    top: -100px;
-    left: 0;
-    width: 100%;
-    height: 200px;
-    z-index: 4;
-    pointer-events: none;
     opacity: 0;
-    animation: steamRise 3s ease forwards;
-    animation-delay: 2.5s;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
 }
 
-.steam::before,
-.steam::after {
+.boil-zone::before,
+.boil-zone::after {
     content: '';
     position: absolute;
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent);
-    border-radius: 50%;
-    animation: steamFloat 2s ease-in-out infinite;
+    inset: -20% 0;
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 2.2px, transparent 2.7px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.55) 0 1.5px, transparent 2px);
+    background-size: 27px 27px, 18px 18px;
+    background-position: 0 0, 10px 8px;
+    filter: blur(0.4px);
 }
 
-.steam::before {
-    left: 20%;
-    animation-delay: 2.7s;
+.boil-zone::after {
+    background-position: 13px 4px, 3px 12px;
+    opacity: 0.6;
 }
 
-.steam::after {
-    left: 60%;
-    animation-delay: 3s;
-}
+/* --- the water being poured in (the violation) --- */
 
-@keyframes steamRise {
-    0% {
-        opacity: 0;
-        transform: translateY(0);
-    }
-    20% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-150px);
-    }
-}
-
-@keyframes steamFloat {
-    0%, 100% {
-        transform: translateY(0) scale(1);
-    }
-    50% {
-        transform: translateY(-30px) scale(1.2);
-    }
-}
-
-/* Explosion effect */
-@keyframes explode {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.5);
-        opacity: 0.8;
-        filter: brightness(2);
-    }
-    100% {
-        transform: scale(3);
-        opacity: 0;
-        filter: brightness(0);
-    }
-}
-
-.explosion {
+.pour-vessel {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, rgba(255, 100, 0, 1), rgba(255, 200, 0, 0.5), transparent);
-    border-radius: 50%;
-    animation: explode 1s ease-out forwards;
-    z-index: 10;
+    top: 4%;
+    left: 13%;
+    width: clamp(58px, 9vh, 84px);
+    height: clamp(42px, 6.4vh, 60px);
+    border: 3px solid rgba(198, 228, 255, 0.5);
+    border-top: none;
+    border-radius: 3px 3px 10px 10px;
+    background: linear-gradient(100deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+    transform-origin: 92% 96%;
+    transform: rotate(0deg) translateY(-16px);
+    opacity: 0;
+    transition: transform 0.75s cubic-bezier(0.3, 0.8, 0.4, 1), opacity 0.5s ease;
+    z-index: 4;
 }
 
-.explosion::before {
+.pour-vessel::before {
+    /* water inside it */
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 120%;
-    height: 120%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
-    border-radius: 50%;
-    animation: explode 1s ease-out 0.1s forwards;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    height: 58%;
+    border-radius: 0 0 8px 8px;
+    background: linear-gradient(180deg, rgba(196, 233, 255, 0.8), rgba(126, 196, 246, 0.5));
+    transition: height 0.9s ease-out;
 }
 
-/* Violation warning box */
-.violation-warning {
+.vessel-label {
     position: absolute;
-    bottom: 80px;
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 90%;
-    max-width: 600px;
+    font-family: var(--font-header);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: rgba(196, 233, 255, 0.9);
+    white-space: nowrap;
+}
+
+/* Sibling of the vessel, not a child: it must fall vertically while
+   the vessel rotates. */
+.water-stream {
+    position: absolute;
+    top: 21%;
+    left: 42%; /* under the tipped vessel's lip, inside the beaker mouth */
+    width: 9px;
+    height: 0;
+    background: linear-gradient(180deg, rgba(212, 241, 255, 0.95), rgba(126, 196, 246, 0.7));
+    box-shadow: 0 0 10px rgba(150, 210, 255, 0.5);
+    clip-path: polygon(0 0, 100% 0, 71% 100%, 29% 100%);
     opacity: 0;
-    animation: warningAppear 0.5s ease forwards;
-    animation-delay: 4s;
+    transition: height 0.4s ease-in, opacity 0.3s ease;
+    z-index: 5;
+}
+
+.beaker-label {
+    position: absolute;
+    bottom: 13%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 7;
+    font-family: var(--font-header);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: #3a2a06;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 3px 7px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.beaker-label em {
+    font-style: normal;
+    opacity: 0.65;
+}
+
+/* --- ejected acid droplets (built in JS) --- */
+
+.spatter-field {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 8;
+}
+
+.droplet {
+    position: absolute;
+    left: 50%;
+    bottom: 46%;
+    width: var(--size, 9px);
+    height: calc(var(--size, 9px) * 1.3);
+    background: linear-gradient(160deg, #ffdd8a, #d4860f);
+    border-radius: 50% 50% 50% 0;
+    box-shadow: 0 0 9px rgba(255, 180, 60, 0.65);
+    opacity: 0;
+    animation: spatterArc var(--dur, 0.9s) cubic-bezier(0.25, 0.5, 0.6, 1) forwards;
+}
+
+@keyframes spatterArc {
+    0% {
+        transform: translate(0, 0) rotate(45deg) scale(0.5);
+        opacity: 0;
+    }
+    12% {
+        opacity: 1;
+    }
+    45% {
+        transform: translate(calc(var(--dx) * 0.55), var(--peak)) rotate(210deg) scale(1);
+    }
+    100% {
+        transform: translate(var(--dx), var(--dy)) rotate(400deg) scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* --- steam / acid fume plume --- */
+
+.fume-plume {
+    position: absolute;
+    left: 50%;
+    bottom: 44%;
+    width: 78%;
+    height: 58%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 7;
+}
+
+.fume-plume i {
+    position: absolute;
+    bottom: 0;
+    width: 44%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(238, 247, 255, 0.5),
+        rgba(200, 220, 240, 0.12) 58%,
+        transparent 72%);
+    filter: blur(9px);
+}
+
+.fume-plume i:nth-child(1) { left: 3%;  --drift: -14px; }
+.fume-plume i:nth-child(2) { left: 29%; --drift: 8px; }
+.fume-plume i:nth-child(3) { left: 53%; --drift: 20px; }
+
+@keyframes fumeDrift {
+    0%   { transform: translate(0, 22%) scale(0.45); opacity: 0; }
+    30%  { opacity: 0.9; }
+    100% { transform: translate(var(--drift, 10px), -125%) scale(1.5); opacity: 0; }
+}
+
+.flash {
+    position: absolute;
+    inset: -25%;
+    background: radial-gradient(circle at 50% 62%,
+        rgba(255, 247, 218, 0.95),
+        rgba(255, 172, 62, 0.4) 34%,
+        transparent 66%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9;
+}
+
+@keyframes violationFlash {
+    0%   { opacity: 0; }
+    14%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.crack-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.crack-overlay path {
+    fill: none;
+    stroke: rgba(238, 250, 255, 0.9);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-dasharray: 130;
+    stroke-dashoffset: 130;
+    filter: drop-shadow(0 0 3px rgba(180, 230, 255, 0.85));
+}
+
+@keyframes crackGrow {
+    to { stroke-dashoffset: 0; }
+}
+
+/* ===================================
+   VIOLATION SEQUENCE — BEAT STATES
+   =================================== */
+
+.hazard-bench.running .pour-vessel {
+    opacity: 1;
+    transform: rotate(0deg) translateY(0);
+}
+
+/* pouring: vessel tips, stream falls, water lands and floats */
+.hazard-bench.pouring .pour-vessel {
+    transform: rotate(54deg);
+}
+
+.hazard-bench.pouring .pour-vessel::before {
+    height: 22%;
+}
+
+.hazard-bench.pouring .water-stream {
+    opacity: 0.95;
+    height: 34%; /* lands on the surface, does not draw through the liquid */
+    animation: streamWobble 1.05s ease-in-out infinite;
+}
+
+.hazard-bench.pouring .water-film {
+    height: 13%;
+}
+
+@keyframes streamWobble {
+    0%, 100% { transform: translateX(0) scaleX(1); }
+    50%      { transform: translateX(1.4px) scaleX(0.85); }
+}
+
+/* reacting: violent boiling confined to the interface */
+.hazard-bench.reacting .boil-zone {
+    opacity: 1;
+}
+
+.hazard-bench.reacting .boil-zone::before {
+    animation: boilRise 0.6s linear infinite;
+}
+
+.hazard-bench.reacting .boil-zone::after {
+    animation: boilRise 0.95s linear infinite;
+}
+
+@keyframes boilRise {
+    from { transform: translateY(28%); }
+    to   { transform: translateY(-72%); }
+}
+
+.hazard-bench.reacting .acid-layer {
+    filter: brightness(1.2) saturate(1.35);
+}
+
+.hazard-bench.reacting .water-film {
+    animation: surfaceChurn 0.28s ease-in-out infinite alternate;
+}
+
+@keyframes surfaceChurn {
+    from { transform: scaleY(1) skewX(0deg); }
+    to   { transform: scaleY(1.35) skewX(2.5deg); }
+}
+
+.hazard-bench.reacting .fume-plume {
+    opacity: 0.65;
+}
+
+.hazard-bench.reacting .fume-plume i {
+    animation: fumeDrift 3.6s ease-in-out infinite;
+}
+
+.hazard-bench.reacting .fume-plume i:nth-child(2) { animation-duration: 4.4s; }
+.hazard-bench.reacting .fume-plume i:nth-child(3) { animation-duration: 4s; }
+
+/* erupting: the stream is pulled away, boiling acid is ejected */
+.hazard-bench.erupting .water-stream {
+    opacity: 0;
+    height: 0;
+}
+
+.hazard-bench.erupting .pour-vessel {
+    transform: rotate(30deg) translate(-24px, -10px);
+}
+
+.hazard-bench.erupting .water-film {
+    height: 0;
+}
+
+.hazard-bench.erupting .acid-layer {
+    filter: brightness(1.35) saturate(1.5);
+}
+
+/* aftermath: flash bloom, thick fumes, cracked glass */
+.hazard-bench.aftermath .flash {
+    animation: violationFlash 0.8s ease-out forwards;
+}
+
+.hazard-bench.aftermath .fume-plume {
+    opacity: 1;
+}
+
+.hazard-bench.aftermath .crack-overlay {
+    opacity: 1;
+}
+
+.hazard-bench.aftermath .crack-overlay path {
+    animation: crackGrow 0.55s ease-out forwards;
+}
+
+.hazard-bench.aftermath .acid-layer {
+    height: 44%;
+    filter: brightness(0.92) saturate(1.1);
+    transition: height 0.7s ease, filter 0.6s ease;
+}
+
+.hazard-bench.aftermath .boil-zone {
+    opacity: 0.45;
+}
+
+/* ===================================
+   VIOLATION WARNING PANEL
+   Holds until dismissed — the old build showed it for 1s.
+   =================================== */
+
+.violation-warning {
+    width: 100%;
+    max-width: 640px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+}
+
+.violation-warning.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .warning-box {
-    background: rgba(255, 0, 0, 0.2);
-    border: 3px solid var(--alert-red);
+    background: rgba(90, 0, 0, 0.35);
+    border: 2px solid var(--alert-red);
     border-radius: 10px;
-    padding: 30px;
+    padding: clamp(14px, 2.2vh, 24px);
     box-shadow:
-        0 0 40px rgba(255, 0, 0, 0.6),
-        inset 0 0 20px rgba(255, 0, 0, 0.2);
+        0 0 34px rgba(255, 0, 0, 0.45),
+        inset 0 0 20px rgba(255, 0, 0, 0.15);
     backdrop-filter: blur(10px);
 }
 
@@ -321,35 +608,289 @@
     font-family: var(--font-header);
     color: var(--alert-red);
     text-align: center;
-    font-size: 28px;
-    margin-bottom: 15px;
-    text-shadow: 0 0 15px var(--alert-red);
-    animation: pulse 1s infinite;
+    font-size: clamp(14px, 1.6vw, 20px);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 14px rgba(255, 0, 0, 0.8);
 }
 
 .warning-box p {
     text-align: center;
-    font-size: 18px;
-    margin: 10px 0;
+    font-size: clamp(13px, 1.15vw, 16px);
+    line-height: 1.45;
     color: var(--text-primary);
 }
 
-.warning-box .safety-tip {
-    color: var(--accent-blue);
-    font-weight: 600;
-    margin-top: 15px;
+.warning-box strong {
+    color: var(--warning-orange);
 }
 
-@keyframes warningAppear {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(50px);
+/* side-by-side wrong/right comparison — the contrast is the lesson */
+.method-compare {
+    display: flex;
+    justify-content: center;
+    gap: clamp(12px, 2vw, 28px);
+    margin: clamp(10px, 1.6vh, 18px) 0 4px;
+}
+
+.method {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 0 1 160px;
+}
+
+.method figcaption {
+    font-size: 12px;
+    line-height: 1.35;
+    text-align: center;
+    color: var(--text-dim);
+}
+
+.method.wrong figcaption b { color: var(--alert-red); }
+.method.right figcaption b { color: var(--success-green); }
+
+.mini-beaker {
+    position: relative;
+    width: 42px;
+    height: 46px;
+    border: 2px solid rgba(198, 228, 255, 0.55);
+    border-top: none;
+    border-radius: 2px 2px 8px 8px;
+    overflow: hidden;
+}
+
+.mini-fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 52%;
+}
+
+.mini-fill.acid  { background: linear-gradient(180deg, #f0b13a, #b06a08); }
+.mini-fill.water { background: linear-gradient(180deg, rgba(196, 233, 255, 0.8), rgba(126, 196, 246, 0.5)); }
+
+.mini-stream {
+    position: absolute;
+    top: 0;
+    left: 46%;
+    width: 5px;
+    height: 40%;
+}
+
+.mini-stream.water { background: linear-gradient(180deg, rgba(212, 241, 255, 0.95), rgba(126, 196, 246, 0.6)); }
+.mini-stream.acid  { background: linear-gradient(180deg, #ffd97e, #d98b16); }
+
+.mini-burst {
+    position: absolute;
+    top: 22%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--alert-red);
+    font-size: 20px;
+    line-height: 1;
+    text-shadow: 0 0 8px var(--alert-red);
+}
+
+.mission-btn.compact {
+    width: auto;
+    display: block;
+    margin: clamp(10px, 1.6vh, 18px) auto 0;
+    font-size: 15px;
+    padding: 11px 26px;
+    letter-spacing: 1.5px;
+}
+
+/* The sequence collapses to a static labelled diagram: JS jumps straight
+   to the settled state, CSS stops everything that loops or lurches. */
+@media (prefers-reduced-motion: reduce) {
+    .hazard-bench *,
+    .hazard-bench *::before,
+    .hazard-bench *::after {
+        animation: none !important;
+        transition: none !important;
     }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
+
+    .hazard-bench .pour-vessel {
+        transform: rotate(30deg) translate(-24px, -10px);
+    }
+
+    .hazard-bench .flash,
+    .hazard-bench .water-stream {
+        display: none;
+    }
+
+    .hazard-bench.aftermath .crack-overlay path {
+        stroke-dashoffset: 0;
     }
 }
+
+/* ===================================
+   SCENE ART
+   The illustrations declare their own colour inline (see js/graphics.js) so
+   they cannot be broken by selector specificity — two earlier versions lost
+   their fills that way. CSS here only animates.
+   =================================== */
+
+.scene-art {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* flame flicker, anchored at the base */
+.art-flame {
+    transform-box: fill-box;
+    transform-origin: bottom center;
+    animation: artFlicker 0.28s ease-in-out infinite alternate;
+}
+
+@keyframes artFlicker {
+    from { transform: scaleY(0.94) scaleX(1.04) translateY(0); }
+    to   { transform: scaleY(1.08) scaleX(0.95) translateY(-0.5px); }
+}
+
+/* shower spray */
+.a-spray { animation: artDrip 1s linear infinite; }
+
+@keyframes artDrip {
+    0%   { opacity: 0.35; transform: translateY(-2px); }
+    55%  { opacity: 1; }
+    100% { opacity: 0.3; transform: translateY(3px); }
+}
+
+/* pour stream */
+.a-stream { animation: artPour 1.4s ease-in-out infinite; }
+
+@keyframes artPour {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 1; }
+}
+
+/* corrosive vapour drifting off a spill */
+.a-fume ellipse {
+    transform-box: fill-box;
+    animation: artFume 6s ease-in-out infinite;
+}
+
+.a-fume ellipse:nth-child(2) { animation-duration: 7.5s; animation-delay: 1.1s; }
+.a-fume ellipse:nth-child(3) { animation-duration: 5.2s; animation-delay: 2.3s; }
+
+@keyframes artFume {
+    0%   { opacity: 0.15; transform: translate(0, 6px) scale(0.85); }
+    45%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(6px, -26px) scale(1.35); }
+}
+
+/* liquid gathering at the bench edge before it falls */
+.a-drip {
+    transform-box: fill-box;
+    transform-origin: top center;
+    animation: artDripFall 2.6s ease-in infinite;
+    animation-delay: calc(var(--i, 0) * 0.9s);
+}
+
+@keyframes artDripFall {
+    0%   { transform: translateY(-3px) scaleY(0.4); opacity: 0.4; }
+    55%  { transform: translateY(0) scaleY(1); opacity: 1; }
+    100% { transform: translateY(16px) scaleY(1.1); opacity: 0; }
+}
+
+/* hotplate element and indicator, breathing rather than blinking */
+.a-hot { animation: artHot 2.4s ease-in-out infinite; }
+
+@keyframes artHot {
+    0%, 100% { opacity: 0.72; }
+    50%      { opacity: 1; }
+}
+
+/* hazard emphasis */
+.a-pulse { animation: artPulse 2s ease-in-out infinite; }
+
+@keyframes artPulse {
+    0%, 100% { opacity: 0.62; }
+    50%      { opacity: 1; }
+}
+
+/* PPE checklist ticks arriving in sequence */
+.a-item {
+    animation: artRise 0.5s ease-out both;
+    animation-delay: calc(var(--i, 0) * 0.13s);
+}
+
+@keyframes artRise {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* microorganisms drifting in the field of view */
+.a-microbe {
+    transform-box: fill-box;
+    animation: artSwim 6s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.9s);
+}
+
+@keyframes artSwim {
+    0%, 100% { transform: translate(0, 0); }
+    30%      { transform: translate(5px, -4px); }
+    60%      { transform: translate(-4px, 5px); }
+}
+
+/* footprints along the aisle */
+.a-step {
+    animation: artPace 2.8s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.2s);
+}
+
+@keyframes artPace {
+    0%, 100% { opacity: 0.22; }
+    40%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scene-art, .scene-art * {
+        animation: none !important;
+    }
+    .a-pulse, .a-step, .a-item, .a-spray, .a-microbe { opacity: 1; }
+    .a-fume ellipse { opacity: 0.5; }
+    .a-drip, .a-hot { opacity: 1; }
+}
+
+/* ===================================
+   SCENE LAYOUT PRIMITIVES
+   Kept for any scene that still composes from text/effect blocks.
+   =================================== */
+
+.scene-stack,
+.scene-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 1.6vw, 22px);
+    max-width: 100%;
+}
+
+.scene-stack {
+    flex-direction: column;
+    gap: clamp(4px, 0.8vh, 12px);
+}
+
+.scene-emoji-lg { font-size: clamp(34px, 7vh, 68px); line-height: 1.1; }
+.scene-emoji-md { font-size: clamp(26px, 5vh, 48px); line-height: 1.1; }
+.scene-emoji-sm { font-size: clamp(18px, 3vh, 30px); line-height: 1.1; }
+
+.scene-tag {
+    font-family: var(--font-header);
+    font-size: clamp(10px, 1.5vh, 15px);
+    letter-spacing: 1.5px;
+    text-align: center;
+    color: var(--accent-blue);
+}
+
+.scene-tag.warn  { color: var(--warning-orange); }
+.scene-tag.alert { color: var(--alert-red); }
 
 /* ===================================
    SCENE SPECIFIC EFFECTS
@@ -358,8 +899,9 @@
 /* Fire Effect */
 .fire-effect {
     position: relative;
-    width: 100px;
-    height: 150px;
+    flex: none;
+    width: clamp(52px, 8vh, 84px);
+    height: clamp(78px, 12vh, 126px);
 }
 
 .flame {
@@ -367,8 +909,8 @@
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60px;
-    height: 100px;
+    width: 62%;
+    height: 68%;
     background: linear-gradient(180deg,
         rgba(255, 100, 0, 0.9),
         rgba(255, 200, 0, 0.7),
@@ -386,8 +928,8 @@
     top: 20%;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 60px;
+    width: 66%;
+    height: 60%;
     background: linear-gradient(180deg,
         rgba(255, 255, 200, 0.9),
         rgba(255, 255, 100, 0.6));
@@ -415,7 +957,7 @@
 
 /* Biohazard Pulse */
 .biohazard-effect {
-    font-size: 120px;
+    font-size: clamp(34px, 7vh, 68px);
     color: var(--warning-orange);
     text-shadow:
         0 0 20px var(--warning-orange),
@@ -489,8 +1031,8 @@
 
 .heat-signature {
     position: absolute;
-    width: 150px;
-    height: 150px;
+    width: clamp(80px, 14vh, 140px);
+    aspect-ratio: 1;
     background: radial-gradient(circle,
         rgba(255, 0, 0, 0.8),
         rgba(255, 100, 0, 0.5),
@@ -498,6 +1040,14 @@
         transparent);
     border-radius: 50%;
     animation: heatPulse 2s ease-in-out infinite;
+}
+
+/* Uses the independent `translate` property, not `transform`: heatPulse
+   animates `transform` and would otherwise wipe the centring out. */
+.heat-signature.centered {
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
 }
 
 @keyframes heatPulse {
@@ -639,10 +1189,11 @@
 
 /* Microscope Zoom Effect */
 .microscope-view {
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    border: 20px solid rgba(0, 0, 0, 0.8);
+    position: relative;
+    flex: none;
+    width: clamp(104px, 18vh, 176px);
+    aspect-ratio: 1;
+    border: 10px solid rgba(0, 0, 0, 0.8);
     border-radius: 50%;
     overflow: hidden;
     box-shadow:
@@ -652,8 +1203,8 @@
 
 .microorganism {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: clamp(14px, 2.6vh, 26px);
+    aspect-ratio: 1;
     background: radial-gradient(circle,
         rgba(150, 255, 150, 0.8),
         rgba(100, 200, 100, 0.5));
@@ -677,12 +1228,12 @@
     }
 }
 
-/* Alarm/Siren Effect */
+/* Alarm/Siren Effect — flows inline inside .scene-row */
 .alarm-light {
-    position: absolute;
-    top: 20px;
-    width: 60px;
-    height: 60px;
+    position: relative;
+    flex: none;
+    width: clamp(26px, 4.4vh, 46px);
+    aspect-ratio: 1;
     background: radial-gradient(circle, var(--alert-red), transparent);
     border-radius: 50%;
     animation: alarmFlash 0.5s ease-in-out infinite;

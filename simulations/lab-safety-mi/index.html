@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/effects.css">
+    <link rel="stylesheet" href="css/certificate.css">
 </head>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
@@ -35,15 +36,11 @@
         </button>
     </div>
 
-    <!-- Audio Elements -->
-    <audio id="bgMusic" loop>
+    <!-- Audio: only the theme exists as a file. Sound effects are synthesised
+         in audio.js — the five effect files were 404ing on every load. -->
+    <audio id="bgMusic" loop preload="none">
         <source src="assets/audio/mi-theme.mp3" type="audio/mpeg">
     </audio>
-    <audio id="beepSound" src="assets/audio/beep.mp3"></audio>
-    <audio id="explosionSound" src="assets/audio/explosion.mp3"></audio>
-    <audio id="successSound" src="assets/audio/success.mp3"></audio>
-    <audio id="failSound" src="assets/audio/fail.mp3"></audio>
-    <audio id="alarmSound" src="assets/audio/alarm.mp3"></audio>
 
     <!-- Main Container -->
     <div id="gameContainer" class="game-container">
@@ -75,6 +72,12 @@
                         <button id="acceptMissionBtn" class="mission-btn pulse-btn" disabled>
                             ACCEPT MISSION
                         </button>
+
+                        <!-- How a teacher finds the setup page at all. Students
+                             see it too; that is the trade for discoverability. -->
+                        <p class="teacher-link">
+                            <a href="teacher.html" target="_blank" rel="noopener">For teachers — set up this activity for your class</a>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -94,80 +97,87 @@
                             <p>Intelligence indicates a rogue scientist is developing hazardous compounds in Lab Omega-7.</p>
                             <p>Your mission, should you choose to accept it, is to navigate the facility while adhering to strict safety protocols.</p>
                             <p><span class="warning-text">Any deviation could trigger catastrophic chain reactions.</span></p>
-                            <br>
                             <p class="self-destruct">This message will self-destruct in <span id="countdown">5</span> seconds...</p>
                         </div>
+                        <button id="skipBriefingBtn" class="skip-sequence inline" type="button">SKIP BRIEFING ▸</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SELF DESTRUCT ANIMATION -->
+        <!-- PROTOCOL VIOLATION SEQUENCE (water poured into concentrated acid) -->
         <div id="destructScreen" class="screen">
             <div class="lab-scene">
-                <div class="beaker-container">
-                    <div class="beaker">
-                        <div class="liquid acid"></div>
-                        <div class="liquid water"></div>
-                        <div class="bubbles"></div>
-                        <div class="steam"></div>
+                <button id="skipSequenceBtn" class="skip-sequence" type="button">SKIP ▸</button>
+
+                <div id="hazardBench" class="hazard-bench">
+                    <!-- the violation: a beaker of water being tipped into the acid -->
+                    <div class="pour-vessel"><span class="vessel-label">H₂O</span></div>
+                    <div class="water-stream"></div>
+
+                    <!-- the beaker of concentrated acid -->
+                    <div class="beaker-wrap">
+                        <div class="beaker">
+                            <div class="acid-layer"></div>
+                            <div class="water-film"></div>
+                            <div class="boil-zone"></div>
+                            <div class="graduations"></div>
+                            <div class="glass-highlight"></div>
+                        </div>
+                        <svg class="crack-overlay" viewBox="0 0 150 190" preserveAspectRatio="none" aria-hidden="true">
+                            <path d="M75 92 L60 68 L69 46 L55 24"></path>
+                            <path d="M75 92 L95 76 L88 54 L101 34"></path>
+                            <path d="M75 92 L64 122 L79 150"></path>
+                        </svg>
+                        <span class="beaker-label">H₂SO₄ <em>conc.</em></span>
                     </div>
-                    <div class="pour-animation">
-                        <div class="pouring-liquid"></div>
-                    </div>
+
+                    <div class="spatter-field" id="spatterField"></div>
+                    <div class="fume-plume"><i></i><i></i><i></i></div>
+                    <div class="flash"></div>
                 </div>
-                <div class="violation-warning">
+
+                <p class="bench-caption">LAB OMEGA-7 · BENCH 3 · ARCHIVE FOOTAGE</p>
+
+                <div class="violation-warning" id="violationWarning">
                     <div class="warning-box">
-                        <h2>⚠️ PROTOCOL VIOLATION DETECTED</h2>
-                        <p>NEVER add water to acid!</p>
-                        <p class="safety-tip">Always add acid TO water slowly to dissipate heat safely.</p>
+                        <h2>⚠ PROTOCOL VIOLATION — THERMAL EJECTION</h2>
+                        <p>Water was added to concentrated acid. Water is <strong>less dense</strong>, so it floats
+                           instead of mixing — the whole heat of dilution is released in that thin surface layer,
+                           which flashes to steam and ejects boiling acid out of the beaker.</p>
+                        <div class="method-compare">
+                            <figure class="method wrong">
+                                <div class="mini-beaker">
+                                    <span class="mini-fill acid"></span>
+                                    <span class="mini-stream water"></span>
+                                    <span class="mini-burst">✳</span>
+                                </div>
+                                <figcaption><b>✗ NEVER</b><br>water → acid</figcaption>
+                            </figure>
+                            <figure class="method right">
+                                <div class="mini-beaker">
+                                    <span class="mini-fill water"></span>
+                                    <span class="mini-stream acid"></span>
+                                </div>
+                                <figcaption><b>✓ ALWAYS</b><br>acid → water, slowly</figcaption>
+                            </figure>
+                        </div>
+                        <button id="violationContinueBtn" class="mission-btn compact" type="button">CONTINUE ▸</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- AGENT SELECTION SCREEN -->
+        <!-- DIFFICULTY SELECTION SCREEN -->
         <div id="agentSelectScreen" class="screen">
             <div class="briefing-room">
                 <h1 class="screen-title">SELECT CLEARANCE LEVEL</h1>
-                <div class="agent-grid">
-                    <div class="agent-card" data-level="0">
-                        <div class="agent-silhouette">👤</div>
-                        <h3>RECRUIT</h3>
-                        <div class="agent-stats">
-                            <p>Starting Points: 0</p>
-                            <p>Status: Learning the Ropes</p>
-                        </div>
-                        <button class="select-agent-btn">SELECT</button>
-                    </div>
-                    <div class="agent-card" data-level="1">
-                        <div class="agent-silhouette">🕵️</div>
-                        <h3>FIELD AGENT</h3>
-                        <div class="agent-stats">
-                            <p>Starting Points: 30</p>
-                            <p>Status: Trained Professional</p>
-                        </div>
-                        <button class="select-agent-btn">SELECT</button>
-                    </div>
-                    <div class="agent-card" data-level="2">
-                        <div class="agent-silhouette">🎯</div>
-                        <h3>SPECIAL OPS</h3>
-                        <div class="agent-stats">
-                            <p>Starting Points: 60</p>
-                            <p>Status: Expert Operative</p>
-                        </div>
-                        <button class="select-agent-btn">SELECT</button>
-                    </div>
-                    <div class="agent-card" data-level="3">
-                        <div class="agent-silhouette">👨‍💼</div>
-                        <h3>IMF DIRECTOR</h3>
-                        <div class="agent-stats">
-                            <p>Starting Points: 90</p>
-                            <p>Status: Master of Protocols</p>
-                        </div>
-                        <button class="select-agent-btn">SELECT</button>
-                    </div>
-                </div>
+                <p class="screen-subtitle">
+                    Clearance sets how much time you get per scenario and whether intel support is
+                    available. Every agent starts on zero — your rank is earned from accuracy alone.
+                </p>
+                <!-- Rendered from DIFFICULTY_TIERS so the copy cannot drift from the table -->
+                <div class="agent-grid" id="agentGrid"></div>
             </div>
         </div>
 
@@ -212,53 +222,50 @@
                 <div class="scenario-header">
                     <h2 id="scenarioTitle" class="scenario-title"></h2>
                     <div class="threat-level">
-                        <span class="label">THREAT LEVEL:</span>
+                        <span class="label">THREAT:</span>
                         <span id="threatLevel" class="threat-indicator"></span>
                     </div>
                 </div>
 
-                <!-- Scene Animation Area -->
-                <div id="sceneArea" class="scene-area">
-                    <div class="camera-overlay">
-                        <div class="corner-tl"></div>
-                        <div class="corner-tr"></div>
-                        <div class="corner-bl"></div>
-                        <div class="corner-br"></div>
-                        <div class="scan-line"></div>
-                    </div>
-                    <div id="sceneContent" class="scene-content"></div>
-                </div>
-
-                <!-- Situation Description -->
-                <div class="situation-box">
-                    <div class="situation-label">SITUATION ANALYSIS:</div>
-                    <p id="situationText" class="situation-text"></p>
-                </div>
-
-                <!-- Timer Bar -->
-                <div class="timer-container">
-                    <div class="timer-label">
-                        <span>TIME REMAINING:</span>
-                        <span id="timerText" class="timer-value">15s</span>
-                    </div>
-                    <div class="timer-bar">
-                        <div id="timerFill" class="timer-fill"></div>
-                    </div>
-                </div>
-
-                <!-- Options -->
-                <div id="optionsContainer" class="options-container"></div>
-
-                <!-- Feedback Area -->
-                <div id="feedbackArea" class="feedback-area hidden">
-                    <div class="feedback-content">
-                        <h3 id="feedbackTitle" class="feedback-title"></h3>
-                        <p id="feedbackText" class="feedback-text"></p>
-                        <div class="field-notes">
-                            <div class="notes-label">FIELD NOTES:</div>
-                            <p id="fieldNotes" class="notes-text"></p>
+                <div class="scenario-stage">
+                    <div class="stage-left">
+                        <!-- Scene Animation Area -->
+                        <div id="sceneArea" class="scene-area">
+                            <div class="camera-overlay">
+                                <div class="corner-tl"></div>
+                                <div class="corner-tr"></div>
+                                <div class="corner-bl"></div>
+                                <div class="corner-br"></div>
+                                <div class="scan-line"></div>
+                            </div>
+                            <div id="sceneContent" class="scene-content"></div>
                         </div>
-                        <button id="nextBtn" class="next-btn">NEXT SCENARIO ➤</button>
+
+                        <!-- Situation Description -->
+                        <div class="situation-box">
+                            <div class="situation-label">SITUATION ANALYSIS</div>
+                            <p id="situationText" class="situation-text"></p>
+                        </div>
+                    </div>
+
+                    <div class="stage-right">
+                        <!-- Timer Bar -->
+                        <div class="timer-container">
+                            <div class="timer-label">
+                                <span>TIME REMAINING</span>
+                                <span id="timerText" class="timer-value">15s</span>
+                            </div>
+                            <div class="timer-bar">
+                                <div id="timerFill" class="timer-fill"></div>
+                            </div>
+                        </div>
+
+                        <!-- Options -->
+                        <div id="optionsContainer" class="options-container"></div>
+
+                        <button id="hintBtn" class="hint-btn" type="button" hidden>
+                            REQUEST INTEL <span id="hintCount"></span> <em>−3 pts</em>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -278,7 +285,7 @@
                         <div class="stats-grid">
                             <div class="stat-item">
                                 <div class="stat-label">FINAL CLEARANCE LEVEL</div>
-                                <div id="finalLevel" class="stat-value"></div>
+                                <div id="finalLevel" class="stat-value is-text"></div>
                             </div>
                             <div class="stat-item">
                                 <div class="stat-label">SECURITY POINTS</div>
@@ -305,8 +312,80 @@
                         </div>
 
                         <div class="final-buttons">
-                            <button id="newMissionBtn" class="mission-btn">ACCEPT NEW MISSION</button>
-                            <button id="reviewBtn" class="mission-btn secondary">REVIEW PROTOCOLS</button>
+                            <button id="certificateBtn" class="mission-btn" type="button">VIEW CERTIFICATE</button>
+                            <button id="reviewBtn" class="mission-btn secondary" type="button">REVIEW PROTOCOLS</button>
+                            <button id="newMissionBtn" class="mission-btn secondary" type="button">NEW MISSION</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROTOCOL REVIEW SCREEN -->
+        <div id="reviewScreen" class="screen">
+            <div class="briefing-room">
+                <div class="mission-dossier">
+                    <div class="classified-header">
+                        <span>PROTOCOL REVIEW</span>
+                        <span id="reviewSummary"></span>
+                    </div>
+                    <div class="dossier-content">
+                        <div id="reviewList" class="review-list"></div>
+                        <button id="reviewBackBtn" class="mission-btn" type="button">BACK TO DEBRIEFING</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CERTIFICATE SCREEN -->
+        <div id="certificateScreen" class="screen">
+            <div class="briefing-room certificate-room">
+                <div class="cert-controls no-print">
+                    <label for="instructorName">SUPERVISING OFFICER</label>
+                    <input type="text" id="instructorName" maxlength="60"
+                           placeholder="Instructor name..." autocomplete="off">
+                    <span class="instructor-note" id="instructorNote" hidden>Set by your teacher</span>
+                    <button id="downloadCertBtn" class="cert-btn primary" type="button">⭳ DOWNLOAD PDF</button>
+                    <button id="printCertBtn" class="cert-btn ghost" type="button">PRINT</button>
+                    <button id="certBackBtn" class="cert-btn ghost" type="button">BACK</button>
+                </div>
+
+                <div id="certificate" class="certificate">
+                    <div class="cert-frame">
+                        <span class="cert-corner tl"></span>
+                        <span class="cert-corner tr"></span>
+                        <span class="cert-corner bl"></span>
+                        <span class="cert-corner br"></span>
+
+                        <div class="cert-seal" id="certSeal">IMF<small>CERTIFIED</small></div>
+
+                        <p class="cert-issuer">IMPOSSIBLE MISSION FORCE · SCIENCE DIVISION</p>
+                        <h1 class="cert-title" id="certTitle">Certificate of Laboratory Safety</h1>
+                        <div class="cert-rule"><span></span></div>
+                        <p class="cert-preamble" id="certPreamble">This certifies that operative</p>
+                        <p class="cert-name" id="certName"></p>
+                        <p class="cert-body" id="certBody"></p>
+
+                        <div class="cert-stats">
+                            <div><span id="certRate"></span><em>SUCCESS RATE</em></div>
+                            <div><span id="certScenarios"></span><em>PROTOCOLS PASSED</em></div>
+                            <div><span id="certTier"></span><em>CLEARANCE</em></div>
+                        </div>
+
+                        <p class="cert-rank-label">RANK CONFERRED</p>
+                        <p class="cert-rank" id="certRank"></p>
+
+                        <ul class="cert-badges" id="certBadges"></ul>
+
+                        <div class="cert-signature">
+                            <div class="cert-sig-block">
+                                <div class="cert-sig-line" id="certInstructor"></div>
+                                <span>Chief Lab Safety Officer · IMF Science Division</span>
+                            </div>
+                            <div class="cert-sig-block">
+                                <div class="cert-sig-line" id="certDate"></div>
+                                <span>Date of issue</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -315,6 +394,30 @@
 
     </div>
 
+    <!-- FEEDBACK DIALOG — sits over the scenario so the explanation is always
+         centred and reachable without scrolling mid-timer. -->
+    <div id="feedbackArea" class="modal-overlay hidden">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
+            <h3 id="feedbackTitle" class="feedback-title"></h3>
+            <p id="feedbackText" class="feedback-text"></p>
+
+            <!-- What the student picked, against the correct protocol -->
+            <div id="answerCompare" class="answer-compare"></div>
+
+            <div id="whyFailedBlock" class="why-failed hidden">
+                <div class="notes-label">WHY THAT FAILS</div>
+                <p id="whyFailedText" class="notes-text"></p>
+            </div>
+            <div class="field-notes">
+                <div class="notes-label">FIELD NOTES</div>
+                <p id="fieldNotes" class="notes-text"></p>
+            </div>
+            <button id="nextBtn" class="next-btn" type="button">NEXT CASE ➤</button>
+        </div>
+    </div>
+
+    <script src="js/graphics.js"></script>
+    <script src="js/pdf.js"></script>
     <script src="js/questions.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/audio.js"></script>

@@ -10,18 +10,26 @@
 }
 
 :root {
-    /* Colors */
-    --primary-bg: #0a0e27;
+    /* Colors
+       Fully saturated primaries on a near-black ground read badly however
+       favourable the raw contrast number is: #ff0000 puts all of its luminance
+       in one channel, so the eye gets colour without edges. The reds and blues
+       below are lifted and slightly desaturated, which takes body text from
+       around 4.7:1 to 6:1+ against the panel and makes it legible rather than
+       merely compliant. Panels are lifted off pure black for the same reason —
+       they now read as surfaces instead of holes. */
+    --primary-bg: #101733;
     --secondary-bg: #000000;
+    --panel-bg: #131c3a;
     --accent-blue: #00f3ff;
-    --accent-blue-dim: #0080ff;
-    --alert-red: #ff0000;
-    --alert-red-dim: #cc0000;
-    --success-green: #00ff00;
-    --success-green-dim: #00cc00;
-    --warning-orange: #ff8800;
+    --accent-blue-dim: #2f96ff;
+    --alert-red: #ff4d4d;
+    --alert-red-dim: #d93636;
+    --success-green: #35e06a;
+    --success-green-dim: #16a34a;
+    --warning-orange: #ffa033;
     --text-primary: #ffffff;
-    --text-dim: #8899aa;
+    --text-dim: #9fb3c8;
 
     /* Fonts */
     --font-header: 'Orbitron', monospace;
@@ -31,14 +39,34 @@
     --transition-fast: 0.2s;
     --transition-normal: 0.4s;
     --transition-slow: 0.8s;
+
+    /* Fluid scale — the game screen has to fit inside one viewport on a
+       15" laptop (1440x810) and a tablet, so nothing here is a fixed px. */
+    --gap: clamp(10px, 1.4vw, 18px);
+    --gap-sm: clamp(6px, 0.9vh, 12px);
+    --pad-box: clamp(10px, 1.2vw, 16px);
+    --hud-h: clamp(40px, 5.4vh, 52px);
+    --fs-body: clamp(13px, 1.05vw, 16px);
+    --fs-situation: clamp(14px, 1.25vw, 18px);
+    --fs-option: clamp(13px, 1.05vw, 16px);
+    --fs-option-desc: clamp(11px, 0.85vw, 13px);
+    --fs-label: clamp(10px, 0.8vw, 13px);
+
+    /* The HUD reserves exactly the space the audio buttons occupy. Derived
+       from the button size rather than guessed in vw — the buttons scale with
+       vh, so a vw-based guess left them sitting on the STREAK value on tall
+       tablet viewports. */
+    --audio-btn: clamp(30px, 3.8vh, 38px);
+    --audio-w: calc(2 * var(--audio-btn) + 8px + 26px);
 }
 
 body {
     font-family: var(--font-body);
     background: var(--secondary-bg);
     color: var(--text-primary);
-    overflow-x: hidden;
-    min-height: 100vh;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
     position: relative;
 }
 
@@ -79,12 +107,15 @@ body {
    AUDIO CONTROLS
    =================================== */
 
+/* Sized and placed to sit inside the HUD bar. The HUD reserves matching
+   space on its right (--audio-w) so these can never cover a HUD value —
+   they used to land directly on top of the STREAK readout. */
 .audio-controls {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: clamp(5px, 0.7vh, 9px);
+    right: 12px;
     display: flex;
-    gap: 10px;
+    gap: 8px;
     z-index: 10000;
 }
 
@@ -92,11 +123,11 @@ body {
     background: rgba(0, 243, 255, 0.2);
     border: 2px solid var(--accent-blue);
     color: var(--accent-blue);
-    width: 50px;
-    height: 50px;
+    width: var(--audio-btn, 34px);
+    height: var(--audio-btn, 34px);
     border-radius: 50%;
     cursor: pointer;
-    font-size: 20px;
+    font-size: clamp(12px, 1.5vh, 16px);
     transition: all var(--transition-fast);
     display: flex;
     align-items: center;
@@ -127,24 +158,34 @@ body {
 .game-container {
     position: relative;
     width: 100%;
-    min-height: 100vh;
+    height: 100%;
+    overflow: hidden;
     z-index: 10;
 }
 
 .screen {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    min-height: 100vh;
+    inset: 0;
     display: none;
     opacity: 0;
     transition: opacity var(--transition-slow);
 }
 
+/* Tall screens (briefing, results, review, certificate) scroll inside
+   themselves; the body never scrolls. */
 .screen.active {
     display: flex;
     opacity: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* The scenario screen is the one that must never scroll: it is a two-row
+   grid pinned to the viewport, HUD then stage. */
+#gameScreen.active {
+    display: grid;
+    grid-template-rows: var(--hud-h) minmax(0, 1fr);
+    overflow: hidden;
 }
 
 /* ===================================
@@ -153,13 +194,13 @@ body {
 
 .briefing-room {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100%;
     background: linear-gradient(135deg, #0a0e27 0%, #000000 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
+    padding: clamp(16px, 3vh, 40px) clamp(12px, 2vw, 24px);
     position: relative;
 }
 
@@ -178,7 +219,7 @@ body {
 .mission-dossier {
     max-width: 900px;
     width: 100%;
-    background: rgba(10, 14, 39, 0.95);
+    background: rgba(16, 23, 51, 0.96);
     border: 3px solid var(--accent-blue);
     border-radius: 10px;
     box-shadow:
@@ -186,6 +227,15 @@ body {
         inset 0 0 50px rgba(0, 243, 255, 0.05);
     overflow: hidden;
     position: relative;
+    /* Capped to the viewport so a long dossier can never push its action
+       buttons below the fold — the content area scrolls instead. */
+    max-height: calc(100dvh - 2 * clamp(16px, 3vh, 40px));
+    display: flex;
+    flex-direction: column;
+}
+
+.mission-dossier > .classified-header {
+    flex: none;
 }
 
 .classified-header {
@@ -205,17 +255,20 @@ body {
     animation: blink 1s infinite;
 }
 
-.timestamp::before {
-    content: attr(data-time);
+.timestamp {
+    font-variant-numeric: tabular-nums;
 }
 
 .dossier-content {
-    padding: 40px;
+    padding: clamp(16px, 2.6vw, 34px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    min-height: 0;
 }
 
 .glitch-text {
     font-family: var(--font-header);
-    font-size: 48px;
+    font-size: clamp(26px, 4vw, 44px);
     font-weight: 900;
     text-align: center;
     color: var(--accent-blue);
@@ -231,15 +284,15 @@ body {
     font-family: var(--font-header);
     text-align: center;
     color: var(--text-dim);
-    font-size: 24px;
+    font-size: clamp(14px, 1.8vw, 22px);
     letter-spacing: 4px;
-    margin-bottom: 30px;
+    margin-bottom: clamp(12px, 2vh, 26px);
 }
 
 .divider {
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
-    margin: 30px 0;
+    margin: clamp(14px, 2.4vh, 28px) 0;
 }
 
 /* ===================================
@@ -247,13 +300,13 @@ body {
    =================================== */
 
 .typing-text {
-    font-size: 18px;
-    line-height: 1.8;
+    font-size: clamp(14px, 1.2vw, 18px);
+    line-height: 1.6;
     color: var(--text-primary);
 }
 
 .typing-text p {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .typing-text strong {
@@ -269,15 +322,15 @@ body {
 
 .self-destruct {
     color: var(--alert-red);
-    font-size: 24px;
+    font-size: clamp(15px, 1.6vw, 22px);
     font-weight: 700;
     text-align: center;
-    margin-top: 30px;
+    margin-top: clamp(12px, 2.2vh, 26px);
     animation: pulse 1s infinite;
 }
 
 #countdown {
-    font-size: 36px;
+    font-size: clamp(24px, 2.6vw, 34px);
     font-family: var(--font-header);
     display: inline-block;
     min-width: 40px;
@@ -289,7 +342,7 @@ body {
    =================================== */
 
 .agent-input-group {
-    margin: 30px 0;
+    margin: clamp(14px, 2.4vh, 28px) 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -371,21 +424,56 @@ body {
     transform: translateY(0);
 }
 
+/* A disabled button still has to be readable — it is telling the user what is
+   waiting for them. The old rule stacked black text on a dark grey slab at 50%
+   opacity over an almost-black page, which left ACCEPT MISSION effectively
+   invisible until a codename was typed. Muted blue-grey with light text reads
+   clearly and is still obviously inert next to the cyan active state. */
 .mission-btn:disabled {
-    background: linear-gradient(135deg, #333, #555);
+    background: linear-gradient(135deg, #223049, #31435f);
+    color: #a8bdd4;
     cursor: not-allowed;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: 1;
+    outline: 1px solid rgba(126, 158, 194, 0.45);
+    outline-offset: -1px;
+}
+
+.mission-btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
 }
 
 .mission-btn.secondary {
-    background: linear-gradient(135deg, #333, #555);
+    background: linear-gradient(135deg, #24314a, #35486b);
+    color: #dce9f7;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
 }
 
 .mission-btn.secondary:hover {
-    background: linear-gradient(135deg, #444, #666);
+    background: linear-gradient(135deg, #2e3d5c, #41577f);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Quiet by design: students will see it, and it should not compete with
+   ACCEPT MISSION. Underlined rather than button-like so it reads as a way out
+   of the game rather than a way into it. */
+.teacher-link {
+    margin-top: clamp(10px, 1.6vh, 16px);
+    text-align: center;
+    font-size: clamp(11px, 0.85vw, 13px);
+}
+
+.teacher-link a {
+    color: var(--text-dim);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition-fast);
+}
+
+.teacher-link a:hover,
+.teacher-link a:focus-visible {
+    color: var(--accent-blue);
 }
 
 .pulse-btn {
@@ -398,28 +486,36 @@ body {
 
 .screen-title {
     font-family: var(--font-header);
-    font-size: 42px;
+    font-size: clamp(20px, 3vw, 36px);
     text-align: center;
     color: var(--accent-blue);
     text-shadow: 0 0 20px var(--accent-blue);
-    margin-bottom: 50px;
-    letter-spacing: 4px;
+    margin-bottom: clamp(14px, 2.6vh, 28px);
+    letter-spacing: 3px;
+}
+
+.screen-subtitle {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: var(--fs-body);
+    max-width: 640px;
+    margin: -12px auto clamp(16px, 3vh, 30px);
 }
 
 .agent-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: clamp(10px, 1.6vw, 22px);
+    max-width: 1160px;
     width: 100%;
-    padding: 0 20px;
+    padding: 0 clamp(8px, 1.6vw, 20px);
 }
 
 .agent-card {
     background: rgba(0, 0, 0, 0.6);
-    border: 3px solid var(--accent-blue-dim);
+    border: 2px solid var(--accent-blue-dim);
     border-radius: 10px;
-    padding: 30px;
+    padding: clamp(12px, 2vh, 24px);
     text-align: center;
     transition: all var(--transition-normal);
     cursor: pointer;
@@ -443,35 +539,47 @@ body {
     opacity: 1;
 }
 
-.agent-card:hover {
+.agent-card:hover,
+.agent-card:focus-visible {
     border-color: var(--accent-blue);
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
-    transform: translateY(-10px);
+    transform: translateY(-6px);
+}
+
+.agent-card.chosen {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 40px var(--accent-blue);
+    transform: scale(1.05);
 }
 
 .agent-silhouette {
-    font-size: 80px;
-    margin-bottom: 20px;
+    font-size: clamp(34px, 4.6vh, 58px);
+    margin-bottom: 8px;
     filter: drop-shadow(0 0 10px var(--accent-blue));
     animation: float 3s ease-in-out infinite;
 }
 
 .agent-card h3 {
     font-family: var(--font-header);
-    font-size: 24px;
+    font-size: clamp(14px, 1.5vw, 20px);
     color: var(--accent-blue);
-    margin-bottom: 20px;
-    letter-spacing: 2px;
+    margin-bottom: 8px;
+    letter-spacing: 1.5px;
 }
 
 .agent-stats {
-    margin: 20px 0;
+    margin: 10px 0;
     color: var(--text-dim);
-    font-size: 16px;
+    font-size: var(--fs-option-desc);
 }
 
 .agent-stats p {
-    margin: 8px 0;
+    margin: 5px 0;
+}
+
+.agent-stats .stat-strong {
+    color: var(--accent-blue);
+    font-weight: 600;
 }
 
 .select-agent-btn {
@@ -479,12 +587,12 @@ body {
     border: 2px solid var(--accent-blue);
     color: var(--accent-blue);
     font-family: var(--font-header);
-    font-size: 16px;
-    padding: 12px 30px;
+    font-size: var(--fs-label);
+    padding: 9px 22px;
     border-radius: 5px;
     cursor: pointer;
     transition: all var(--transition-fast);
-    margin-top: 15px;
+    margin-top: 8px;
 }
 
 .select-agent-btn:hover {
@@ -497,33 +605,38 @@ body {
    HUD (Heads-Up Display)
    =================================== */
 
+/* First row of the #gameScreen grid — no longer position:fixed, so the
+   scenario below it needs no magic top padding. */
 .hud {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
     z-index: 100;
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.8));
     border-bottom: 2px solid var(--accent-blue);
-    padding: 12px 30px;
+    padding: 0 var(--audio-w) 0 clamp(12px, 1.6vw, 26px);
     display: flex;
-    justify-content: space-evenly;
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
+    row-gap: 2px;
+    column-gap: clamp(10px, 1.8vw, 28px);
     font-family: var(--font-header);
-    font-size: 13px;
+    font-size: var(--fs-label);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-    gap: 30px;
 }
 
+/* These were display:contents, which generates no box — so every
+   media-query rule targeting them was silently discarded. */
 .hud-left,
 .hud-center,
 .hud-right {
-    display: contents;
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 1.6vw, 24px);
+    min-width: 0;
 }
 
 .hud-item {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
     white-space: nowrap;
 }
@@ -569,42 +682,104 @@ body {
    =================================== */
 
 .scenario-container {
-    max-width: 1400px;
+    max-width: 1560px;
+    width: 100%;
     margin: 0 auto;
-    padding: 70px 20px 20px 20px;
-}
-
-.scenario-header {
+    padding: var(--gap-sm) var(--gap) var(--gap);
     display: flex;
     flex-direction: column;
+    gap: var(--gap-sm);
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Title and threat badge share one row — as two stacked blocks they cost
+   87px of vertical space on their own. */
+.scenario-header {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    margin-bottom: 20px;
-    gap: 15px;
+    justify-content: center;
+    gap: clamp(8px, 1.4vw, 18px);
+    flex: none;
 }
 
 .scenario-title {
     font-family: var(--font-header);
-    font-size: 28px;
+    font-size: clamp(15px, 1.5vw, 22px);
     color: var(--accent-blue);
     text-shadow: 0 0 15px var(--accent-blue);
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-align: center;
 }
 
 .threat-level {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-family: var(--font-header);
-    font-size: 14px;
+    font-size: var(--fs-label);
 }
 
 .threat-indicator {
-    padding: 8px 20px;
+    padding: 4px 12px;
     border-radius: 3px;
     font-weight: 700;
     letter-spacing: 1px;
 }
+
+/* ===================================
+   SCENARIO STAGE
+   Single column by default; two columns from 1200px so scene, situation,
+   timer and all four options fit inside 810px of viewport height.
+   =================================== */
+
+.scenario-stage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.stage-left,
+.stage-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    min-height: 0;
+    min-width: 0;
+}
+
+.stage-left { flex: 1 1 auto; }
+.stage-right { flex: none; }
+
+@media (min-width: 1200px) {
+    .scenario-stage {
+        flex-direction: row;
+        align-items: stretch;
+        gap: var(--gap);
+    }
+
+    .stage-left  { flex: 1 1 46%; }
+    .stage-right { flex: 1 1 54%; }
+
+    /* Fill the viewport without inflating: both columns centre their content
+       and each block is capped, so cards stay card-sized instead of
+       stretching to 300px of mostly empty space. */
+    .stage-left,
+    .stage-right {
+        justify-content: center;
+    }
+
+    .option-card {
+        min-height: 0;
+    }
+}
+/* NOTE: --scene-h and the options cap for this breakpoint live in the
+   RESPONSIVE section at the end of the file. They must come *after* the
+   base .scene-area / .options-container rules, which are declared below
+   this point — equal specificity means source order decides. */
 
 .threat-low {
     background: rgba(0, 255, 0, 0.2);
@@ -628,14 +803,21 @@ body {
    SCENE AREA
    =================================== */
 
+/* The art is drawn 320x176 (1.82:1). The panel is capped to roughly that
+   aspect and centred, so a wide single-column layout does not letterbox the
+   figure inside a 6:1 strip. */
 .scene-area {
     position: relative;
-    height: 250px;
+    flex: none;
+    --scene-h: clamp(150px, 26vh, 260px);
+    height: var(--scene-h);
+    width: 100%;
+    max-width: calc(var(--scene-h) * 2.05);
+    margin-inline: auto;
     background: rgba(0, 0, 0, 0.8);
-    border: 3px solid var(--accent-blue-dim);
+    border: 2px solid var(--accent-blue-dim);
     border-radius: 10px;
     overflow: hidden;
-    margin-bottom: 20px;
 }
 
 .camera-overlay {
@@ -653,9 +835,9 @@ body {
 .camera-overlay .corner-bl,
 .camera-overlay .corner-br {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--accent-blue);
+    width: clamp(16px, 2.2vw, 30px);
+    height: clamp(16px, 2.2vw, 30px);
+    border: 2px solid var(--accent-blue);
 }
 
 .corner-tl {
@@ -697,6 +879,8 @@ body {
     animation: scanDown 4s linear infinite;
 }
 
+/* overflow:hidden is a guard for all ten scenes — one of them used to push
+   its own content 200px out of a 250px box. */
 .scene-content {
     width: 100%;
     height: 100%;
@@ -704,6 +888,8 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
+    overflow: hidden;
+    padding: clamp(6px, 1vh, 14px);
 }
 
 /* ===================================
@@ -714,21 +900,22 @@ body {
     background: rgba(0, 0, 0, 0.8);
     border: 2px solid var(--accent-blue-dim);
     border-radius: 8px;
-    padding: 25px;
-    margin-bottom: 30px;
+    padding: var(--pad-box);
+    flex: none;
+    overflow-y: auto;
 }
 
 .situation-label {
     font-family: var(--font-header);
     color: var(--accent-blue);
-    font-size: 14px;
+    font-size: var(--fs-label);
     letter-spacing: 2px;
-    margin-bottom: 15px;
+    margin-bottom: 6px;
 }
 
 .situation-text {
-    font-size: 22px;
-    line-height: 1.6;
+    font-size: var(--fs-situation);
+    line-height: 1.45;
     color: var(--text-primary);
     font-weight: 500;
 }
@@ -738,26 +925,27 @@ body {
    =================================== */
 
 .timer-container {
-    margin-bottom: 30px;
+    flex: none;
 }
 
 .timer-label {
     display: flex;
     justify-content: space-between;
+    align-items: baseline;
     font-family: var(--font-header);
-    font-size: 14px;
+    font-size: var(--fs-label);
     color: var(--text-dim);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .timer-value {
     color: var(--accent-blue);
-    font-size: 18px;
+    font-size: clamp(13px, 1.15vw, 17px);
 }
 
 .timer-bar {
     width: 100%;
-    height: 12px;
+    height: 9px;
     background: rgba(0, 0, 0, 0.8);
     border: 2px solid var(--accent-blue-dim);
     border-radius: 6px;
@@ -783,20 +971,127 @@ body {
 
 .options-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-sm);
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .option-card {
     background: rgba(0, 0, 0, 0.7);
-    border: 3px solid var(--accent-blue-dim);
+    border: 2px solid var(--accent-blue-dim);
     border-radius: 8px;
-    padding: 25px;
+    padding: var(--pad-box);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast),
+                transform var(--transition-fast),
+                background-color var(--transition-fast);
     position: relative;
     overflow: hidden;
+    /* icon column + text column, so titles align across all four cards
+       instead of drifting with icon height */
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(8px, 1vw, 14px);
+    min-height: clamp(76px, 11vh, 128px);
+    /* it is a <button>: strip the UA chrome */
+    font-family: inherit;
+    color: inherit;
+    text-align: left;
+    width: 100%;
+}
+
+.option-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+/* The icon sits in a tinted well so it reads as an object, not a glyph. */
+.option-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: clamp(34px, 4.4vh, 48px);
+    aspect-ratio: 1;
+    border-radius: 10px;
+    background: rgba(0, 243, 255, 0.07);
+    border: 1px solid rgba(0, 243, 255, 0.22);
+    transition: background-color var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+.opt-icon {
+    width: 62%;
+    height: 62%;
+    color: var(--accent-blue);
+    filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.45));
+}
+
+.option-card:hover .option-icon {
+    background: rgba(0, 243, 255, 0.16);
+    border-color: var(--accent-blue);
+}
+
+/* Verdict badge, drawn in the corner once the card is marked. */
+.option-state {
+    position: absolute;
+    top: 6px;
+    right: 7px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-header);
+    font-size: 10px;
+    line-height: 1;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+
+.option-card.correct .option-state,
+.option-card.incorrect .option-state {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.option-card.correct .option-state {
+    background: var(--success-green);
+    color: #04210a;
+}
+
+.option-card.correct .option-state::after { content: '✓'; }
+
+.option-card.incorrect .option-state {
+    background: var(--alert-red);
+    color: #2a0505;
+}
+
+.option-card.incorrect .option-state::after { content: '✕'; }
+
+.option-card.correct .option-icon {
+    background: rgba(0, 255, 0, 0.12);
+    border-color: var(--success-green);
+}
+
+.option-card.correct .opt-icon {
+    color: var(--success-green);
+    filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.5));
+}
+
+.option-card.incorrect .option-icon {
+    background: rgba(255, 0, 0, 0.12);
+    border-color: var(--alert-red);
+}
+
+.option-card.incorrect .opt-icon {
+    color: var(--alert-red);
+    filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
 }
 
 .option-card::before {
@@ -840,55 +1135,108 @@ body {
 
 .option-card.disabled {
     pointer-events: none;
-    opacity: 0.5;
+    opacity: 0.55;
 }
 
-.option-icon {
-    font-size: 48px;
-    text-align: center;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 0 10px var(--accent-blue));
+/* The chosen and correct cards stay legible behind the feedback dialog so
+   the explanation still connects to the choice. */
+.option-card.disabled.correct,
+.option-card.disabled.incorrect,
+.option-card.disabled.selected {
+    opacity: 1;
+}
+
+.option-card.eliminated {
+    opacity: 0.3;
+    pointer-events: none;
+    filter: grayscale(1);
+}
+
+.option-key {
+    position: absolute;
+    top: 5px;
+    left: 7px;
+    font-family: var(--font-header);
+    font-size: 10px;
+    color: var(--text-dim);
+    border: 1px solid rgba(136, 153, 170, 0.4);
+    border-radius: 3px;
+    padding: 0 4px;
+    line-height: 1.5;
 }
 
 .option-text {
     font-family: var(--font-header);
-    font-size: 20px;
+    font-size: var(--fs-option);
     color: var(--accent-blue);
-    text-align: center;
-    margin-bottom: 10px;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
 }
 
 .option-description {
-    font-size: 16px;
+    font-size: var(--fs-option-desc);
     color: var(--text-dim);
-    text-align: center;
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
 /* ===================================
    FEEDBACK AREA
    =================================== */
 
-.feedback-area {
-    background: rgba(0, 0, 0, 0.95);
-    border: 3px solid var(--accent-blue);
-    border-radius: 10px;
-    padding: 30px;
-    margin-top: 30px;
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+/* Centred over the scenario. Previously this was an inline block below the
+   options, which pushed the page to 1278px on an 810px screen. */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(12px, 2.5vh, 32px);
+    background: rgba(2, 5, 14, 0.72);
+    backdrop-filter: blur(4px);
 }
 
-.feedback-area.hidden {
+.modal-overlay.hidden {
     display: none;
 }
 
+.modal-panel {
+    width: 100%;
+    max-width: 640px;
+    max-height: 84dvh;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid var(--accent-blue);
+    border-radius: 10px;
+    padding: clamp(16px, 2.4vh, 28px);
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.35);
+}
+
+.modal-panel.wide {
+    max-width: 900px;
+}
+
+@keyframes dialogIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes dialogOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+.modal-overlay.dialog-in  { animation: dialogOut 0.2s reverse both; }
+.modal-overlay.dialog-in .modal-panel { animation: dialogIn 0.28s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.modal-overlay.dialog-out { animation: dialogOut 0.2s ease both; }
+
 .feedback-title {
     font-family: var(--font-header);
-    font-size: 28px;
-    margin-bottom: 15px;
+    font-size: clamp(17px, 1.8vw, 24px);
+    margin-bottom: 8px;
     text-align: center;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
 }
 
 .feedback-title.success {
@@ -902,30 +1250,114 @@ body {
 }
 
 .feedback-text {
-    font-size: 18px;
-    line-height: 1.6;
-    margin-bottom: 20px;
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    margin-bottom: 12px;
     text-align: center;
+    color: var(--text-dim);
 }
 
-.field-notes {
+/* ===================================
+   CHOSEN vs CORRECT
+   =================================== */
+
+.answer-compare {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 4px 0 12px;
+}
+
+.ac-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+}
+
+.ac-row.right {
+    background: rgba(0, 255, 0, 0.08);
+    border-color: rgba(0, 255, 0, 0.45);
+}
+
+.ac-row.wrong {
+    background: rgba(255, 0, 0, 0.08);
+    border-color: rgba(255, 0, 0, 0.45);
+}
+
+.ac-mark {
+    font-family: var(--font-header);
+    font-size: 14px;
+    line-height: 1.35;
+    flex: none;
+}
+
+.ac-row.right .ac-mark { color: var(--success-green); }
+.ac-row.wrong .ac-mark { color: var(--alert-red); }
+
+.ac-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.ac-label {
+    font-family: var(--font-header);
+    font-size: clamp(8px, 0.72vw, 10px);
+    letter-spacing: 1.6px;
+    color: var(--text-dim);
+}
+
+.ac-value {
+    font-family: var(--font-header);
+    font-size: var(--fs-option);
+    letter-spacing: 0.5px;
+}
+
+.ac-row.right .ac-value { color: var(--success-green); }
+.ac-row.wrong .ac-value { color: var(--alert-red); }
+
+.ac-desc {
+    font-size: var(--fs-option-desc);
+    color: var(--text-dim);
+    line-height: 1.35;
+}
+
+.field-notes,
+.why-failed {
     background: rgba(0, 243, 255, 0.05);
-    border-left: 4px solid var(--accent-blue);
-    padding: 20px;
-    margin: 20px 0;
+    border-left: 3px solid var(--accent-blue);
+    padding: clamp(10px, 1.4vh, 16px);
+    margin: 12px 0;
+}
+
+.why-failed {
+    background: rgba(255, 0, 0, 0.07);
+    border-left-color: var(--alert-red);
+}
+
+.why-failed.hidden {
+    display: none;
+}
+
+.why-failed .notes-label {
+    color: var(--alert-red);
 }
 
 .notes-label {
     font-family: var(--font-header);
     color: var(--accent-blue);
-    font-size: 14px;
+    font-size: var(--fs-label);
     letter-spacing: 2px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .notes-text {
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: var(--fs-body);
+    line-height: 1.5;
     color: var(--text-primary);
 }
 
@@ -934,14 +1366,14 @@ body {
     border: none;
     color: var(--secondary-bg);
     font-family: var(--font-header);
-    font-size: 18px;
+    font-size: clamp(14px, 1.2vw, 17px);
     font-weight: 700;
-    padding: 15px 40px;
+    padding: 12px 32px;
     border-radius: 5px;
     cursor: pointer;
     transition: all var(--transition-fast);
     display: block;
-    margin: 20px auto 0;
+    margin: 14px auto 0;
     box-shadow: 0 5px 15px rgba(0, 243, 255, 0.4);
 }
 
@@ -956,9 +1388,9 @@ body {
 
 .completion-title {
     font-family: var(--font-header);
-    font-size: 48px;
+    font-size: clamp(24px, 3.4vw, 42px);
     text-align: center;
-    margin: 30px 0;
+    margin: clamp(12px, 2.4vh, 26px) 0;
     letter-spacing: 3px;
 }
 
@@ -974,80 +1406,118 @@ body {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin: 40px 0;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--gap-sm);
+    margin: clamp(12px, 2.1vh, 22px) 0;
 }
 
+/* Around 18% shorter than it was. That reclaimed height is what keeps the
+   action buttons inside the dossier on a 720px-tall viewport. */
 .stat-item {
     background: rgba(0, 0, 0, 0.5);
     border: 2px solid var(--accent-blue-dim);
     border-radius: 8px;
-    padding: 20px;
+    padding: clamp(8px, 1.1vh, 13px) clamp(8px, 0.9vw, 12px);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
 }
 
+/* Reserving two lines for the label puts every value on the same baseline
+   regardless of how many lines its own label wraps to — FINAL CLEARANCE LEVEL
+   takes two where the other three take one, which is what knocked the numbers
+   out of alignment with each other. */
 .stat-label {
     font-family: var(--font-header);
-    font-size: 12px;
+    font-size: clamp(9px, 0.72vw, 11px);
     color: var(--text-dim);
     letter-spacing: 1px;
-    margin-bottom: 10px;
+    line-height: 1.25;
+    min-height: 2.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .stat-value {
     font-family: var(--font-header);
-    font-size: 32px;
+    font-size: clamp(18px, 1.9vw, 26px);
     color: var(--accent-blue);
     font-weight: 700;
     text-shadow: 0 0 10px var(--accent-blue);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* The clearance level is a phrase, not a number, and has to wrap inside the
+   same box the three numeric stats use. At the numeric size it overran its
+   border on every viewport. */
+.stat-value.is-text {
+    font-size: clamp(11px, 1.05vw, 15px);
+    line-height: 1.25;
+    letter-spacing: 0.5px;
+    overflow-wrap: anywhere;
 }
 
 .badges-container {
-    margin: 40px 0;
+    margin: clamp(14px, 2.6vh, 28px) 0;
 }
 
 .badges-container h3 {
     font-family: var(--font-header);
     text-align: center;
     color: var(--accent-blue);
-    font-size: 24px;
+    font-size: clamp(14px, 1.5vw, 20px);
     letter-spacing: 2px;
-    margin-bottom: 25px;
+    margin-bottom: clamp(10px, 1.8vh, 20px);
 }
 
 .badges-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--gap-sm);
 }
 
 .badge-item {
     background: rgba(0, 0, 0, 0.6);
     border: 2px solid var(--warning-orange);
     border-radius: 8px;
-    padding: 20px;
+    padding: clamp(10px, 1.4vh, 16px);
     text-align: center;
     box-shadow: 0 0 20px rgba(255, 136, 0, 0.3);
+    /* staggered reveal on the results screen, replacing the blocking
+       full-screen badge overlays */
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+    animation: badgeReveal 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 0.22s);
+}
+
+@keyframes badgeReveal {
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .badge-icon {
-    font-size: 48px;
-    margin-bottom: 15px;
+    font-size: clamp(26px, 3.4vh, 40px);
+    margin-bottom: 6px;
     filter: drop-shadow(0 0 10px var(--warning-orange));
     animation: float 3s ease-in-out infinite;
 }
 
 .badge-name {
     font-family: var(--font-header);
-    font-size: 18px;
+    font-size: clamp(12px, 1.1vw, 16px);
     color: var(--warning-orange);
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     letter-spacing: 1px;
 }
 
 .badge-description {
-    font-size: 14px;
+    font-size: clamp(10px, 0.85vw, 13px);
     color: var(--text-dim);
 }
 
@@ -1055,71 +1525,294 @@ body {
     background: rgba(0, 243, 255, 0.05);
     border: 2px solid var(--accent-blue-dim);
     border-radius: 8px;
-    padding: 25px;
-    margin: 30px 0;
+    padding: clamp(12px, 1.8vh, 22px);
+    margin: clamp(14px, 2.4vh, 26px) 0;
 }
 
 .debriefing h3 {
     font-family: var(--font-header);
     color: var(--accent-blue);
-    font-size: 20px;
+    font-size: clamp(13px, 1.3vw, 18px);
     letter-spacing: 2px;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
 }
 
 .debriefing p {
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: var(--fs-body);
+    line-height: 1.5;
 }
 
 .final-buttons {
     display: flex;
-    gap: 20px;
-    margin-top: 40px;
+    flex-wrap: wrap;
+    gap: var(--gap-sm);
+    margin-top: clamp(16px, 2.6vh, 30px);
 }
 
 .final-buttons .mission-btn {
-    flex: 1;
+    flex: 1 1 180px;
     margin-top: 0;
+    font-size: clamp(13px, 1.1vw, 17px);
+    padding: 13px 20px;
+}
+
+/* ===================================
+   INTEL REQUEST (hint)
+   =================================== */
+
+.hint-btn {
+    flex: none;
+    align-self: center;
+    background: transparent;
+    border: 1px dashed rgba(255, 136, 0, 0.6);
+    color: var(--warning-orange);
+    font-family: var(--font-header);
+    font-size: var(--fs-label);
+    letter-spacing: 1.5px;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.hint-btn:hover:not(:disabled) {
+    background: rgba(255, 136, 0, 0.14);
+    border-style: solid;
+}
+
+.hint-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.hint-btn em {
+    font-style: normal;
+    opacity: 0.7;
+    font-size: 0.85em;
+}
+
+.hint-btn[hidden] {
+    display: none;
+}
+
+/* ===================================
+   PROTOCOL REVIEW
+   =================================== */
+
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    margin-bottom: var(--gap);
+}
+
+.review-item {
+    border: 2px solid var(--accent-blue-dim);
+    border-left-width: 5px;
+    border-radius: 8px;
+    padding: var(--pad-box);
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.review-item.pass { border-left-color: var(--success-green); }
+.review-item.fail { border-left-color: var(--alert-red); }
+
+.review-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.review-title {
+    font-family: var(--font-header);
+    font-size: var(--fs-option);
+    color: var(--accent-blue);
+    letter-spacing: 1px;
+}
+
+.review-verdict {
+    font-family: var(--font-header);
+    font-size: var(--fs-label);
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+.review-verdict.pass {
+    color: var(--success-green);
+    background: rgba(0, 255, 0, 0.12);
+    border: 1px solid var(--success-green);
+}
+
+.review-verdict.fail {
+    color: var(--alert-red);
+    background: rgba(255, 0, 0, 0.12);
+    border: 1px solid var(--alert-red);
+}
+
+.review-row {
+    font-size: var(--fs-option-desc);
+    line-height: 1.5;
+    color: var(--text-dim);
+}
+
+.review-row b {
+    font-family: var(--font-header);
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    font-weight: 400;
+}
+
+.review-row .chose  { color: var(--alert-red); }
+.review-row .answer { color: var(--success-green); }
+
+.review-protocol {
+    font-size: var(--fs-option-desc);
+    color: var(--text-primary);
+    border-top: 1px solid rgba(0, 243, 255, 0.15);
+    margin-top: 8px;
+    padding-top: 8px;
+    line-height: 1.5;
 }
 
 /* ===================================
    RESPONSIVE
    =================================== */
 
-@media (max-width: 768px) {
-    .hud {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .hud-left,
-    .hud-center,
-    .hud-right {
-        align-items: flex-start;
-    }
-
-    .scenario-title {
-        font-size: 24px;
-    }
-
+/* Two columns: the scene gets the full height of its column, and the option
+   grid is capped so cards stay card-sized. */
+@media (min-width: 1200px) {
     .scene-area {
-        height: 300px;
+        --scene-h: min(40vh, 330px);
     }
 
-    .agent-grid {
-        grid-template-columns: 1fr;
+    .options-container {
+        max-height: min(50vh, 400px);
+    }
+}
+
+/* Tablet portrait and small laptops: one column, options stay 2x2 so all
+   four are visible without scrolling. */
+@media (max-width: 1199px) {
+    .scene-area {
+        --scene-h: clamp(140px, 24vh, 230px);
+    }
+}
+
+/* Phones and small tablets: every control gets a 44px touch target.
+   --audio-btn is raised on :root so the HUD's reserved space grows with it. */
+@media (max-width: 767px), (pointer: coarse) {
+    :root {
+        --audio-btn: 44px;
+    }
+
+    .hint-btn {
+        min-height: 44px;
+        padding: 10px 20px;
+    }
+
+    .select-agent-btn,
+    .skip-sequence {
+        min-height: 44px;
+    }
+}
+
+/* Phones: the scenario may scroll — four readable option cards cannot fit
+   812px of height at 44px touch targets alongside the scene. */
+@media (max-width: 767px) {
+    #gameScreen.active {
+        grid-template-rows: auto minmax(0, 1fr);
+        overflow-y: auto;
+    }
+
+    .scenario-container {
+        overflow: visible;
     }
 
     .options-container {
         grid-template-columns: 1fr;
     }
 
+    .option-card {
+        min-height: 60px;
+        padding: 10px 12px 10px 24px;
+    }
+
+    .scene-area {
+        --scene-h: clamp(120px, 20vh, 180px);
+    }
+
     .final-buttons {
         flex-direction: column;
     }
+}
 
-    .glitch-text {
-        font-size: 32px;
+/* Very narrow: drop the HUD items a student does not need mid-question. */
+@media (max-width: 599px) {
+    .hud {
+        font-size: 10px;
+    }
+
+    .hud-left {
+        display: none;
+    }
+}
+
+/* Keyboard focus must be visible on every interactive control. */
+:focus-visible {
+    outline: 3px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+.option-card:focus-visible {
+    outline-offset: -3px;
+    border-color: var(--accent-blue);
+}
+
+/* ===================================
+   REDUCED MOTION
+   The build shook the whole container and hue-rotated it on every screen
+   change with no way out. Opacity fades are kept; nothing moves.
+   =================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .scanlines,
+    .spotlight,
+    .scan-line,
+    .xray-scan {
+        display: none;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+        display: none;
+    }
+
+    .screen-shake,
+    .glitch-transition {
+        animation: none !important;
+    }
+
+    .modal-overlay.dialog-in,
+    .modal-overlay.dialog-in .modal-panel {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+    }
+
+    .badge-item {
+        opacity: 1;
+        transform: none;
     }
 }

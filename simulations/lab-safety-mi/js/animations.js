@@ -3,22 +3,31 @@
 // Animation Controllers
 // ===================================
 
-// Typing effect for mission briefing
-function typeText(element, text, speed = 30, callback) {
-    let index = 0;
-    element.innerHTML = '';
-
-    function type() {
-        if (index < text.length) {
-            element.innerHTML += text.charAt(index);
-            index++;
-            setTimeout(type, speed);
-        } else if (callback) {
-            callback();
-        }
+// Reveal a briefing one line at a time. Replaces the old character-by-character
+// typeText, which was never called and would have shredded the inline markup
+// (it appended raw characters into innerHTML, tags included).
+function revealLines(container, callback, step = 380) {
+    if (!container) {
+        if (callback) callback();
+        return;
     }
 
-    type();
+    const lines = Array.from(container.children);
+
+    if (prefersReducedMotion()) {
+        lines.forEach(line => line.classList.add('revealed'));
+        if (callback) callback();
+        return;
+    }
+
+    lines.forEach(line => line.classList.remove('revealed'));
+
+    lines.forEach((line, index) => {
+        setTimeout(() => {
+            line.classList.add('revealed');
+            if (index === lines.length - 1 && callback) callback();
+        }, index * step);
+    });
 }
 
 // Countdown animation
@@ -73,61 +82,154 @@ function glitchTransition(callback, duration = 500) {
     }, duration);
 }
 
-// Create explosion effect for self-destruct sequence
-function createExplosion() {
-    const beakerContainer = document.querySelector('.beaker-container');
-    if (!beakerContainer) return;
+// ===================================
+// PROTOCOL VIOLATION SEQUENCE
+// Water poured into concentrated acid. One clock drives picture,
+// sound and shake, so they cannot drift apart; every beat is a state
+// class rather than a hard-coded animation-delay, which is what makes
+// the sequence skippable.
+// ===================================
 
-    // Create explosion element
-    const explosion = document.createElement('div');
-    explosion.className = 'explosion';
-    beakerContainer.appendChild(explosion);
+const VIOLATION_BEATS = [
+    { at: 0,    state: 'running' },
+    { at: 700,  state: 'pouring' },
+    { at: 1600, state: 'reacting' },
+    { at: 2400, state: 'erupting', bang: true },
+    { at: 3000, state: 'aftermath' }
+];
 
-    // Create multiple bubbles
-    for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-            createBubble();
-        }, 2200 + (i * 100));
-    }
+const VIOLATION_WARNING_AT = 4000;   // panel appears
+const VIOLATION_AUTO_ADVANCE = 12000; // fallback if CONTINUE is never pressed
+const VIOLATION_STATES = 'running pouring reacting erupting aftermath';
 
-    // Trigger screen shake during explosion
-    setTimeout(() => {
-        shakeScreen(800);
-        if (window.audioManager) {
-            window.audioManager.playExplosion();
-        }
-    }, 3500);
+let violationTimers = [];
 
-    // Remove explosion after animation
-    setTimeout(() => {
-        explosion.remove();
-    }, 4500);
+function prefersReducedMotion() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 
-// Create bubble animation
-function createBubble() {
-    const beaker = document.querySelector('.beaker');
-    if (!beaker) return;
+function clearViolationTimers() {
+    violationTimers.forEach(clearTimeout);
+    violationTimers = [];
+}
 
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
+function later(fn, delay) {
+    violationTimers.push(setTimeout(fn, delay));
+}
 
-    // Random position
-    const left = Math.random() * 80 + 10; // 10% to 90%
-    const size = Math.random() * 15 + 10; // 10px to 25px
+// Boiling acid thrown clear of the beaker
+function createSpatter(count = 16) {
+    const field = document.getElementById('spatterField');
+    if (!field) return;
 
-    bubble.style.left = `${left}%`;
-    bubble.style.bottom = '0';
-    bubble.style.width = `${size}px`;
-    bubble.style.height = `${size}px`;
-    bubble.style.animationDuration = `${Math.random() * 2 + 2}s`; // 2-4s
+    field.innerHTML = '';
 
-    beaker.appendChild(bubble);
+    for (let i = 0; i < count; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'droplet';
 
-    // Remove after animation
-    setTimeout(() => {
-        bubble.remove();
-    }, 4000);
+        const dir = i % 2 ? 1 : -1;
+        drop.style.setProperty('--dx', `${Math.round(dir * (16 + Math.random() * 95))}px`);
+        drop.style.setProperty('--peak', `${Math.round(-(55 + Math.random() * 75))}px`);
+        drop.style.setProperty('--dy', `${Math.round(30 + Math.random() * 95)}px`);
+        drop.style.setProperty('--size', `${(5.5 + Math.random() * 7).toFixed(1)}px`);
+        drop.style.setProperty('--dur', `${(0.75 + Math.random() * 0.5).toFixed(2)}s`);
+        drop.style.animationDelay = `${(Math.random() * 0.26).toFixed(2)}s`;
+
+        field.appendChild(drop);
+    }
+
+    later(() => { field.innerHTML = ''; }, 2000);
+}
+
+function runViolationSequence(onDone) {
+    const bench = document.getElementById('hazardBench');
+    const warning = document.getElementById('violationWarning');
+    const skipBtn = document.getElementById('skipSequenceBtn');
+    const continueBtn = document.getElementById('violationContinueBtn');
+
+    if (!bench) {
+        if (onDone) onDone();
+        return;
+    }
+
+    clearViolationTimers();
+    bench.classList.remove(...VIOLATION_STATES.split(' '));
+    if (warning) warning.classList.remove('show');
+    if (skipBtn) skipBtn.hidden = false;
+
+    const spatterField = document.getElementById('spatterField');
+    if (spatterField) spatterField.innerHTML = '';
+
+    let finished = false;
+
+    function detach() {
+        document.removeEventListener('keydown', onKey);
+        if (skipBtn) skipBtn.onclick = null;
+        if (continueBtn) continueBtn.onclick = null;
+    }
+
+    // Leave the mission: only the CONTINUE button does this, so the safety
+    // message is never on a timer the student can lose.
+    function finish() {
+        if (finished) return;
+        finished = true;
+        clearViolationTimers();
+        detach();
+        if (onDone) onDone();
+    }
+
+    // SKIP jumps to the end state and holds the lesson — it does not skip
+    // past the explanation.
+    function settle() {
+        clearViolationTimers();
+        bench.classList.add(...VIOLATION_STATES.split(' '));
+        if (warning) warning.classList.add('show');
+        if (skipBtn) skipBtn.hidden = true;
+        if (continueBtn) continueBtn.focus();
+        later(finish, VIOLATION_AUTO_ADVANCE);
+    }
+
+    function onKey(e) {
+        if (e.key !== 'Escape' && e.key !== 'Enter') return;
+        if (warning && warning.classList.contains('show')) {
+            finish();
+        } else {
+            settle();
+        }
+    }
+
+    document.addEventListener('keydown', onKey);
+    if (skipBtn) skipBtn.onclick = settle;
+    if (continueBtn) continueBtn.onclick = finish;
+
+    if (prefersReducedMotion()) {
+        settle();
+        return;
+    }
+
+    VIOLATION_BEATS.forEach(beat => {
+        later(() => {
+            bench.classList.add(beat.state);
+
+            if (beat.bang) {
+                // Sound and shake land ON the ejection frame. In the previous
+                // build they fired 2s after the flash had already faded.
+                createSpatter();
+                shakeScreen(700);
+                if (window.audioManager) {
+                    window.audioManager.playExplosion();
+                }
+            }
+        }, beat.at);
+    });
+
+    later(() => {
+        if (warning) warning.classList.add('show');
+        if (skipBtn) skipBtn.hidden = true;
+        if (continueBtn) continueBtn.focus();
+        later(finish, VIOLATION_AUTO_ADVANCE);
+    }, VIOLATION_WARNING_AT);
 }
 
 // Create particle effect
@@ -202,61 +304,152 @@ function updateAlertLevel(level) {
     }
 }
 
-// Animate timer bar
+// Animate timer bar. Remaining time is tracked outside the closure so the
+// countdown can be paused when the tab is hidden and resumed where it left off.
+let timerRemaining = 0;
+let timerTotal = 0;
+let activeTimerInterval = null;
+
 function animateTimer(duration, onComplete) {
     const timerFill = document.getElementById('timerFill');
     const timerText = document.getElementById('timerText');
     if (!timerFill || !timerText) return null;
 
-    let timeLeft = duration;
-    let percentage = 100;
+    timerRemaining = duration;
+    timerTotal = Math.max(timerTotal, duration);
 
-    timerFill.style.width = '100%';
+    const paint = () => {
+        timerFill.style.width = `${(timerRemaining / timerTotal) * 100}%`;
+        timerText.textContent = `${Math.max(0, timerRemaining)}s`;
+    };
+
     timerFill.classList.remove('critical');
-    timerText.textContent = `${timeLeft}s`;
+    paint();
 
-    const interval = setInterval(() => {
-        timeLeft--;
-        percentage = (timeLeft / duration) * 100;
+    activeTimerInterval = setInterval(() => {
+        timerRemaining--;
+        paint();
 
-        timerFill.style.width = `${percentage}%`;
-        timerText.textContent = `${timeLeft}s`;
-
-        // Add critical styling when time is low
-        if (timeLeft <= 5) {
+        if (timerRemaining <= 5) {
             timerFill.classList.add('critical');
             updateAlertLevel('critical');
-
-            // Play beep sound
-            if (window.audioManager) {
-                window.audioManager.playBeep();
-            }
-        } else if (timeLeft <= 10) {
+            if (window.audioManager) window.audioManager.playBeep();
+        } else if (timerRemaining <= 10) {
             updateAlertLevel('elevated');
         }
 
-        if (timeLeft <= 0) {
-            clearInterval(interval);
+        if (timerRemaining <= 0) {
+            clearInterval(activeTimerInterval);
+            activeTimerInterval = null;
             if (onComplete) onComplete();
         }
     }, 1000);
 
-    return interval;
+    return activeTimerInterval;
 }
 
-// Show feedback with animation
-function showFeedback(isCorrect, title, text, explanation) {
-    const feedbackArea = document.getElementById('feedbackArea');
+// Freeze the countdown and report what is left, so a backgrounded tab does
+// not silently burn a student's clock.
+function pauseTimer() {
+    if (activeTimerInterval) {
+        clearInterval(activeTimerInterval);
+        activeTimerInterval = null;
+    }
+    return Math.max(1, timerRemaining);
+}
+
+// A fresh question resets the bar's full-width reference.
+function resetTimerScale(duration) {
+    timerTotal = duration;
+    timerRemaining = duration;
+}
+
+// ===================================
+// FEEDBACK DIALOG
+// Centred over the scenario. The answer cards stay visible behind it, so
+// the explanation still reads against the choice that produced it.
+// ===================================
+
+let dialogReturnFocus = null;
+let dialogKeyHandler = null;
+
+function trapDialogFocus(overlay, onAdvance) {
+    const panel = overlay.querySelector('.modal-panel');
+    if (!panel) return;
+
+    dialogKeyHandler = (e) => {
+        if (e.key === 'Escape' || e.key === 'Enter') {
+            e.preventDefault();
+            if (onAdvance) onAdvance();
+            return;
+        }
+
+        if (e.key !== 'Tab') return;
+
+        const focusable = panel.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable.length) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    };
+
+    document.addEventListener('keydown', dialogKeyHandler);
+}
+
+function showFeedback(options) {
+    const {
+        isCorrect,
+        title,
+        text,
+        explanation,
+        whyFailed = '',
+        chosen = null,
+        correct = null,
+        onAdvance = null
+    } = options;
+
+    const overlay = document.getElementById('feedbackArea');
     const feedbackTitle = document.getElementById('feedbackTitle');
     const feedbackText = document.getElementById('feedbackText');
     const fieldNotes = document.getElementById('fieldNotes');
+    const whyBlock = document.getElementById('whyFailedBlock');
+    const whyText = document.getElementById('whyFailedText');
+    const compare = document.getElementById('answerCompare');
+    const nextBtn = document.getElementById('nextBtn');
 
-    if (!feedbackArea || !feedbackTitle || !feedbackText || !fieldNotes) return;
+    if (!overlay || !feedbackTitle || !feedbackText || !fieldNotes) return;
 
-    // Flash screen
+    // Always state what was chosen and what the correct protocol was. When they
+    // match, one row says so rather than repeating the same line twice.
+    if (compare) {
+        const row = (kind, label, option) => `
+            <div class="ac-row ${kind}">
+                <span class="ac-mark" aria-hidden="true">${kind === 'wrong' ? '✕' : '✓'}</span>
+                <span class="ac-body">
+                    <span class="ac-label">${label}</span>
+                    <span class="ac-value">${option ? option.text : '—'}</span>
+                    ${option && option.description
+                        ? `<span class="ac-desc">${option.description}</span>` : ''}
+                </span>
+            </div>`;
+
+        compare.innerHTML = isCorrect
+            ? row('right', 'YOUR CHOICE — CORRECT', chosen)
+            : row('wrong', 'YOUR CHOICE', chosen) + row('right', 'CORRECT PROTOCOL', correct);
+    }
+
     flashScreen(isCorrect ? 'success' : 'failure');
 
-    // Play sound
     if (window.audioManager) {
         if (isCorrect) {
             window.audioManager.playSuccess();
@@ -265,32 +458,50 @@ function showFeedback(isCorrect, title, text, explanation) {
         }
     }
 
-    // Set content
     feedbackTitle.textContent = title;
     feedbackTitle.className = 'feedback-title ' + (isCorrect ? 'success' : 'failure');
     feedbackText.textContent = text;
     fieldNotes.textContent = explanation;
 
-    // Show with animation
-    feedbackArea.classList.remove('hidden');
-    feedbackArea.classList.add('animated', 'slideInFromBottom');
+    if (whyBlock && whyText) {
+        if (whyFailed) {
+            whyText.textContent = whyFailed;
+            whyBlock.classList.remove('hidden');
+        } else {
+            whyBlock.classList.add('hidden');
+        }
+    }
 
-    setTimeout(() => {
-        feedbackArea.classList.remove('animated', 'slideInFromBottom');
-    }, 500);
+    dialogReturnFocus = document.activeElement;
+
+    overlay.classList.remove('hidden', 'dialog-out');
+    overlay.classList.add('dialog-in');
+
+    if (nextBtn) nextBtn.focus();
+    trapDialogFocus(overlay, onAdvance);
 }
 
-// Hide feedback
 function hideFeedback() {
-    const feedbackArea = document.getElementById('feedbackArea');
-    if (!feedbackArea) return;
+    const overlay = document.getElementById('feedbackArea');
+    if (!overlay) return;
 
-    feedbackArea.classList.add('animated', 'fadeOut');
+    if (dialogKeyHandler) {
+        document.removeEventListener('keydown', dialogKeyHandler);
+        dialogKeyHandler = null;
+    }
+
+    overlay.classList.remove('dialog-in');
+    overlay.classList.add('dialog-out');
 
     setTimeout(() => {
-        feedbackArea.classList.add('hidden');
-        feedbackArea.classList.remove('animated', 'fadeOut');
-    }, 300);
+        overlay.classList.add('hidden');
+        overlay.classList.remove('dialog-out');
+    }, 200);
+
+    if (dialogReturnFocus && document.body.contains(dialogReturnFocus)) {
+        dialogReturnFocus.focus();
+    }
+    dialogReturnFocus = null;
 }
 
 // Transition between screens
@@ -378,14 +589,14 @@ function showBadgeEarned(badge) {
     }, 3000);
 }
 
-// Update timestamp in header
+// Update timestamp in header. Sets textContent only — the matching
+// `.timestamp::before { content: attr(data-time) }` rule has been removed,
+// because together they printed the time twice.
 function updateTimestamp() {
-    const timestampElements = document.querySelectorAll('.timestamp');
     const now = new Date();
     const formatted = now.toISOString().slice(0, 19).replace('T', ' ');
 
-    timestampElements.forEach(el => {
-        el.setAttribute('data-time', formatted);
+    document.querySelectorAll('.timestamp').forEach(el => {
         el.textContent = formatted;
     });
 }
@@ -396,17 +607,19 @@ updateTimestamp();
 
 // Export functions for use in game.js
 window.animations = {
-    typeText,
+    revealLines,
+    prefersReducedMotion,
     startCountdown,
     shakeScreen,
     flashScreen,
     glitchTransition,
-    createExplosion,
-    createBubble,
+    runViolationSequence,
     createParticles,
     updateHUD,
     updateAlertLevel,
     animateTimer,
+    pauseTimer,
+    resetTimerScale,
     showFeedback,
     hideFeedback,
     switchScreen,

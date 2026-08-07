@@ -1,0 +1,602 @@
+/* ===================================
+   MISSION: IMPOSSIBLE - LAB SAFETY
+   Certificate of completion
+   Deliberately NOT the dark spy theme: this is the one screen a student
+   keeps, prints and shows someone, so it reads as printed stationery —
+   warm paper, navy ink, gold rules.
+   =================================== */
+
+#certificateScreen {
+    --ink-navy: #1b2a4a;
+    --ink-gold: #a9803a;
+    --ink-gold-light: #d8b978;
+    --ink-crimson: #8d1c1c;
+    --ink-grey: #5a6478;
+    --paper: #fdfaf3;
+}
+
+/* The CRT scanline and matrix overlays belong to the spy screens; over
+   printed stationery they just add grime. */
+body.paper-mode .scanlines,
+body.paper-mode .matrix-bg {
+    display: none;
+}
+
+.certificate-room {
+    justify-content: flex-start;
+    gap: clamp(10px, 1.8vh, 20px);
+    padding: clamp(12px, 2.4vh, 28px) clamp(10px, 2vw, 26px);
+    background:
+        radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.85), transparent 45%),
+        radial-gradient(circle at 82% 92%, rgba(216, 185, 120, 0.28), transparent 52%),
+        linear-gradient(155deg, #f4efe2 0%, #e9eef5 55%, #eae3d3 100%);
+}
+
+/* --- controls: light chrome to match the paper --- */
+
+.cert-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(27, 42, 74, 0.16);
+    border-radius: 10px;
+    padding: 9px 12px;
+    box-shadow: 0 6px 18px rgba(27, 42, 74, 0.12);
+}
+
+.cert-controls label {
+    font-family: var(--font-header);
+    font-size: clamp(8px, 0.72vw, 10px);
+    letter-spacing: 1.7px;
+    color: var(--ink-gold);
+}
+
+.cert-controls input {
+    background: #fff;
+    border: 1px solid rgba(27, 42, 74, 0.28);
+    color: var(--ink-navy);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 8px 11px;
+    border-radius: 6px;
+    outline: none;
+    min-width: 190px;
+    flex: 1 1 190px;
+}
+
+.cert-controls input::placeholder { color: #9aa3b4; }
+
+.cert-controls input:focus {
+    border-color: var(--ink-gold);
+    box-shadow: 0 0 0 3px rgba(216, 185, 120, 0.35);
+}
+
+/* Set from the class link. This has to read as settled rather than broken:
+   the name is correct and final, not a field that failed to load. So it keeps
+   full-strength ink and a clean border, and only loses the affordances that
+   invite typing. */
+.cert-controls input.is-locked {
+    background: rgba(27, 42, 74, 0.05);
+    border-color: rgba(27, 42, 74, 0.18);
+    border-style: dashed;
+    caret-color: transparent;
+    cursor: default;
+}
+
+.cert-controls input.is-locked:focus {
+    border-color: rgba(27, 42, 74, 0.3);
+    box-shadow: none;
+}
+
+.instructor-note {
+    font-family: var(--font-header);
+    font-size: clamp(7px, 0.62vw, 9px);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--ink-grey);
+    white-space: nowrap;
+}
+
+.instructor-note[hidden] { display: none; }
+
+.cert-btn {
+    font-family: var(--font-header);
+    font-size: clamp(10px, 0.85vw, 12px);
+    letter-spacing: 1.4px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all var(--transition-fast);
+    flex: 0 0 auto;
+    min-height: 40px;
+}
+
+.cert-btn.primary {
+    background: linear-gradient(150deg, #24365c, #12203a);
+    border-color: #12203a;
+    color: #f6efdd;
+    box-shadow: 0 4px 12px rgba(18, 32, 58, 0.3);
+}
+
+.cert-btn.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px rgba(18, 32, 58, 0.42);
+}
+
+.cert-btn.ghost {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(27, 42, 74, 0.28);
+    color: var(--ink-navy);
+}
+
+.cert-btn.ghost:hover {
+    background: #fff;
+    border-color: var(--ink-gold);
+}
+
+/* --- the certificate --- */
+
+.certificate {
+    width: 100%;
+    max-width: 900px;
+    /* A4 landscape, so what is on screen is what prints */
+    aspect-ratio: 1.414 / 1;
+    max-height: calc(100dvh - 120px);
+    background:
+        radial-gradient(circle at 12% 6%, rgba(255, 255, 255, 0.9), transparent 42%),
+        linear-gradient(168deg, #fdfaf3 0%, #f7f1e4 100%);
+    color: var(--ink-navy);
+    border-radius: 3px;
+    box-shadow:
+        0 22px 48px rgba(27, 42, 74, 0.28),
+        0 2px 0 rgba(255, 255, 255, 0.9) inset;
+    padding: clamp(7px, 1vw, 12px);
+    container-type: inline-size;
+}
+
+/* Double rule plus a gold inner line, drawn with nested borders. */
+.cert-frame {
+    position: relative;
+    height: 100%;
+    border: 3px solid var(--ink-navy);
+    padding: clamp(10px, 2.2cqi, 30px) clamp(12px, 3cqi, 40px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.cert-frame::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(27, 42, 74, 0.55);
+    pointer-events: none;
+}
+
+.cert-frame::after {
+    content: '';
+    position: absolute;
+    inset: 11px;
+    border: 1px solid var(--ink-gold-light);
+    pointer-events: none;
+}
+
+/* gold corner brackets */
+.cert-corner {
+    position: absolute;
+    width: clamp(16px, 3.4cqi, 30px);
+    height: clamp(16px, 3.4cqi, 30px);
+    border: 2px solid var(--ink-gold);
+    pointer-events: none;
+}
+
+.cert-corner.tl { top: 14px; left: 14px; border-right: none; border-bottom: none; }
+.cert-corner.tr { top: 14px; right: 14px; border-left: none; border-bottom: none; }
+.cert-corner.bl { bottom: 14px; left: 14px; border-right: none; border-top: none; }
+.cert-corner.br { bottom: 14px; right: 14px; border-left: none; border-top: none; }
+
+/* ---- award seal -------------------------------------------------------
+   The seal is the one mark on this page that states the result at a glance,
+   so it carries the grade band in its colour as well as its wording. Sizes
+   are all in em off --size, so the three text rows keep their proportions at
+   any container width. Nothing animates: this is a document, and it has to
+   look the same printed as it does on screen. */
+.cert-seal {
+    --size: clamp(58px, 10.5cqi, 100px);
+    --seal: var(--ink-gold);
+    --seal-lt: var(--ink-gold-light);
+    --seal-glow: rgba(169, 128, 58, 0.4);
+
+    position: absolute;
+    /* Pushed clear of the top-right corner bracket, which occupies 16-46 from
+       both frame edges — the seal used to sit on top of it. The floor on the
+       top clamp is what keeps it clear on narrow containers too, where the
+       bracket does not shrink. */
+    top: clamp(58px, 7.4cqi, 76px);
+    right: clamp(30px, 5.6cqi, 58px);
+    width: var(--size);
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.05;
+    font-family: var(--font-header);
+    font-weight: 900;
+    font-size: var(--size);
+    color: var(--seal);
+    border-radius: 50%;
+    border: 0.026em solid var(--seal);
+    background:
+        radial-gradient(circle at 38% 30%,
+            #fff 0 40%,
+            rgba(255, 255, 255, 0.92) 60%,
+            rgba(255, 255, 255, 0.72) 72%,
+            transparent 73%),
+        conic-gradient(from 0deg, var(--seal-lt) 0 4deg, transparent 4deg 15deg);
+    box-shadow:
+        inset 0 0 0 0.012em rgba(255, 255, 255, 0.95),
+        inset 0 0 0.05em 0.012em var(--seal-lt),
+        0 0 0.17em 0.03em var(--seal-glow),
+        0 0.03em 0.1em rgba(27, 42, 74, 0.22);
+    transform: rotate(-9deg);
+}
+
+/* inner hairline ring — what makes it read as struck rather than drawn */
+.cert-seal::after {
+    content: '';
+    position: absolute;
+    inset: 11%;
+    border: 1px solid var(--seal);
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
+.cert-seal .seal-top {
+    font-size: 0.105em;
+    letter-spacing: 0.2em;
+    opacity: 0.85;
+}
+
+.cert-seal .seal-mark {
+    font-size: 0.27em;
+    letter-spacing: 0.01em;
+    margin: 0.06em 0 0.04em;
+}
+
+.cert-seal .seal-band {
+    font-size: 0.078em;
+    letter-spacing: 0.11em;
+}
+
+/* grade bands: 90+ gold, 80-89 silver, 70-79 bronze */
+.cert-seal.tier-gold {
+    --seal: #a9803a;
+    --seal-lt: #e8cd93;
+    --seal-glow: rgba(190, 145, 55, 0.48);
+}
+
+.cert-seal.tier-silver {
+    --seal: #5f7386;
+    --seal-lt: #cdd8e2;
+    --seal-glow: rgba(110, 140, 170, 0.44);
+}
+
+.cert-seal.tier-bronze {
+    --seal: #96602f;
+    --seal-lt: #d5a678;
+    --seal-glow: rgba(170, 105, 50, 0.44);
+}
+
+/* Not cleared. Grey read as "draft", not as "this person is not signed off",
+   so the fail seal borrows the cues a warning label uses: crimson ink, a
+   hazard-striped rim instead of the rosette teeth, a heavier strike and a
+   steeper angle. */
+.cert-seal.is-fail {
+    --seal: #a3231f;
+    --seal-lt: #e8a3a0;
+    --seal-glow: rgba(163, 35, 31, 0.42);
+    border-width: 0.034em;
+    transform: rotate(-13deg);
+    background:
+        radial-gradient(circle at 38% 30%,
+            #fff 0 62%,
+            rgba(255, 255, 255, 0.9) 71%,
+            transparent 72%),
+        repeating-linear-gradient(45deg,
+            #a3231f 0 0.055em,
+            #f4dcc0 0.055em 0.11em);
+}
+
+.cert-seal.is-fail .seal-top {
+    font-size: 0.16em;
+    letter-spacing: 0;
+    opacity: 1;
+}
+
+.cert-seal.is-fail .seal-mark {
+    font-size: 0.132em;
+    letter-spacing: 0.03em;
+}
+
+/* reversed out of the crimson, the way a rejected-stamp bar reads */
+.cert-seal.is-fail .seal-band {
+    font-size: 0.068em;
+    letter-spacing: 0.08em;
+    padding: 0.03em 0.06em;
+    background: var(--seal);
+    color: #fff5f4;
+    border-radius: 0.02em;
+}
+
+/* type */
+
+.cert-issuer {
+    font-family: var(--font-header);
+    font-size: clamp(6.5px, 1.2cqi, 10px);
+    font-weight: 700;
+    letter-spacing: clamp(1.5px, 0.42cqi, 3.6px);
+    color: var(--ink-gold);
+    margin-bottom: clamp(5px, 1.4cqi, 14px);
+}
+
+.cert-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: clamp(15px, 3.5cqi, 34px);
+    line-height: 1.14;
+    letter-spacing: 0.4px;
+    color: var(--ink-navy);
+    max-width: 92%;
+}
+
+/* gold divider with a diamond */
+.cert-rule {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: clamp(5px, 1.3cqi, 13px) 0;
+    color: var(--ink-gold);
+}
+
+.cert-rule::before,
+.cert-rule::after {
+    content: '';
+    width: clamp(38px, 11cqi, 120px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, currentColor);
+}
+
+.cert-rule::after { background: linear-gradient(90deg, currentColor, transparent); }
+
+.cert-rule span {
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    transform: rotate(45deg);
+}
+
+.cert-preamble {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: clamp(8.5px, 1.5cqi, 14px);
+    color: var(--ink-grey);
+}
+
+.cert-name {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: clamp(20px, 5cqi, 48px);
+    line-height: 1.1;
+    letter-spacing: clamp(1px, 0.28cqi, 3px);
+    color: var(--ink-crimson);
+    margin: clamp(3px, 0.9cqi, 9px) 0 clamp(4px, 1cqi, 10px);
+    padding: 0 clamp(8px, 2.4cqi, 26px) clamp(3px, 0.7cqi, 7px);
+    border-bottom: 1.5px solid rgba(27, 42, 74, 0.45);
+    max-width: 94%;
+    overflow-wrap: anywhere;
+}
+
+.cert-body {
+    font-size: clamp(8px, 1.4cqi, 13px);
+    line-height: 1.5;
+    color: var(--ink-grey);
+    max-width: 62ch;
+}
+
+/* stat plates */
+
+.cert-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(7px, 2cqi, 22px);
+    margin: clamp(7px, 1.8cqi, 20px) 0 clamp(5px, 1.2cqi, 12px);
+}
+
+.cert-stats div {
+    min-width: clamp(66px, 15cqi, 150px);
+    padding: clamp(4px, 1cqi, 10px) clamp(6px, 1.4cqi, 14px);
+    border: 1px solid var(--ink-gold);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.cert-stats span {
+    display: block;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: clamp(13px, 2.7cqi, 26px);
+    color: var(--ink-navy);
+    line-height: 1.1;
+}
+
+.cert-stats em {
+    display: block;
+    font-style: normal;
+    font-family: var(--font-header);
+    font-size: clamp(5.5px, 0.95cqi, 8px);
+    font-weight: 700;
+    letter-spacing: clamp(0.8px, 0.22cqi, 1.8px);
+    color: var(--ink-gold);
+    margin-top: 3px;
+}
+
+/* rank ribbon */
+
+.cert-rank-label {
+    font-family: var(--font-header);
+    font-size: clamp(5.5px, 1cqi, 8.5px);
+    font-weight: 700;
+    letter-spacing: clamp(1.4px, 0.4cqi, 3px);
+    color: var(--ink-gold);
+}
+
+.cert-rank {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    font-size: clamp(10px, 2.1cqi, 20px);
+    letter-spacing: clamp(0.4px, 0.14cqi, 1.4px);
+    color: var(--ink-navy);
+    background: linear-gradient(180deg, rgba(216, 185, 120, 0.26), rgba(216, 185, 120, 0.08));
+    border-top: 1px solid var(--ink-gold);
+    border-bottom: 1px solid var(--ink-gold);
+    padding: clamp(3px, 0.8cqi, 8px) clamp(10px, 3cqi, 34px);
+    margin: clamp(2px, 0.6cqi, 6px) 0 clamp(5px, 1.2cqi, 12px);
+    max-width: 94%;
+}
+
+.cert-badges {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(4px, 1cqi, 9px);
+}
+
+.cert-badges li {
+    font-size: clamp(6.5px, 1.15cqi, 11px);
+    border: 1px solid rgba(169, 128, 58, 0.55);
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 999px;
+    padding: 2px clamp(6px, 1.4cqi, 12px);
+    color: var(--ink-grey);
+}
+
+.cert-badges:empty { display: none; }
+
+/* signatures pinned to the base of the frame */
+
+.cert-signature {
+    margin-top: auto;
+    padding-top: clamp(8px, 2cqi, 22px);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(14px, 6cqi, 80px);
+    width: 100%;
+}
+
+.cert-sig-block { flex: 0 1 clamp(120px, 30cqi, 260px); }
+
+.cert-sig-line {
+    border-bottom: 1px solid rgba(27, 42, 74, 0.7);
+    min-height: 1.5em;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: clamp(9px, 1.6cqi, 15px);
+    color: var(--ink-navy);
+    padding-bottom: 2px;
+    margin-bottom: 4px;
+}
+
+.cert-sig-block span {
+    font-family: var(--font-header);
+    font-size: clamp(5px, 0.9cqi, 8px);
+    font-weight: 700;
+    letter-spacing: clamp(0.5px, 0.16cqi, 1.2px);
+    color: var(--ink-gold);
+}
+
+/* ===================================
+   PRINT — the certificate prints alone. Everything else in the document,
+   including the scanline overlay and the other screens, is removed.
+   =================================== */
+
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 8mm;
+    }
+
+    html,
+    body {
+        height: auto !important;
+        overflow: visible !important;
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    .scanlines,
+    .matrix-bg,
+    .audio-controls,
+    .no-print,
+    .hud,
+    .modal-overlay {
+        display: none !important;
+    }
+
+    /* Hoist the certificate out of the absolutely-positioned screen stack */
+    .game-container,
+    #certificateScreen,
+    #certificateScreen .briefing-room {
+        position: static !important;
+        display: block !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+        opacity: 1 !important;
+        background: #fff !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Any screen that is not the certificate stays out of the printout,
+       whether or not it happens to be .active */
+    .screen:not(#certificateScreen) {
+        display: none !important;
+    }
+
+    .certificate {
+        max-width: none;
+        max-height: none;
+        width: 100%;
+        aspect-ratio: auto;
+        min-height: 185mm;
+        box-shadow: none !important;
+        background: #fff !important;
+        padding: 0;
+        break-inside: avoid;
+    }
+
+    .cert-frame {
+        border-color: #14213a;
+        padding: 10mm 12mm 8mm;
+    }
+
+    * {
+        animation: none !important;
+        transition: none !important;
+        text-shadow: none !important;
+    }
+}
