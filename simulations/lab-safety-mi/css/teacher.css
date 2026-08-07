@@ -1,0 +1,297 @@
+/* ===================================
+   MISSION: IMPOSSIBLE - LAB SAFETY
+   Teacher setup page
+
+   Deliberately not the dark spy theme, and not the certificate either. This is
+   a utility a teacher uses once before a lesson, so it reads as ordinary
+   documentation: warm paper, navy ink, generous line length, nothing moving.
+   Self-contained — it borrows the certificate's ink palette by value rather
+   than loading certificate.css, whose variables are scoped to a screen that
+   does not exist on this page.
+   =================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.teacher-page {
+    --ink-navy: #1b2a4a;
+    --ink-gold: #a9803a;
+    --ink-grey: #5a6478;
+    --ink-crimson: #8d1c1c;
+    --paper: #fdfaf3;
+    --rule: rgba(27, 42, 74, 0.16);
+    --font-header: 'Orbitron', monospace;
+    --font-body: 'Rajdhani', sans-serif;
+
+    font-family: var(--font-body);
+    color: var(--ink-navy);
+    background:
+        radial-gradient(circle at 15% 6%, rgba(255, 255, 255, 0.9), transparent 42%),
+        linear-gradient(140deg, #fdfaf3 0%, #f4ece0 100%);
+    min-height: 100vh;
+    padding: clamp(16px, 4vh, 48px) clamp(14px, 4vw, 32px);
+    font-size: clamp(15px, 1.15vw, 17px);
+    line-height: 1.55;
+}
+
+.tp-sheet {
+    max-width: 700px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    box-shadow: 0 10px 34px rgba(27, 42, 74, 0.1);
+    padding: clamp(20px, 4vw, 44px);
+}
+
+/* ---- header ---- */
+
+.tp-eyebrow {
+    font-family: var(--font-header);
+    font-size: clamp(8px, 0.8vw, 10px);
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    color: var(--ink-gold);
+}
+
+.tp-head h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(24px, 3.2vw, 34px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 8px 0 10px;
+}
+
+.tp-lede {
+    color: var(--ink-grey);
+    max-width: 54ch;
+}
+
+/* ---- steps ---- */
+
+.tp-step {
+    margin-top: clamp(22px, 3.4vh, 34px);
+    padding-top: clamp(18px, 2.8vh, 26px);
+    border-top: 1px solid var(--rule);
+}
+
+.tp-step h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-header);
+    font-size: clamp(12px, 1.15vw, 15px);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+.tp-num {
+    display: grid;
+    place-items: center;
+    width: 1.9em;
+    height: 1.9em;
+    flex: none;
+    border-radius: 50%;
+    background: var(--ink-navy);
+    color: var(--paper);
+    font-size: 0.85em;
+}
+
+.tp-label {
+    display: block;
+    font-family: var(--font-header);
+    font-size: clamp(8px, 0.72vw, 10px);
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+    color: var(--ink-gold);
+    margin-bottom: 6px;
+}
+
+.teacher-page input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 17px;
+    color: var(--ink-navy);
+    background: #fff;
+    border: 1px solid rgba(27, 42, 74, 0.28);
+    border-radius: 6px;
+    padding: 11px 13px;
+    outline: none;
+}
+
+.teacher-page input:focus {
+    border-color: var(--ink-gold);
+    box-shadow: 0 0 0 3px rgba(216, 185, 120, 0.35);
+}
+
+/* ---- signature preview ----
+   Matches the certificate's own signature block (Georgia italic over a rule)
+   so what the teacher approves here is what gets printed. */
+
+.tp-preview-label {
+    margin: 18px 0 6px;
+    font-size: 0.9em;
+    color: var(--ink-grey);
+}
+
+.tp-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 20px 16px 14px;
+}
+
+.tp-sig {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 20px;
+    min-height: 1.4em;
+    color: var(--ink-navy);
+    text-align: center;
+    word-break: break-word;
+}
+
+.tp-sig-rule {
+    display: block;
+    width: min(280px, 100%);
+    border-bottom: 1px solid rgba(27, 42, 74, 0.7);
+    margin: 4px 0 7px;
+}
+
+.tp-sig-role {
+    font-family: var(--font-header);
+    font-size: 9px;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    color: var(--ink-gold);
+    text-align: center;
+}
+
+.tp-warn {
+    margin-top: 12px;
+    padding: 10px 13px;
+    border-left: 3px solid var(--ink-crimson);
+    background: rgba(141, 28, 28, 0.06);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.94em;
+    color: #6f1717;
+}
+
+.tp-warn[hidden] { display: none; }
+
+/* ---- link row ---- */
+
+.tp-linkrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tp-linkrow input {
+    flex: 1 1 260px;
+    font-size: 14px;
+    background: rgba(27, 42, 74, 0.04);
+    cursor: text;
+}
+
+.tp-hint {
+    margin-top: 8px;
+    font-size: 0.92em;
+    color: var(--ink-grey);
+    max-width: 56ch;
+}
+
+.tp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+/* ---- buttons ---- */
+
+.tp-btn {
+    font-family: var(--font-header);
+    font-size: clamp(10px, 0.85vw, 12px);
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 11px 18px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+
+.tp-btn.primary {
+    background: var(--ink-navy);
+    color: var(--paper);
+}
+
+.tp-btn.primary:hover { background: #24365d; }
+
+.tp-btn.ghost {
+    background: transparent;
+    border-color: rgba(27, 42, 74, 0.3);
+    color: var(--ink-navy);
+}
+
+.tp-btn.ghost:hover {
+    border-color: var(--ink-gold);
+    color: var(--ink-gold);
+}
+
+.tp-btn:focus-visible {
+    outline: 2px solid var(--ink-gold);
+    outline-offset: 2px;
+}
+
+/* ---- notes and footer ---- */
+
+.tp-note {
+    margin-top: clamp(22px, 3.4vh, 34px);
+    padding-top: clamp(18px, 2.8vh, 26px);
+    border-top: 1px solid var(--rule);
+}
+
+.tp-note h3 {
+    font-family: var(--font-header);
+    font-size: clamp(10px, 0.9vw, 12px);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-gold);
+    margin-bottom: 10px;
+}
+
+.tp-note ul {
+    padding-left: 1.15em;
+    color: var(--ink-grey);
+    max-width: 60ch;
+}
+
+.tp-note li { margin-bottom: 7px; }
+
+.tp-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: clamp(20px, 3vh, 30px);
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 0.85em;
+    color: var(--ink-grey);
+}
+
+.tp-foot a { color: var(--ink-navy); }
+
+@media (prefers-reduced-motion: reduce) {
+    .tp-btn { transition: none; }
+}

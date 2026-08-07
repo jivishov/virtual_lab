@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Set up for your class — Laboratory Safety Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/teacher.css">
+</head>
+<body class="teacher-page">
+
+    <main class="tp-sheet">
+        <header class="tp-head">
+            <p class="tp-eyebrow">Impossible Mission Force · Science Division</p>
+            <h1>Set up this activity for your class</h1>
+            <p class="tp-lede">
+                Put your name on every certificate your students earn — without asking
+                them to type it. Enter it once here and share the link you get back.
+            </p>
+        </header>
+
+        <section class="tp-step">
+            <h2><span class="tp-num">1</span> Your name, as it should appear</h2>
+            <label class="tp-label" for="teacherName">Supervising officer</label>
+            <input type="text" id="teacherName" maxlength="60" autocomplete="name"
+                   placeholder="e.g. Ms. Rivera" spellcheck="false">
+
+            <p class="tp-preview-label">On the certificate it will read:</p>
+            <div class="tp-preview" aria-live="polite">
+                <span class="tp-sig" id="sigPreview"></span>
+                <span class="tp-sig-rule"></span>
+                <span class="tp-sig-role">Chief Lab Safety Officer · IMF Science Division</span>
+            </div>
+            <p class="tp-warn" id="nameWarning" hidden></p>
+        </section>
+
+        <section class="tp-step" id="linkStep" hidden>
+            <h2><span class="tp-num">2</span> Share this link with your students</h2>
+            <div class="tp-linkrow">
+                <input type="text" id="classLink" readonly aria-label="Your class link">
+                <button type="button" class="tp-btn primary" id="copyBtn">Copy link</button>
+            </div>
+            <p class="tp-hint" id="copyState" aria-live="polite"></p>
+            <p class="tp-hint">
+                Paste it into Google Classroom, Canvas, or wherever you post work.
+                Anyone who opens it gets your name locked onto their certificate —
+                students cannot change it.
+            </p>
+            <div class="tp-actions">
+                <a class="tp-btn ghost" id="tryLink" href="#" target="_blank" rel="noopener">Open as a student</a>
+                <button type="button" class="tp-btn ghost" id="previewPdfBtn">Preview the certificate PDF</button>
+            </div>
+        </section>
+
+        <section class="tp-note">
+            <h3>Worth knowing</h3>
+            <ul>
+                <li>Nothing is stored on a server. The name travels in the link itself, so
+                    it works on any device, in any browser, with no sign-in.</li>
+                <li>Bookmark this page to make a fresh link any time — one per section if
+                    you want certificates to come back sorted by class.</li>
+                <li>Students still enter their own codename at the start; that is the name
+                    the certificate is issued to.</li>
+                <li>The old link keeps working if you have already shared one.</li>
+            </ul>
+        </section>
+
+        <footer class="tp-foot">
+            <a href="index.html">← Back to the simulation</a>
+            <span>Virtual Lab · Laboratory Safety Protocol simulation</span>
+        </footer>
+    </main>
+
+    <script src="js/pdf.js"></script>
+    <script src="js/teacher.js"></script>
+</body>
+</html>

@@ -182,11 +182,17 @@
     }
 }
 
-.typing-effect {
-    overflow: hidden;
-    border-right: 2px solid var(--accent-blue);
-    white-space: nowrap;
-    animation: typing 3s steps(40) 1s forwards, cursorBlink 0.75s step-end infinite;
+/* Line-by-line briefing reveal. Scoped to #briefingText so the intro
+   screen's .typing-text children (which never get .revealed) stay visible. */
+#briefingText > * {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+#briefingText > .revealed {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* ===================================
@@ -561,6 +567,25 @@
 .critical-warning {
     animation: criticalBlink 0.3s infinite;
 }
+
+/* ===================================
+   SCENE ANIMATION UTILITIES
+   Replace the inline `animation:` declarations that used to live in
+   every scenario's sceneHTML, so reduced-motion can switch them off.
+   =================================== */
+
+.float-soft   { animation: float 3s ease-in-out infinite; }
+.pulse-soft   { animation: pulse 1.6s ease-in-out infinite; }
+.pulse-fast   { animation: pulse 0.8s ease-in-out infinite; }
+.shake-soft   { animation: shake 0.45s infinite; }
+.flicker-soft { animation: flicker 0.4s ease-in-out infinite alternate; }
+
+/* Classes the JS actually applies. These had no rule at all before, so
+   scene entry, feedback slide-in/out and HUD pulse were silent no-ops. */
+.animated.zoomIn             { animation-name: zoomIn; }
+.animated.fadeOut            { animation-name: fadeOut; }
+.animated.slideInFromBottom  { animation-name: slideInFromBottom; }
+.animated.pulse              { animation-name: pulse; }
 
 /* ===================================
    UTILITY ANIMATION CLASSES

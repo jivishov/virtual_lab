@@ -1,6 +1,16 @@
 // ===================================
 // MISSION: IMPOSSIBLE - LAB SAFETY
 // Questions Database
+//
+// The `correct: true` flag on an option is the single source of truth.
+// There is deliberately no parallel `correctAnswer` index: options are
+// shuffled per attempt, and two copies of the same fact are how a key
+// silently goes stale.
+//
+// Every scenario asks for the SAFE action. Items that used to ask students
+// to pick the forbidden action have been rewritten, because the UI marks the
+// chosen option green with "PROTOCOL EXECUTED" — which rewarded selecting a
+// hazard in a safety module.
 // ===================================
 
 const MISSION_SCENARIOS = [
@@ -8,458 +18,457 @@ const MISSION_SCENARIOS = [
         id: 1,
         title: "SCENARIO ALPHA - PPE CHECKPOINT",
         threatLevel: "low",
-        situation: "Agent must infiltrate the lab. Intelligence reports hazardous materials present. Select proper protective equipment before entry.",
+        situation: "Agent must infiltrate the lab. Intelligence reports corrosives and open flames in use. Select the protective equipment required for entry.",
         sceneType: "ppe",
-        sceneHTML: `
-            <div class="xray-scan"></div>
-            <div style="font-size: 100px; animation: float 2s ease-in-out infinite;">
-                🥽🧤🥼
-            </div>
-        `,
+        art: "ppe",
         options: [
             {
                 text: "CASUAL ATTIRE",
-                icon: "👕",
-                description: "Regular clothing and open-toed shoes",
-                correct: false
+                icon: "tshirt",
+                description: "Everyday clothing, open-toed shoes",
+                feedback: "Open-toed shoes and bare arms put nothing between a spill and your skin, and dropped glassware lands on your feet."
             },
             {
-                text: "PARTIAL PPE",
-                icon: "🥽",
-                description: "Only safety goggles",
-                correct: false
+                text: "GOGGLES ONLY",
+                icon: "goggles",
+                description: "Eye protection, nothing else",
+                feedback: "Your eyes are covered, but your hands and clothing are still exposed to corrosives and hot glassware."
             },
             {
                 text: "FULL PROTECTION",
-                icon: "🥼",
+                icon: "lab-coat",
                 description: "Lab coat, goggles, gloves, closed shoes",
                 correct: true
             },
             {
-                text: "MINIMAL GEAR",
-                icon: "🧤",
-                description: "Only gloves",
-                correct: false
+                text: "GLOVES ONLY",
+                icon: "gloves",
+                description: "Hand protection, nothing else",
+                feedback: "Gloves leave your eyes unprotected, and eye injuries are the most common serious laboratory injury."
             }
         ],
-        explanation: "Full PPE is mandatory in laboratory environments. Lab coat protects clothing and skin, goggles protect eyes from splashes, gloves prevent hand contamination, and closed-toe shoes protect feet from spills and dropped objects.",
-        correctAnswer: 2
+        explanation: "Full PPE is mandatory. The lab coat protects skin and clothing, goggles protect eyes from splashes, gloves prevent contamination and chemical burns, and closed-toe shoes protect feet from spills and dropped glassware. PPE only works as a complete set.",
+        protocol: "Wear a lab coat, goggles, gloves and closed shoes for every practical."
     },
     {
         id: 2,
-        title: "SCENARIO BRAVO - CHEMICAL IDENTIFICATION",
+        title: "SCENARIO BRAVO - HAZARD IDENTIFICATION",
         threatLevel: "medium",
-        situation: "Surveillance detected an unmarked container. Identify the hazard symbol to proceed safely.",
+        situation: "Surveillance recovered this warning label from an unmarked container. Identify the hazard class it declares.",
         sceneType: "chemical",
-        sceneHTML: `
-            <div class="infrared-effect"></div>
-            <div class="heat-signature" style="top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
-            <div style="font-size: 120px; animation: pulse 1.5s infinite;">
-                ⚠️☣️☢️🔥
-            </div>
-        `,
+        art: "hazard",
         options: [
             {
                 text: "CORROSIVE",
-                icon: "🧪",
-                description: "Acids and bases that burn skin",
-                correct: false
+                icon: "droplet",
+                description: "Acids and bases that burn tissue",
+                feedback: "Corrosives are marked with a pictogram of a hand and a surface being eaten away, not three interlocking rings."
             },
             {
                 text: "FLAMMABLE",
-                icon: "🔥",
-                description: "Easily ignites and burns",
-                correct: false
+                icon: "flame",
+                description: "Ignites and burns easily",
+                feedback: "The flammable pictogram is a flame. Three interlocking rings are the international biohazard symbol."
             },
             {
                 text: "BIOHAZARD",
-                icon: "☣️",
-                description: "Biological agents, infectious materials",
+                icon: "biohazard",
+                description: "Infectious biological material",
                 correct: true
             },
             {
                 text: "RADIOACTIVE",
-                icon: "☢️",
-                description: "Emits harmful radiation",
-                correct: false
+                icon: "radioactive",
+                description: "Emits ionising radiation",
+                feedback: "Radioactive material uses a trefoil — three solid wedges around a central dot. Similar at a glance, a different hazard entirely."
             }
         ],
-        explanation: "The biohazard symbol (☣️) indicates biological agents that pose a threat to human health. These include bacteria, viruses, and other microorganisms. Always handle with extreme caution and proper containment protocols.",
-        correctAnswer: 2
+        explanation: "Three interlocking rings is the international biohazard symbol: bacteria, viruses, cultures, blood and tissue. Handle only with the containment level your instructor specifies, and never open an unmarked container carrying it.",
+        protocol: "Read the pictogram before you touch the container — the symbol tells you which precautions apply."
     },
     {
         id: 3,
-        title: "SCENARIO CHARLIE - FIRE PROTOCOL ALPHA",
+        title: "SCENARIO CHARLIE - CLOTHING FIRE",
         threatLevel: "high",
-        situation: "CRITICAL: Target's lab coat has caught fire during experiment. Immediate action required!",
+        situation: "CRITICAL: a colleague's sleeve has caught fire at the bench. The safety shower is three metres away, in clear reach. Act now.",
         sceneType: "fire",
-        sceneHTML: `
-            <div class="fire-effect">
-                <div class="flame"></div>
-            </div>
-            <div class="alarm-light" style="left: 20px;"></div>
-            <div class="alarm-light" style="right: 20px;"></div>
-            <div style="font-size: 80px; margin-top: 200px; animation: shake 0.3s infinite;">
-                🧑‍🔬🔥
-            </div>
-        `,
+        art: "fire",
         options: [
             {
-                text: "WATER SPRAY",
-                icon: "💧",
-                description: "Use water to extinguish",
-                correct: false
-            },
-            {
-                text: "FIRE BLANKET",
-                icon: "🧯",
-                description: "Smother flames with fire blanket",
+                text: "SAFETY SHOWER",
+                icon: "shower",
+                description: "Get them under it and drench immediately",
                 correct: true
             },
             {
-                text: "FIRE EXTINGUISHER",
-                icon: "🧴",
-                description: "Spray with CO₂ extinguisher",
-                correct: false
+                text: "FIRE BLANKET",
+                icon: "blanket",
+                description: "Smother the flames with a blanket",
+                feedback: "A blanket is the right call when no shower is within reach — but with one three metres away, drenching is faster and also cools the burn instead of trapping heat against the skin."
             },
             {
-                text: "EVACUATE ONLY",
-                icon: "🚪",
-                description: "Leave immediately, no action",
-                correct: false
+                text: "CO₂ EXTINGUISHER",
+                icon: "extinguisher",
+                description: "Spray the person with the extinguisher",
+                feedback: "Never aim a CO₂ or dry-powder extinguisher at a person. It can cause cold burns, drive burning material into skin, and displace the air they are breathing."
+            },
+            {
+                text: "RUN FOR HELP",
+                icon: "door",
+                description: "Leave and fetch a teacher",
+                feedback: "Running fans the flames with fresh oxygen and spends the few seconds that decide how deep the burn goes."
             }
         ],
-        explanation: "When a person's clothing is on fire, use a FIRE BLANKET to smother the flames by cutting off oxygen supply. Drop and roll is also effective. Never use a chemical fire extinguisher directly on a person as it can cause harm.",
-        correctAnswer: 1
+        explanation: "Drench the person under the safety shower at once — it extinguishes the fire and cools the burn in one action. With no shower in reach, smother with a fire blanket or stop-drop-and-roll. Never use a CO₂ or dry-powder extinguisher on a person, and send someone else for help rather than leaving.",
+        protocol: "Clothing fire: drench under the safety shower, or smother — never spray a person with an extinguisher."
     },
     {
         id: 4,
         title: "SCENARIO DELTA - CONTAMINATION ALERT",
         threatLevel: "high",
-        situation: "Chemical spill detected in Sector 7. Corrosive substance spreading. What is your first action?",
+        situation: "A corrosive spill is spreading across the bench in Sector 7. The substance is not identified. What is your first action?",
         sceneType: "spill",
-        sceneHTML: `
-            <div class="biohazard-effect">⚠️</div>
-            <div style="margin-top: 20px; font-size: 60px;">
-                <div style="animation: pulse 0.5s infinite;">💧💦</div>
-                <div style="color: #ff8800; margin-top: 10px;">☣️ CONTAMINATION ZONE ☣️</div>
-            </div>
-        `,
+        art: "spill",
         options: [
             {
                 text: "ALERT SUPERVISOR",
-                icon: "📢",
-                description: "Immediately notify teacher/supervisor",
+                icon: "megaphone",
+                description: "Tell the teacher or supervisor at once",
                 correct: true
             },
             {
-                text: "CLEAN YOURSELF",
-                icon: "🧹",
-                description: "Attempt cleanup alone",
-                correct: false
+                text: "CLEAN IT YOURSELF",
+                icon: "broom",
+                description: "Deal with it before anyone notices",
+                feedback: "Cleaning an unidentified corrosive risks skin contact and the wrong neutraliser — some combinations release heat or toxic gas."
             },
             {
-                text: "IGNORE & CONTINUE",
-                icon: "➡️",
-                description: "Report later, continue work",
-                correct: false
+                text: "CARRY ON, REPORT LATER",
+                icon: "arrow",
+                description: "Finish the experiment first",
+                feedback: "A spreading corrosive reaches other people, other reagents and shoes. Every second of delay widens the contaminated zone."
             },
             {
-                text: "ASK CLASSMATE",
-                icon: "👥",
-                description: "Get peer assistance first",
-                correct: false
+                text: "ASK A CLASSMATE",
+                icon: "people",
+                description: "Get a peer to help you first",
+                feedback: "Your classmate has the same training you do and no access to spill kits or PPE stores. Escalate — don't refer sideways."
             }
         ],
-        explanation: "ALWAYS immediately alert your teacher or supervisor about any chemical spill. They are trained to handle hazardous situations and have access to proper cleanup equipment and safety protocols.",
-        correctAnswer: 0
+        explanation: "Report every spill to your teacher or supervisor immediately. They are trained in decontamination, know what the substance is, and control the spill kit. Keep others away from the area while you wait.",
+        protocol: "Any spill, however small: stop, keep clear, tell the supervisor immediately."
     },
     {
         id: 5,
-        title: "SCENARIO ECHO - MIXING PROTOCOL",
+        title: "SCENARIO ECHO - DILUTION PROTOCOL",
         threatLevel: "high",
-        situation: "Mission requires diluting concentrated sulfuric acid with water. Choose the CORRECT method to prevent exothermic reaction.",
+        situation: "The mission requires diluting concentrated sulfuric acid. Choose the method that keeps the heat of dilution under control.",
         sceneType: "mixing",
-        sceneHTML: `
-            <div class="particle-system">
-                ${Array.from({length: 20}, (_, i) => `
-                    <div class="particle" style="
-                        left: ${Math.random() * 100}%;
-                        top: ${Math.random() * 100}%;
-                        --tx: ${(Math.random() - 0.5) * 200}px;
-                        --ty: ${(Math.random() - 0.5) * 200}px;
-                        animation-delay: ${Math.random() * 3}s;
-                    "></div>
-                `).join('')}
-            </div>
-            <div style="font-size: 80px; animation: pulse 1s infinite;">
-                🧪 + 💧 = ?
-            </div>
-        `,
+        art: "dilution",
         options: [
             {
-                text: "WATER TO ACID",
-                icon: "💥",
-                description: "Pour water into acid",
-                correct: false
+                text: "WATER INTO ACID",
+                icon: "water-to-acid",
+                description: "Pour the water into the acid",
+                feedback: "This is the violation from your briefing. Water floats on denser acid, so the entire heat of dilution lands in a thin surface layer, flashes to steam, and ejects boiling acid."
             },
             {
-                text: "QUICK MIX",
-                icon: "🌀",
-                description: "Mix both quickly together",
-                correct: false
+                text: "MIX QUICKLY",
+                icon: "swirl",
+                description: "Combine them fast and stir hard",
+                feedback: "Speed is the hazard here, not the order. Fast mixing releases heat faster than the water can carry it away."
             },
             {
-                text: "ACID TO WATER",
-                icon: "✅",
-                description: "Slowly add acid to water",
+                text: "ACID INTO WATER",
+                icon: "acid-to-water",
+                description: "Add acid to water slowly, stirring",
                 correct: true
             },
             {
                 text: "EQUAL PORTIONS",
-                icon: "⚖️",
-                description: "Pour equal amounts simultaneously",
-                correct: false
+                icon: "balance",
+                description: "Pour both at the same time",
+                feedback: "Pouring together still creates moments where acid is the bulk liquid receiving water. There is no safe simultaneous version."
             }
         ],
-        explanation: "CRITICAL PROTOCOL: Always add ACID to WATER, never water to acid! The reaction releases significant heat. Adding acid to water allows the larger volume of water to dissipate the heat safely. Water to acid causes violent boiling and splattering.",
-        correctAnswer: 2
+        explanation: "Always add acid TO water, slowly, with stirring. The large volume of water absorbs and spreads the heat of dilution. Reversing it concentrates that heat in a thin floating layer of water, which boils violently and throws acid out of the vessel.",
+        protocol: "Acid into water, slowly — never water into acid."
     },
     {
         id: 6,
         title: "SCENARIO FOXTROT - LAB RESPONSIBILITY",
         threatLevel: "low",
-        situation: "Experiment complete. Lab station contains used equipment and chemical residue. Determine cleanup responsibility.",
+        situation: "The experiment is complete. The station holds used glassware and chemical residue. Determine who is responsible for clearing it.",
         sceneType: "cleanup",
-        sceneHTML: `
-            <div style="font-size: 70px;">
-                <div style="animation: float 2s ease-in-out infinite;">🧪⚗️🔬</div>
-                <div style="margin-top: 20px; font-size: 40px;">
-                    ❓ WHO CLEANS ❓
-                </div>
-            </div>
-        `,
+        art: "cleanup",
         options: [
             {
                 text: "TEACHER ONLY",
-                icon: "👨‍🏫",
-                description: "Only the teacher cleans",
-                correct: false
+                icon: "teacher",
+                description: "Staff clear every station",
+                feedback: "One person cannot safely clear thirty stations, and they did not see what went into your glassware."
             },
             {
-                text: "LAB ASSISTANT",
-                icon: "🧑‍🔬",
-                description: "Designated lab assistant",
-                correct: false
+                text: "LAB TECHNICIAN",
+                icon: "microscope",
+                description: "The technician handles all of it",
+                feedback: "Technicians handle disposal of hazardous waste, not routine tidying — and passing them unlabelled residue makes their job dangerous."
             },
             {
-                text: "ALL STUDENTS",
-                icon: "👥",
-                description: "Everyone who used the lab",
+                text: "EVERYONE WHO USED IT",
+                icon: "people",
+                description: "Each student clears their own station",
                 correct: true
             },
             {
-                text: "NEXT CLASS",
-                icon: "⏰",
-                description: "Leave for next period",
-                correct: false
+                text: "THE NEXT CLASS",
+                icon: "clock",
+                description: "Leave it for the following period",
+                feedback: "The next class inherits unknown residue on a bench they assume is clean. That is how someone else gets hurt by your experiment."
             }
         ],
-        explanation: "Lab safety is EVERYONE'S responsibility. All students who use lab equipment and materials must clean their work area, properly dispose of waste, and return equipment. This ensures safety for the next users.",
-        correctAnswer: 2
+        explanation: "Everyone who used the lab clears their own station: wash and return glassware, dispose of waste in the designated container, wipe the bench, and wash your hands. The next user has to be able to trust that the bench is clean.",
+        protocol: "Clear your own station: glassware returned, waste in the right container, bench wiped, hands washed."
     },
     {
         id: 7,
-        title: "SCENARIO GOLF - FLAMMABLE MATERIALS",
+        title: "SCENARIO GOLF - FLAMMABLE STORAGE",
         threatLevel: "medium",
-        situation: "Alcohol and other flammable solvents must be stored. Identify the PROHIBITED location.",
+        situation: "Ethanol and other flammable solvents must be put away at the end of the session. Identify the correct storage location.",
         sceneType: "storage",
-        sceneHTML: `
-            <div class="fire-effect" style="position: absolute; right: 20px; top: 20px;">
-                <div class="flame"></div>
-            </div>
-            <div style="font-size: 80px; display: flex; gap: 30px; align-items: center;">
-                <div>🧪</div>
-                <div style="animation: pulse 0.8s infinite; color: #ff8800;">⚠️</div>
-                <div style="animation: flicker 0.5s infinite;">🔥</div>
-            </div>
-        `,
+        art: "storage",
         options: [
             {
-                text: "VENTILATED CABINET",
-                icon: "🗄️",
-                description: "Proper chemical storage cabinet",
-                correct: false
-            },
-            {
-                text: "COOL DARK AREA",
-                icon: "🌡️",
-                description: "Temperature-controlled space",
-                correct: false
-            },
-            {
-                text: "NEAR BURNER",
-                icon: "🔥",
-                description: "Next to Bunsen burner/heat source",
+                text: "FLAMMABLES CABINET",
+                icon: "cabinet",
+                description: "Labelled, vented, approved cabinet",
                 correct: true
             },
             {
-                text: "LABELED SHELF",
-                icon: "📦",
-                description: "Designated flammable shelf",
-                correct: false
+                text: "BESIDE THE BURNER",
+                icon: "burner",
+                description: "On the bench next to the heat source",
+                feedback: "Solvent vapour is heavier than air and travels along the bench. An ignition source at bench level can flash the vapour trail back to the bottle."
+            },
+            {
+                text: "OPEN BEAKER ON BENCH",
+                icon: "beaker",
+                description: "An unlabelled beaker, left out",
+                feedback: "An open vessel evaporates solvent into the room all night, and nobody downstream knows what the unlabelled liquid is."
+            },
+            {
+                text: "KITCHEN REFRIGERATOR",
+                icon: "fridge",
+                description: "A domestic fridge keeps it cool",
+                feedback: "A household fridge has an internal thermostat and light that spark — a classic cause of solvent explosions. Only lab-rated flammable-storage refrigerators are safe."
             }
         ],
-        explanation: "NEVER store flammable materials near heat sources, open flames, or Bunsen burners! Flammable liquids have low ignition points and can easily catch fire, causing explosions. Store in designated cabinets away from heat.",
-        correctAnswer: 2
+        explanation: "Flammable solvents belong in a labelled, ventilated, approved flammables cabinet, away from heat, flames and electrical ignition sources, with the cap firmly closed. Keep only the working quantity at the bench.",
+        protocol: "Flammables live in the approved vented cabinet, capped and labelled, away from every ignition source."
     },
     {
         id: 8,
         title: "SCENARIO HOTEL - ACCESS CONTROL",
         threatLevel: "low",
-        situation: "Laboratory door is locked. Agent needs access. Determine authorized entry protocol.",
+        situation: "The laboratory door is unlocked and the room is empty. Determine the authorised entry protocol.",
         sceneType: "access",
-        sceneHTML: `
-            <div style="font-size: 100px; animation: pulse 1.5s infinite;">
-                🚪🔒
-            </div>
-            <div style="font-size: 50px; margin-top: 30px; color: var(--accent-blue);">
-                <div>👨‍🏫 SUPERVISOR REQUIRED?</div>
-            </div>
-        `,
+        art: "access",
         options: [
             {
-                text: "ANYTIME ACCESS",
-                icon: "🕐",
-                description: "Enter whenever school is open",
-                correct: false
+                text: "ENTER ANY TIME",
+                icon: "clock",
+                description: "It is open, so it is available",
+                feedback: "An unlocked door is not permission. Reactions may be running, and an empty lab means nobody would know you were in trouble."
             },
             {
-                text: "WITH PERMISSION",
-                icon: "✅",
-                description: "Only with teacher authorization",
+                text: "ONLY WITH PERMISSION",
+                icon: "check",
+                description: "Enter only when staff authorise and supervise",
                 correct: true
             },
             {
-                text: "DURING CLASS",
-                icon: "📚",
-                description: "Only during scheduled class",
-                correct: false
+                text: "DURING CLASS ONLY",
+                icon: "book",
+                description: "Any time a lesson is scheduled",
+                feedback: "Close, but a timetabled lesson is not the point — the requirement is a supervisor who knows you are there and what you are handling."
             },
             {
-                text: "PEER ESCORT",
-                icon: "👥",
-                description: "With another student",
-                correct: false
+                text: "WITH A CLASSMATE",
+                icon: "people",
+                description: "Two students together is enough",
+                feedback: "A second student doubles the people at risk without adding anyone trained to respond."
             }
         ],
-        explanation: "NEVER enter a science laboratory without teacher permission and supervision. Labs contain hazardous materials and equipment that require trained oversight. Unauthorized access poses serious safety risks.",
-        correctAnswer: 1
+        explanation: "Never enter or work in a laboratory without staff authorisation and supervision. Labs hold hazardous materials, live equipment and running reactions, and emergency response depends on a trained adult being present.",
+        protocol: "No supervisor, no entry — regardless of whether the door is open."
     },
     {
         id: 9,
-        title: "SCENARIO INDIA - BEHAVIOR PROTOCOL",
+        title: "SCENARIO INDIA - CONDUCT PROTOCOL",
         threatLevel: "medium",
-        situation: "Multiple agents operating in confined lab space. Identify the STRICTLY FORBIDDEN behavior.",
+        situation: "Several operatives are working in a crowded lab with hot plates running. Identify the conduct required of all of them.",
         sceneType: "behavior",
-        sceneHTML: `
-            <div style="font-size: 80px;">
-                <div style="display: flex; gap: 20px; justify-content: center;">
-                    <div style="animation: float 1s ease-in-out infinite;">🧑‍🔬</div>
-                    <div style="animation: shake 0.3s infinite;">🏃</div>
-                    <div style="animation: float 1.5s ease-in-out infinite;">🧪</div>
-                </div>
-                <div style="margin-top: 30px; font-size: 60px; color: #ff0000;">
-                    ⛔ PROHIBITED ⛔
-                </div>
-            </div>
-        `,
+        art: "conduct",
         options: [
             {
-                text: "QUIET DISCUSSION",
-                icon: "🤫",
-                description: "Quietly talking with lab partners",
-                correct: false
-            },
-            {
-                text: "TAKING NOTES",
-                icon: "📝",
-                description: "Writing observations",
-                correct: false
-            },
-            {
-                text: "RUNNING/HORSEPLAY",
-                icon: "🏃",
-                description: "Running around or playing",
+                text: "MOVE AT WALKING PACE",
+                icon: "walk",
+                description: "Walk, keep aisles and exits clear",
                 correct: true
             },
             {
-                text: "ASKING QUESTIONS",
-                icon: "❓",
-                description: "Seeking clarification from teacher",
-                correct: false
+                text: "HURRY TO SAVE TIME",
+                icon: "run",
+                description: "Move fast between stations",
+                feedback: "Running in a crowded lab knocks glassware off benches and puts you into someone else's hot plate. Time saved is not worth a burn."
+            },
+            {
+                text: "TASTE TO CHECK RESULTS",
+                icon: "tongue",
+                description: "Confirm a product by tasting it",
+                feedback: "Nothing in a laboratory is ever tasted. Even a nominally harmless product may be contaminated by the glassware it sat in."
+            },
+            {
+                text: "GOGGLES OFF WHEN HEATING STOPS",
+                icon: "goggles",
+                description: "Remove eye protection after the flame is out",
+                feedback: "Hot glass, residual pressure and unnoticed splashes persist long after the flame is out. Goggles stay on until all work is cleared away."
             }
         ],
-        explanation: "Running, horseplay, and playing around are STRICTLY FORBIDDEN in the lab. These behaviors can cause accidents, spills, fires, or injuries. Labs require calm, focused behavior at all times for everyone's safety.",
-        correctAnswer: 2
+        explanation: "Calm, deliberate movement is a safety requirement, not etiquette. Walk, keep bags and stools out of aisles, keep exits clear, and keep your PPE on until everything is cleared away. Running and horseplay cause spills, breakages, fires and injuries.",
+        protocol: "Walk, keep aisles clear, and keep PPE on until the bench is cleared."
     },
     {
         id: 10,
-        title: "SCENARIO JULIET - FINAL PROTOCOL",
+        title: "SCENARIO JULIET - BIOLOGICAL SAMPLE",
         threatLevel: "high",
-        situation: "MISSION CRITICAL: Examining biological pond water samples under microscope. Identify the MOST DANGEROUS action.",
+        situation: "MISSION CRITICAL: pond water samples must be examined under the microscope. Select the required handling protocol.",
         sceneType: "biological",
-        sceneHTML: `
-            <div class="microscope-view" style="position: relative; margin: 0 auto;">
-                ${Array.from({length: 5}, (_, i) => `
-                    <div class="microorganism" style="
-                        top: ${Math.random() * 80 + 10}%;
-                        left: ${Math.random() * 80 + 10}%;
-                        animation-delay: ${i * 0.8}s;
-                    "></div>
-                `).join('')}
-            </div>
-            <div style="font-size: 50px; margin-top: 30px; color: #ff0000; animation: pulse 1s infinite;">
-                🦠 BIOHAZARD WARNING 🦠
-            </div>
-        `,
+        art: "biological",
         options: [
             {
-                text: "WEAR GLOVES",
-                icon: "🧤",
-                description: "Put on protective gloves",
-                correct: false
-            },
-            {
-                text: "USE GOGGLES",
-                icon: "🥽",
-                description: "Wear safety goggles",
-                correct: false
-            },
-            {
-                text: "TASTE SAMPLE",
-                icon: "👅",
-                description: "Taste a small amount",
+                text: "OBSERVE ONLY",
+                icon: "microscope",
+                description: "Eyes and instruments; gloves on, wash after",
                 correct: true
             },
             {
-                text: "PROPER DISPOSAL",
-                icon: "🗑️",
-                description: "Dispose in designated waste",
-                correct: false
+                text: "TASTE A DROP",
+                icon: "tongue",
+                description: "Sample it directly to compare",
+                feedback: "Pond water carries parasites, bacteria and chemical run-off. Tasting any laboratory sample can cause serious illness or death."
+            },
+            {
+                text: "WAFT AND SNIFF",
+                icon: "nose",
+                description: "Waft the vapour toward your nose",
+                feedback: "Wafting is only ever used with a known, low-hazard substance on explicit instruction — never with an uncharacterised biological sample."
+            },
+            {
+                text: "MOUTH PIPETTE IT",
+                icon: "straw",
+                description: "Draw the sample up by mouth",
+                feedback: "Mouth pipetting pulls the sample toward your mouth and has caused laboratory infections for over a century. Always use a bulb or pipettor."
             }
         ],
-        explanation: "NEVER taste, smell, or ingest ANY laboratory substance! Even 'harmless' water samples can contain dangerous microorganisms, parasites, bacteria, or chemical contaminants that cause serious illness or death. Use only your eyes and instruments.",
-        correctAnswer: 2
+        explanation: "Examine biological samples with your eyes and instruments only. Wear gloves, keep the sample contained, never taste, smell or mouth-pipette it, dispose of slides in the designated container, and wash your hands afterwards.",
+        protocol: "Never taste, smell or mouth-pipette a sample — observe with instruments, then wash your hands."
     }
 ];
 
-// Badge definitions
+// ===================================
+// SHUFFLING
+// Option C used to be correct in 7 of 10 items, so always clicking the
+// third card scored 70%. Position must carry no signal.
+// ===================================
+
+function shuffle(list) {
+    const copy = list.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+}
+
+// Returns a per-attempt view of a scenario with its options shuffled and the
+// correct index derived from the `correct` flag.
+function prepareScenario(scenario) {
+    const options = shuffle(scenario.options);
+    return {
+        ...scenario,
+        options,
+        correctIndex: options.findIndex(option => option.correct === true)
+    };
+}
+
+// ===================================
+// DIFFICULTY (how hard the mission is) — deliberately separate from
+// RANK (how well the agent did). The old AGENT_LEVELS table was both at
+// once, which is why picking IMF DIRECTOR handed out 90 free points and
+// made the final rank a function of the menu choice rather than learning.
+// ===================================
+
+const DIFFICULTY_TIERS = [
+    {
+        id: "recruit",
+        name: "RECRUIT",
+        icon: "👤",
+        timerSeconds: 25,
+        hints: 2,
+        blurb: "Longest response window. Two intel requests available."
+    },
+    {
+        id: "field",
+        name: "FIELD AGENT",
+        icon: "🕵️",
+        timerSeconds: 20,
+        hints: 1,
+        blurb: "Standard window. One intel request available."
+    },
+    {
+        id: "specialops",
+        name: "SPECIAL OPS",
+        icon: "🎯",
+        timerSeconds: 16,
+        hints: 0,
+        blurb: "Short window. No intel support."
+    },
+    {
+        id: "director",
+        name: "IMF DIRECTOR",
+        icon: "👨‍💼",
+        timerSeconds: 12,
+        hints: 0,
+        blurb: "Minimum window. No intel support. Command standard."
+    }
+];
+
+// One pass mark for the mission verdict and the certificate.
+const PASS_THRESHOLD = 70;
+
+// Earned from accuracy, not from the difficulty picked.
+const RANKS = [
+    { minPercent: 100, title: "DIRECTOR OF LABORATORY SAFETY" },
+    { minPercent: 90,  title: "SPECIAL AGENT — HAZMAT DIVISION" },
+    { minPercent: 70,  title: "FIELD AGENT — LAB PROTOCOL" },
+    { minPercent: 50,  title: "PROBATIONARY OPERATIVE" },
+    { minPercent: 0,   title: "RECRUIT — RETRAINING REQUIRED" }
+];
+
+function getRank(percent) {
+    return RANKS.find(rank => percent >= rank.minPercent) || RANKS[RANKS.length - 1];
+}
+
+// ===================================
+// BADGES
+// ===================================
+
 const BADGES = [
     {
         id: "speed",
         name: "SPEED OPERATIVE",
-        description: "Completed 5 scenarios in under 8 seconds each",
+        description: "5 protocols answered correctly, promptly and deliberately",
         icon: "⚡",
         requirement: (stats) => stats.quickAnswers >= 5
     },
@@ -473,10 +482,10 @@ const BADGES = [
     {
         id: "safety",
         name: "SAFETY SPECIALIST",
-        description: "All emergency scenarios handled correctly",
+        description: "Every emergency scenario handled correctly",
         icon: "🛡️",
         requirement: (stats) => {
-            // Emergency scenarios: 3 (Fire), 4 (Spill), 5 (Mixing), 10 (Biological)
+            // Fire, spill, dilution, biological
             const emergencyIds = [3, 4, 5, 10];
             return emergencyIds.every(id => stats.correctScenarios.includes(id));
         }
@@ -487,43 +496,14 @@ const BADGES = [
         description: "5 consecutive correct protocols",
         icon: "🔥",
         requirement: (stats) => stats.maxStreak >= 5
+    },
+    {
+        id: "unaided",
+        name: "NO BACKUP NEEDED",
+        description: "Mission passed without a single intel request",
+        icon: "🎖️",
+        requirement: (stats) =>
+            stats.hintsUsed === 0 &&
+            (stats.correctAnswers / MISSION_SCENARIOS.length) * 100 >= PASS_THRESHOLD
     }
 ];
-
-// Agent levels
-const AGENT_LEVELS = [
-    {
-        name: "RECRUIT",
-        minPoints: 0,
-        maxPoints: 30,
-        startingPoints: 0
-    },
-    {
-        name: "FIELD AGENT",
-        minPoints: 30,
-        maxPoints: 60,
-        startingPoints: 30
-    },
-    {
-        name: "SPECIAL OPS",
-        minPoints: 60,
-        maxPoints: 90,
-        startingPoints: 60
-    },
-    {
-        name: "IMF DIRECTOR",
-        minPoints: 90,
-        maxPoints: 150,
-        startingPoints: 90
-    }
-];
-
-// Get current agent level based on points
-function getAgentLevel(points) {
-    for (let i = AGENT_LEVELS.length - 1; i >= 0; i--) {
-        if (points >= AGENT_LEVELS[i].minPoints) {
-            return AGENT_LEVELS[i];
-        }
-    }
-    return AGENT_LEVELS[0];
-}
