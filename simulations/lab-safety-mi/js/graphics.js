@@ -196,13 +196,21 @@ function label(x, y, text, color = '#9fb6cf', size = 8.6, anchor = 'middle', spa
                   letter-spacing="${spacing}">${text}</text>`;
 }
 
+// Every string drawn into the artwork goes through the global T() from
+// i18n.js, so the pictures speak the same language as the rest of the screen.
+
 // A caption plate sized to its text.
+//
+// The plate is nudged back inside the 320-wide viewBox when its text is wide
+// enough to overhang. Translations are not the same length as the English they
+// replace, and a plate that runs off the canvas is clipped, not scrolled.
 function plate(cx, y, text, { color = '#f0b13a', border = '#f0b13a', size = 8.6 } = {}) {
     const w = text.length * size * 0.78 + 16;
+    const x = Math.min(Math.max(cx, w / 2 + 3), Math.max(w / 2 + 3, 317 - w / 2));
     return `
-    <rect x="${cx - w / 2}" y="${y - 11}" width="${w}" height="16" rx="3"
+    <rect x="${x - w / 2}" y="${y - 11}" width="${w}" height="16" rx="3"
           fill="#070c17" fill-opacity=".9" stroke="${border}" stroke-opacity=".7" stroke-width="1"/>
-    ${label(cx, y, text, color, size)}`;
+    ${label(x, y, text, color, size)}`;
 }
 
 function leader(x1, y1, x2, y2, color = '#8fb0cd') {
@@ -378,7 +386,7 @@ function svgWrap(inner, cls = '') {
 // ---- scenes ----------------------------------------------------------
 
 // 1 — the four required items on a pegboard, each ticked
-const ART_PPE = (() => {
+const ART_PPE = () => {
     const tick = (cx, cy) => `
         <circle cx="${cx}" cy="${cy}" r="7.5" fill="#0d2a15" stroke="#31c866" stroke-width="1.4"/>
         <path d="M${cx - 3.4} ${cy}l2.6 2.8 4.4-5.2" fill="none" stroke="#4de884"
@@ -507,7 +515,7 @@ const ART_PPE = (() => {
                 Array.from({ length: 32 }, (_, c) =>
                     `<circle cx="${16 + c * 9.4}" cy="${33 + r * 9}" r="1.1"/>`).join('')).join('')}
         </g>
-        ${label(160, 20, 'ENTRY REQUIREMENTS — ALL FOUR', '#6fd3e8', 9)}
+        ${label(160, 20, T('art.ppe.title'), '#6fd3e8', 9)}
         ${benchTop(118)}
         ${reflection(subject, 118)}
         ${contactShadow(44, 118, 32, 4)}
@@ -515,15 +523,15 @@ const ART_PPE = (() => {
         ${contactShadow(187, 118, 20, 4)}
         ${contactShadow(261, 118, 24, 4)}
         ${subject}
-        <g class="a-item" style="--i:0">${tick(44, 132)}${label(44, 152, 'GOGGLES', '#9fb6cf', 8)}</g>
-        <g class="a-item" style="--i:1">${tick(114, 132)}${label(114, 152, 'LAB COAT', '#9fb6cf', 8)}</g>
-        <g class="a-item" style="--i:2">${tick(187, 132)}${label(187, 152, 'GLOVES', '#9fb6cf', 8)}</g>
-        <g class="a-item" style="--i:3">${tick(261, 132)}${label(261, 152, 'CLOSED SHOES', '#9fb6cf', 8)}</g>
+        <g class="a-item" style="--i:0">${tick(44, 132)}${label(44, 152, T('art.ppe.goggles'), '#9fb6cf', 8)}</g>
+        <g class="a-item" style="--i:1">${tick(114, 132)}${label(114, 152, T('art.ppe.coat'), '#9fb6cf', 8)}</g>
+        <g class="a-item" style="--i:2">${tick(187, 132)}${label(187, 152, T('art.ppe.gloves'), '#9fb6cf', 8)}</g>
+        <g class="a-item" style="--i:3">${tick(261, 132)}${label(261, 152, T('art.ppe.shoes'), '#9fb6cf', 8)}</g>
     `, 'art-ppe');
-})();
+};
 
 // 2 — an unmarked bottle beside the pictogram to be read
-const ART_HAZARD = (() => {
+const ART_HAZARD = () => {
     const subject = bottle(84, 40, 62, 100, { liquid: 'mAcid', fill: 0.6, cap: '#8d1c1c' });
 
     // One arm of the trefoil, drawn pointing up around the origin, then rotated
@@ -554,7 +562,7 @@ const ART_HAZARD = (() => {
         ${reflection(subject)}
         ${contactShadow(115, 146, 30, 5)}
         ${subject}
-        ${label(115, 161, 'UNMARKED CONTAINER', '#9fb6cf')}
+        ${label(115, 161, T('art.hazard.container'), '#9fb6cf')}
 
         <!-- Biohazard sign: black trefoil on safety amber -->
         <g class="a-pulse">
@@ -568,13 +576,13 @@ const ART_HAZARD = (() => {
                 <g transform="rotate(240)">${arm}</g>
             </g>
         </g>
-        ${plate(240, 146, 'READ THE PICTOGRAM')}
+        ${plate(240, 146, T('art.hazard.plate'))}
         ${leader(188, 78, 152, 84)}
     `, 'art-hazard');
-})();
+};
 
 // 3 — a sleeve alight, the safety shower within reach
-const ART_FIRE = (() => {
+const ART_FIRE = () => {
     // A forearm in a lab-coat sleeve, angled across the bench, cuff alight.
     // Drawn as an arm rather than a symmetrical shape — the previous version
     // read as a bell.
@@ -689,22 +697,22 @@ const ART_FIRE = (() => {
         ${contactShadow(294, 146, 16, 4)}
         ${shower}
         ${spray}
-        ${plate(62, 163, 'SLEEVE ALIGHT', { color: '#ff8b4a', border: '#c85a1a' })}
+        ${plate(62, 163, T('art.fire.sleeve'), { color: '#ff8b4a', border: '#c85a1a' })}
         <!-- Equipment identification, deliberately not in the green used for a
              correct answer elsewhere: "SAFETY SHOWER" is also the wording of the
              correct option, and colour-coding it would mark the answer. The
              situation text already tells the student the shower is there. -->
-        ${plate(252, 163, 'SAFETY SHOWER', { color: '#a8c0d6', border: '#5d7997' })}
+        ${plate(252, 163, T('art.fire.shower'), { color: '#a8c0d6', border: '#5d7997' })}
         ${dimension(122, 206, 132, '3 m')}
     `, 'art-fire');
-})();
+};
 
 // 4 — a corrosive spill spreading across the bench from an unmarked source.
 // Shows only the hazard: the scenario asks the student what to do first, so
 // the scene must not depict the answer. An earlier version put a road cone on
 // the bench (nonsense in a lab) beside an intercom captioned "REPORT IT",
 // which handed over the correct option.
-const ART_SPILL = (() => {
+const ART_SPILL = () => {
     // The beaker on its side IS the source — rotated just past 90 degrees so it
     // still reads as a beaker pouring out. A steeper angle turned it into an
     // unreadable box, and a second labelled bottle only added clutter.
@@ -778,9 +786,9 @@ const ART_SPILL = (() => {
         ${rack}
         ${tipped}
         ${fumes}
-        ${plate(110, 163, 'SPREADING · UNIDENTIFIED', { color: '#ffb454', border: '#c07b12' })}
+        ${plate(110, 163, T('art.spill.plate'), { color: '#ffb454', border: '#c07b12' })}
     `, 'art-spill');
-})();
+};
 
 // 5 — order of addition: both vessels standing on the bench, and the transfer
 // left as an open question.
@@ -791,7 +799,7 @@ const ART_SPILL = (() => {
 // vessels, a double-headed arc between them, and a question mark. Nothing in it
 // favours either direction, or the two distractors (mixing fast, pouring both
 // at once). The thermometer stays: heat is what the choice is about.
-const ART_DILUTION = (() => {
+const ART_DILUTION = () => {
     const acid = beaker(74, 86, 50, 54, 0.6, 'mAcid');
     const water = beaker(176, 66, 80, 74, 0.66, 'mWater');
     const thermo = `
@@ -810,7 +818,7 @@ const ART_DILUTION = (() => {
         `<path d="M0 0L-10 -5L-10 5Z" transform="translate(${x} ${y}) rotate(${deg})" fill="#6fd3e8"/>`;
 
     return svgWrap(`
-        ${label(160, 18, 'ORDER OF ADDITION', '#6fd3e8', 9)}
+        ${label(160, 18, T('art.dilution.title'), '#6fd3e8', 9)}
         ${benchTop()}
         ${reflection(acid + water + thermo)}
         ${contactShadow(99, 146, 30, 5)}
@@ -831,13 +839,13 @@ const ART_DILUTION = (() => {
         </g>
         <text x="155" y="106" text-anchor="middle" fill="#f0b13a" opacity=".92"
               font-family="Orbitron, monospace" font-size="30" font-weight="700">?</text>
-        ${label(99, 163, 'ACID', '#f0b13a')}
-        ${label(216, 163, 'WATER · LARGE VOLUME', '#7fc4f0')}
+        ${label(99, 163, T('art.dilution.acid'), '#f0b13a')}
+        ${label(216, 163, T('art.dilution.water'), '#7fc4f0')}
     `, 'art-dilution');
-})();
+};
 
 // 6 — your own station, and where each item goes
-const ART_CLEANUP = (() => {
+const ART_CLEANUP = () => {
     const glass = beaker(34, 92, 32, 40, 0.26, 'mAcid') +
                   flask(76, 88, 34, 44, { liquid: 'mWater', fill: 0.45 }) +
                   beaker(118, 104, 24, 28, 0.4, 'mWater');
@@ -858,16 +866,16 @@ const ART_CLEANUP = (() => {
         ${contactShadow(93, 146, 22, 4)}
         ${contactShadow(130, 146, 16, 4)}
         ${glass}
-        ${label(88, 163, 'YOUR STATION', '#9fb6cf')}
-        ${bin(176, 'GLASS', '#2f6d4a')}
-        ${bin(222, 'AQUEOUS', '#2b5686')}
-        ${bin(268, 'SHARPS', '#8d3a1c')}
-        ${label(245, 163, 'WASTE ROUTES', '#9fb6cf')}
+        ${label(88, 163, T('art.cleanup.station'), '#9fb6cf')}
+        ${bin(176, T('art.cleanup.glass'), '#2f6d4a')}
+        ${bin(222, T('art.cleanup.aqueous'), '#2b5686')}
+        ${bin(268, T('art.cleanup.sharps'), '#8d3a1c')}
+        ${label(245, 163, T('art.cleanup.routes'), '#9fb6cf')}
     `, 'art-cleanup');
-})();
+};
 
 // 7 — approved yellow flammables cabinet, kept away from the burner
-const ART_STORAGE = (() => {
+const ART_STORAGE = () => {
     const cabinet = `
         <g>
             <rect x="26" y="36" width="108" height="104" rx="4" fill="url(#mYellow)"
@@ -891,7 +899,7 @@ const ART_STORAGE = (() => {
                 ${flame(52, 124, 0.44)}
             </g>
             <rect x="90" y="104" width="34" height="20" rx="2" fill="#f3eee1" opacity=".92"/>
-            ${label(107, 117, 'FLAM.', '#2c3a4e', 7)}
+            ${label(107, 117, T('art.storage.flam'), '#2c3a4e', 7)}
         </g>`;
     const burner = `
         <g>
@@ -911,16 +919,16 @@ const ART_STORAGE = (() => {
         ${cabinet}
         ${burner}
         ${flame(258, 96, 1, true)}
-        ${plate(92, 163, 'APPROVED VENTED CABINET', { color: '#f2c62f', border: '#a87c08', size: 7.8 })}
-        ${plate(258, 163, 'IGNITION SOURCE', { color: '#ff8b4a', border: '#c85a1a' })}
+        ${plate(92, 163, T('art.storage.cabinet'), { color: '#f2c62f', border: '#a87c08', size: 7.8 })}
+        ${plate(258, 163, T('art.storage.ignition'), { color: '#ff8b4a', border: '#c85a1a' })}
         <path class="a-pulse" d="M206 56a56 56 0 0 1 0 84" fill="none" stroke="#ff8b4a"
               stroke-width="1.6" stroke-dasharray="5 5" opacity=".8"/>
-        ${dimension(140, 206, 28, 'KEEP APART')}
+        ${dimension(140, 206, 28, T('art.storage.apart'))}
     `, 'art-storage');
-})();
+};
 
 // 8 — a controlled door: sign, lock, supervisor authorisation
-const ART_ACCESS = (() => {
+const ART_ACCESS = () => {
     const door = `
         <g>
             <rect x="58" y="18" width="120" height="128" rx="3" fill="url(#mPaint)"
@@ -958,7 +966,7 @@ const ART_ACCESS = (() => {
         <!-- warning sign -->
         <g>
             <rect x="82" y="82" width="72" height="26" rx="2" fill="#f2b01c" stroke="#6d5108" stroke-width="1.4"/>
-            ${label(118, 99, 'AUTHORISED', '#1a1206', 8.6)}
+            ${label(118, 99, T('art.access.authorised'), '#1a1206', 8.6)}
         </g>
         <!-- padlock -->
         <g class="a-pulse">
@@ -970,15 +978,15 @@ const ART_ACCESS = (() => {
         </g>
         ${reader}
         ${label(118, 163, 'LAB OMEGA-7', '#9fb6cf')}
-        ${plate(270, 136, 'SUPERVISOR', { color: '#5fe08a', border: '#2f8a4f' })}
+        ${plate(270, 136, T('art.access.supervisor'), { color: '#5fe08a', border: '#2f8a4f' })}
         ${leader(250, 92, 240, 88)}
     `, 'art-access');
-})();
+};
 
 // 9 — a working bench: hot plates running, glassware heating, walkway marked.
 // The scenario text says "a crowded lab with hot plates running", so the scene
 // shows exactly that; an earlier plan-view of an empty aisle showed neither.
-const ART_CONDUCT = (() => {
+const ART_CONDUCT = () => {
     // hot plate with a beaker heating on it
     const station = (x, i) => `
         <g>
@@ -1016,13 +1024,13 @@ const ART_CONDUCT = (() => {
             <path d="M0 34h320M0 68h320"/>
             <path d="M108 0v126M216 0v126"/>
         </g>
-        ${label(112, 16, 'HOT WORK IN PROGRESS', '#ffb454', 9)}
+        ${label(112, 16, T('art.conduct.hotwork'), '#ffb454', 9)}
 
         <!-- wall-mounted hot surface warning -->
         <g>
             <path d="M280 18l13 22h-26z" fill="#f2b01c" stroke="#5f4708" stroke-width="1.4"/>
             <path d="M280 26v7M280 36h.01" stroke="#1a1206" stroke-width="2" stroke-linecap="round"/>
-            ${label(280, 50, 'HOT', '#f2b01c', 7)}
+            ${label(280, 50, T('art.conduct.hot'), '#f2b01c', 7)}
         </g>
 
         <!-- bench: top edge, front face, plinth -->
@@ -1051,7 +1059,7 @@ const ART_CONDUCT = (() => {
             <rect x="246" y="82" width="12" height="4" rx="2" fill="url(#mSteel)"/>
             <!-- exit sign -->
             <rect x="252" y="10" width="42" height="14" rx="2" fill="#0f3d24" stroke="#31c866" stroke-width="1.3"/>
-            ${label(273, 21, 'EXIT', '#5fe08a', 8)}
+            ${label(273, 21, T('art.conduct.exit'), '#5fe08a', 8)}
         </g>
 
         <!-- floor: seen edge-on, with the light from the exit sign spilling on it -->
@@ -1079,12 +1087,12 @@ const ART_CONDUCT = (() => {
         <!-- Names the hazard, not the required behaviour. A green
              "floor and exit kept clear" plate echoed the correct option's
              wording, which is the answer leak removed from the other scenes. -->
-        ${plate(112, 163, 'ALL STATIONS IN USE · HOT', { color: '#ffb454', border: '#c07b12' })}
+        ${plate(112, 163, T('art.conduct.plate'), { color: '#ffb454', border: '#c07b12' })}
     `, 'art-conduct');
-})();
+};
 
 // 10 — instruments only: a microscope and the field of view
-const ART_BIO = (() => {
+const ART_BIO = () => {
     // A compound light microscope in profile, built from the parts a student
     // actually names: horseshoe base and illuminator, condenser, mechanical
     // stage with the slide clipped down, C-limb carrying coarse and fine focus,
@@ -1160,7 +1168,7 @@ const ART_BIO = (() => {
              own description ("Eyes and instruments") in the colour this set uses
              for the right answer. The scene names the equipment and the hazard;
              it does not state the protocol. -->
-        ${label(84, 163, 'MICROSCOPE', '#9fb6cf')}
+        ${label(84, 163, T('art.bio.microscope'), '#9fb6cf')}
 
         <!-- field of view -->
         <g>
@@ -1177,11 +1185,11 @@ const ART_BIO = (() => {
                     </g>`).join('')}
             <path d="M216 48a44 44 0 0 1 22-14" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="4"/>
         </g>
-        ${label(248, 134, 'POND WATER SAMPLE', '#9fb6cf')}
-        ${plate(248, 163, 'LIVE MICROBES', { color: '#f0b13a', border: '#c07d12' })}
+        ${label(248, 134, T('art.bio.sample'), '#9fb6cf')}
+        ${plate(248, 163, T('art.bio.plate'), { color: '#f0b13a', border: '#c07d12' })}
         ${leader(215, 44, 137, 30)}
     `, 'art-bio');
-})();
+};
 
 const SCENE_ART = {
     ppe: ART_PPE,
@@ -1258,7 +1266,8 @@ function icon(name) {
 }
 
 function sceneArt(key) {
-    return SCENE_ART[key] || '';
+    const art = SCENE_ART[key];
+    return typeof art === 'function' ? art() : (art || '');
 }
 
 window.graphics = { sceneArt, icon, SCENE_ART, ICON_PATHS };

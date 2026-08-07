@@ -188,10 +188,30 @@ const CERT_INK = {
     fail: '#a3231f'
 };
 
+// Every word the certificate prints arrives on `data.strings`, resolved by the
+// caller in the student's language. The defaults below are the English copy and
+// exist only so a caller that predates this argument still renders.
+const CERT_TEXT_FALLBACK = {
+    issuer: 'IMPOSSIBLE MISSION FORCE  \u2022  SCIENCE DIVISION',
+    title: 'Certificate of Laboratory Safety',
+    preamble: 'This certifies that operative',
+    rankConferred: 'RANK CONFERRED',
+    signatureRole: 'Chief Lab Safety Officer \u2022 IMF Science Division',
+    dateOfIssue: 'Date of issue',
+    footer: 'Virtual Lab (https://virtuallab.az) \u2022 Laboratory Safety Protocol simulation',
+    retrain: 'RETRAIN',
+    bandHonours: 'HONOURS',
+    bandMerit: 'MERIT',
+    bandPass: 'PASS',
+    bandFail: 'NOT CLEARED',
+    filename: 'lab-safety-certificate'
+};
+
 function buildCertificatePdf(data) {
     const doc = new PdfDoc();
     const W = doc.w;
     const pass = !!data.passed;
+    const s = { ...CERT_TEXT_FALLBACK, ...(data.strings || {}) };
 
     // paper
     doc.setFill(CERT_INK.paper).rect(0, 0, W, doc.h, 'f');
@@ -211,19 +231,26 @@ function buildCertificatePdf(data) {
 
     let y = 84;
 
-    doc.text('IMPOSSIBLE MISSION FORCE  •  SCIENCE DIVISION',
+    doc.text(s.issuer,
         { x: W / 2, y, size: 9.5, font: 'bodyBold', align: 'center', spacing: 3.4, color: CERT_INK.gold });
 
     y += 40;
-    doc.text(pass ? 'Certificate of Laboratory Safety' : 'Laboratory Safety Retraining Notice',
-        { x: W / 2, y, size: 30, font: 'display', align: 'center', color: CERT_INK.navy });
+    // Spanish titles run longer than the English they replace. Step the display
+    // size down until the line clears the gold rule rather than letting it run
+    // off the paper — the frame is fixed, the words are not.
+    let titleSize = 30;
+    while (titleSize > 17 && doc.measure(pdfSanitize(s.title), titleSize, 'display') > W - 250) {
+        titleSize -= 1;
+    }
+    doc.text(s.title,
+        { x: W / 2, y, size: titleSize, font: 'display', align: 'center', color: CERT_INK.navy });
 
     y += 16;
     doc.setStroke(CERT_INK.gold).setWidth(1).line(W / 2 - 120, y, W / 2 + 120, y);
     doc.setFill(CERT_INK.gold).circle(W / 2, y, 3, 'f');
 
     y += 34;
-    doc.text(pass ? 'This certifies that operative' : 'This records that operative',
+    doc.text(s.preamble,
         { x: W / 2, y, size: 12, font: 'displayIt', align: 'center', color: CERT_INK.grey });
 
     y += 44;
@@ -262,7 +289,7 @@ function buildCertificatePdf(data) {
     });
 
     y += 84;
-    doc.text('RANK CONFERRED', {
+    doc.text(s.rankConferred, {
         x: W / 2, y, size: 8, font: 'bodyBold', align: 'center',
         spacing: 2.6, color: CERT_INK.gold
     });
@@ -286,10 +313,10 @@ function buildCertificatePdf(data) {
     const sx = W - 118;
     const sy = 132;
     const pct = Number(data.percent) || 0;
-    const seal = !pass ? { ink: CERT_INK.fail, band: 'NOT CLEARED' }
-               : pct >= 90 ? { ink: CERT_INK.gold, band: 'HONOURS' }
-               : pct >= 80 ? { ink: CERT_INK.silver, band: 'MERIT' }
-               : { ink: CERT_INK.bronze, band: 'PASS' };
+    const seal = !pass ? { ink: CERT_INK.fail, band: s.bandFail }
+               : pct >= 90 ? { ink: CERT_INK.gold, band: s.bandHonours }
+               : pct >= 80 ? { ink: CERT_INK.silver, band: s.bandMerit }
+               : { ink: CERT_INK.bronze, band: s.bandPass };
 
     doc.setStroke(seal.ink).setWidth(pass ? 2.4 : 3.4).circle(sx, sy, 40, 'S');
     doc.setWidth(0.9).circle(sx, sy, 33, 'S');
@@ -319,20 +346,23 @@ function buildCertificatePdf(data) {
         doc.line(sx, sy - 19, sx - 8, sy - 6).line(sx - 8, sy - 6, sx + 8, sy - 6)
            .line(sx + 8, sy - 6, sx, sy - 19);
         doc.setWidth(1.6).line(sx, sy - 15, sx, sy - 10);
-        doc.text('RETRAIN', { x: sx, y: sy + 8, size: 11, font: 'display',
+        doc.text(s.retrain, { x: sx, y: sy + 8, size: 11, font: 'display',
                               align: 'center', spacing: 1, color: seal.ink });
     }
 
+    // The band sits inside a 66pt-wide well; "SIN AUTORIZAR" needs the tracking
+    // dropped to fit where "PASS" did not care.
+    const bandSpacing = seal.band.length > 9 ? 0.4 : 1.2;
     doc.text(seal.band, {
-        x: sx, y: sy + 23, size: 6.4, font: 'bodyBold', align: 'center',
-        spacing: 1.2, color: seal.ink
+        x: sx, y: sy + 23, size: seal.band.length > 9 ? 5.6 : 6.4,
+        font: 'bodyBold', align: 'center', spacing: bandSpacing, color: seal.ink
     });
 
     // signature blocks
     const sigY = doc.h - 92;
     const blocks = [
-        { x: 170, line: data.instructor || '', label: 'Chief Lab Safety Officer • IMF Science Division' },
-        { x: W - 170, line: data.date || '', label: 'Date of issue' }
+        { x: 170, line: data.instructor || '', label: s.signatureRole },
+        { x: W - 170, line: data.date || '', label: s.dateOfIssue }
     ];
 
     blocks.forEach(block => {
@@ -349,7 +379,7 @@ function buildCertificatePdf(data) {
         });
     });
 
-    doc.text('Virtual Lab (https://virtuallab.az) • Laboratory Safety Protocol simulation', {
+    doc.text(s.footer, {
         x: W / 2, y: doc.h - 52, size: 7, font: 'body', align: 'center',
         spacing: 1, color: CERT_INK.grey
     });
@@ -362,10 +392,11 @@ function downloadCertificatePdf(data) {
     const blob = new Blob([bytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
 
+    const stem = (data.strings && data.strings.filename) || CERT_TEXT_FALLBACK.filename;
     const safeName = String(data.name || 'agent').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     const link = document.createElement('a');
     link.href = url;
-    link.download = `lab-safety-certificate-${safeName}.pdf`;
+    link.download = `${stem}-${safeName}.pdf`;
     document.body.appendChild(link);
     link.click();
     link.remove();
