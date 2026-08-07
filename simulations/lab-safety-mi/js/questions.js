@@ -393,10 +393,18 @@ function shuffle(list) {
 
 // Returns a per-attempt view of a scenario with its options shuffled and the
 // correct index derived from the `correct` flag.
+//
+// Translation happens BEFORE the shuffle and carries `correct` across with the
+// rest of the option, so the answer key is derived from the same objects the
+// student sees. A translation cannot move the correct answer.
 function prepareScenario(scenario) {
-    const options = shuffle(scenario.options);
+    const localized = window.i18n
+        ? window.i18n.localizeScenario(scenario)
+        : scenario;
+
+    const options = shuffle(localized.options);
     return {
-        ...scenario,
+        ...localized,
         options,
         correctIndex: options.findIndex(option => option.correct === true)
     };
@@ -409,52 +417,30 @@ function prepareScenario(scenario) {
 // made the final rank a function of the menu choice rather than learning.
 // ===================================
 
+// `name` and `blurb` are getters rather than stored strings: every call site
+// reads them fresh, so a language change is picked up without anyone having to
+// remember to re-render. Same pattern for RANKS and BADGES below.
 const DIFFICULTY_TIERS = [
-    {
-        id: "recruit",
-        name: "RECRUIT",
-        icon: "👤",
-        timerSeconds: 25,
-        hints: 2,
-        blurb: "Longest response window. Two intel requests available."
-    },
-    {
-        id: "field",
-        name: "FIELD AGENT",
-        icon: "🕵️",
-        timerSeconds: 20,
-        hints: 1,
-        blurb: "Standard window. One intel request available."
-    },
-    {
-        id: "specialops",
-        name: "SPECIAL OPS",
-        icon: "🎯",
-        timerSeconds: 16,
-        hints: 0,
-        blurb: "Short window. No intel support."
-    },
-    {
-        id: "director",
-        name: "IMF DIRECTOR",
-        icon: "👨‍💼",
-        timerSeconds: 12,
-        hints: 0,
-        blurb: "Minimum window. No intel support. Command standard."
-    }
-];
+    { id: "recruit",    icon: "👤",     timerSeconds: 25, hints: 2 },
+    { id: "field",      icon: "🕵️",     timerSeconds: 20, hints: 1 },
+    { id: "specialops", icon: "🎯",     timerSeconds: 16, hints: 0 },
+    { id: "director",   icon: "👨‍💼",     timerSeconds: 12, hints: 0 }
+].map(tier => ({
+    ...tier,
+    get name()  { return window.i18n ? window.i18n.t(`tier.${this.id}`) : this.id; },
+    get blurb() { return window.i18n ? window.i18n.t(`tier.${this.id}.blurb`) : ''; }
+}));
 
 // One pass mark for the mission verdict and the certificate.
 const PASS_THRESHOLD = 70;
 
 // Earned from accuracy, not from the difficulty picked.
-const RANKS = [
-    { minPercent: 100, title: "DIRECTOR OF LABORATORY SAFETY" },
-    { minPercent: 90,  title: "SPECIAL AGENT — HAZMAT DIVISION" },
-    { minPercent: 70,  title: "FIELD AGENT — LAB PROTOCOL" },
-    { minPercent: 50,  title: "PROBATIONARY OPERATIVE" },
-    { minPercent: 0,   title: "RECRUIT — RETRAINING REQUIRED" }
-];
+const RANKS = [100, 90, 70, 50, 0].map(minPercent => ({
+    minPercent,
+    get title() {
+        return window.i18n ? window.i18n.t(`rank.${this.minPercent}`) : String(this.minPercent);
+    }
+}));
 
 function getRank(percent) {
     return RANKS.find(rank => percent >= rank.minPercent) || RANKS[RANKS.length - 1];
@@ -467,22 +453,16 @@ function getRank(percent) {
 const BADGES = [
     {
         id: "speed",
-        name: "SPEED OPERATIVE",
-        description: "5 protocols answered correctly, promptly and deliberately",
         icon: "⚡",
         requirement: (stats) => stats.quickAnswers >= 5
     },
     {
         id: "perfect",
-        name: "PERFECT PROTOCOL",
-        description: "All scenarios executed correctly",
         icon: "🏆",
         requirement: (stats) => stats.correctAnswers === MISSION_SCENARIOS.length
     },
     {
         id: "safety",
-        name: "SAFETY SPECIALIST",
-        description: "Every emergency scenario handled correctly",
         icon: "🛡️",
         requirement: (stats) => {
             // Fire, spill, dilution, biological
@@ -492,18 +472,22 @@ const BADGES = [
     },
     {
         id: "streak",
-        name: "STREAK MASTER",
-        description: "5 consecutive correct protocols",
         icon: "🔥",
         requirement: (stats) => stats.maxStreak >= 5
     },
     {
         id: "unaided",
-        name: "NO BACKUP NEEDED",
-        description: "Mission passed without a single intel request",
         icon: "🎖️",
         requirement: (stats) =>
             stats.hintsUsed === 0 &&
             (stats.correctAnswers / MISSION_SCENARIOS.length) * 100 >= PASS_THRESHOLD
     }
-];
+].map(badge => ({
+    ...badge,
+    get name()        { return window.i18n ? window.i18n.t(`badge.${this.id}`) : this.id; },
+    get description() { return window.i18n ? window.i18n.t(`badge.${this.id}.desc`) : ''; }
+}));
+
+// Fails loudly in the console if a translated option list has drifted out of
+// step with the English one it is positionally matched against.
+if (window.i18n) window.i18n.auditScenarios(MISSION_SCENARIOS);

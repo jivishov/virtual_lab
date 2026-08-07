@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-i18n-doc-title="doc.title">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +7,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/effects.css">
-    <link rel="stylesheet" href="css/certificate.css">
+    <link rel="stylesheet" href="css/main.css?v=20260807-es">
+    <link rel="stylesheet" href="css/animations.css?v=20260807-es">
+    <link rel="stylesheet" href="css/effects.css?v=20260807-es">
+    <link rel="stylesheet" href="css/certificate.css?v=20260807-es">
+
+    <!-- Loaded in <head>, before any markup exists: the language has to be
+         resolved and <html lang> set before the first paint, or a Spanish
+         student watches the page flash English. -->
+    <script src="js/i18n.js?v=20260807-es"></script>
 </head>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
@@ -28,10 +33,10 @@
 
     <!-- Audio Controls -->
     <div class="audio-controls">
-        <button id="musicToggle" class="audio-btn" title="Toggle Music">
+        <button id="musicToggle" class="audio-btn" data-i18n-title="audio.music" title="Toggle Music">
             <span class="icon">🎵</span>
         </button>
-        <button id="sfxToggle" class="audio-btn" title="Toggle Sound Effects">
+        <button id="sfxToggle" class="audio-btn" data-i18n-title="audio.sfx" title="Toggle Sound Effects">
             <span class="icon">🔊</span>
         </button>
     </div>
@@ -51,32 +56,45 @@
                 <div class="spotlight"></div>
                 <div class="mission-dossier">
                     <div class="classified-header">
-                        <span class="blink">● REC</span>
-                        <span>CLASSIFIED - EYES ONLY</span>
+                        <span class="blink" data-i18n="intro.rec">● REC</span>
+                        <span data-i18n="intro.classified">CLASSIFIED - EYES ONLY</span>
                         <span class="timestamp"></span>
                     </div>
                     <div class="dossier-content">
                         <h1 class="glitch-text" data-text="MISSION: IMPOSSIBLE">MISSION: IMPOSSIBLE</h1>
-                        <h2>LABORATORY PROTOCOL</h2>
+                        <h2 data-i18n="intro.subtitle">LABORATORY PROTOCOL</h2>
 
                         <div class="divider"></div>
 
+                        <!-- Language first, before the student commits to a
+                             codename: everything after this point is copy they
+                             have to read to answer correctly. -->
+                        <div class="lang-switch-row">
+                            <span class="lang-switch-legend" data-i18n="lang.legend">LANGUAGE / IDIOMA</span>
+                            <div class="lang-switch" id="langSwitch" role="radiogroup"
+                                 aria-label="Language / Idioma"></div>
+                        </div>
+
                         <div class="typing-text" id="missionBrief">
-                            <p><strong>AGENT IDENTIFICATION REQUIRED</strong></p>
+                            <p><strong data-i18n="intro.identify">AGENT IDENTIFICATION REQUIRED</strong></p>
                             <div class="agent-input-group">
-                                <label>CODENAME:</label>
-                                <input type="text" id="agentName" placeholder="Enter codename..." maxlength="20">
+                                <label for="agentName" data-i18n="intro.codename">CODENAME:</label>
+                                <input type="text" id="agentName" maxlength="20"
+                                       data-i18n-placeholder="intro.codenamePlaceholder"
+                                       placeholder="Enter codename...">
                             </div>
                         </div>
 
-                        <button id="acceptMissionBtn" class="mission-btn pulse-btn" disabled>
+                        <button id="acceptMissionBtn" class="mission-btn pulse-btn" disabled
+                                data-i18n="intro.accept">
                             ACCEPT MISSION
                         </button>
 
                         <!-- How a teacher finds the setup page at all. Students
                              see it too; that is the trade for discoverability. -->
                         <p class="teacher-link">
-                            <a href="teacher.html" target="_blank" rel="noopener">For teachers — set up this activity for your class</a>
+                            <a href="teacher.html" target="_blank" rel="noopener" id="teacherLink"
+                               data-i18n="intro.teacherLink">For teachers — set up this activity for your class</a>
                         </p>
                     </div>
                 </div>
@@ -88,18 +106,23 @@
             <div class="briefing-room">
                 <div class="mission-dossier">
                     <div class="classified-header">
-                        <span class="blink">● REC</span>
-                        <span>MISSION BRIEFING</span>
+                        <span class="blink" data-i18n="intro.rec">● REC</span>
+                        <span data-i18n="briefing.header">MISSION BRIEFING</span>
                     </div>
                     <div class="dossier-content">
                         <div id="briefingText" class="typing-text">
-                            <p><strong>MISSION DOSSIER - CLEARANCE LEVEL: OMEGA</strong></p>
-                            <p>Intelligence indicates a rogue scientist is developing hazardous compounds in Lab Omega-7.</p>
-                            <p>Your mission, should you choose to accept it, is to navigate the facility while adhering to strict safety protocols.</p>
-                            <p><span class="warning-text">Any deviation could trigger catastrophic chain reactions.</span></p>
-                            <p class="self-destruct">This message will self-destruct in <span id="countdown">5</span> seconds...</p>
+                            <p><strong data-i18n="briefing.dossier">MISSION DOSSIER - CLEARANCE LEVEL: OMEGA</strong></p>
+                            <p data-i18n="briefing.line1">Intelligence indicates a rogue scientist is developing hazardous compounds in Lab Omega-7.</p>
+                            <p data-i18n="briefing.line2">Your mission, should you choose to accept it, is to navigate the facility while adhering to strict safety protocols.</p>
+                            <p><span class="warning-text" data-i18n="briefing.line3">Any deviation could trigger catastrophic chain reactions.</span></p>
+                            <p class="self-destruct">
+                                <span data-i18n="briefing.selfDestruct">This message will self-destruct in</span>
+                                <span id="countdown">5</span>
+                                <span data-i18n="briefing.seconds">seconds...</span>
+                            </p>
                         </div>
-                        <button id="skipBriefingBtn" class="skip-sequence inline" type="button">SKIP BRIEFING ▸</button>
+                        <button id="skipBriefingBtn" class="skip-sequence inline" type="button"
+                                data-i18n="briefing.skip">SKIP BRIEFING ▸</button>
                     </div>
                 </div>
             </div>
@@ -108,7 +131,8 @@
         <!-- PROTOCOL VIOLATION SEQUENCE (water poured into concentrated acid) -->
         <div id="destructScreen" class="screen">
             <div class="lab-scene">
-                <button id="skipSequenceBtn" class="skip-sequence" type="button">SKIP ▸</button>
+                <button id="skipSequenceBtn" class="skip-sequence" type="button"
+                        data-i18n="violation.skip">SKIP ▸</button>
 
                 <div id="hazardBench" class="hazard-bench">
                     <!-- the violation: a beaker of water being tipped into the acid -->
@@ -137,12 +161,12 @@
                     <div class="flash"></div>
                 </div>
 
-                <p class="bench-caption">LAB OMEGA-7 · BENCH 3 · ARCHIVE FOOTAGE</p>
+                <p class="bench-caption" data-i18n="violation.caption">LAB OMEGA-7 · BENCH 3 · ARCHIVE FOOTAGE</p>
 
                 <div class="violation-warning" id="violationWarning">
                     <div class="warning-box">
-                        <h2>⚠ PROTOCOL VIOLATION — THERMAL EJECTION</h2>
-                        <p>Water was added to concentrated acid. Water is <strong>less dense</strong>, so it floats
+                        <h2 data-i18n="violation.title">⚠ PROTOCOL VIOLATION — THERMAL EJECTION</h2>
+                        <p data-i18n-html="violation.body">Water was added to concentrated acid. Water is <strong>less dense</strong>, so it floats
                            instead of mixing — the whole heat of dilution is released in that thin surface layer,
                            which flashes to steam and ejects boiling acid out of the beaker.</p>
                         <div class="method-compare">
@@ -152,17 +176,18 @@
                                     <span class="mini-stream water"></span>
                                     <span class="mini-burst">✳</span>
                                 </div>
-                                <figcaption><b>✗ NEVER</b><br>water → acid</figcaption>
+                                <figcaption><b data-i18n="violation.never">✗ NEVER</b><br><span data-i18n="violation.neverWhat">water → acid</span></figcaption>
                             </figure>
                             <figure class="method right">
                                 <div class="mini-beaker">
                                     <span class="mini-fill water"></span>
                                     <span class="mini-stream acid"></span>
                                 </div>
-                                <figcaption><b>✓ ALWAYS</b><br>acid → water, slowly</figcaption>
+                                <figcaption><b data-i18n="violation.always">✓ ALWAYS</b><br><span data-i18n="violation.alwaysWhat">acid → water, slowly</span></figcaption>
                             </figure>
                         </div>
-                        <button id="violationContinueBtn" class="mission-btn compact" type="button">CONTINUE ▸</button>
+                        <button id="violationContinueBtn" class="mission-btn compact" type="button"
+                                data-i18n="violation.continue">CONTINUE ▸</button>
                     </div>
                 </div>
             </div>
@@ -171,8 +196,8 @@
         <!-- DIFFICULTY SELECTION SCREEN -->
         <div id="agentSelectScreen" class="screen">
             <div class="briefing-room">
-                <h1 class="screen-title">SELECT CLEARANCE LEVEL</h1>
-                <p class="screen-subtitle">
+                <h1 class="screen-title" data-i18n="select.title">SELECT CLEARANCE LEVEL</h1>
+                <p class="screen-subtitle" data-i18n="select.subtitle">
                     Clearance sets how much time you get per scenario and whether intel support is
                     available. Every agent starts on zero — your rank is earned from accuracy alone.
                 </p>
@@ -187,31 +212,31 @@
             <div class="hud">
                 <div class="hud-left">
                     <div class="hud-item">
-                        <span class="label">AGENT:</span>
+                        <span class="label" data-i18n="hud.agent">AGENT:</span>
                         <span id="hudAgent" class="value"></span>
                     </div>
                     <div class="hud-item">
-                        <span class="label">CLEARANCE:</span>
+                        <span class="label" data-i18n="hud.clearance">CLEARANCE:</span>
                         <span id="hudLevel" class="value"></span>
                     </div>
                 </div>
                 <div class="hud-center">
                     <div class="hud-item">
-                        <span class="label">SCENARIO:</span>
+                        <span class="label" data-i18n="hud.scenario">SCENARIO:</span>
                         <span id="hudScenario" class="value">1/10</span>
                     </div>
                     <div class="hud-item alert-level">
-                        <span class="label">ALERT:</span>
-                        <span id="hudAlert" class="value alert-green">SECURE</span>
+                        <span class="label" data-i18n="hud.alert">ALERT:</span>
+                        <span id="hudAlert" class="value alert-green" data-i18n="alert.secure">SECURE</span>
                     </div>
                 </div>
                 <div class="hud-right">
                     <div class="hud-item">
-                        <span class="label">POINTS:</span>
+                        <span class="label" data-i18n="hud.points">POINTS:</span>
                         <span id="hudPoints" class="value">0</span>
                     </div>
                     <div class="hud-item">
-                        <span class="label">STREAK:</span>
+                        <span class="label" data-i18n="hud.streak">STREAK:</span>
                         <span id="hudStreak" class="value">0</span>
                     </div>
                 </div>
@@ -222,7 +247,7 @@
                 <div class="scenario-header">
                     <h2 id="scenarioTitle" class="scenario-title"></h2>
                     <div class="threat-level">
-                        <span class="label">THREAT:</span>
+                        <span class="label" data-i18n="stage.threat">THREAT:</span>
                         <span id="threatLevel" class="threat-indicator"></span>
                     </div>
                 </div>
@@ -243,7 +268,7 @@
 
                         <!-- Situation Description -->
                         <div class="situation-box">
-                            <div class="situation-label">SITUATION ANALYSIS</div>
+                            <div class="situation-label" data-i18n="stage.situation">SITUATION ANALYSIS</div>
                             <p id="situationText" class="situation-text"></p>
                         </div>
                     </div>
@@ -252,7 +277,7 @@
                         <!-- Timer Bar -->
                         <div class="timer-container">
                             <div class="timer-label">
-                                <span>TIME REMAINING</span>
+                                <span data-i18n="stage.timeRemaining">TIME REMAINING</span>
                                 <span id="timerText" class="timer-value">15s</span>
                             </div>
                             <div class="timer-bar">
@@ -264,7 +289,9 @@
                         <div id="optionsContainer" class="options-container"></div>
 
                         <button id="hintBtn" class="hint-btn" type="button" hidden>
-                            REQUEST INTEL <span id="hintCount"></span> <em>−3 pts</em>
+                            <span data-i18n="stage.hint">REQUEST INTEL</span>
+                            <span id="hintCount"></span>
+                            <em id="hintCost"></em>
                         </button>
                     </div>
                 </div>
@@ -277,44 +304,47 @@
                 <div class="mission-dossier">
                     <div class="classified-header">
                         <span id="missionStatusIcon">✓</span>
-                        <span id="missionStatus">MISSION STATUS</span>
+                        <span id="missionStatus" data-i18n="results.status">MISSION STATUS</span>
                     </div>
                     <div class="dossier-content">
                         <h1 id="completionTitle" class="completion-title"></h1>
 
                         <div class="stats-grid">
                             <div class="stat-item">
-                                <div class="stat-label">FINAL CLEARANCE LEVEL</div>
+                                <div class="stat-label" data-i18n="results.finalLevel">FINAL CLEARANCE LEVEL</div>
                                 <div id="finalLevel" class="stat-value is-text"></div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-label">SECURITY POINTS</div>
+                                <div class="stat-label" data-i18n="results.points">SECURITY POINTS</div>
                                 <div id="finalPoints" class="stat-value"></div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-label">PROTOCOLS EXECUTED</div>
+                                <div class="stat-label" data-i18n="results.executed">PROTOCOLS EXECUTED</div>
                                 <div id="protocolsExecuted" class="stat-value"></div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-label">BREACH COUNT</div>
+                                <div class="stat-label" data-i18n="results.breaches">BREACH COUNT</div>
                                 <div id="breachCount" class="stat-value"></div>
                             </div>
                         </div>
 
                         <div id="badgesContainer" class="badges-container">
-                            <h3>COMMENDATIONS EARNED</h3>
+                            <h3 data-i18n="results.commendations">COMMENDATIONS EARNED</h3>
                             <div id="badgesList" class="badges-list"></div>
                         </div>
 
                         <div class="debriefing">
-                            <h3>DEBRIEFING NOTES</h3>
+                            <h3 data-i18n="results.debriefing">DEBRIEFING NOTES</h3>
                             <p id="debriefingText"></p>
                         </div>
 
                         <div class="final-buttons">
-                            <button id="certificateBtn" class="mission-btn" type="button">VIEW CERTIFICATE</button>
-                            <button id="reviewBtn" class="mission-btn secondary" type="button">REVIEW PROTOCOLS</button>
-                            <button id="newMissionBtn" class="mission-btn secondary" type="button">NEW MISSION</button>
+                            <button id="certificateBtn" class="mission-btn" type="button"
+                                    data-i18n="results.certificate">VIEW CERTIFICATE</button>
+                            <button id="reviewBtn" class="mission-btn secondary" type="button"
+                                    data-i18n="results.review">REVIEW PROTOCOLS</button>
+                            <button id="newMissionBtn" class="mission-btn secondary" type="button"
+                                    data-i18n="results.newMission">NEW MISSION</button>
                         </div>
                     </div>
                 </div>
@@ -326,12 +356,13 @@
             <div class="briefing-room">
                 <div class="mission-dossier">
                     <div class="classified-header">
-                        <span>PROTOCOL REVIEW</span>
+                        <span data-i18n="review.header">PROTOCOL REVIEW</span>
                         <span id="reviewSummary"></span>
                     </div>
                     <div class="dossier-content">
                         <div id="reviewList" class="review-list"></div>
-                        <button id="reviewBackBtn" class="mission-btn" type="button">BACK TO DEBRIEFING</button>
+                        <button id="reviewBackBtn" class="mission-btn" type="button"
+                                data-i18n="review.back">BACK TO DEBRIEFING</button>
                     </div>
                 </div>
             </div>
@@ -341,13 +372,18 @@
         <div id="certificateScreen" class="screen">
             <div class="briefing-room certificate-room">
                 <div class="cert-controls no-print">
-                    <label for="instructorName">SUPERVISING OFFICER</label>
+                    <label for="instructorName" data-i18n="cert.supervisor">SUPERVISING OFFICER</label>
                     <input type="text" id="instructorName" maxlength="60"
+                           data-i18n-placeholder="cert.instructorPlaceholder"
                            placeholder="Instructor name..." autocomplete="off">
-                    <span class="instructor-note" id="instructorNote" hidden>Set by your teacher</span>
-                    <button id="downloadCertBtn" class="cert-btn primary" type="button">⭳ DOWNLOAD PDF</button>
-                    <button id="printCertBtn" class="cert-btn ghost" type="button">PRINT</button>
-                    <button id="certBackBtn" class="cert-btn ghost" type="button">BACK</button>
+                    <span class="instructor-note" id="instructorNote" hidden
+                          data-i18n="cert.setByTeacher">Set by your teacher</span>
+                    <button id="downloadCertBtn" class="cert-btn primary" type="button"
+                            data-i18n="cert.download">⭳ DOWNLOAD PDF</button>
+                    <button id="printCertBtn" class="cert-btn ghost" type="button"
+                            data-i18n="cert.print">PRINT</button>
+                    <button id="certBackBtn" class="cert-btn ghost" type="button"
+                            data-i18n="cert.back">BACK</button>
                 </div>
 
                 <div id="certificate" class="certificate">
@@ -357,9 +393,9 @@
                         <span class="cert-corner bl"></span>
                         <span class="cert-corner br"></span>
 
-                        <div class="cert-seal" id="certSeal">IMF<small>CERTIFIED</small></div>
+                        <div class="cert-seal" id="certSeal">IMF<small data-i18n="cert.sealCertified">CERTIFIED</small></div>
 
-                        <p class="cert-issuer">IMPOSSIBLE MISSION FORCE · SCIENCE DIVISION</p>
+                        <p class="cert-issuer" data-i18n="cert.issuer">IMPOSSIBLE MISSION FORCE · SCIENCE DIVISION</p>
                         <h1 class="cert-title" id="certTitle">Certificate of Laboratory Safety</h1>
                         <div class="cert-rule"><span></span></div>
                         <p class="cert-preamble" id="certPreamble">This certifies that operative</p>
@@ -367,12 +403,12 @@
                         <p class="cert-body" id="certBody"></p>
 
                         <div class="cert-stats">
-                            <div><span id="certRate"></span><em>SUCCESS RATE</em></div>
-                            <div><span id="certScenarios"></span><em>PROTOCOLS PASSED</em></div>
-                            <div><span id="certTier"></span><em>CLEARANCE</em></div>
+                            <div><span id="certRate"></span><em data-i18n="cert.successRate">SUCCESS RATE</em></div>
+                            <div><span id="certScenarios"></span><em data-i18n="cert.protocolsPassed">PROTOCOLS PASSED</em></div>
+                            <div><span id="certTier"></span><em data-i18n="cert.clearance">CLEARANCE</em></div>
                         </div>
 
-                        <p class="cert-rank-label">RANK CONFERRED</p>
+                        <p class="cert-rank-label" data-i18n="cert.rankConferred">RANK CONFERRED</p>
                         <p class="cert-rank" id="certRank"></p>
 
                         <ul class="cert-badges" id="certBadges"></ul>
@@ -380,11 +416,11 @@
                         <div class="cert-signature">
                             <div class="cert-sig-block">
                                 <div class="cert-sig-line" id="certInstructor"></div>
-                                <span>Chief Lab Safety Officer · IMF Science Division</span>
+                                <span data-i18n="cert.signatureRole">Chief Lab Safety Officer · IMF Science Division</span>
                             </div>
                             <div class="cert-sig-block">
                                 <div class="cert-sig-line" id="certDate"></div>
-                                <span>Date of issue</span>
+                                <span data-i18n="cert.dateOfIssue">Date of issue</span>
                             </div>
                         </div>
                     </div>
@@ -405,22 +441,22 @@
             <div id="answerCompare" class="answer-compare"></div>
 
             <div id="whyFailedBlock" class="why-failed hidden">
-                <div class="notes-label">WHY THAT FAILS</div>
+                <div class="notes-label" data-i18n="feedback.whyFailed">WHY THAT FAILS</div>
                 <p id="whyFailedText" class="notes-text"></p>
             </div>
             <div class="field-notes">
-                <div class="notes-label">FIELD NOTES</div>
+                <div class="notes-label" data-i18n="feedback.fieldNotes">FIELD NOTES</div>
                 <p id="fieldNotes" class="notes-text"></p>
             </div>
-            <button id="nextBtn" class="next-btn" type="button">NEXT CASE ➤</button>
+            <button id="nextBtn" class="next-btn" type="button" data-i18n="feedback.next">NEXT CASE ➤</button>
         </div>
     </div>
 
-    <script src="js/graphics.js"></script>
-    <script src="js/pdf.js"></script>
-    <script src="js/questions.js"></script>
-    <script src="js/animations.js"></script>
-    <script src="js/audio.js"></script>
-    <script src="js/game.js"></script>
+    <script src="js/graphics.js?v=20260807-es"></script>
+    <script src="js/pdf.js?v=20260807-es"></script>
+    <script src="js/questions.js?v=20260807-es"></script>
+    <script src="js/animations.js?v=20260807-es"></script>
+    <script src="js/audio.js?v=20260807-es"></script>
+    <script src="js/game.js?v=20260807-es"></script>
 </body>
 </html>

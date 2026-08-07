@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-i18n-doc-title="doc.titleTeacher">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,73 +7,94 @@
     <title>Set up for your class — Laboratory Safety Protocol</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/teacher.css">
+    <link rel="stylesheet" href="css/teacher.css?v=20260807-es">
+    <script src="js/i18n.js?v=20260807-es"></script>
 </head>
 <body class="teacher-page">
 
     <main class="tp-sheet">
         <header class="tp-head">
-            <p class="tp-eyebrow">Impossible Mission Force · Science Division</p>
-            <h1>Set up this activity for your class</h1>
-            <p class="tp-lede">
+            <div class="tp-head-row">
+                <p class="tp-eyebrow" data-i18n="tp.eyebrow">Impossible Mission Force · Science Division</p>
+                <div class="lang-switch" id="langSwitch" role="radiogroup" aria-label="Language / Idioma"></div>
+            </div>
+            <h1 data-i18n="tp.title">Set up this activity for your class</h1>
+            <p class="tp-lede" data-i18n="tp.lede">
                 Put your name on every certificate your students earn — without asking
                 them to type it. Enter it once here and share the link you get back.
             </p>
         </header>
 
         <section class="tp-step">
-            <h2><span class="tp-num">1</span> Your name, as it should appear</h2>
-            <label class="tp-label" for="teacherName">Supervising officer</label>
+            <h2><span class="tp-num">1</span> <span data-i18n="tp.step1">Your name, as it should appear</span></h2>
+            <label class="tp-label" for="teacherName" data-i18n="tp.nameLabel">Supervising officer</label>
             <input type="text" id="teacherName" maxlength="60" autocomplete="name"
+                   data-i18n-placeholder="tp.namePlaceholder"
                    placeholder="e.g. Ms. Rivera" spellcheck="false">
 
-            <p class="tp-preview-label">On the certificate it will read:</p>
+            <p class="tp-preview-label" data-i18n="tp.previewLabel">On the certificate it will read:</p>
             <div class="tp-preview" aria-live="polite">
                 <span class="tp-sig" id="sigPreview"></span>
                 <span class="tp-sig-rule"></span>
-                <span class="tp-sig-role">Chief Lab Safety Officer · IMF Science Division</span>
+                <span class="tp-sig-role" data-i18n="cert.signatureRole">Chief Lab Safety Officer · IMF Science Division</span>
             </div>
             <p class="tp-warn" id="nameWarning" hidden></p>
         </section>
 
         <section class="tp-step" id="linkStep" hidden>
-            <h2><span class="tp-num">2</span> Share this link with your students</h2>
+            <h2><span class="tp-num">2</span> <span data-i18n="tp.step2">Share this link with your students</span></h2>
+
+            <div class="tp-langpick">
+                <label class="tp-label" for="studentLang" data-i18n="tp.langStep">Language for your students</label>
+                <select id="studentLang">
+                    <option value="" data-i18n="tp.langAuto">Let students choose</option>
+                    <option value="en" data-i18n="lang.en">English</option>
+                    <option value="es" data-i18n="lang.es">Español</option>
+                </select>
+                <p class="tp-hint" data-i18n="tp.langHint">
+                    The link opens the simulation in the language you pick here. Students can
+                    still switch it themselves on the first screen.
+                </p>
+            </div>
+
             <div class="tp-linkrow">
-                <input type="text" id="classLink" readonly aria-label="Your class link">
-                <button type="button" class="tp-btn primary" id="copyBtn">Copy link</button>
+                <input type="text" id="classLink" readonly data-i18n-aria-label="tp.linkAria" aria-label="Your class link">
+                <button type="button" class="tp-btn primary" id="copyBtn" data-i18n="tp.copy">Copy link</button>
             </div>
             <p class="tp-hint" id="copyState" aria-live="polite"></p>
-            <p class="tp-hint">
+            <p class="tp-hint" data-i18n="tp.pasteHint">
                 Paste it into Google Classroom, Canvas, or wherever you post work.
                 Anyone who opens it gets your name locked onto their certificate —
                 students cannot change it.
             </p>
             <div class="tp-actions">
-                <a class="tp-btn ghost" id="tryLink" href="#" target="_blank" rel="noopener">Open as a student</a>
-                <button type="button" class="tp-btn ghost" id="previewPdfBtn">Preview the certificate PDF</button>
+                <a class="tp-btn ghost" id="tryLink" href="#" target="_blank" rel="noopener"
+                   data-i18n="tp.openStudent">Open as a student</a>
+                <button type="button" class="tp-btn ghost" id="previewPdfBtn"
+                        data-i18n="tp.previewPdf">Preview the certificate PDF</button>
             </div>
         </section>
 
         <section class="tp-note">
-            <h3>Worth knowing</h3>
+            <h3 data-i18n="tp.noteTitle">Worth knowing</h3>
             <ul>
-                <li>Nothing is stored on a server. The name travels in the link itself, so
+                <li data-i18n="tp.note1">Nothing is stored on a server. The name travels in the link itself, so
                     it works on any device, in any browser, with no sign-in.</li>
-                <li>Bookmark this page to make a fresh link any time — one per section if
+                <li data-i18n="tp.note2">Bookmark this page to make a fresh link any time — one per section if
                     you want certificates to come back sorted by class.</li>
-                <li>Students still enter their own codename at the start; that is the name
+                <li data-i18n="tp.note3">Students still enter their own codename at the start; that is the name
                     the certificate is issued to.</li>
-                <li>The old link keeps working if you have already shared one.</li>
+                <li data-i18n="tp.note4">The old link keeps working if you have already shared one.</li>
             </ul>
         </section>
 
         <footer class="tp-foot">
-            <a href="index.html">← Back to the simulation</a>
-            <span>Virtual Lab · Laboratory Safety Protocol simulation</span>
+            <a href="index.html" id="backLink" data-i18n="tp.back">← Back to the simulation</a>
+            <span data-i18n="tp.foot">Virtual Lab · Laboratory Safety Protocol simulation</span>
         </footer>
     </main>
 
-    <script src="js/pdf.js"></script>
-    <script src="js/teacher.js"></script>
+    <script src="js/pdf.js?v=20260807-es"></script>
+    <script src="js/teacher.js?v=20260807-es"></script>
 </body>
 </html>

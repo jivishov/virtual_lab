@@ -5,6 +5,8 @@ protocol-violation sequence, earned ranks and a printable certificate.
 
 ## Features
 
+- **English and Spanish** — the whole simulation, chosen from a selector on the
+  codename screen and remembered per browser
 - **10 Mission Scenarios** covering critical lab safety protocols
 - **Protocol violation sequence** — water poured into concentrated acid, played on
   a single synchronised timeline with a skip control and a wrong-vs-right comparison
@@ -21,6 +23,53 @@ protocol-violation sequence, earned ranks and a printable certificate.
 - **Badge system** for speed, accuracy, streaks and unaided passes
 - **Keyboard operable** — `1`–`4` to answer, `Enter`/`Esc` to advance
 - **Reduced-motion support** throughout
+
+## Language
+
+A segmented **EN / Español** selector sits on the codename screen, above the
+codename field — before any copy the student has to read to answer correctly.
+Everything downstream follows it: briefing, scenarios, option cards, the labels
+drawn inside the scene illustrations, feedback, debriefing, protocol review, the
+certificate and the generated PDF, including the date format.
+
+The language is picked in this order, first match wins:
+
+1. `?lang=en` or `?lang=es` in the URL — how a teacher pins a class to one language
+2. the student's own last choice, from `localStorage`
+3. the browser's `Accept-Language` (anything `es-*` opens in Spanish)
+4. English
+
+Only an explicit click is persisted, so a shared lab machine does not trap the
+next student in a language their browser never asked for.
+
+### About the Spanish
+
+The Spanish is **neutral Latin American Spanish (es-419)**, aimed at Spanish-
+speaking students in United States schools — largely of Mexican and Central
+American origin. It uses `tú`/`ustedes`, never `vosotros`, and pan-regional
+safety vocabulary (`bata`, `gafas de seguridad`, `ducha de seguridad`,
+`gabinete de inflamables`). Ranks and job titles avoid assuming a student's
+gender: `DIRECCIÓN DE SEGURIDAD DE LABORATORIO`, not `DIRECTOR`.
+
+### Adding or editing copy
+
+All UI strings for both languages live in **`js/i18n.js`** in one flat key space.
+Static markup is translated by attribute — `data-i18n`, `data-i18n-html`,
+`data-i18n-placeholder`, `data-i18n-title`, `data-i18n-aria-label` — and the
+English text left in the HTML is the no-JS fallback.
+
+English scenario copy stays in `js/questions.js`, which remains the canonical
+description of the mission: ids, option order, `correct` flags and artwork keys.
+`I18N_SCENARIOS.es` overlays **words only**, matched to options **by position**.
+That coupling is checked on every load by `i18nAuditScenarios()`, which warns in
+the console if a translated option list drifts out of step with the English one —
+the one way this design could show a student the wrong explanation for their
+answer. Translation happens before the per-attempt shuffle and carries the
+`correct` flag with it, so no translation can move the correct answer.
+
+Adding a third language means adding a dictionary and a scenario pack to
+`I18N_SUPPORTED`; the selector and its sliding highlight are generated from that
+list and need no CSS change.
 
 ## Topics Covered
 
@@ -96,6 +145,11 @@ Open **`teacher.html`**, enter your name once, and share the link it gives you:
 https://virtuallab.az/simulations/lab-safety-mi/?instructor=Ms.%20Rivera
 ```
 
+The setup page also lets you pin the language your students open in, which adds
+`&lang=es` (or `&lang=en`) to that link. It defaults to **letting students
+choose**, so the link you hand out does not override a student whose browser
+asks for Spanish unless you decide it should.
+
 Every student who opens that link gets your name on their certificate, and the
 field is **read-only** for them — the point of the mechanism is that the student,
 who has no reason to know how you spell your name, is not the one typing it. The
@@ -151,7 +205,7 @@ are no missing-file requests. Both music and effects can be toggled from the HUD
 ## How to Use
 
 1. Serve the folder (e.g. `python -m http.server 8000`) and open `index.html`
-2. Enter a codename
+2. Pick a language if the default is not the one you want, then enter a codename
 3. Read the briefing (skippable) and watch the violation sequence
 4. Choose a clearance level
 5. Complete 10 scenarios
@@ -163,6 +217,12 @@ Scene art and option icons live in `js/graphics.js`. Scenes are drawn on a
 shared `320x176` grid as annotated apparatus diagrams — glassware, cabinets,
 a microscope, a plan view of a bench aisle — with leader lines, dimension
 lines and labels. Option icons are a `24x24` line set.
+
+Each scene is a **function**, not a baked string, so its labels are resolved
+through `T()` at render time and follow the language. Keep label text short:
+the canvas is only 320 wide and a `label()` has no box to grow into. A `plate()`
+sizes itself to its text and is nudged back inside the viewBox if a longer
+translation would otherwise overhang the edge and be clipped.
 
 Styling is inherited from the `<svg>` element (stroke, width, caps) so each
 CSS class overrides only what it needs. Do **not** add a blanket

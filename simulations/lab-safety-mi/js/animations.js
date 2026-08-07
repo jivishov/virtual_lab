@@ -288,20 +288,13 @@ function updateAlertLevel(level) {
 
     alertElement.classList.remove('alert-green', 'alert-yellow', 'alert-red');
 
-    switch(level) {
-        case 'secure':
-            alertElement.classList.add('alert-green');
-            alertElement.textContent = 'SECURE';
-            break;
-        case 'elevated':
-            alertElement.classList.add('alert-yellow');
-            alertElement.textContent = 'ELEVATED';
-            break;
-        case 'critical':
-            alertElement.classList.add('alert-red');
-            alertElement.textContent = 'CRITICAL';
-            break;
-    }
+    const tone = { secure: 'alert-green', elevated: 'alert-yellow', critical: 'alert-red' }[level];
+    if (!tone) return;
+
+    alertElement.classList.add(tone);
+    alertElement.textContent = T(`alert.${level}`);
+    // Keeps the value in step if the language changes while it is on screen.
+    alertElement.setAttribute('data-i18n', `alert.${level}`);
 }
 
 // Animate timer bar. Remaining time is tracked outside the closure so the
@@ -444,8 +437,9 @@ function showFeedback(options) {
             </div>`;
 
         compare.innerHTML = isCorrect
-            ? row('right', 'YOUR CHOICE — CORRECT', chosen)
-            : row('wrong', 'YOUR CHOICE', chosen) + row('right', 'CORRECT PROTOCOL', correct);
+            ? row('right', T('feedback.yourChoiceCorrect'), chosen)
+            : row('wrong', T('feedback.yourChoice'), chosen) +
+              row('right', T('feedback.correctProtocol'), correct);
     }
 
     flashScreen(isCorrect ? 'success' : 'failure');
@@ -562,7 +556,7 @@ function showBadgeEarned(badge) {
             ${badge.icon}
         </div>
         <h2 style="font-family: var(--font-header); color: var(--warning-orange); font-size: 28px; margin-bottom: 15px;">
-            COMMENDATION EARNED
+            ${T('results.badgeEarned')}
         </h2>
         <h3 style="font-family: var(--font-header); color: var(--text-primary); font-size: 24px; margin-bottom: 10px;">
             ${badge.name}

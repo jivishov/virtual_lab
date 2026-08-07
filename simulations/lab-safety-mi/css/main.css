@@ -338,6 +338,114 @@ body {
 }
 
 /* ===================================
+   LANGUAGE SELECTOR
+   A segmented control. The highlight is one absolutely positioned thumb slid
+   by --lang-index rather than a background on the active button, so the
+   movement between languages reads as a single object rather than two lamps
+   switching. Column count comes from --lang-count, set in i18n.js, so a third
+   language needs no CSS.
+   =================================== */
+
+.lang-switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: clamp(10px, 1.8vh, 20px) 0 clamp(4px, 1vh, 10px);
+}
+
+.lang-switch-legend {
+    font-family: var(--font-header);
+    font-size: clamp(9px, 0.72vw, 11px);
+    font-weight: 700;
+    letter-spacing: 2.4px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+.lang-switch {
+    --lang-index: 0;
+    --lang-count: 2;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--lang-count), minmax(72px, 1fr));
+    gap: 0;
+    padding: 3px;
+    border: 1px solid rgba(0, 243, 255, 0.32);
+    border-radius: 9px;
+    background: rgba(0, 20, 34, 0.72);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.lang-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    bottom: 3px;
+    width: calc((100% - 6px) / var(--lang-count));
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--accent-blue-dim), var(--accent-blue));
+    box-shadow: 0 0 14px rgba(0, 243, 255, 0.45);
+    transform: translateX(calc(var(--lang-index) * 100%));
+    transition: transform var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+}
+
+.lang-opt {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 6px 12px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.lang-opt .lang-code {
+    font-family: var(--font-header);
+    font-size: clamp(11px, 0.9vw, 13px);
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    line-height: 1.1;
+}
+
+.lang-opt .lang-name {
+    font-family: var(--font-body);
+    font-size: clamp(10px, 0.75vw, 12px);
+    font-weight: 600;
+    line-height: 1.1;
+    opacity: 0.85;
+}
+
+.lang-opt:hover {
+    color: var(--text-primary);
+}
+
+.lang-opt.is-active,
+.lang-opt.is-active:hover {
+    /* Against the lit thumb, the near-black panel colour is the readable one. */
+    color: var(--secondary-bg);
+}
+
+.lang-opt:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lang-thumb {
+        transition: none;
+    }
+}
+
+/* ===================================
    AGENT INPUT
    =================================== */
 
