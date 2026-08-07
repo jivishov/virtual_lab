@@ -73,6 +73,21 @@ class LabSafetyGame {
         const agentNameInput = document.getElementById('agentName');
         const acceptBtn = document.getElementById('acceptMissionBtn');
 
+        window.i18n.mountLanguageSwitch(document.getElementById('langSwitch'));
+
+        // Two things outside the data-i18n sweep: the teacher link has to carry
+        // the language forward, or a teacher following it from a Spanish page
+        // lands on an English setup screen; and the hint cost is a number the
+        // dictionary interpolates rather than static copy.
+        const paintLangDependents = () => {
+            const teacherLink = document.getElementById('teacherLink');
+            const hintCost = document.getElementById('hintCost');
+            if (teacherLink) teacherLink.href = 'teacher.html?lang=' + window.i18n.lang;
+            if (hintCost) hintCost.textContent = T('stage.hintCost', { cost: HINT_COST });
+        };
+        paintLangDependents();
+        window.i18n.onChange(paintLangDependents);
+
         if (agentNameInput) {
             agentNameInput.addEventListener('input', (e) => {
                 if (acceptBtn) acceptBtn.disabled = e.target.value.trim().length < 2;
@@ -150,17 +165,24 @@ class LabSafetyGame {
         const grid = document.getElementById('agentGrid');
         if (!grid) return;
 
+        // Whole phrases, not English fragments glued together: "s per scenario"
+        // and a pluralising "s" do not survive translation as separate pieces.
+        const intel = (count) =>
+            count === 0 ? T('select.intelNone')
+          : count === 1 ? T('select.intelOne', { count })
+                        : T('select.intelMany', { count });
+
         grid.innerHTML = DIFFICULTY_TIERS.map((tier, index) => `
             <div class="agent-card" data-tier="${index}" role="button" tabindex="0"
-                 aria-label="Select ${tier.name} clearance">
+                 aria-label="${T('select.aria', { tier: tier.name })}">
                 <div class="agent-silhouette">${tier.icon}</div>
                 <h3>${tier.name}</h3>
                 <div class="agent-stats">
-                    <p><span class="stat-strong">${tier.timerSeconds}s</span> per scenario</p>
-                    <p><span class="stat-strong">${tier.hints || 'No'}</span> intel request${tier.hints === 1 ? '' : 's'}</p>
+                    <p><span class="stat-strong">${tier.timerSeconds}s</span> ${T('select.perScenarioSuffix')}</p>
+                    <p>${intel(tier.hints)}</p>
                     <p>${tier.blurb}</p>
                 </div>
-                <button class="select-agent-btn" type="button" tabindex="-1">SELECT</button>
+                <button class="select-agent-btn" type="button" tabindex="-1">${T('select.button')}</button>
             </div>
         `).join('');
 
@@ -240,7 +262,7 @@ class LabSafetyGame {
         if (scenarioTitle) scenarioTitle.textContent = scenario.title;
 
         if (threatLevel) {
-            threatLevel.textContent = scenario.threatLevel.toUpperCase();
+            threatLevel.textContent = T('threat.' + scenario.threatLevel);
             threatLevel.className = 'threat-indicator threat-' + scenario.threatLevel;
         }
 
@@ -423,10 +445,10 @@ class LabSafetyGame {
             this.pendingFeedback = null;
             window.animations.showFeedback({
                 isCorrect,
-                title: isCorrect ? '✅ PROTOCOL EXECUTED' : '❌ PROTOCOL BREACH',
+                title: T(isCorrect ? 'feedback.correctTitle' : 'feedback.wrongTitle'),
                 text: isCorrect
-                    ? `+${earned} POINTS · STREAK ${this.state.streak}`
-                    : `−${WRONG_PENALTY} POINTS · STREAK RESET`,
+                    ? T('feedback.correctScore', { points: earned, streak: this.state.streak })
+                    : T('feedback.wrongScore', { points: WRONG_PENALTY }),
                 explanation: scenario.explanation,
                 whyFailed,
                 chosen: scenario.options[chosenIndex],
@@ -457,7 +479,7 @@ class LabSafetyGame {
         this.state.answers.push({
             id: scenario.id,
             title: scenario.title,
-            chosen: 'No response',
+            chosen: T('feedback.noResponse'),
             chosenFeedback: '',
             answer: scenario.options[scenario.correctIndex].text,
             explanation: scenario.explanation,
@@ -474,11 +496,11 @@ class LabSafetyGame {
 
         window.animations.showFeedback({
             isCorrect: false,
-            title: '⏱️ MISSION COMPROMISED',
-            text: `TIME EXPIRED · −${WRONG_PENALTY} POINTS`,
+            title: T('feedback.timeoutTitle'),
+            text: T('feedback.timeoutScore', { points: WRONG_PENALTY }),
             explanation: scenario.explanation,
-            whyFailed: 'No protocol was executed. In a real incident, hesitation is itself the hazard — decide, then act.',
-            chosen: { text: 'No response', description: 'The clock ran out' },
+            whyFailed: T('feedback.timeoutWhy'),
+            chosen: { text: T('feedback.noResponse'), description: T('feedback.clockRanOut') },
             correct: scenario.options[scenario.correctIndex],
             onAdvance: () => this.nextScenario()
         });
@@ -489,9 +511,9 @@ class LabSafetyGame {
         const nextBtn = document.getElementById('nextBtn');
         if (!nextBtn) return;
 
-        nextBtn.textContent = this.state.currentScenario === MISSION_SCENARIOS.length - 1
-            ? 'MISSION COMPLETE ➤'
-            : 'NEXT CASE ➤';
+        nextBtn.textContent = T(this.state.currentScenario === MISSION_SCENARIOS.length - 1
+            ? 'feedback.finish'
+            : 'feedback.next');
 
         nextBtn.onclick = () => this.nextScenario();
     }
@@ -574,7 +596,7 @@ class LabSafetyGame {
         if (missionStatusIcon) missionStatusIcon.textContent = isSuccess ? '✓' : '✗';
 
         if (completionTitle) {
-            completionTitle.textContent = isSuccess ? 'MISSION SUCCESS' : 'MISSION FAILED';
+            completionTitle.textContent = T(isSuccess ? 'results.success' : 'results.failed');
             completionTitle.className = 'completion-title ' + (isSuccess ? 'success' : 'failure');
         }
 
@@ -592,7 +614,7 @@ class LabSafetyGame {
                         <div class="badge-description">${badge.description}</div>
                     </div>
                 `).join('')
-                : '<p style="text-align:center;color:var(--text-dim)">No commendations earned this mission</p>';
+                : `<p style="text-align:center;color:var(--text-dim)">${T('results.noCommendations')}</p>`;
         }
 
         if (earnedBadges.length && window.audioManager) {
@@ -603,19 +625,11 @@ class LabSafetyGame {
     }
 
     debriefingFor(percent) {
-        if (percent === 100) {
-            return 'OUTSTANDING. Every protocol executed correctly. You are cleared for advanced laboratory operations.';
-        }
-        if (percent >= 90) {
-            return 'EXCELLENT WORK. Strong command of laboratory safety. Review the one or two misses to reach a perfect record.';
-        }
-        if (percent >= PASS_THRESHOLD) {
-            return 'MISSION PASSED. Core protocols are sound, but emergency response needs sharpening. Use REVIEW PROTOCOLS on the scenarios you lost.';
-        }
-        if (percent >= 50) {
-            return 'BELOW STANDARD. You grasp the basics but not the emergency procedures that matter most. Review every breach before your next attempt.';
-        }
-        return 'CRITICAL DEFICIENCIES. The gaps in these answers would cause real injury in a real laboratory. Mandatory retraining before lab clearance.';
+        if (percent === 100) return T('debrief.100');
+        if (percent >= 90) return T('debrief.90');
+        if (percent >= PASS_THRESHOLD) return T('debrief.pass');
+        if (percent >= 50) return T('debrief.50');
+        return T('debrief.fail');
     }
 
     setupResultsButtons() {
@@ -645,8 +659,11 @@ class LabSafetyGame {
         const summary = document.getElementById('reviewSummary');
 
         if (summary) {
-            summary.textContent =
-                `${this.state.correctAnswers}/${MISSION_SCENARIOS.length} PASSED · ${this.percentCorrect}%`;
+            summary.textContent = T('review.summary', {
+                correct: this.state.correctAnswers,
+                total: MISSION_SCENARIOS.length,
+                percent: this.percentCorrect
+            });
         }
 
         if (list) {
@@ -655,16 +672,17 @@ class LabSafetyGame {
                     <div class="review-head">
                         <span class="review-title">${entry.title}</span>
                         <span class="review-verdict ${entry.isCorrect ? 'pass' : 'fail'}">
-                            ${entry.isCorrect ? 'PASSED' : (entry.timedOut ? 'NO RESPONSE' : 'BREACH')}
+                            ${T(entry.isCorrect ? 'review.passed'
+                                : (entry.timedOut ? 'review.noResponse' : 'review.breach'))}
                         </span>
                     </div>
                     ${entry.isCorrect ? `
-                        <p class="review-row"><b>YOUR ANSWER:</b>
+                        <p class="review-row"><b>${T('review.yourAnswer')}</b>
                            <span class="answer">${entry.chosen}</span></p>
                     ` : `
-                        <p class="review-row"><b>YOU CHOSE:</b>
+                        <p class="review-row"><b>${T('review.youChose')}</b>
                            <span class="chose">${entry.chosen}</span></p>
-                        <p class="review-row"><b>CORRECT PROTOCOL:</b>
+                        <p class="review-row"><b>${T('review.correct')}</b>
                            <span class="answer">${entry.answer}</span></p>
                         ${entry.chosenFeedback
                             ? `<p class="review-row">${entry.chosenFeedback}</p>`
@@ -768,6 +786,8 @@ class LabSafetyGame {
         const tier = DIFFICULTY_TIERS[this.state.tierIndex];
         const input = document.getElementById('instructorName');
 
+        const vars = { tier: tier.name, threshold: PASS_THRESHOLD };
+
         return {
             passed,
             name: this.state.agentName,
@@ -777,27 +797,35 @@ class LabSafetyGame {
             correct: this.state.correctAnswers,
             total: MISSION_SCENARIOS.length,
             instructor: input ? input.value.trim() : '',
-            date: new Date().toLocaleDateString(undefined, {
-                year: 'numeric', month: 'long', day: 'numeric'
-            }),
+            date: window.i18n.formatDate(),
             badges: result.earnedBadges.map(b => b.name),
             stats: [
-                { value: `${result.percent}%`, label: 'SUCCESS RATE' },
-                { value: `${this.state.correctAnswers}/${MISSION_SCENARIOS.length}`, label: 'PROTOCOLS PASSED' },
-                { value: tier.name, label: 'CLEARANCE' }
+                { value: `${result.percent}%`, label: T('cert.successRate') },
+                { value: `${this.state.correctAnswers}/${MISSION_SCENARIOS.length}`, label: T('cert.protocolsPassed') },
+                { value: tier.name, label: T('cert.clearance') }
             ],
-            // pre-wrapped for the PDF, which has no line-breaking of its own
-            body: passed
-                ? [
-                    'has completed the Laboratory Protocol mission, demonstrating command of personal',
-                    'protective equipment, hazard identification, emergency response, chemical handling',
-                    `and laboratory conduct at ${tier.name} clearance.`
-                  ]
-                : [
-                    `attempted the Laboratory Protocol mission at ${tier.name} clearance and did not reach`,
-                    `the ${PASS_THRESHOLD}% standard required for laboratory clearance.`,
-                    'Retraining and a further attempt are required.'
-                  ]
+            // The PDF writer has no line-breaking of its own, so the body is
+            // pre-wrapped. Three keys rather than one paragraph: a translator
+            // controls where the lines break in their own language.
+            body: [1, 2, 3].map(n =>
+                T(`cert.body${passed ? 'Pass' : 'Fail'}Pdf${n}`, vars)),
+            // Everything the PDF prints in words, resolved here so pdf.js stays
+            // a pure renderer with no dictionary of its own.
+            strings: {
+                issuer: T('cert.issuerPdf'),
+                title: T(passed ? 'cert.titlePass' : 'cert.titleFailPdf'),
+                preamble: T(passed ? 'cert.preamblePass' : 'cert.preambleFail'),
+                rankConferred: T('cert.rankConferred'),
+                signatureRole: T('cert.signatureRolePdf'),
+                dateOfIssue: T('cert.dateOfIssue'),
+                footer: T('cert.footer'),
+                retrain: T('cert.retrain'),
+                bandHonours: T('cert.bandHonours'),
+                bandMerit: T('cert.bandMerit'),
+                bandPass: T('cert.bandPass'),
+                bandFail: T('cert.bandFail'),
+                filename: T('cert.filename')
+            }
         };
     }
 
@@ -815,40 +843,34 @@ class LabSafetyGame {
         const badgeList = document.getElementById('certBadges');
         const input = document.getElementById('instructorName');
 
-        setText('certTitle', passed
-            ? 'Certificate of Laboratory Safety'
-            : 'Laboratory Safety — Retraining Notice');
+        const tierName = DIFFICULTY_TIERS[this.state.tierIndex].name;
+        const certVars = { tier: tierName, threshold: PASS_THRESHOLD };
 
-        setText('certPreamble', passed
-            ? 'This certifies that operative'
-            : 'This records that operative');
-
+        setText('certTitle', T(passed ? 'cert.titlePass' : 'cert.titleFail'));
+        setText('certPreamble', T(passed ? 'cert.preamblePass' : 'cert.preambleFail'));
         setText('certName', this.state.agentName);
-
-        setText('certBody', passed
-            ? `has completed the Laboratory Protocol mission, demonstrating command of personal protective equipment, hazard identification, emergency response, chemical handling and laboratory conduct at ${DIFFICULTY_TIERS[this.state.tierIndex].name} clearance.`
-            : `attempted the Laboratory Protocol mission at ${DIFFICULTY_TIERS[this.state.tierIndex].name} clearance and did not reach the ${PASS_THRESHOLD}% standard required for laboratory clearance. Retraining and a further attempt are required.`);
+        setText('certBody', T(passed ? 'cert.bodyPass' : 'cert.bodyFail', certVars));
 
         setText('certRate', `${result.percent}%`);
         setText('certScenarios', `${this.state.correctAnswers}/${MISSION_SCENARIOS.length}`);
-        setText('certTier', DIFFICULTY_TIERS[this.state.tierIndex].name);
+        setText('certTier', tierName);
         setText('certRank', result.rank.title);
 
         if (seal) {
             // The seal carries the grade, not just pass/fail: bands at 90 and
             // 80 give a distinction and a merit something to aim at above the
             // 70% clearance bar.
-            const band = result.percent >= 90 ? ['gold', 'HONOURS']
-                       : result.percent >= 80 ? ['silver', 'MERIT']
-                       : ['bronze', 'PASS'];
+            const band = result.percent >= 90 ? ['gold', T('cert.bandHonours')]
+                       : result.percent >= 80 ? ['silver', T('cert.bandMerit')]
+                       : ['bronze', T('cert.bandPass')];
             seal.className = passed ? `cert-seal is-pass tier-${band[0]}` : 'cert-seal is-fail';
             seal.innerHTML = passed
                 ? `<span class="seal-top">IMF</span>
                    <span class="seal-mark">${result.percent}%</span>
                    <span class="seal-band">${band[1]}</span>`
                 : `<span class="seal-top">&#9888;</span>
-                   <span class="seal-mark">RETRAIN</span>
-                   <span class="seal-band">NOT CLEARED</span>`;
+                   <span class="seal-mark">${T('cert.retrain')}</span>
+                   <span class="seal-band">${T('cert.bandFail')}</span>`;
         }
 
         if (badgeList) {
@@ -857,9 +879,7 @@ class LabSafetyGame {
                 .join('');
         }
 
-        setText('certDate', new Date().toLocaleDateString(undefined, {
-            year: 'numeric', month: 'long', day: 'numeric'
-        }));
+        setText('certDate', window.i18n.formatDate());
 
         this.paintInstructor(input ? input.value.trim() : '');
 

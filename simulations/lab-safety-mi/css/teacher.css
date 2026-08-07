@@ -49,6 +49,112 @@
 
 /* ---- header ---- */
 
+.tp-head-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* ---- language selector ----
+   Same control as the simulation, re-inked for paper. The layout is driven by
+   --lang-index / --lang-count, both set from i18n.js. */
+
+.teacher-page .lang-switch {
+    --lang-index: 0;
+    --lang-count: 2;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--lang-count), minmax(62px, 1fr));
+    padding: 3px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.teacher-page .lang-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    bottom: 3px;
+    width: calc((100% - 6px) / var(--lang-count));
+    border-radius: 5px;
+    background: var(--ink-navy);
+    transform: translateX(calc(var(--lang-index) * 100%));
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+}
+
+.teacher-page .lang-opt {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 10px;
+    background: none;
+    border: none;
+    border-radius: 5px;
+    color: var(--ink-grey);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.teacher-page .lang-opt .lang-code {
+    font-family: var(--font-header);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    line-height: 1.2;
+}
+
+.teacher-page .lang-opt .lang-name {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.teacher-page .lang-opt.is-active {
+    color: #fff;
+}
+
+.teacher-page .lang-opt:focus-visible {
+    outline: 2px solid var(--ink-gold);
+    outline-offset: 2px;
+}
+
+/* ---- student language picker ---- */
+
+.tp-langpick {
+    margin-bottom: 18px;
+}
+
+.tp-langpick select {
+    font-family: var(--font-body);
+    font-size: clamp(14px, 1.1vw, 16px);
+    font-weight: 600;
+    color: var(--ink-navy);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 7px;
+    padding: 9px 12px;
+    width: 100%;
+    max-width: 320px;
+    cursor: pointer;
+}
+
+.tp-langpick select:focus-visible {
+    outline: 2px solid var(--ink-gold);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .teacher-page .lang-thumb {
+        transition: none;
+    }
+}
+
 .tp-eyebrow {
     font-family: var(--font-header);
     font-size: clamp(8px, 0.8vw, 10px);
