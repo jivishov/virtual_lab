@@ -1,0 +1,2849 @@
+{
+  "id": "marble-statue-kinetics",
+  "title": "How Long Will That Marble Statue Last?",
+  "description": "An inquiry-centered kinetics lab that plans a controlled HCl and CaCO3 investigation, runs a teacher-approved gas-syringe configuration, revises the procedure, compares time-series rates, and qualifies a marble-weathering model.",
+  "audience": "Chemistry students",
+  "learningGoals": [
+    "Frame testable research questions, hypotheses, variables, controls, treatment levels, and replicate expectations before seeing results.",
+    "Assemble and leak-check a gas-syringe apparatus that directs CO2 into an expanding collection volume without creating a dangerous rigid closed system.",
+    "Collect and distinguish simulator-generated CO2 volume versus time evidence from teacher configuration and student measurements.",
+    "Use the balanced reaction and a declared slope interval to calculate, compare, and evaluate reaction rates with uncertainty.",
+    "Revise an approved procedure and use evidence to qualify—not overstate—a classroom model of marble weathering."
+  ],
+  "safetyNotes": [
+    "Wear splash goggles and a protective apron; handle concentrated hydrochloric acid only through the teacher-approved path.",
+    "When dilution is assigned, add acid to water—never water to acid—and use only teacher-configured concentrations and volumes.",
+    "Reject any gas-generation setup that forms a rigid closed container. The approved gas-syringe path must be connected, zeroed and leak-checked before the reactants meet, and the flask is sealed through that path only after the acid and the weighed chips are in it.",
+    "After the teacher-approved simulated run, separate excess CaCO3 for solid disposal and dilute the remaining solution with plenty of water according to the source procedure; the simulator does not replace current local disposal rules."
+  ],
+  "equipment": [
+    "reagent-bottle",
+    "graduated-cylinder",
+    "erlenmeyer-flask-250ml",
+    "rubber-stopper-delivery-tube",
+    "gas-syringe",
+    "marble-chips",
+    "analytical-balance",
+    "watch-glass",
+    "stopwatch",
+    "hot-plate-stirrer",
+    "thermometer",
+    "waste-beaker"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "hcl-bottle-1",
+        "definitionId": "reagent-bottle",
+        "label": "4.0 M HCl",
+        "location": "shelf",
+        "contents": {
+          "kind": "solution",
+          "label": "Hydrochloric acid",
+          "volumeMl": 250,
+          "solutes": [
+            {
+              "id": "hydrochloric-acid",
+              "label": "Hydrochloric acid",
+              "amount": 1,
+              "unit": "mol"
+            }
+          ],
+          "concentration": {
+            "value": 4,
+            "unit": "M"
+          },
+          "contamination": [],
+          "temperatureC": 25,
+          "wetState": "wet",
+          "visualState": "clear-solution"
+        }
+      },
+      {
+        "id": "graduated-cylinder-1",
+        "definitionId": "graduated-cylinder",
+        "label": "Graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "erlenmeyer-flask-250ml-1",
+        "definitionId": "erlenmeyer-flask-250ml",
+        "label": "Gas reaction flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "rubber-stopper-delivery-tube-1",
+        "definitionId": "rubber-stopper-delivery-tube",
+        "label": "Stopper and delivery tube",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "gas-syringe-1",
+        "definitionId": "gas-syringe",
+        "label": "Gas syringe",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "marble-chips-1",
+        "definitionId": "marble-chips",
+        "label": "Marble chips",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Calcium carbonate marble chips",
+          "massG": 10,
+          "solutes": [
+            {
+              "id": "calcium-carbonate",
+              "label": "Calcium carbonate",
+              "amount": 10,
+              "unit": "g"
+            }
+          ],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "solid"
+        }
+      },
+      {
+        "id": "analytical-balance-1",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "watch-glass-1",
+        "definitionId": "watch-glass",
+        "label": "Watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "stopwatch-1",
+        "definitionId": "stopwatch",
+        "label": "Stopwatch",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "hot-plate-stirrer-1",
+        "definitionId": "hot-plate-stirrer",
+        "label": "Hot plate stirrer",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "thermometer-1",
+        "definitionId": "thermometer",
+        "label": "Thermometer",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "waste-beaker-1",
+        "definitionId": "waste-beaker",
+        "label": "Waste beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "kineticsModels": [
+    {
+      "id": "marble-statue-gas-syringe",
+      "type": "gasSyringe",
+      "timepointsS": [
+        0,
+        5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40,
+        45
+      ],
+      "baseMaxVolumeMl": 70,
+      "baseRateConstant": 0.055,
+      "defaultVariable": "acidConcentration",
+      "controlled": {
+        "acidVolumeMl": 50,
+        "marbleMassG": 1.3,
+        "acidConcentrationM": 4,
+        "chipSize": "medium",
+        "temperatureC": 25
+      },
+      "conditions": [
+        {
+          "id": "acid-2m",
+          "label": "2.0 M HCl",
+          "variable": "acidConcentration",
+          "acidConcentrationM": 2,
+          "chipSize": "medium",
+          "temperatureC": 25,
+          "rateFactor": 0.55
+        },
+        {
+          "id": "acid-4m",
+          "label": "4.0 M HCl",
+          "variable": "acidConcentration",
+          "acidConcentrationM": 4,
+          "chipSize": "medium",
+          "temperatureC": 25,
+          "rateFactor": 1
+        },
+        {
+          "id": "acid-6m",
+          "label": "6.0 M HCl",
+          "variable": "acidConcentration",
+          "acidConcentrationM": 6,
+          "chipSize": "medium",
+          "temperatureC": 25,
+          "rateFactor": 1.45
+        },
+        {
+          "id": "chips-large",
+          "label": "Large marble chips",
+          "variable": "chipSize",
+          "acidConcentrationM": 4,
+          "chipSize": "large",
+          "temperatureC": 25,
+          "rateFactor": 0.62
+        },
+        {
+          "id": "chips-medium",
+          "label": "Medium marble chips",
+          "variable": "chipSize",
+          "acidConcentrationM": 4,
+          "chipSize": "medium",
+          "temperatureC": 25,
+          "rateFactor": 1
+        },
+        {
+          "id": "chips-small",
+          "label": "Small marble chips",
+          "variable": "chipSize",
+          "acidConcentrationM": 4,
+          "chipSize": "small",
+          "temperatureC": 25,
+          "rateFactor": 1.4
+        },
+        {
+          "id": "temp-20c",
+          "label": "20 C",
+          "variable": "temperature",
+          "acidConcentrationM": 4,
+          "chipSize": "medium",
+          "temperatureC": 20,
+          "rateFactor": 0.72
+        },
+        {
+          "id": "temp-30c",
+          "label": "30 C",
+          "variable": "temperature",
+          "acidConcentrationM": 4,
+          "chipSize": "medium",
+          "temperatureC": 30,
+          "rateFactor": 1.15
+        },
+        {
+          "id": "temp-40c",
+          "label": "40 C",
+          "variable": "temperature",
+          "acidConcentrationM": 4,
+          "chipSize": "medium",
+          "temperatureC": 40,
+          "rateFactor": 1.55
+        }
+      ]
+    }
+  ],
+  "techniques": [
+    {
+      "id": "marble-statue-kinetics-state",
+      "title": "Plan and run a marble-weathering kinetics trial",
+      "learningGoal": "Connect inquiry design, safe gas collection, controlled time-series evidence, rate analysis, revision, and a qualified weathering claim.",
+      "requiredEquipment": [
+        "reagent-bottle",
+        "graduated-cylinder",
+        "erlenmeyer-flask-250ml",
+        "rubber-stopper-delivery-tube",
+        "gas-syringe",
+        "marble-chips",
+        "analytical-balance",
+        "watch-glass",
+        "stopwatch",
+        "hot-plate-stirrer",
+        "thermometer",
+        "waste-beaker"
+      ],
+      "initialState": {
+        "equipment": []
+      },
+      "actions": [
+        {
+          "id": "review-kinetics-setup",
+          "verb": "observe",
+          "label": "Review kinetics setup",
+          "parameters": {
+            "note": "This runnable route is a teacher-configured gas-syringe example. HCl concentration, marble surface area, or temperature may be investigated, but treatment levels, replicates, cadence, duration, endpoint, and rate method remain teacher-configured. Gas-over-water, pressure-probe, and mass-loss methods are planning options only unless separately enabled.",
+            "tag": "setup"
+          },
+          "prerequisites": [],
+          "stateChanges": [
+            "Record setup context."
+          ],
+          "invalidCases": [],
+          "feedback": {
+            "success": "Kinetics setup reviewed.",
+            "invalid": "Review the available kinetics equipment."
+          },
+          "evidence": [
+            "observe"
+          ]
+        }
+      ],
+      "process": {
+        "startNodeId": "review-kinetics-setup-node",
+        "nodes": [
+          {
+            "id": "review-kinetics-setup-node",
+            "type": "teacherNote",
+            "title": "Review setup",
+            "description": "Observe the starting state for the marble-statue kinetics lab.",
+            "actionId": "review-kinetics-setup",
+            "config": {},
+            "validation": [],
+            "hints": [
+              "Use the lab process for the student workflow."
+            ],
+            "feedback": {
+              "success": "Setup ready.",
+              "retry": "Review setup."
+            }
+          }
+        ],
+        "edges": []
+      },
+      "successCriteria": [],
+      "commonMistakes": [],
+      "resetBehavior": "resetTechnique",
+      "metadata": {
+        "version": "2.0.0",
+        "author": "Lab Studio",
+        "updatedAt": "2026-07-27T00:00:00.000Z",
+        "tags": [
+          "technique",
+          "kinetics",
+          "inquiry-design",
+          "gas-collection",
+          "rate-analysis"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "review-inquiry-scope",
+      "verb": "observe",
+      "label": "Review the inquiry choices and unresolved teacher settings",
+      "parameters": {
+        "note": "Candidate independent variables are HCl concentration, marble chip size or surface area, and temperature. Candidate dependent-variable methods are gas syringe, gas over water, pressure probe, or teacher-approved mass loss. The source conflicts between one-to-two and at-least-two research questions, so question count and all ranges, levels, replicates, timing, endpoints, and method settings require teacher confirmation.",
+        "tag": "inquiry-scope"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Record the supported inquiry choices and configuration boundary."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Inquiry scope reviewed.",
+        "invalid": "Review the inquiry choices before authoring research questions."
+      },
+      "evidence": [
+        "inquiry",
+        "teacher-configuration"
+      ]
+    },
+    {
+      "id": "record-research-questions",
+      "verb": "observe",
+      "label": "Record the teacher-confirmed research question set",
+      "parameters": {
+        "note": "Student deliverable: write the teacher-confirmed number of questions in the form “To what extent does A affect B?” Each question must name a measurable dependent variable and will own its own hypothesis, design, measurements, and conclusion. This guided runnable route demonstrates one concentration question without asserting that concentration is the required class choice.",
+        "tag": "research-questions"
+      },
+      "prerequisites": [
+        {
+          "id": "inquiry-scope-required",
+          "type": "notebookEntry",
+          "label": "Inquiry scope is reviewed.",
+          "notebookTag": "inquiry-scope"
+        }
+      ],
+      "stateChanges": [
+        "Record the research-question requirements."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Research-question requirements recorded.",
+        "invalid": "Review the inquiry scope first."
+      },
+      "evidence": [
+        "research-question",
+        "dependent-variable"
+      ]
+    },
+    {
+      "id": "choose-variable-hypothesis",
+      "verb": "observe",
+      "label": "Preregister the guided concentration hypothesis",
+      "parameters": {
+        "note": "Guided configuration only—chosen independent variable: HCl concentration; measured response: CO2 volume versus time. Preregistered hypothesis: if the teacher-approved HCl concentration increases while acid volume, CaCO3 mass and chip class, temperature, apparatus, and timing are controlled, the initial CO2-production rate will increase because the collision frequency of reacting particles increases.",
+        "tag": "hypothesis"
+      },
+      "prerequisites": [
+        {
+          "id": "research-questions-required",
+          "type": "notebookEntry",
+          "label": "Research-question requirements are recorded.",
+          "notebookTag": "research-questions"
+        }
+      ],
+      "stateChanges": [
+        "Record the selected variable and hypothesis."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Hypothesis recorded.",
+        "invalid": "Record the variable choice and hypothesis before setting up the apparatus."
+      },
+      "evidence": [
+        "hypothesis",
+        "acidConcentration"
+      ]
+    },
+    {
+      "id": "configure-experimental-design",
+      "verb": "observe",
+      "label": "Document variables, controls, levels, replicates, and stopping rule",
+      "parameters": {
+        "note": "Student design record: identify IV, measurable DV, controls, treatment levels, replicate count, apparatus, exact HCl concentration and volume, exact CaCO3 mass and chip class, temperature, sampling interval, duration, stopping rule, and rate method. The simulator’s later 50.0 mL, 1.30 g, 2.0/4.0/6.0 M, 5 s, and 45 s values are labeled configuration choices—not source mandates.",
+        "tag": "experimental-design"
+      },
+      "prerequisites": [
+        {
+          "id": "hypothesis-for-design-required",
+          "type": "notebookEntry",
+          "label": "A hypothesis is preregistered.",
+          "notebookTag": "hypothesis"
+        }
+      ],
+      "stateChanges": [
+        "Record the controlled experimental design and data strategy."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Experimental-design requirements recorded.",
+        "invalid": "Preregister a hypothesis before documenting the design."
+      },
+      "evidence": [
+        "variables",
+        "controls",
+        "replicates",
+        "stopping-rule"
+      ]
+    },
+    {
+      "id": "document-safety-plan",
+      "verb": "observe",
+      "label": "Document the acid, gas-path, and disposal safety plan",
+      "parameters": {
+        "note": "Safety plan: wear goggles and apron; use only the approved acid path; add acid to water when dilution is assigned; reject rigid closed gas-generation systems; inspect the expanding or vented gas path; confirm any temperature method; separate excess CaCO3 for solid disposal; and dilute remaining solution with plenty of water under current teacher and local rules.",
+        "tag": "safety-plan"
+      },
+      "prerequisites": [
+        {
+          "id": "experimental-design-required",
+          "type": "notebookEntry",
+          "label": "Experimental design is documented.",
+          "notebookTag": "experimental-design"
+        }
+      ],
+      "stateChanges": [
+        "Record the safety and cleanup plan."
+      ],
+      "invalidCases": [
+        {
+          "id": "dangerous-closed-system",
+          "when": "Gas generation is planned in a rigid closed container.",
+          "message": "A rigid closed gas-generation system can build dangerous pressure.",
+          "recovery": "Use the teacher-approved expanding gas syringe or another approved vented or rated collection path."
+        }
+      ],
+      "feedback": {
+        "success": "Safety plan recorded.",
+        "invalid": "Complete the experimental design before documenting safety controls."
+      },
+      "evidence": [
+        "acid-safety",
+        "gas-path",
+        "disposal"
+      ]
+    },
+    {
+      "id": "initial-teacher-approval",
+      "verb": "observe",
+      "label": "Confirm initial teacher approval",
+      "parameters": {
+        "note": "Teacher gate: confirm the question count, allowed variable and range, controls, treatment levels, replicates, apparatus option, cadence, duration, stopping rule, rate method, recovery rules, and any later weathering-model assumptions. Approval applies to the documented design; it is not a simulator-generated safety certification.",
+        "tag": "initial-teacher-approval"
+      },
+      "prerequisites": [
+        {
+          "id": "safety-plan-required",
+          "type": "notebookEntry",
+          "label": "Safety plan is documented.",
+          "notebookTag": "safety-plan"
+        }
+      ],
+      "stateChanges": [
+        "Record the initial teacher-approval gate."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Initial approval gate recorded.",
+        "invalid": "Document the safety plan before requesting approval."
+      },
+      "evidence": [
+        "teacher-gate",
+        "approved-design"
+      ]
+    },
+    {
+      "id": "connect-gas-syringe",
+      "verb": "place",
+      "label": "Connect the gas syringe to the delivery tube",
+      "parameters": {
+        "equipmentDefinitionId": "gas-syringe",
+        "targetDefinitionId": "rubber-stopper-delivery-tube",
+        "snapZoneId": "delivery-tube-gas-syringe-port"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "gas-syringe",
+        "targetDefinitionId": "rubber-stopper-delivery-tube",
+        "snapZoneId": "delivery-tube-gas-syringe-port",
+        "successCue": "The gas syringe is connected to the delivery tube.",
+        "invalidCue": "Connect the gas syringe to the delivery tube before starting trials.",
+        "accessibleLabel": "Place the gas syringe onto the delivery tube."
+      },
+      "prerequisites": [
+        {
+          "id": "initial-approval-for-train-required",
+          "type": "notebookEntry",
+          "label": "Initial teacher approval is recorded.",
+          "notebookTag": "initial-teacher-approval"
+        }
+      ],
+      "stateChanges": [
+        "Attach the gas syringe to the delivery tube so the collection train can be zeroed and leak-checked before it ever reaches the reaction flask."
+      ],
+      "invalidCases": [
+        {
+          "id": "train-seated-in-flask-first",
+          "when": "The delivery stopper is already seated in the reaction flask.",
+          "message": "A stoppered flask cannot receive the acid or the marble chips.",
+          "recovery": "Build and verify the collection train on its own, charge the open flask, and seal it only after the reactants are in it."
+        }
+      ],
+      "feedback": {
+        "success": "The gas syringe is connected to the delivery tube; the train is not yet on the flask.",
+        "invalid": "Record initial teacher approval before assembling the collection train."
+      },
+      "evidence": [
+        "apparatus",
+        "gas-syringe"
+      ],
+      "atomId": "atom.place.gas-delivery-train",
+      "equipmentRoleBindings": {
+        "gas-delivery-connector": "rubber-stopper-delivery-tube",
+        "gas-collection-instrument": "gas-syringe"
+      }
+    },
+    {
+      "id": "zero-gas-syringe",
+      "verb": "observe",
+      "label": "Zero the gas syringe and record the baseline",
+      "atomId": "atom.observe.zero-gas-collection-instrument",
+      "equipmentRoleBindings": {
+        "gas-collection-instrument": "gas-syringe"
+      },
+      "parameters": {
+        "note": "Baseline record: read the gas syringe barrel and record the starting volume the teacher has approved as zero, together with the syringe capacity and the smallest graduation you can read. The simulator does not supply this reading and does not assume the plunger starts at 0.0 mL; a non-zero start that is not recorded makes every later volume uninterpretable.",
+        "tag": "syringe-zero",
+        "sourceDefinitionId": "gas-syringe",
+        "instrumentCapacityMl": 100,
+        "instrumentGraduationMl": 1,
+        "precisionProvenance": "instrument-catalog"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "gas-syringe",
+        "stationId": "gas-syringe",
+        "successCue": "Gas syringe baseline recorded.",
+        "invalidCue": "Read the connected gas syringe before recording its baseline.",
+        "accessibleLabel": "Read the gas syringe barrel and record its baseline volume."
+      },
+      "prerequisites": [
+        {
+          "id": "connected-train-for-zero-required",
+          "type": "actionEvidence",
+          "label": "The gas syringe is connected to the delivery tube.",
+          "actionId": "connect-gas-syringe"
+        }
+      ],
+      "stateChanges": [
+        "Record the gas syringe baseline reading, capacity, and readable graduation."
+      ],
+      "invalidCases": [
+        {
+          "id": "baseline-not-read",
+          "when": "The baseline is assumed rather than read from the barrel.",
+          "message": "An assumed zero is not a measurement.",
+          "recovery": "Read the barrel against its graduations and record the value you can actually resolve."
+        }
+      ],
+      "feedback": {
+        "success": "Gas syringe baseline recorded.",
+        "invalid": "Connect the gas syringe to the delivery tube before reading its baseline."
+      },
+      "evidence": [
+        "zero",
+        "instrument-capacity",
+        "raw-precision"
+      ]
+    },
+    {
+      "id": "verify-safe-gas-path",
+      "verb": "observe",
+      "label": "Leak-check and zero the expanding gas path",
+      "parameters": {
+        "note": "Apparatus check, performed before any reactant contact as S-06 requires: the stopper, delivery tube and syringe are connected to each other; the tubing is not kinked; the recorded baseline still stands; the plunger moves freely through its travel; and no rigid closed volume can trap generated CO2. A missing connection and a dangerous closure are different failures and need different recovery. The flask is still open at this point.",
+        "tag": "gas-path-check"
+      },
+      "prerequisites": [
+        {
+          "id": "syringe-zero-required",
+          "type": "notebookEntry",
+          "label": "The gas syringe baseline is recorded.",
+          "notebookTag": "syringe-zero"
+        }
+      ],
+      "stateChanges": [
+        "Record the leak check, zero check, and pressure-relief path."
+      ],
+      "invalidCases": [
+        {
+          "id": "missing-gas-connection",
+          "when": "A stopper, tube, or syringe connection is missing or leaking.",
+          "message": "The collection path is incomplete, so CO2 volume evidence would be invalid.",
+          "recovery": "Reconnect the missing component and repeat the leak check."
+        },
+        {
+          "id": "blocked-gas-path",
+          "when": "The syringe plunger cannot move or the path is blocked.",
+          "message": "The apparatus could build pressure instead of safely expanding.",
+          "recovery": "Stop. Restore the teacher-approved expanding or vented path before adding reactants."
+        }
+      ],
+      "feedback": {
+        "success": "Gas path and zero check recorded.",
+        "invalid": "Record the gas syringe baseline before leak-checking the train."
+      },
+      "evidence": [
+        "leak-check",
+        "zero",
+        "expansion-path"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "successCue": "Gas path and baseline check recorded.",
+        "invalidCue": "Record the connection, baseline, plunger-travel and pressure-relief checks.",
+        "accessibleLabel": "Record the leak, baseline and pressure-relief checks for the gas collection train."
+      }
+    },
+    {
+      "id": "measure-practice-acid",
+      "verb": "measureVolume",
+      "label": "Measure 50.0 mL HCl",
+      "parameters": {
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "graduated-cylinder",
+        "measurementId": "practice-hcl-volume",
+        "volumeMl": 50,
+        "tolerance": 1,
+        "volumeProvenance": "teacher-configured",
+        "note": "The 50.0 mL volume and the +/-1 mL acceptance are configured choices for this guided route, not manual mandates; finding 3 of the source lists concentrations as examples and confirmation point 5 keeps the quantities open. Read the cylinder graduation yourself."
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "graduated-cylinder",
+        "valueParameter": "volumeMl",
+        "successCue": "HCl volume measured.",
+        "invalidCue": "Use the graduated cylinder to measure the hydrochloric acid.",
+        "accessibleLabel": "Pour 50.0 mL of hydrochloric acid into the graduated cylinder."
+      },
+      "prerequisites": [
+        {
+          "id": "gas-path-check-required",
+          "type": "notebookEntry",
+          "label": "The safe gas path is checked.",
+          "notebookTag": "gas-path-check"
+        }
+      ],
+      "stateChanges": [
+        "Measure the controlled acid volume."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Practice acid volume measured.",
+        "invalid": "Leak-check and zero the gas syringe apparatus before measuring acid."
+      },
+      "evidence": [
+        "measureVolume",
+        "controlled-volume"
+      ],
+      "atomId": "atom.measure.variable-volume",
+      "equipmentRoleBindings": {
+        "variable-volume-measuring-device": "graduated-cylinder",
+        "liquid-source": "reagent-bottle"
+      }
+    },
+    {
+      "id": "transfer-practice-acid",
+      "verb": "transfer",
+      "label": "Transfer HCl to the reaction flask",
+      "parameters": {
+        "sourceDefinitionId": "graduated-cylinder",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "volumeMl": 50
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "graduated-cylinder",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "valueParameter": "volumeMl",
+        "successCue": "HCl transferred to the flask.",
+        "invalidCue": "Transfer the measured HCl into the Erlenmeyer flask.",
+        "accessibleLabel": "Pour the measured hydrochloric acid into the Erlenmeyer flask."
+      },
+      "prerequisites": [
+        {
+          "id": "practice-acid-volume-required",
+          "type": "measurementRecorded",
+          "label": "Practice acid volume is measured.",
+          "measurementId": "practice-hcl-volume"
+        }
+      ],
+      "stateChanges": [
+        "Move the measured HCl into the open reaction flask, before any part of the collection train is seated in it."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "HCl is in the reaction flask.",
+        "invalid": "Measure the acid volume before transferring it."
+      },
+      "evidence": [
+        "transfer",
+        "reaction-mixture"
+      ],
+      "atomId": "atom.transfer.measured-liquid",
+      "equipmentRoleBindings": {
+        "measured-solvent-source": "graduated-cylinder",
+        "receiving-vessel": "erlenmeyer-flask-250ml"
+      }
+    },
+    {
+      "id": "weigh-practice-marble",
+      "verb": "weigh",
+      "label": "Weigh the marble chip sample within the approved range",
+      "parameters": {
+        "sourceDefinitionId": "marble-chips",
+        "instrumentDefinitionId": "analytical-balance",
+        "measurementId": "marble-mass",
+        "expectedMassG": 1.3,
+        "tolerance": 0.05,
+        "note": "T-06 selects the chip-size class and T-07 weighs within the approved range. The 1.30 g target, the +/-0.05 g acceptance and the medium chip class are configured choices: the source gives 1.20-1.40 g as roughly 2 large, 4 medium or 8 small chips, and confirmation point 5 keeps the preset open. Read the balance; do not place the sample in an instrument that reports it for you.",
+        "massProvenance": "student-measured",
+        "chipSizeClass": "medium",
+        "chipSizeClassProvenance": "teacher-configured",
+      "approvedMassRangeG": "1.20-1.40 g"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "marble-chips",
+        "targetDefinitionId": "analytical-balance",
+        "stationId": "analytical-balance",
+        "successCue": "Marble chip mass recorded.",
+        "invalidCue": "Use the analytical balance to weigh the marble chips.",
+        "accessibleLabel": "Read the analytical balance for the 1.30 g marble chip sample."
+      },
+      "prerequisites": [
+        {
+          "id": "acid-transferred-required",
+          "type": "actionEvidence",
+          "label": "HCl has been transferred to the flask.",
+          "actionId": "transfer-practice-acid"
+        }
+      ],
+      "stateChanges": [
+        "Record the controlled marble mass."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Marble mass measured.",
+        "invalid": "Transfer the acid before weighing the marble sample."
+      },
+      "evidence": [
+        "weigh",
+        "controlled-mass"
+      ],
+      "atomId": "atom.weigh.solid-reactant-portion",
+      "equipmentRoleBindings": {
+        "balance-instrument": "analytical-balance",
+        "reactant-solid-source": "marble-chips"
+      }
+    },
+    {
+      "id": "transfer-practice-marble",
+      "verb": "transfer",
+      "label": "Add the weighed marble chips to the acid",
+      "atomId": "atom.transfer.initiate-solid-reactant-contact",
+      "equipmentRoleBindings": {
+        "reactant-solid-source": "marble-chips",
+        "reaction-vessel": "erlenmeyer-flask-250ml"
+      },
+      "parameters": {
+        "sourceDefinitionId": "marble-chips",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "massG": 1.3,
+        "note": "T-11 initiates the reaction: the weighed CaCO3 enters the acid while the flask is still open. The mass that moves is the mass the balance read, and it leaves the chip stock, so a repeat trial consumes fresh reactant rather than the same portion twice. Seal the flask through the verified expanding path immediately afterwards and start the timer at this contact event. The mass moved here is declared against the balance reading recorded as marble-mass; the runtime cannot yet consume that measurement as the transfer operand, so the two are held equal by a static rule rather than by the reducer.",
+        "massMeasurementId": "marble-mass"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "marble-chips",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "valueParameter": "massG",
+        "successCue": "The marble chips are in the acid; the reaction has started.",
+        "invalidCue": "Tip the weighed marble chips into the open reaction flask.",
+        "accessibleLabel": "Add the weighed marble chips to the hydrochloric acid in the reaction flask."
+      },
+      "prerequisites": [
+        {
+          "id": "marble-mass-for-contact-required",
+          "type": "measurementRecorded",
+          "label": "The marble chip mass is recorded.",
+          "measurementId": "marble-mass"
+        },
+        {
+          "id": "gas-path-check-before-contact-required",
+          "type": "notebookEntry",
+          "label": "The gas path and baseline are checked.",
+          "notebookTag": "gas-path-check"
+        }
+      ],
+      "stateChanges": [
+        "Move the weighed CaCO3 into the acid in the open reaction flask and decrement the chip stock by that mass."
+      ],
+      "invalidCases": [
+        {
+          "id": "contact-before-path-check",
+          "when": "Reactants meet before the collection train is connected, zeroed and leak-checked.",
+          "message": "CO2 produced before the path is verified is lost, so the early rate cannot be measured.",
+          "recovery": "Discard the failed run, keep its record, and repeat with fresh configured reactants after verifying the train."
+        },
+        {
+          "id": "contact-into-sealed-flask",
+          "when": "The flask is already stoppered.",
+          "message": "Solid cannot be added through a seated delivery stopper.",
+          "recovery": "Remove the stopper, add the weighed chips to the open flask, then reseal through the approved path."
+        }
+      ],
+      "feedback": {
+        "success": "Marble chips added to the acid; seal the flask and start the timer now.",
+        "invalid": "Weigh and record the marble chip mass before initiating the reaction."
+      },
+      "evidence": [
+        "transfer",
+        "reaction-start",
+        "fresh-reactant"
+      ]
+    },
+    {
+      "id": "assemble-gas-apparatus",
+      "verb": "place",
+      "label": "Seal the charged flask through the verified expanding path",
+      "parameters": {
+        "equipmentDefinitionId": "rubber-stopper-delivery-tube",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "snapZoneId": "erlenmeyer-stopper-neck"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "rubber-stopper-delivery-tube",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "snapZoneId": "erlenmeyer-stopper-neck",
+        "successCue": "The stopper and delivery tube are seated in the reaction flask.",
+        "invalidCue": "Seal the Erlenmeyer flask with the stopper and delivery tube.",
+        "accessibleLabel": "Seat the rubber stopper and delivery tube in the Erlenmeyer flask."
+      },
+      "prerequisites": [
+        {
+          "id": "reactant-contact-required",
+          "type": "actionEvidence",
+          "label": "The weighed marble chips are in the acid.",
+          "actionId": "transfer-practice-marble"
+        },
+        {
+          "id": "verified-train-required",
+          "type": "notebookEntry",
+          "label": "The gas path and baseline are checked.",
+          "notebookTag": "gas-path-check"
+        }
+      ],
+      "stateChanges": [
+        "Seat the already connected, zeroed and leak-checked stopper and delivery tube in the charged reaction flask, keeping the path to the freely moving gas syringe open."
+      ],
+      "invalidCases": [
+        {
+          "id": "stopper-without-expansion-path",
+          "when": "The reaction flask is stoppered before an expanding or vented collection path is available.",
+          "message": "Do not generate gas in a rigid closed system.",
+          "recovery": "Connect and zero the approved gas-collection device, then leak-check the complete path before sealing the flask."
+        },
+        {
+          "id": "seal-before-reactants",
+          "when": "The flask is sealed before the acid and the marble chips are in it.",
+          "message": "A sealed flask cannot be charged, and sealing early loses the CO2 produced at the start of the run.",
+          "recovery": "Charge the open flask with acid and weighed chips first, then seal through the verified path."
+        }
+      ],
+      "feedback": {
+        "success": "The charged flask is sealed through the verified expanding path.",
+        "invalid": "Add the acid and the weighed marble chips to the open flask before sealing it."
+      },
+      "evidence": [
+        "apparatus",
+        "seal"
+      ],
+      "atomId": "atom.place.gas-collection-apparatus",
+      "equipmentRoleBindings": {
+        "reaction-vessel": "erlenmeyer-flask-250ml",
+        "gas-delivery-connector": "rubber-stopper-delivery-tube",
+        "gas-collection-instrument": "gas-syringe"
+      }
+    },
+    {
+      "id": "record-synchronized-reaction-start",
+      "verb": "observe",
+      "label": "Synchronize reactant contact, gas collection, and time zero",
+      "parameters": {
+        "note": "Reaction-start record: the weighed CaCO3 is already in the acid and the verified expanding path is sealed onto the flask, so time zero is the contact event that just happened. Record when the timer was started relative to that contact, and take the first reading at the configured time zero. The sampling interval, duration and stopping rule are configured choices, not manual mandates.",
+        "tag": "reaction-start"
+      },
+      "prerequisites": [
+        {
+          "id": "sealed-collection-path-required",
+          "type": "actionEvidence",
+          "label": "The charged flask is sealed through the verified path.",
+          "actionId": "assemble-gas-apparatus"
+        }
+      ],
+      "stateChanges": [
+        "Record the synchronized reactant-contact and timing event."
+      ],
+      "invalidCases": [
+        {
+          "id": "timer-start-late",
+          "when": "The timer starts after the defined reactant-contact event.",
+          "message": "A delayed time zero biases the early-rate evidence.",
+          "recovery": "Use fresh configured reactants and repeat the run with the timer synchronized to the approved start event."
+        }
+      ],
+      "feedback": {
+        "success": "Reaction start and time zero synchronized.",
+        "invalid": "Seal the charged flask through the verified expanding path before recording time zero."
+      },
+      "evidence": [
+        "reaction-start",
+        "time-zero",
+        "gas-path"
+      ]
+    },
+    {
+      "id": "record-practice-run",
+      "verb": "record",
+      "label": "Practice run gas data",
+      "parameters": {
+        "kineticsModelId": "marble-statue-gas-syringe",
+        "conditionId": "acid-4m",
+        "dataSeriesId": "practice-gas-series",
+        "label": "Practice run: 4.0 M HCl",
+        "xUnit": "s",
+        "yUnit": "mL CO2",
+        "valueProvenance": "simulator-generated",
+        "instrumentGraduationMl": 1,
+        "samplingIntervalS": 5,
+        "samplingProvenance": "teacher-configured",
+        "modelDisplayDecimals": 1,
+        "note": "The tabulated volumes are generated by the configured gas-syringe model, not read from the barrel. The model reports one decimal place while the modelled syringe is graduated in whole millilitres, so the tenths digit is model resolution and must not be treated as read precision; report readings to the graduation you can actually resolve. The sampling interval and duration are teacher-configured."
+      },
+      "prerequisites": [
+        {
+          "id": "reaction-start-required",
+          "type": "notebookEntry",
+          "label": "Reaction start and time zero are synchronized.",
+          "notebookTag": "reaction-start"
+        }
+      ],
+      "stateChanges": [
+        "Generate deterministic timed gas syringe readings for the practice run."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Practice gas data recorded.",
+        "invalid": "Synchronize reactant contact and time zero before recording the initial run."
+      },
+      "evidence": [
+        "time-series",
+        "practice"
+      ],
+      "atomId": "atom.record.timed-gas-volume",
+      "equipmentRoleBindings": {
+        "gas-collection-instrument": "gas-syringe",
+        "timing-instrument": "stopwatch"
+      },
+      "interaction": {
+        "type": "recordTimeSeries",
+        "sourceDefinitionId": "gas-syringe",
+        "stationId": "gas-syringe",
+        "valueParameter": "dataSeriesId",
+        "successCue": "Timed CO2 volumes recorded against the syringe graduations.",
+        "invalidCue": "Read the gas syringe at each configured sampling time and record the paired value.",
+        "accessibleLabel": "Record the timed gas syringe volumes for practice-gas-series."
+      }
+    },
+    {
+      "id": "revise-procedure-note",
+      "verb": "observe",
+      "label": "Revise procedure after practice run",
+      "parameters": {
+        "note": "Required revision record: compare the initial execution with the planned controls, timing, gas-path integrity, reading method, and recovery steps; state at least one concrete change. Guided example: coordinate reaction start with the timer, keep the verified path connected to the freely moving syringe, and read at each configured mark. Do not reuse the first dataset.",
+        "tag": "procedure-revision"
+      },
+      "prerequisites": [
+        {
+          "id": "practice-series-required",
+          "type": "dataSeriesRecorded",
+          "label": "Practice gas data are recorded.",
+          "dataSeriesId": "practice-gas-series"
+        }
+      ],
+      "stateChanges": [
+        "Record a procedure revision based on the practice run."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Procedure revision recorded.",
+        "invalid": "Run the practice trial before revising the procedure."
+      },
+      "evidence": [
+        "reflection",
+        "revision"
+      ]
+    },
+    {
+      "id": "revised-teacher-approval",
+      "verb": "observe",
+      "label": "Confirm teacher approval of the revised procedure",
+      "parameters": {
+        "note": "Second teacher gate: identify each changed procedure element and confirm that the revised question, controls, levels, replicate plan, cadence, stopping rule, apparatus, rate method, and safety path remain approved. The next execution must create fresh simulator data records rather than redisplaying the initial practice series.",
+        "tag": "revised-teacher-approval"
+      },
+      "prerequisites": [
+        {
+          "id": "procedure-revision-required",
+          "type": "notebookEntry",
+          "label": "A procedure revision is recorded.",
+          "notebookTag": "procedure-revision"
+        }
+      ],
+      "stateChanges": [
+        "Record approval for the revised execution."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Revised-procedure approval recorded.",
+        "invalid": "Document the procedure changes before requesting the second approval."
+      },
+      "evidence": [
+        "teacher-gate",
+        "revised-procedure",
+        "fresh-data"
+      ]
+    },
+    {
+      "id": "record-acid-2m-run",
+      "verb": "record",
+      "label": "Run condition 1: 2.0 M HCl",
+      "parameters": {
+        "kineticsModelId": "marble-statue-gas-syringe",
+        "conditionId": "acid-2m",
+        "dataSeriesId": "acid-2m-gas-series",
+        "label": "2.0 M HCl",
+        "xUnit": "s",
+        "yUnit": "mL CO2",
+        "valueProvenance": "simulator-generated",
+        "instrumentGraduationMl": 1,
+        "samplingIntervalS": 5,
+        "samplingProvenance": "teacher-configured",
+        "modelDisplayDecimals": 1,
+        "note": "The tabulated volumes are generated by the configured gas-syringe model, not read from the barrel. The model reports one decimal place while the modelled syringe is graduated in whole millilitres, so the tenths digit is model resolution and must not be treated as read precision; report readings to the graduation you can actually resolve. The sampling interval and duration are teacher-configured."
+      },
+      "prerequisites": [
+        {
+          "id": "revised-approval-required",
+          "type": "notebookEntry",
+          "label": "The revised procedure is approved.",
+          "notebookTag": "revised-teacher-approval"
+        }
+      ],
+      "stateChanges": [
+        "Record timed gas syringe data for the low-acid condition."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "2.0 M HCl gas data recorded.",
+        "invalid": "Obtain approval of the revised procedure before collecting fresh investigation trials."
+      },
+      "evidence": [
+        "time-series",
+        "condition"
+      ],
+      "atomId": "atom.record.timed-gas-volume",
+      "equipmentRoleBindings": {
+        "gas-collection-instrument": "gas-syringe",
+        "timing-instrument": "stopwatch"
+      },
+      "interaction": {
+        "type": "recordTimeSeries",
+        "sourceDefinitionId": "gas-syringe",
+        "stationId": "gas-syringe",
+        "valueParameter": "dataSeriesId",
+        "successCue": "Timed CO2 volumes recorded against the syringe graduations.",
+        "invalidCue": "Read the gas syringe at each configured sampling time and record the paired value.",
+        "accessibleLabel": "Record the timed gas syringe volumes for acid-2m-gas-series."
+      }
+    },
+    {
+      "id": "record-acid-4m-run",
+      "verb": "record",
+      "label": "Run condition 2: 4.0 M HCl",
+      "parameters": {
+        "kineticsModelId": "marble-statue-gas-syringe",
+        "conditionId": "acid-4m",
+        "dataSeriesId": "acid-4m-gas-series",
+        "label": "4.0 M HCl",
+        "xUnit": "s",
+        "yUnit": "mL CO2",
+        "valueProvenance": "simulator-generated",
+        "instrumentGraduationMl": 1,
+        "samplingIntervalS": 5,
+        "samplingProvenance": "teacher-configured",
+        "modelDisplayDecimals": 1,
+        "note": "The tabulated volumes are generated by the configured gas-syringe model, not read from the barrel. The model reports one decimal place while the modelled syringe is graduated in whole millilitres, so the tenths digit is model resolution and must not be treated as read precision; report readings to the graduation you can actually resolve. The sampling interval and duration are teacher-configured."
+      },
+      "prerequisites": [
+        {
+          "id": "acid-2m-required",
+          "type": "dataSeriesRecorded",
+          "label": "2.0 M HCl data are recorded.",
+          "dataSeriesId": "acid-2m-gas-series"
+        }
+      ],
+      "stateChanges": [
+        "Record timed gas syringe data for the middle-acid condition."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "4.0 M HCl gas data recorded.",
+        "invalid": "Record the 2.0 M condition before the 4.0 M condition."
+      },
+      "evidence": [
+        "time-series",
+        "condition"
+      ],
+      "atomId": "atom.record.timed-gas-volume",
+      "equipmentRoleBindings": {
+        "gas-collection-instrument": "gas-syringe",
+        "timing-instrument": "stopwatch"
+      },
+      "interaction": {
+        "type": "recordTimeSeries",
+        "sourceDefinitionId": "gas-syringe",
+        "stationId": "gas-syringe",
+        "valueParameter": "dataSeriesId",
+        "successCue": "Timed CO2 volumes recorded against the syringe graduations.",
+        "invalidCue": "Read the gas syringe at each configured sampling time and record the paired value.",
+        "accessibleLabel": "Record the timed gas syringe volumes for acid-4m-gas-series."
+      }
+    },
+    {
+      "id": "record-acid-6m-run",
+      "verb": "record",
+      "label": "Run condition 3: 6.0 M HCl",
+      "parameters": {
+        "kineticsModelId": "marble-statue-gas-syringe",
+        "conditionId": "acid-6m",
+        "dataSeriesId": "acid-6m-gas-series",
+        "label": "6.0 M HCl",
+        "xUnit": "s",
+        "yUnit": "mL CO2",
+        "valueProvenance": "simulator-generated",
+        "instrumentGraduationMl": 1,
+        "samplingIntervalS": 5,
+        "samplingProvenance": "teacher-configured",
+        "modelDisplayDecimals": 1,
+        "note": "The tabulated volumes are generated by the configured gas-syringe model, not read from the barrel. The model reports one decimal place while the modelled syringe is graduated in whole millilitres, so the tenths digit is model resolution and must not be treated as read precision; report readings to the graduation you can actually resolve. The sampling interval and duration are teacher-configured."
+      },
+      "prerequisites": [
+        {
+          "id": "acid-4m-required",
+          "type": "dataSeriesRecorded",
+          "label": "4.0 M HCl data are recorded.",
+          "dataSeriesId": "acid-4m-gas-series"
+        }
+      ],
+      "stateChanges": [
+        "Record timed gas syringe data for the high-acid condition."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "6.0 M HCl gas data recorded.",
+        "invalid": "Record the 4.0 M condition before the 6.0 M condition."
+      },
+      "evidence": [
+        "time-series",
+        "condition"
+      ],
+      "atomId": "atom.record.timed-gas-volume",
+      "equipmentRoleBindings": {
+        "gas-collection-instrument": "gas-syringe",
+        "timing-instrument": "stopwatch"
+      },
+      "interaction": {
+        "type": "recordTimeSeries",
+        "sourceDefinitionId": "gas-syringe",
+        "stationId": "gas-syringe",
+        "valueParameter": "dataSeriesId",
+        "successCue": "Timed CO2 volumes recorded against the syringe graduations.",
+        "invalidCue": "Read the gas syringe at each configured sampling time and record the paired value.",
+        "accessibleLabel": "Record the timed gas syringe volumes for acid-6m-gas-series."
+      }
+    },
+    {
+      "id": "record-run-provenance-and-replicates",
+      "verb": "observe",
+      "label": "Audit run provenance, controls, and replicate coverage",
+      "parameters": {
+        "note": "Data provenance: the displayed gas-volume tables are simulator-generated from the configured gas-syringe model; 50.0 mL HCl, ±1 mL volume acceptance, 1.30 g CaCO3, ±0.05 g mass acceptance, medium chips, 25 °C, 5 s sampling, 45 s duration, 2.0/4.0/6.0 M levels, and 0.01 mL/s calculation tolerance are guided simulator settings. They are not manual mandates or student instrument readings, and the teacher must approve or replace them. Each displayed condition currently has one generated series; teacher-assigned replicate counts must be documented and repeated with fresh reactants, and treatment levels must not be mislabeled as replicates.",
+        "tag": "run-provenance"
+      },
+      "prerequisites": [
+        {
+          "id": "all-guided-series-required",
+          "type": "dataSeriesRecorded",
+          "label": "The final guided condition is recorded.",
+          "dataSeriesId": "acid-6m-gas-series"
+        }
+      ],
+      "stateChanges": [
+        "Record data origin, controlled settings, and replicate limitations."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Run provenance and replicate coverage recorded.",
+        "invalid": "Collect the fresh guided condition series before auditing provenance."
+      },
+      "evidence": [
+        "simulator-generated",
+        "controls",
+        "replicates",
+        "limitations"
+      ]
+    },
+    {
+      "id": "record-reaction-stoichiometry",
+      "verb": "observe",
+      "label": "Record the reaction stoichiometry and measurement link",
+      "parameters": {
+        "note": "Balanced reaction: CaCO3(s) + 2 HCl(aq) → CaCl2(aq) + H2O(l) + CO2(g). One mole of reacted CaCO3 forms one mole of CO2, while two moles of HCl are consumed. Gas volume versus time is therefore an indirect progress measure under the configured temperature, pressure, collection, and leak assumptions; this step does not invent a theoretical yield or limiting reagent.",
+        "tag": "reaction-stoichiometry"
+      },
+      "prerequisites": [
+        {
+          "id": "run-provenance-required",
+          "type": "notebookEntry",
+          "label": "Run provenance is recorded.",
+          "notebookTag": "run-provenance"
+        }
+      ],
+      "stateChanges": [
+        "Record the balanced equation and gas-evidence assumptions."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Reaction stoichiometry recorded.",
+        "invalid": "Audit the run provenance before interpreting gas volume."
+      },
+      "evidence": [
+        "stoichiometry",
+        "CO2",
+        "measurement-model"
+      ]
+    },
+    {
+      "id": "create-kinetics-graph",
+      "verb": "observe",
+      "label": "Create CO2 volume versus time graph",
+      "parameters": {
+        "note": "Graph deliverable: plot CO2 volume on the y-axis against time on the x-axis for every recorded condition, label both axes with units, and identify which curve belongs to which condition from your own records. State what you read off the graph rather than what you expected to see.",
+        "tag": "kinetics-graph"
+      },
+      "prerequisites": [
+        {
+          "id": "acid-2m-graph-required",
+          "type": "dataSeriesRecorded",
+          "label": "2.0 M HCl data are recorded.",
+          "dataSeriesId": "acid-2m-gas-series"
+        },
+        {
+          "id": "acid-4m-graph-required",
+          "type": "dataSeriesRecorded",
+          "label": "4.0 M HCl data are recorded.",
+          "dataSeriesId": "acid-4m-gas-series"
+        },
+        {
+          "id": "acid-6m-graph-required",
+          "type": "dataSeriesRecorded",
+          "label": "6.0 M HCl data are recorded.",
+          "dataSeriesId": "acid-6m-gas-series"
+        },
+        {
+          "id": "reaction-stoichiometry-required",
+          "type": "notebookEntry",
+          "label": "Reaction stoichiometry is recorded.",
+          "notebookTag": "reaction-stoichiometry"
+        }
+      ],
+      "stateChanges": [
+        "Record graph-analysis evidence in the notebook."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Graph evidence recorded.",
+        "invalid": "Collect all three condition data tables before graphing."
+      },
+      "evidence": [
+        "graph",
+        "analysis"
+      ]
+    },
+    {
+      "id": "calculate-acid-2m-rate",
+      "verb": "calculate",
+      "label": "Calculate initial rate for 2.0 M HCl",
+      "parameters": {
+        "calculationId": "acid-2m-initial-rate",
+        "template": "initialRateMlPerS",
+        "dataSeriesId": "acid-2m-gas-series",
+        "tolerance": 0.01,
+        "unit": "mL/s",
+        "intervalS": 15,
+        "intervalProvenance": "teacher-configured",
+        "note": "The rate is derived from the recorded series over the configured 0-15 s secant interval. No expected value is stored: the gate is that the timed evidence exists and names this condition, because a stored answer would be a fabricated measurement rather than a derivation."
+      },
+      "prerequisites": [
+        {
+          "id": "acid-2m-rate-series-required",
+          "type": "dataSeriesRecorded",
+          "label": "2.0 M HCl data are recorded.",
+          "dataSeriesId": "acid-2m-gas-series"
+        }
+      ],
+      "stateChanges": [
+        "Calculate the early slope from 0 s to 15 s."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "2.0 M initial rate calculated.",
+        "invalid": "Record the 2.0 M gas data before calculating its rate."
+      },
+      "evidence": [
+        "calculation",
+        "initial-rate"
+      ]
+    },
+    {
+      "id": "calculate-acid-4m-rate",
+      "verb": "calculate",
+      "label": "Calculate initial rate for 4.0 M HCl",
+      "parameters": {
+        "calculationId": "acid-4m-initial-rate",
+        "template": "initialRateMlPerS",
+        "dataSeriesId": "acid-4m-gas-series",
+        "tolerance": 0.01,
+        "unit": "mL/s",
+        "intervalS": 15,
+        "intervalProvenance": "teacher-configured",
+        "note": "The rate is derived from the recorded series over the configured 0-15 s secant interval. No expected value is stored: the gate is that the timed evidence exists and names this condition, because a stored answer would be a fabricated measurement rather than a derivation."
+      },
+      "prerequisites": [
+        {
+          "id": "acid-4m-rate-series-required",
+          "type": "dataSeriesRecorded",
+          "label": "4.0 M HCl data are recorded.",
+          "dataSeriesId": "acid-4m-gas-series"
+        }
+      ],
+      "stateChanges": [
+        "Calculate the early slope from 0 s to 15 s."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "4.0 M initial rate calculated.",
+        "invalid": "Record the 4.0 M gas data before calculating its rate."
+      },
+      "evidence": [
+        "calculation",
+        "initial-rate"
+      ]
+    },
+    {
+      "id": "calculate-acid-6m-rate",
+      "verb": "calculate",
+      "label": "Calculate initial rate for 6.0 M HCl",
+      "parameters": {
+        "calculationId": "acid-6m-initial-rate",
+        "template": "initialRateMlPerS",
+        "dataSeriesId": "acid-6m-gas-series",
+        "tolerance": 0.01,
+        "unit": "mL/s",
+        "intervalS": 15,
+        "intervalProvenance": "teacher-configured",
+        "note": "The rate is derived from the recorded series over the configured 0-15 s secant interval. No expected value is stored: the gate is that the timed evidence exists and names this condition, because a stored answer would be a fabricated measurement rather than a derivation."
+      },
+      "prerequisites": [
+        {
+          "id": "acid-6m-rate-series-required",
+          "type": "dataSeriesRecorded",
+          "label": "6.0 M HCl data are recorded.",
+          "dataSeriesId": "acid-6m-gas-series"
+        }
+      ],
+      "stateChanges": [
+        "Calculate the early slope from 0 s to 15 s."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "6.0 M initial rate calculated.",
+        "invalid": "Record the 6.0 M gas data before calculating its rate."
+      },
+      "evidence": [
+        "calculation",
+        "initial-rate"
+      ]
+    },
+    {
+      "id": "compare-rate-models",
+      "verb": "observe",
+      "label": "Compare rate definitions and choose a defensible model",
+      "parameters": {
+        "note": "Guided calculation uses the secant slope from 0 s to 15 s in mL CO2/s because that interval is explicitly configured. A teacher may instead approve another interval or regression method. Compare conditions only with the same method and units; inspect whether curvature, lag, leakage, syringe resistance, temperature drift, or reactant depletion makes the chosen initial-rate approximation unsuitable.",
+        "tag": "rate-model"
+      },
+      "prerequisites": [
+        {
+          "id": "rate-model-2m-required",
+          "type": "calculationWithinTolerance",
+          "label": "2.0 M rate calculation is complete.",
+          "calculationId": "acid-2m-initial-rate",
+          "tolerance": 0.01
+        },
+        {
+          "id": "rate-model-4m-required",
+          "type": "calculationWithinTolerance",
+          "label": "4.0 M rate calculation is complete.",
+          "calculationId": "acid-4m-initial-rate",
+          "tolerance": 0.01
+        },
+        {
+          "id": "rate-model-6m-required",
+          "type": "calculationWithinTolerance",
+          "label": "6.0 M rate calculation is complete.",
+          "calculationId": "acid-6m-initial-rate",
+          "tolerance": 0.01
+        }
+      ],
+      "stateChanges": [
+        "Record the selected rate model, interval, units, and suitability limits."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Rate-model comparison recorded.",
+        "invalid": "Complete all configured rate calculations before comparing methods."
+      },
+      "evidence": [
+        "rate-method",
+        "model-choice",
+        "units"
+      ]
+    },
+    {
+      "id": "evaluate-uncertainty",
+      "verb": "observe",
+      "label": "Evaluate uncertainty, controls, and excluded effects",
+      "parameters": {
+        "note": "Uncertainty review: distinguish gas-syringe reading resolution from model rounding; check start-time synchronization, leaks, plunger friction, chip-size heterogeneity, true CaCO3 composition, acid preparation, temperature drift, and incomplete mixing. The deterministic guided series does not estimate experimental scatter, so replicate variability, confidence intervals, accepted tolerances, and outlier rules must come from actual approved repeats or teacher configuration—not from these curves.",
+        "tag": "uncertainty-analysis"
+      },
+      "prerequisites": [
+        {
+          "id": "rate-model-required",
+          "type": "notebookEntry",
+          "label": "Rate-model comparison is recorded.",
+          "notebookTag": "rate-model"
+        }
+      ],
+      "stateChanges": [
+        "Record uncertainty sources, excluded effects, and evidence limits."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Uncertainty analysis recorded.",
+        "invalid": "Choose and justify a rate model before evaluating its uncertainty."
+      },
+      "evidence": [
+        "uncertainty",
+        "sources-of-error",
+        "excluded-effects"
+      ]
+    },
+    {
+      "id": "write-cer-conclusion",
+      "verb": "observe",
+      "label": "Write CER conclusion",
+      "parameters": {
+        "note": "CER deliverable: state a claim about the effect of the independent variable on the reaction rate; cite your own calculated initial rates with their units and the interval they came from as evidence; and reason from collision theory to connect the two. Quote the values your calculations produced, not values supplied here.",
+        "tag": "cer-claim"
+      },
+      "prerequisites": [
+        {
+          "id": "rate-2m-required",
+          "type": "calculationWithinTolerance",
+          "label": "2.0 M rate calculation is within tolerance.",
+          "calculationId": "acid-2m-initial-rate",
+          "tolerance": 0.01
+        },
+        {
+          "id": "rate-4m-required",
+          "type": "calculationWithinTolerance",
+          "label": "4.0 M rate calculation is within tolerance.",
+          "calculationId": "acid-4m-initial-rate",
+          "tolerance": 0.01
+        },
+        {
+          "id": "rate-6m-required",
+          "type": "calculationWithinTolerance",
+          "label": "6.0 M rate calculation is within tolerance.",
+          "calculationId": "acid-6m-initial-rate",
+          "tolerance": 0.01
+        },
+        {
+          "id": "uncertainty-required",
+          "type": "notebookEntry",
+          "label": "Uncertainty analysis is recorded.",
+          "notebookTag": "uncertainty-analysis"
+        }
+      ],
+      "stateChanges": [
+        "Record a claim-evidence-reasoning conclusion."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "CER conclusion recorded.",
+        "invalid": "Complete the rate calculations before writing the conclusion."
+      },
+      "evidence": [
+        "CER",
+        "claim"
+      ]
+    },
+    {
+      "id": "complete-postlab-analysis",
+      "verb": "observe",
+      "label": "Complete postlab graph analysis",
+      "parameters": {
+        "note": "Postlab graph analysis: the configured early slope is used because reactant concentrations and exposed solid surface change as reaction proceeds. Later points can flatten as reactants are consumed and as the configured simulator curve approaches its maximum collected CO2 volume. A plateau alone does not identify the limiting reagent or prove a mechanism.",
+        "tag": "postlab-analysis"
+      },
+      "prerequisites": [
+        {
+          "id": "cer-required",
+          "type": "notebookEntry",
+          "label": "CER conclusion is recorded.",
+          "notebookTag": "cer-claim"
+        }
+      ],
+      "stateChanges": [
+        "Record the postlab graph-analysis prompt."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Postlab analysis complete.",
+        "invalid": "Write the CER conclusion before completing the postlab analysis."
+      },
+      "evidence": [
+        "postlab",
+        "graph-analysis"
+      ]
+    },
+    {
+      "id": "qualify-statue-weathering-model",
+      "verb": "observe",
+      "label": "Build a qualified marble-weathering extrapolation",
+      "parameters": {
+        "note": "Transfer-task requirement: use only teacher-supplied environmental acidity, exposure pattern, temperature, surface geometry, material composition, scale conversion, and endpoint definition. Show units and significant figures, state whether the classroom rate law is being assumed outside its measured range, and identify excluded rain renewal, runoff, buffering, coatings, pores, pollutants, biology, seasonal temperature, and changing surface area. Report a scenario-bound classroom estimate—not a real monument lifetime prediction.",
+        "tag": "weathering-model"
+      },
+      "prerequisites": [
+        {
+          "id": "postlab-for-weathering-required",
+          "type": "notebookEntry",
+          "label": "Postlab graph analysis is recorded.",
+          "notebookTag": "postlab-analysis"
+        }
+      ],
+      "stateChanges": [
+        "Record the weathering-model inputs, units, assumptions, exclusions, and claim boundary."
+      ],
+      "invalidCases": [
+        {
+          "id": "unsupported-real-lifetime-claim",
+          "when": "The classroom rate is presented as a real statue lifetime without teacher-supplied environmental inputs and limitations.",
+          "message": "The classroom kinetics model does not establish a real monument lifetime.",
+          "recovery": "State the supplied scenario, scaling assumptions, units, uncertainty, excluded effects, and model boundary."
+        }
+      ],
+      "feedback": {
+        "success": "Qualified weathering model recorded.",
+        "invalid": "Complete the postlab analysis before attempting the transfer model."
+      },
+      "evidence": [
+        "extrapolation",
+        "assumptions",
+        "limitations",
+        "units"
+      ]
+    },
+    {
+      "id": "record-cleanup-and-defense",
+      "verb": "observe",
+      "label": "Record cleanup, presentation, and design defense",
+      "parameters": {
+        "note": "Final deliverables: isolate excess CaCO3 for the approved solid-disposal path; dilute remaining solution with plenty of water under current teacher and local rules; present a labeled table or graph with units; judge each hypothesis; defend procedure revisions and data treatment; and state why the evidence supports only the qualified claim. No disposal action or environmental claim is inferred from simulator completion alone.",
+        "tag": "cleanup-and-defense"
+      },
+      "prerequisites": [
+        {
+          "id": "weathering-model-required",
+          "type": "notebookEntry",
+          "label": "Qualified weathering model is recorded.",
+          "notebookTag": "weathering-model"
+        }
+      ],
+      "stateChanges": [
+        "Record cleanup decisions, presentation evidence, hypothesis judgment, and design defense."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Cleanup and defense record complete.",
+        "invalid": "Qualify the weathering model before final cleanup and defense."
+      },
+      "evidence": [
+        "cleanup",
+        "presentation",
+        "hypothesis-judgment",
+        "design-defense"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "review-inquiry-scope-node",
+    "nodes": [
+      {
+        "id": "review-inquiry-scope-node",
+        "type": "observation",
+        "title": "Review inquiry choices",
+        "description": "Distinguish manual-supported choices from settings that require teacher configuration.",
+        "actionId": "review-inquiry-scope",
+        "config": {},
+        "validation": [
+          {
+            "id": "inquiry-scope-recorded",
+            "type": "notebookEntry",
+            "label": "Inquiry scope is recorded.",
+            "notebookTag": "inquiry-scope"
+          }
+        ],
+        "hints": [
+          "Concentration is one valid branch; surface area and temperature are also supported variables."
+        ],
+        "feedback": {
+          "success": "Inquiry choices reviewed.",
+          "retry": "Review the configuration boundary."
+        }
+      },
+      {
+        "id": "research-questions-node",
+        "type": "observation",
+        "title": "Frame research questions",
+        "description": "Record the teacher-confirmed question count and the required “To what extent does A affect B?” structure.",
+        "actionId": "record-research-questions",
+        "config": {},
+        "validation": [
+          {
+            "id": "research-questions-recorded",
+            "type": "notebookEntry",
+            "label": "Research-question requirements are recorded.",
+            "notebookTag": "research-questions"
+          }
+        ],
+        "hints": [
+          "Every question needs its own hypothesis, measurements, and conclusion."
+        ],
+        "feedback": {
+          "success": "Research-question requirements ready.",
+          "retry": "Record the teacher-confirmed research-question requirements."
+        }
+      },
+      {
+        "id": "choose-variable-node",
+        "type": "observation",
+        "title": "Preregister the guided hypothesis",
+        "description": "Record the gas-syringe concentration route as a guided configuration, not as the only valid inquiry.",
+        "actionId": "choose-variable-hypothesis",
+        "config": {},
+        "validation": [
+          {
+            "id": "hypothesis-recorded",
+            "type": "notebookEntry",
+            "label": "Hypothesis is recorded.",
+            "notebookTag": "hypothesis"
+          }
+        ],
+        "hints": [
+          "The later 2.0 M, 4.0 M, and 6.0 M levels are configuration choices, not source mandates."
+        ],
+        "feedback": {
+          "success": "Variable and hypothesis ready.",
+          "retry": "Preregister the guided hypothesis."
+        }
+      },
+      {
+        "id": "experimental-design-node",
+        "type": "observation",
+        "title": "Document the experimental design",
+        "description": "Record variables, controls, treatment levels, replicates, quantities, apparatus, cadence, duration, stopping rule, and rate method.",
+        "actionId": "configure-experimental-design",
+        "config": {},
+        "validation": [
+          {
+            "id": "experimental-design-recorded",
+            "type": "notebookEntry",
+            "label": "Experimental design is recorded.",
+            "notebookTag": "experimental-design"
+          }
+        ],
+        "hints": [
+          "Do not treat treatment levels as replicates or expose a fixed recipe as the student’s design."
+        ],
+        "feedback": {
+          "success": "Experimental-design requirements recorded.",
+          "retry": "Document the variables, controls, quantities, repeats, and data strategy."
+        }
+      },
+      {
+        "id": "safety-plan-node",
+        "type": "checkpoint",
+        "title": "Document safety and cleanup",
+        "description": "Record acid handling, dilution order, pressure-path, temperature, recovery, and disposal controls.",
+        "actionId": "document-safety-plan",
+        "config": {},
+        "validation": [
+          {
+            "id": "safety-plan-recorded",
+            "type": "notebookEntry",
+            "label": "Safety plan is recorded.",
+            "notebookTag": "safety-plan"
+          }
+        ],
+        "hints": [
+          "Never generate gas in a rigid closed container."
+        ],
+        "feedback": {
+          "success": "Safety plan ready.",
+          "retry": "Record the safety and cleanup controls."
+        }
+      },
+      {
+        "id": "initial-approval-node",
+        "type": "teacherNote",
+        "title": "Initial teacher approval",
+        "description": "Confirm that the documented design and safety path are approved before apparatus work.",
+        "actionId": "initial-teacher-approval",
+        "config": {
+          "teacherConfigured": true
+        },
+        "validation": [
+          {
+            "id": "initial-approval-recorded",
+            "type": "notebookEntry",
+            "label": "Initial teacher approval is recorded.",
+            "notebookTag": "initial-teacher-approval"
+          }
+        ],
+        "hints": [
+          "The simulator records the gate; it does not replace teacher review."
+        ],
+        "feedback": {
+          "success": "Initial approval recorded.",
+          "retry": "Obtain and record initial approval."
+        }
+      },
+      {
+        "id": "connect-syringe-node",
+        "type": "action",
+        "title": "Connect the gas syringe",
+        "description": "Connect the syringe to the delivery tube so the collection train can be verified away from the flask.",
+        "actionId": "connect-gas-syringe",
+        "config": {},
+        "validation": [
+          {
+            "id": "syringe-connected",
+            "type": "actionEvidence",
+            "label": "Gas syringe is connected.",
+            "actionId": "connect-gas-syringe"
+          }
+        ],
+        "hints": [
+          "Build and verify the train before the flask is charged; the flask stays open until T-12."
+        ],
+        "feedback": {
+          "success": "Syringe connected.",
+          "retry": "Connect the gas syringe to the delivery tube."
+        }
+      },
+      {
+        "id": "zero-syringe-node",
+        "type": "action",
+        "title": "Zero the gas syringe",
+        "description": "Read the connected syringe barrel and record the approved baseline before any reactant contact.",
+        "actionId": "zero-gas-syringe",
+        "config": {},
+        "validation": [
+          {
+            "id": "syringe-zero-recorded",
+            "type": "notebookEntry",
+            "label": "The gas syringe baseline is recorded.",
+            "notebookTag": "syringe-zero"
+          }
+        ],
+        "hints": [
+          "Record the capacity and the smallest graduation you can read, not just the value."
+        ],
+        "feedback": {
+          "success": "Baseline recorded.",
+          "invalid": "Read and record the gas syringe baseline.",
+          "retry": "Read and record the gas syringe baseline."
+        }
+      },
+      {
+        "id": "gas-path-check-node",
+        "type": "checkpoint",
+        "title": "Leak-check and zero the gas path",
+        "description": "Confirm the train is connected, holds the recorded baseline, and can expand freely. The flask is still open.",
+        "actionId": "verify-safe-gas-path",
+        "config": {},
+        "validation": [
+          {
+            "id": "gas-path-check-recorded",
+            "type": "notebookEntry",
+            "label": "Safe gas-path check is recorded.",
+            "notebookTag": "gas-path-check"
+          }
+        ],
+        "hints": [
+          "A missing connection loses gas; a blocked path can build pressure."
+        ],
+        "feedback": {
+          "success": "Gas path checked.",
+          "retry": "Check connections, zero, plunger travel, and pressure relief."
+        }
+      },
+      {
+        "id": "measure-acid-node",
+        "type": "action",
+        "title": "Measure controlled HCl volume",
+        "description": "Pour 50.0 mL of HCl into the graduated cylinder.",
+        "actionId": "measure-practice-acid",
+        "config": {},
+        "validation": [
+          {
+            "id": "hcl-volume-recorded",
+            "type": "measurementRecorded",
+            "label": "HCl volume is measured.",
+            "measurementId": "practice-hcl-volume"
+          }
+        ],
+        "hints": [
+          "Hold acid volume constant across all conditions."
+        ],
+        "feedback": {
+          "success": "Acid volume measured.",
+          "retry": "Measure 50.0 mL of HCl."
+        }
+      },
+      {
+        "id": "transfer-acid-node",
+        "type": "action",
+        "title": "Transfer acid to flask",
+        "description": "Pour the measured HCl into the gas reaction flask.",
+        "actionId": "transfer-practice-acid",
+        "config": {},
+        "validation": [
+          {
+            "id": "hcl-transferred",
+            "type": "actionEvidence",
+            "label": "HCl is transferred to the flask.",
+            "actionId": "transfer-practice-acid"
+          }
+        ],
+        "hints": [
+          "The reaction starts when marble contacts the acid, so transfer acid before adding marble."
+        ],
+        "feedback": {
+          "success": "Acid in flask.",
+          "retry": "Transfer the measured acid to the flask."
+        }
+      },
+      {
+        "id": "weigh-marble-node",
+        "type": "action",
+        "title": "Weigh the marble chips",
+        "description": "Read the balance for a CaCO3 sample inside the approved range and record the chip class.",
+        "actionId": "weigh-practice-marble",
+        "config": {},
+        "validation": [
+          {
+            "id": "marble-mass-recorded",
+            "type": "measurementRecorded",
+            "label": "Marble mass is recorded.",
+            "measurementId": "marble-mass"
+          }
+        ],
+        "hints": [
+          "The approved range is 1.20-1.40 g; the 1.30 g midpoint is a configured target, not a mandate."
+        ],
+        "feedback": {
+          "success": "Marble mass recorded.",
+          "retry": "Weigh the marble chips."
+        }
+      },
+      {
+        "id": "transfer-marble-node",
+        "type": "action",
+        "title": "Add marble chips to the acid",
+        "description": "Tip the weighed CaCO3 into the acid in the still-open flask. This contact is time zero.",
+        "actionId": "transfer-practice-marble",
+        "config": {},
+        "validation": [
+          {
+            "id": "marble-in-acid",
+            "type": "actionEvidence",
+            "label": "The weighed marble chips are in the acid.",
+            "actionId": "transfer-practice-marble"
+          }
+        ],
+        "hints": [
+          "Seal the flask through the verified path immediately after contact, then start the timer."
+        ],
+        "feedback": {
+          "success": "Reactants in contact.",
+          "retry": "Add the weighed marble chips to the acid in the open flask."
+        }
+      },
+      {
+        "id": "assemble-apparatus-node",
+        "type": "action",
+        "title": "Seal the charged flask",
+        "description": "Seat the verified stopper and delivery tube in the flask only after the acid and the weighed chips are in it.",
+        "actionId": "assemble-gas-apparatus",
+        "config": {},
+        "validation": [
+          {
+            "id": "apparatus-sealed",
+            "type": "actionEvidence",
+            "label": "Stopper and delivery tube are seated.",
+            "actionId": "assemble-gas-apparatus"
+          }
+        ],
+        "hints": [
+          "Sealing before the reactants are in loses the start of the run; sealing without an expanding path is dangerous."
+        ],
+        "feedback": {
+          "success": "Delivery stopper seated.",
+          "retry": "Seat the stopper and delivery tube in the flask neck."
+        }
+      },
+      {
+        "id": "reaction-start-node",
+        "type": "checkpoint",
+        "title": "Synchronize reaction start and time zero",
+        "description": "Record the approved reactant-contact event, connected gas collection, timer start, and first reading as one coordinated checkpoint.",
+        "actionId": "record-synchronized-reaction-start",
+        "config": {},
+        "validation": [
+          {
+            "id": "reaction-start-recorded",
+            "type": "notebookEntry",
+            "label": "Reaction start and time zero are recorded.",
+            "notebookTag": "reaction-start"
+          }
+        ],
+        "hints": [
+          "If time zero is missed, retain the failed-run record and repeat with fresh configured reactants."
+        ],
+        "feedback": {
+          "success": "Reaction start synchronized.",
+          "retry": "Coordinate reactant contact, gas collection, and timer start."
+        }
+      },
+      {
+        "id": "practice-run-node",
+        "type": "checkpoint",
+        "title": "Initial approved execution",
+        "description": "Record a fresh timed gas-syringe series for the approved 4.0 M guided condition.",
+        "actionId": "record-practice-run",
+        "config": {},
+        "validation": [
+          {
+            "id": "practice-series-recorded",
+            "type": "dataSeriesRecorded",
+            "label": "Practice time series is recorded.",
+            "dataSeriesId": "practice-gas-series"
+          }
+        ],
+        "hints": [
+          "The 5 s cadence and 45 s duration are configuration choices for this guided route."
+        ],
+        "feedback": {
+          "success": "Initial execution recorded.",
+          "retry": "Record the initial gas data."
+        }
+      },
+      {
+        "id": "revision-node",
+        "type": "observation",
+        "title": "Revise procedure",
+        "description": "Record one procedure improvement before the three investigation runs.",
+        "actionId": "revise-procedure-note",
+        "config": {},
+        "validation": [
+          {
+            "id": "revision-recorded",
+            "type": "notebookEntry",
+            "label": "Procedure revision is recorded.",
+            "notebookTag": "procedure-revision"
+          }
+        ],
+        "hints": [
+          "Focus on timing, sealing, and reading the syringe consistently."
+        ],
+        "feedback": {
+          "success": "Procedure revised.",
+          "retry": "Record a procedure revision."
+        }
+      },
+      {
+        "id": "revised-approval-node",
+        "type": "teacherNote",
+        "title": "Approve the revised procedure",
+        "description": "Show the changed procedure to the teacher and record the second approval before rerunning.",
+        "actionId": "revised-teacher-approval",
+        "config": {
+          "teacherConfigured": true
+        },
+        "validation": [
+          {
+            "id": "revised-approval-recorded",
+            "type": "notebookEntry",
+            "label": "Revised-procedure approval is recorded.",
+            "notebookTag": "revised-teacher-approval"
+          }
+        ],
+        "hints": [
+          "The rerun must create fresh records and use fresh configured reactants."
+        ],
+        "feedback": {
+          "success": "Revised procedure approved.",
+          "retry": "Obtain and record the second approval."
+        }
+      },
+      {
+        "id": "acid-2m-run-node",
+        "type": "checkpoint",
+        "title": "Revised execution—condition 1: 2.0 M HCl",
+        "description": "Create a fresh CO2-volume series for the low-concentration guided condition.",
+        "actionId": "record-acid-2m-run",
+        "config": {},
+        "validation": [
+          {
+            "id": "acid-2m-series-recorded",
+            "type": "dataSeriesRecorded",
+            "label": "2.0 M HCl time series is recorded.",
+            "dataSeriesId": "acid-2m-gas-series"
+          }
+        ],
+        "hints": [
+          "Hold the acid volume and the marble mass at the configured values so only the named variable changes."
+        ],
+        "feedback": {
+          "success": "2.0 M data recorded.",
+          "retry": "Record the 2.0 M gas data."
+        }
+      },
+      {
+        "id": "acid-4m-run-node",
+        "type": "checkpoint",
+        "title": "Revised execution—condition 2: 4.0 M HCl",
+        "description": "Create a fresh CO2-volume series for the middle-concentration guided condition.",
+        "actionId": "record-acid-4m-run",
+        "config": {},
+        "validation": [
+          {
+            "id": "acid-4m-series-recorded",
+            "type": "dataSeriesRecorded",
+            "label": "4.0 M HCl time series is recorded.",
+            "dataSeriesId": "acid-4m-gas-series"
+          }
+        ],
+        "hints": [
+          "Keep every control at the same value as the previous condition."
+        ],
+        "feedback": {
+          "success": "4.0 M data recorded.",
+          "retry": "Record the 4.0 M gas data."
+        }
+      },
+      {
+        "id": "acid-6m-run-node",
+        "type": "checkpoint",
+        "title": "Revised execution—condition 3: 6.0 M HCl",
+        "description": "Create a fresh CO2-volume series for the high-concentration guided condition.",
+        "actionId": "record-acid-6m-run",
+        "config": {},
+        "validation": [
+          {
+            "id": "acid-6m-series-recorded",
+            "type": "dataSeriesRecorded",
+            "label": "6.0 M HCl time series is recorded.",
+            "dataSeriesId": "acid-6m-gas-series"
+          }
+        ],
+        "hints": [
+          "Keep every control at the same value as the previous conditions."
+        ],
+        "feedback": {
+          "success": "6.0 M data recorded.",
+          "retry": "Record the 6.0 M gas data."
+        }
+      },
+      {
+        "id": "run-provenance-node",
+        "type": "checkpoint",
+        "title": "Audit provenance and replicates",
+        "description": "Separate simulator-generated curves from configured inputs, student measurements, and any teacher-assigned repeat plan.",
+        "actionId": "record-run-provenance-and-replicates",
+        "config": {},
+        "validation": [
+          {
+            "id": "run-provenance-recorded",
+            "type": "notebookEntry",
+            "label": "Run provenance and replicate coverage are recorded.",
+            "notebookTag": "run-provenance"
+          }
+        ],
+        "hints": [
+          "Three concentrations are three treatment levels, not three replicates."
+        ],
+        "feedback": {
+          "success": "Provenance and replicate limits recorded.",
+          "retry": "Document data origin, controlled values, and repeat coverage."
+        }
+      },
+      {
+        "id": "reaction-stoichiometry-node",
+        "type": "observation",
+        "title": "Connect stoichiometry to gas evidence",
+        "description": "Record the balanced reaction and the assumptions that connect reacted CaCO3 to collected CO2.",
+        "actionId": "record-reaction-stoichiometry",
+        "config": {},
+        "validation": [
+          {
+            "id": "reaction-stoichiometry-recorded",
+            "type": "notebookEntry",
+            "label": "Reaction stoichiometry is recorded.",
+            "notebookTag": "reaction-stoichiometry"
+          }
+        ],
+        "hints": [
+          "One mole CaCO3 reacted corresponds to one mole CO2 formed."
+        ],
+        "feedback": {
+          "success": "Stoichiometry linked to gas evidence.",
+          "retry": "Record the balanced equation and collection assumptions."
+        }
+      },
+      {
+        "id": "graph-node",
+        "type": "observation",
+        "title": "Create graph",
+        "description": "Record graph evidence comparing CO2 volume versus time for all three conditions.",
+        "actionId": "create-kinetics-graph",
+        "config": {},
+        "validation": [
+          {
+            "id": "graph-recorded",
+            "type": "notebookEntry",
+            "label": "Graph interpretation is recorded.",
+            "notebookTag": "kinetics-graph"
+          }
+        ],
+        "hints": [
+          "Compare the early slopes rather than the final plateau, and say which condition each curve came from."
+        ],
+        "feedback": {
+          "success": "Graph evidence recorded.",
+          "retry": "Record graph evidence."
+        }
+      },
+      {
+        "id": "calculate-2m-rate-node",
+        "type": "calculation",
+        "title": "Initial rate: 2.0 M",
+        "description": "Calculate the initial rate from the 0 s and 15 s readings.",
+        "actionId": "calculate-acid-2m-rate",
+        "config": {},
+        "validation": [
+          {
+            "id": "rate-2m-within-tolerance",
+            "type": "calculationWithinTolerance",
+            "label": "2.0 M initial rate is within tolerance.",
+            "calculationId": "acid-2m-initial-rate",
+            "tolerance": 0.01
+          }
+        ],
+        "hints": [
+          "Initial rate = (CO2 at 15 s - CO2 at 0 s) / 15 s, over the configured interval."
+        ],
+        "feedback": {
+          "success": "2.0 M rate calculated.",
+          "retry": "Submit the 2.0 M initial rate."
+        }
+      },
+      {
+        "id": "calculate-4m-rate-node",
+        "type": "calculation",
+        "title": "Initial rate: 4.0 M",
+        "description": "Calculate the initial rate from the 0 s and 15 s readings.",
+        "actionId": "calculate-acid-4m-rate",
+        "config": {},
+        "validation": [
+          {
+            "id": "rate-4m-within-tolerance",
+            "type": "calculationWithinTolerance",
+            "label": "4.0 M initial rate is within tolerance.",
+            "calculationId": "acid-4m-initial-rate",
+            "tolerance": 0.01
+          }
+        ],
+        "hints": [
+          "Use the same interval and units for every condition so the rates are comparable."
+        ],
+        "feedback": {
+          "success": "4.0 M rate calculated.",
+          "retry": "Submit the 4.0 M initial rate."
+        }
+      },
+      {
+        "id": "calculate-6m-rate-node",
+        "type": "calculation",
+        "title": "Initial rate: 6.0 M",
+        "description": "Calculate the initial rate from the 0 s and 15 s readings.",
+        "actionId": "calculate-acid-6m-rate",
+        "config": {},
+        "validation": [
+          {
+            "id": "rate-6m-within-tolerance",
+            "type": "calculationWithinTolerance",
+            "label": "6.0 M initial rate is within tolerance.",
+            "calculationId": "acid-6m-initial-rate",
+            "tolerance": 0.01
+          }
+        ],
+        "hints": [
+          "Use the same interval and units for every condition so the rates are comparable."
+        ],
+        "feedback": {
+          "success": "6.0 M rate calculated.",
+          "retry": "Submit the 6.0 M initial rate."
+        }
+      },
+      {
+        "id": "rate-model-node",
+        "type": "observation",
+        "title": "Choose and defend the rate model",
+        "description": "Compare the configured early secant slope with other teacher-approved intervals or regression choices.",
+        "actionId": "compare-rate-models",
+        "config": {},
+        "validation": [
+          {
+            "id": "rate-model-recorded",
+            "type": "notebookEntry",
+            "label": "Rate-model choice is recorded.",
+            "notebookTag": "rate-model"
+          }
+        ],
+        "hints": [
+          "Use the same method and units across conditions."
+        ],
+        "feedback": {
+          "success": "Rate model defended.",
+          "retry": "Record the method, interval, units, and suitability limits."
+        }
+      },
+      {
+        "id": "uncertainty-node",
+        "type": "observation",
+        "title": "Evaluate uncertainty",
+        "description": "Identify measurement limits, procedural error sources, deterministic-model limits, and excluded environmental effects.",
+        "actionId": "evaluate-uncertainty",
+        "config": {},
+        "validation": [
+          {
+            "id": "uncertainty-recorded",
+            "type": "notebookEntry",
+            "label": "Uncertainty analysis is recorded.",
+            "notebookTag": "uncertainty-analysis"
+          }
+        ],
+        "hints": [
+          "Deterministic simulator curves cannot substitute for replicate scatter."
+        ],
+        "feedback": {
+          "success": "Uncertainty analysis recorded.",
+          "retry": "Record uncertainty and model limits."
+        }
+      },
+      {
+        "id": "cer-node",
+        "type": "observation",
+        "title": "Write CER conclusion",
+        "description": "Record a claim, evidence, and reasoning statement about the concentration effect on reaction rate.",
+        "actionId": "write-cer-conclusion",
+        "config": {},
+        "validation": [
+          {
+            "id": "cer-recorded",
+            "type": "notebookEntry",
+            "label": "CER conclusion is recorded.",
+            "notebookTag": "cer-claim"
+          }
+        ],
+        "hints": [
+          "Use your own calculated rates as the evidence, then give the collision-theory reasoning."
+        ],
+        "feedback": {
+          "success": "CER conclusion recorded.",
+          "retry": "Record the CER conclusion."
+        }
+      },
+      {
+        "id": "postlab-node",
+        "type": "observation",
+        "title": "Postlab graph analysis",
+        "description": "Record why initial slope is the rate evidence for this reaction.",
+        "actionId": "complete-postlab-analysis",
+        "config": {},
+        "validation": [
+          {
+            "id": "postlab-recorded",
+            "type": "notebookEntry",
+            "label": "Postlab graph analysis is recorded.",
+            "notebookTag": "postlab-analysis"
+          }
+        ],
+        "hints": [
+          "Later graph points flatten because gas production slows as reactants are consumed."
+        ],
+        "feedback": {
+          "success": "Postlab analysis complete.",
+          "retry": "Record the postlab analysis."
+        }
+      },
+      {
+        "id": "weathering-model-node",
+        "type": "calculation",
+        "title": "Qualify a marble-weathering scenario",
+        "description": "Apply only teacher-supplied environmental inputs and make units, scaling assumptions, excluded effects, and the model boundary explicit.",
+        "actionId": "qualify-statue-weathering-model",
+        "config": {
+          "teacherConfigured": true
+        },
+        "validation": [
+          {
+            "id": "weathering-model-recorded",
+            "type": "notebookEntry",
+            "label": "Qualified weathering model is recorded.",
+            "notebookTag": "weathering-model"
+          }
+        ],
+        "hints": [
+          "Do not present a classroom rate as a real monument lifetime prediction."
+        ],
+        "feedback": {
+          "success": "Qualified weathering scenario recorded.",
+          "retry": "State the supplied inputs, units, assumptions, limitations, and claim boundary."
+        }
+      },
+      {
+        "id": "cleanup-defense-node",
+        "type": "checkpoint",
+        "title": "Clean up, present, and defend",
+        "description": "Record source-aligned cleanup branches, present the evidence, judge each hypothesis, and defend the revision and data treatment.",
+        "actionId": "record-cleanup-and-defense",
+        "config": {},
+        "validation": [
+          {
+            "id": "cleanup-defense-recorded",
+            "type": "notebookEntry",
+            "label": "Cleanup and design defense are recorded.",
+            "notebookTag": "cleanup-and-defense"
+          }
+        ],
+        "hints": [
+          "Simulator completion does not replace current teacher and local disposal rules."
+        ],
+        "feedback": {
+          "success": "Investigation record complete.",
+          "retry": "Complete the cleanup, presentation, hypothesis judgment, and design defense record."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "review-inquiry-scope-node",
+        "to": "research-questions-node",
+        "label": "Frame questions",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "research-questions-node",
+        "to": "choose-variable-node",
+        "label": "Preregister",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "choose-variable-node",
+        "to": "experimental-design-node",
+        "label": "Design",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "experimental-design-node",
+        "to": "safety-plan-node",
+        "label": "Plan safety",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "safety-plan-node",
+        "to": "initial-approval-node",
+        "label": "Request approval",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "initial-approval-node",
+        "to": "connect-syringe-node",
+        "label": "Build the collection train",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "connect-syringe-node",
+        "to": "zero-syringe-node",
+        "label": "Zero the syringe",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "zero-syringe-node",
+        "to": "gas-path-check-node",
+        "label": "Check the path",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gas-path-check-node",
+        "to": "measure-acid-node",
+        "label": "Measure acid",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "measure-acid-node",
+        "to": "transfer-acid-node",
+        "label": "Transfer acid",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-acid-node",
+        "to": "weigh-marble-node",
+        "label": "Weigh marble",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "weigh-marble-node",
+        "to": "transfer-marble-node",
+        "label": "Start the reaction",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-marble-node",
+        "to": "assemble-apparatus-node",
+        "label": "Seal the flask",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "assemble-apparatus-node",
+        "to": "reaction-start-node",
+        "label": "Mark time zero",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "reaction-start-node",
+        "to": "practice-run-node",
+        "label": "Record initial execution",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "practice-run-node",
+        "to": "revision-node",
+        "label": "Revise",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "revision-node",
+        "to": "revised-approval-node",
+        "label": "Request approval",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "revised-approval-node",
+        "to": "acid-2m-run-node",
+        "label": "Fresh execution",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "acid-2m-run-node",
+        "to": "acid-4m-run-node",
+        "label": "Next condition",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "acid-4m-run-node",
+        "to": "acid-6m-run-node",
+        "label": "Next condition",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "acid-6m-run-node",
+        "to": "run-provenance-node",
+        "label": "Audit records",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "run-provenance-node",
+        "to": "reaction-stoichiometry-node",
+        "label": "Interpret reaction",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "reaction-stoichiometry-node",
+        "to": "graph-node",
+        "label": "Graph",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "graph-node",
+        "to": "calculate-2m-rate-node",
+        "label": "Calculate rates",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "calculate-2m-rate-node",
+        "to": "calculate-4m-rate-node",
+        "label": "Next rate",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "calculate-4m-rate-node",
+        "to": "calculate-6m-rate-node",
+        "label": "Next rate",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "calculate-6m-rate-node",
+        "to": "rate-model-node",
+        "label": "Compare models",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "rate-model-node",
+        "to": "uncertainty-node",
+        "label": "Evaluate uncertainty",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "uncertainty-node",
+        "to": "cer-node",
+        "label": "Conclusion",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "cer-node",
+        "to": "postlab-node",
+        "label": "Postlab",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "postlab-node",
+        "to": "weathering-model-node",
+        "label": "Transfer model",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "weathering-model-node",
+        "to": "cleanup-defense-node",
+        "label": "Defend and clean up",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "assessments": [
+    {
+      "id": "process-complete",
+      "type": "processCompleted",
+      "label": "How Long Will That Marble Statue Last? workflow is complete."
+    },
+    {
+      "id": "cer-assessment",
+      "type": "notebookEntry",
+      "label": "CER conclusion is present.",
+      "notebookTag": "cer-claim"
+    },
+    {
+      "id": "revised-execution-assessment",
+      "type": "notebookEntry",
+      "label": "Revised-procedure approval and fresh execution are documented.",
+      "notebookTag": "revised-teacher-approval"
+    },
+    {
+      "id": "weathering-model-assessment",
+      "type": "notebookEntry",
+      "label": "Weathering extrapolation is qualified with supplied inputs and limitations.",
+      "notebookTag": "weathering-model"
+    },
+    {
+      "id": "cleanup-defense-assessment",
+      "type": "notebookEntry",
+      "label": "Cleanup, presentation, hypothesis judgment, and design defense are documented.",
+      "notebookTag": "cleanup-and-defense"
+    }
+  ],
+  "metadata": {
+    "version": "2.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-07-27T00:00:00.000Z",
+    "tags": [
+      "lab",
+      "chemistry",
+      "kinetics",
+      "gas-syringe",
+      "inquiry",
+      "surface-area",
+      "uncertainty",
+      "weathering-model"
+    ]
+  }
+}

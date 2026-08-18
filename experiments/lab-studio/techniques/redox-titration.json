@@ -1,0 +1,1275 @@
+{
+  "id": "redox-titration",
+  "title": "Redox Titration",
+  "learningGoal": "Standardize or apply permanganate titration evidence to estimate hydrogen peroxide percent.",
+  "requiredEquipment": [
+    "sample-bottle",
+    "graduated-cylinder",
+    "erlenmeyer-flask-250ml",
+    "burette-50ml",
+    "ring-stand-clamp",
+    "reagent-bottle",
+    "wash-bottle",
+    "waste-beaker"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "sample-bottle-1",
+        "definitionId": "sample-bottle",
+        "label": "Sample bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "solution",
+          "label": "Hydrogen peroxide sample",
+          "volumeMl": 30,
+          "solutes": [],
+          "concentration": {
+            "value": 0.88,
+            "unit": "M"
+          },
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "reagent-bottle-1",
+        "definitionId": "reagent-bottle",
+        "label": "Reagent bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "solution",
+          "label": "Permanganate or acid reagent",
+          "volumeMl": 100,
+          "solutes": [],
+          "concentration": {
+            "value": 0.02,
+            "unit": "M"
+          },
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "purple-solution"
+        }
+      },
+      {
+        "id": "graduated-cylinder-1",
+        "definitionId": "graduated-cylinder",
+        "label": "Graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "erlenmeyer-flask-250ml-1",
+        "definitionId": "erlenmeyer-flask-250ml",
+        "label": "250 mL Erlenmeyer flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "burette-50ml-1",
+        "definitionId": "burette-50ml",
+        "label": "50 mL burette",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "ring-stand-clamp-1",
+        "definitionId": "ring-stand-clamp",
+        "label": "Ring stand and clamp",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "wash-bottle-1",
+        "definitionId": "wash-bottle",
+        "label": "Wash bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "waste-beaker-1",
+        "definitionId": "waste-beaker",
+        "label": "Waste beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "place-redox-flask",
+      "verb": "place",
+      "label": "Position the receiving flask under the burette tip",
+      "parameters": {
+        "equipmentDefinitionId": "erlenmeyer-flask-250ml",
+        "location": "workbench",
+        "sourceDefinitionId": "erlenmeyer-flask-250ml"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Place redox flask: The redox titration flask is ready."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The redox titration flask is ready.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ],
+      "atomId": "atom.place.titration-receiver",
+      "equipmentRoleBindings": {
+        "analyte-receiver": "erlenmeyer-flask-250ml",
+        "burette-support": "ring-stand-clamp"
+      },
+      "interaction": {
+      "type": "dragToZone",
+      "sourceDefinitionId": "erlenmeyer-flask-250ml",
+      "stationId": "workbench",
+        "successCue": "The flask sits under the burette tip.",
+        "invalidCue": "Position the receiving flask under the burette tip before titrating.",
+        "accessibleLabel": "Place the Erlenmeyer flask under the burette tip."
+      }
+    },
+    {
+      "id": "measure-analyte",
+      "verb": "measureVolume",
+      "label": "Measure redox analyte",
+      "parameters": {
+        "sourceDefinitionId": "sample-bottle",
+        "targetDefinitionId": "graduated-cylinder",
+        "measurementId": "redox-analyte-volume",
+        "volumeMl": 10,
+        "tolerance": 0.2,
+        "aliquotIsTeacherConfigured": true
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Measure redox analyte: The analyte volume is measured."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The analyte volume is measured.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "measureVolume",
+        "measurement"
+      ],
+      "atomId": "atom.measure.variable-volume",
+      "equipmentRoleBindings": {
+        "variable-volume-measuring-device": "graduated-cylinder",
+        "liquid-source": "sample-bottle"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "sample-bottle",
+        "targetDefinitionId": "graduated-cylinder",
+        "valueParameter": "volumeMl",
+        "successCue": "Analyte aliquot measured.",
+        "invalidCue": "Measure a fresh analyte aliquot from the sample bottle.",
+        "accessibleLabel": "Measure the approved analyte aliquot into the graduated cylinder."
+      }
+    },
+    {
+      "id": "transfer-analyte",
+      "verb": "transfer",
+      "label": "Transfer redox analyte",
+      "parameters": {
+        "sourceDefinitionId": "graduated-cylinder",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "volumeMl": 10
+      },
+      "prerequisites": [
+        {
+          "id": "analyte-measured-required",
+          "type": "measurementRecorded",
+          "label": "The analyte aliquot has been measured.",
+          "measurementId": "redox-analyte-volume"
+        }
+      ],
+      "stateChanges": [
+        "Transfer redox analyte: The analyte is in the flask."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The analyte is in the flask.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ],
+      "atomId": "atom.transfer.measured-liquid",
+      "equipmentRoleBindings": {
+        "measured-solvent-source": "graduated-cylinder",
+        "receiving-vessel": "erlenmeyer-flask-250ml"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "graduated-cylinder",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "valueParameter": "volumeMl",
+        "successCue": "Analyte delivered to the flask.",
+        "invalidCue": "Deliver the measured analyte into the receiving flask.",
+        "accessibleLabel": "Pour the measured analyte into the Erlenmeyer flask."
+      }
+    },
+    {
+      "id": "acidify-analyte",
+      "verb": "transfer",
+      "label": "Acidify the analyte",
+      "parameters": {
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "volumeMl": 10,
+        "acidVolumeIsTeacherConfigured": true,
+        "practiceAcidMaxMl": 10,
+        "note": "The titrated system is the aliquot plus this acid. Solid KMnO4 is never combined with H2SO4 (S-05)."
+      },
+      "prerequisites": [
+        {
+          "id": "analyte-in-flask-required",
+          "type": "actionEvidence",
+          "label": "The analyte is in the receiving flask.",
+          "actionId": "transfer-analyte"
+        }
+      ],
+      "stateChanges": [
+        "Acidify analyte: The analyte is acidified before titration."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The analyte is acidified before titration.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ],
+      "atomId": "atom.transfer.acidify-analyte",
+      "equipmentRoleBindings": {
+        "acidifying-reagent-source": "reagent-bottle",
+        "analyte-receiver": "erlenmeyer-flask-250ml"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "valueParameter": "volumeMl",
+        "successCue": "The analyte is acidified.",
+        "invalidCue": "Add the approved volume of 6 M H2SO4 to the analyte in the flask.",
+        "accessibleLabel": "Add the approved volume of sulfuric acid to the analyte."
+      }
+    },
+    {
+      "id": "mount-permanganate-burette",
+      "verb": "place",
+      "label": "Mount the burette in the clamp",
+      "atomId": "atom.place.mount-burette",
+      "equipmentRoleBindings": {
+        "titrant-delivery-device": "burette-50ml",
+        "burette-support": "ring-stand-clamp"
+      },
+      "parameters": {
+        "equipmentDefinitionId": "burette-50ml",
+        "sourceDefinitionId": "burette-50ml",
+        "targetDefinitionId": "ring-stand-clamp",
+        "snapZoneId": "ring-stand-burette-clamp"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "burette-50ml",
+        "targetDefinitionId": "ring-stand-clamp",
+        "snapZoneId": "ring-stand-burette-clamp",
+        "successCue": "The burette is clamped vertically with the stopcock reachable.",
+        "invalidCue": "Seat the burette in the ring-stand clamp before conditioning or filling it.",
+        "accessibleLabel": "Mount the 50 mL burette in the ring stand clamp."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Clamp the burette to the ring stand."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for this technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "no-support",
+          "when": "no ring stand and clamp are on the workbench",
+          "message": "There is nothing to clamp the burette to.",
+          "recovery": "Place the ring stand and clamp, then seat the burette in it."
+        }
+      ],
+      "feedback": {
+        "success": "The burette is clamped vertically with the stopcock reachable.",
+        "invalid": "Place the ring stand and clamp before mounting the burette."
+      },
+      "evidence": [
+        "place",
+        "titration-setup"
+      ]
+    },
+    {
+      "id": "fill-permanganate-burette",
+      "verb": "transfer",
+      "label": "Fill the conditioned burette with permanganate",
+      "parameters": {
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "burette-50ml",
+        "volumeMl": 35,
+        "visualState": "purple-solution",
+        "tipAirRemovalIsTeacherConfigured": true
+      },
+      "prerequisites": [
+        {
+          "id": "burette-mounted-required",
+          "type": "actionEvidence",
+          "label": "The burette is clamped to the stand.",
+          "actionId": "mount-permanganate-burette"
+        }
+      ],
+      "stateChanges": [
+        "Fill permanganate burette: The burette contains permanganate titrant."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The burette contains permanganate titrant.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ],
+      "atomId": "atom.transfer.fill-burette",
+      "equipmentRoleBindings": {
+        "titrant-source": "reagent-bottle",
+        "titrant-delivery-device": "burette-50ml"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "burette-50ml",
+        "valueParameter": "volumeMl",
+        "successCue": "The burette is filled and the tip is clear.",
+        "invalidCue": "Fill the conditioned burette with the permanganate solution.",
+        "accessibleLabel": "Fill the conditioned burette with permanganate solution."
+      }
+    },
+    {
+      "id": "read-redox-initial-burette",
+      "verb": "measureVolume",
+      "label": "Read the initial burette level",
+      "atomId": "atom.measure.read-burette",
+      "equipmentRoleBindings": {
+        "titrant-delivery-device": "burette-50ml"
+      },
+      "parameters": {
+        "sourceDefinitionId": "burette-50ml",
+        "measurementId": "redox-initial-burette",
+        "label": "Initial redox burette reading",
+        "readingPrecisionMl": 0.01,
+        "scaleReadsDownward": true
+      },
+      "interaction": {
+      "type": "readInstrument",
+      "sourceDefinitionId": "burette-50ml",
+      "stationId": "burette-50ml",
+        "successCue": "Initial burette level read.",
+        "invalidCue": "Fill the burette before reading its scale.",
+        "accessibleLabel": "Read the meniscus on the filled burette."
+      },
+      "prerequisites": [
+        {
+          "id": "filled-required",
+          "type": "actionEvidence",
+          "label": "The burette has been filled.",
+          "actionId": "fill-permanganate-burette"
+        }
+      ],
+      "stateChanges": [
+        "Read the burette scale; a reading delivers nothing."
+      ],
+      "invalidCases": [
+        {
+          "id": "empty-burette",
+          "when": "the burette holds no titrant",
+          "message": "There is no meniscus to read.",
+          "recovery": "Fill the burette, then read the scale."
+        }
+      ],
+      "feedback": {
+        "success": "Initial burette level read.",
+        "invalid": "Fill the burette before reading it."
+      },
+      "evidence": [
+        "measureVolume",
+        "measurement"
+      ]
+    },
+    {
+      "id": "record-redox-initial",
+      "verb": "record",
+      "label": "Record redox initial burette",
+      "parameters": {
+        "measurementId": "redox-initial-burette",
+        "label": "Initial redox burette reading",
+        "unit": "mL"
+      },
+      "prerequisites": [
+        {
+          "id": "initial-read-required",
+          "type": "measurementRecorded",
+          "label": "The initial level has been read.",
+          "measurementId": "redox-initial-burette"
+        }
+      ],
+      "stateChanges": [
+        "Record redox initial burette: Initial redox burette reading is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Initial redox burette reading is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "measurementId",
+        "successCue": "Initial burette reading recorded.",
+        "invalidCue": "Read the burette before recording its value.",
+        "accessibleLabel": "Record the initial burette reading you read from the scale."
+      }
+    },
+    {
+      "id": "deliver-permanganate",
+      "verb": "transfer",
+      "label": "Titrate to a persistent faint pink",
+      "parameters": {
+        "sourceDefinitionId": "burette-50ml",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "titrationModelId": "redox-technique-analyte",
+        "initialBuretteMeasurementId": "redox-initial-burette",
+        "finalBuretteMeasurementId": "redox-final-burette",
+        "finalBuretteLabel": "Final redox burette reading",
+        "mixtureLabel": "Acidified redox reaction mixture",
+        "endpointLabel": "Persistent faint-pink endpoint",
+        "overshootLabel": "the dark red-purple shows the permanganate is now in excess",
+        "preEndpointVisualState": "redox-colorless-solution",
+        "endpointVisualState": "permanganate-faint-pink",
+        "overshootVisualState": "permanganate-overshoot-purple",
+        "endpointPersistenceIsTeacherConfigured": true
+      },
+      "prerequisites": [
+        {
+          "id": "burette-mounted-required",
+          "type": "actionEvidence",
+          "label": "The burette is clamped to the stand.",
+          "actionId": "mount-permanganate-burette"
+        },
+        {
+          "id": "analyte-acidified-required",
+          "type": "actionEvidence",
+          "label": "The acidified analyte is in the receiving flask.",
+          "actionId": "acidify-analyte"
+        },
+        {
+          "id": "initial-required",
+          "type": "measurementRecorded",
+          "label": "The initial burette reading is recorded.",
+          "measurementId": "redox-initial-burette"
+        }
+      ],
+      "stateChanges": [
+        "Deliver permanganate: Permanganate is delivered to a persistent faint endpoint."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Permanganate is delivered to a persistent faint endpoint.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ],
+      "atomId": "atom.transfer.deliver-titrant",
+      "equipmentRoleBindings": {
+        "titrant-delivery-device": "burette-50ml",
+        "analyte-receiver": "erlenmeyer-flask-250ml"
+      },
+      "interaction": {
+        "type": "dispenseDrops",
+        "sourceDefinitionId": "burette-50ml",
+        "targetDefinitionId": "erlenmeyer-flask-250ml",
+        "successCue": "Faint-pink endpoint accepted.",
+        "invalidCue": "Mount and fill the burette, charge and acidify the flask, and record the initial reading first.",
+        "accessibleLabel": "Add permanganate in portions, then dropwise near the endpoint, and accept the persistent faint pink."
+      }
+    },
+    {
+      "id": "record-redox-final",
+      "verb": "record",
+      "label": "Record redox final burette",
+      "parameters": {
+        "measurementId": "redox-final-burette",
+        "label": "Final redox burette reading",
+        "unit": "mL"
+      },
+      "prerequisites": [
+        {
+          "id": "final-required",
+          "type": "measurementRecorded",
+          "label": "The final level is available from the accepted endpoint.",
+          "measurementId": "redox-final-burette"
+        }
+      ],
+      "stateChanges": [
+        "Record redox final burette: Final redox burette reading is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Final redox burette reading is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "measurementId",
+        "successCue": "Final burette reading recorded.",
+        "invalidCue": "Accept the endpoint before recording the final reading.",
+        "accessibleLabel": "Record the final burette reading produced by the accepted endpoint."
+      }
+    },
+    {
+      "id": "calculate-hydrogen-peroxide",
+      "verb": "calculate",
+      "label": "Calculate hydrogen peroxide percent",
+      "parameters": {
+        "calculationId": "hydrogen-peroxide-percent",
+        "expected": 3,
+        "tolerance": 0.5,
+        "unit": "% H2O2",
+        "studentValueRequired": true,
+        "analyteVolumeMeasurementId": "redox-analyte-volume",
+        "initialBuretteMeasurementId": "redox-initial-burette",
+        "finalBuretteMeasurementId": "redox-final-burette"
+      },
+      "prerequisites": [
+        {
+          "id": "analyte-required",
+          "type": "measurementRecorded",
+          "label": "The analyte volume is recorded.",
+          "measurementId": "redox-analyte-volume"
+        },
+        {
+          "id": "initial-required",
+          "type": "measurementRecorded",
+          "label": "The initial burette reading is recorded.",
+          "measurementId": "redox-initial-burette"
+        },
+        {
+          "id": "final-required",
+          "type": "measurementRecorded",
+          "label": "The final burette reading is recorded.",
+          "measurementId": "redox-final-burette"
+        }
+      ],
+      "stateChanges": [
+        "Calculate hydrogen peroxide percent: Hydrogen peroxide percent is calculated."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Hydrogen peroxide percent is calculated.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "calculate"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "place-redox-flask-node",
+    "nodes": [
+      {
+        "id": "place-redox-flask-node",
+        "type": "action",
+        "title": "Place redox flask",
+        "description": "Place the Erlenmeyer flask on the workbench.",
+        "actionId": "place-redox-flask",
+        "config": {},
+        "validation": [
+          {
+            "id": "place-redox-flask-node-done",
+            "type": "actionEvidence",
+            "label": "Action place-redox-flask was completed.",
+            "actionId": "place-redox-flask"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place redox flask complete.",
+          "retry": "Review Place redox flask and try again."
+        },
+        "layout": {
+          "x": 40,
+          "y": 60
+        }
+      },
+      {
+        "id": "measure-analyte-node",
+        "type": "action",
+        "title": "Measure analyte",
+        "description": "Pour 10 mL of redox analyte into the graduated cylinder.",
+        "actionId": "measure-analyte",
+        "config": {},
+        "validation": [
+          {
+            "id": "measure-analyte-node-done",
+            "type": "actionEvidence",
+            "label": "Action measure-analyte was completed.",
+            "actionId": "measure-analyte"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure analyte complete.",
+          "retry": "Review Measure analyte and try again."
+        },
+        "layout": {
+          "x": 340,
+          "y": 60
+        }
+      },
+      {
+        "id": "transfer-analyte-node",
+        "type": "action",
+        "title": "Transfer analyte",
+        "description": "Pour the analyte into the Erlenmeyer flask.",
+        "actionId": "transfer-analyte",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-analyte-node-done",
+            "type": "actionEvidence",
+            "label": "Action transfer-analyte was completed.",
+            "actionId": "transfer-analyte"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer analyte complete.",
+          "retry": "Review Transfer analyte and try again."
+        },
+        "layout": {
+          "x": 640,
+          "y": 60
+        }
+      },
+      {
+        "id": "acidify-analyte-node",
+        "type": "action",
+        "title": "Acidify analyte",
+        "description": "Pour acid reagent into the analyte before titration.",
+        "actionId": "acidify-analyte",
+        "config": {},
+        "validation": [
+          {
+            "id": "acidify-analyte-node-done",
+            "type": "actionEvidence",
+            "label": "Action acidify-analyte was completed.",
+            "actionId": "acidify-analyte"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Acidify analyte complete.",
+          "retry": "Review Acidify analyte and try again."
+        },
+        "layout": {
+          "x": 940,
+          "y": 60
+        }
+      },
+      {
+        "id": "mount-permanganate-burette-node",
+        "type": "action",
+        "title": "Mount the burette",
+        "description": "Seat the burette in the ring-stand clamp so the stopcock is reachable and the tip clears the receiving vessel. Nothing may be delivered from a hand-held burette.",
+        "actionId": "mount-permanganate-burette",
+        "layout": {
+          "x": 40,
+          "y": 260
+        },
+        "config": {},
+        "validation": [
+          {
+            "id": "mount-permanganate-burette-complete",
+            "type": "actionEvidence",
+            "label": "Burette mounted on the ring stand.",
+            "actionId": "mount-permanganate-burette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Burette mount checkpoint passed.",
+          "retry": "Clamp the burette to the ring stand before filling it."
+        }
+      },
+      {
+        "id": "fill-permanganate-burette-node",
+        "type": "action",
+        "title": "Fill burette",
+        "description": "Pour permanganate titrant into the burette.",
+        "actionId": "fill-permanganate-burette",
+        "config": {},
+        "validation": [
+          {
+            "id": "fill-permanganate-burette-node-done",
+            "type": "actionEvidence",
+            "label": "Action fill-permanganate-burette was completed.",
+            "actionId": "fill-permanganate-burette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Fill burette complete.",
+          "retry": "Review Fill burette and try again."
+        },
+        "layout": {
+          "x": 340,
+          "y": 260
+        }
+      },
+      {
+        "id": "read-redox-initial-burette-node",
+        "type": "observation",
+        "title": "Read the initial burette level",
+        "description": "Read the meniscus on the filled burette. Reading and recording are separate steps.",
+        "actionId": "read-redox-initial-burette",
+        "layout": {
+          "x": 640,
+          "y": 260
+        },
+        "config": {},
+        "validation": [
+          {
+            "id": "redox-initial-read",
+            "type": "measurementRecorded",
+            "label": "Initial burette level read.",
+            "measurementId": "redox-initial-burette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Initial reading checkpoint passed.",
+          "retry": "Read the burette before recording its value."
+        }
+      },
+      {
+        "id": "record-redox-initial-node",
+        "type": "observation",
+        "title": "Record initial burette",
+        "description": "Record the initial redox burette reading.",
+        "actionId": "record-redox-initial",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-redox-initial-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-redox-initial was completed.",
+            "actionId": "record-redox-initial"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record initial burette complete.",
+          "retry": "Review Record initial burette and try again."
+        },
+        "layout": {
+          "x": 940,
+          "y": 260
+        }
+      },
+      {
+        "id": "deliver-permanganate-node",
+        "type": "action",
+        "title": "Deliver titrant",
+        "description": "Pour permanganate titrant into the flask to a faint endpoint.",
+        "actionId": "deliver-permanganate",
+        "config": {},
+        "validation": [
+          {
+            "id": "deliver-permanganate-node-done",
+            "type": "actionEvidence",
+            "label": "Action deliver-permanganate was completed.",
+            "actionId": "deliver-permanganate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Deliver titrant complete.",
+          "retry": "Review Deliver titrant and try again."
+        },
+        "layout": {
+          "x": 40,
+          "y": 460
+        }
+      },
+      {
+        "id": "record-redox-final-node",
+        "type": "observation",
+        "title": "Record final burette",
+        "description": "Record the final redox burette reading.",
+        "actionId": "record-redox-final",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-redox-final-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-redox-final was completed.",
+            "actionId": "record-redox-final"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record final burette complete.",
+          "retry": "Review Record final burette and try again."
+        },
+        "layout": {
+          "x": 340,
+          "y": 460
+        }
+      },
+      {
+        "id": "calculate-hydrogen-peroxide-node",
+        "type": "calculation",
+        "title": "Calculate peroxide",
+        "description": "Calculate hydrogen peroxide percent from titration evidence.",
+        "actionId": "calculate-hydrogen-peroxide",
+        "config": {},
+        "validation": [
+          {
+            "id": "calculate-hydrogen-peroxide-node-done",
+            "type": "actionEvidence",
+            "label": "Action calculate-hydrogen-peroxide was completed.",
+            "actionId": "calculate-hydrogen-peroxide"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate peroxide complete.",
+          "retry": "Review Calculate peroxide and try again."
+        },
+        "layout": {
+          "x": 640,
+          "y": 460
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "place-redox-flask-node",
+        "to": "measure-analyte-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "measure-analyte-node",
+        "to": "transfer-analyte-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-analyte-node",
+        "to": "acidify-analyte-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "acidify-analyte-node",
+        "to": "mount-permanganate-burette-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "mount-permanganate-burette-node",
+        "to": "fill-permanganate-burette-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "fill-permanganate-burette-node",
+        "to": "read-redox-initial-burette-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "read-redox-initial-burette-node",
+        "to": "record-redox-initial-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-redox-initial-node",
+        "to": "deliver-permanganate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "deliver-permanganate-node",
+        "to": "record-redox-final-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-redox-final-node",
+        "to": "calculate-hydrogen-peroxide-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "place-redox-flask-node-success",
+      "type": "actionEvidence",
+      "label": "Action place-redox-flask was completed.",
+      "actionId": "place-redox-flask"
+    },
+    {
+      "id": "measure-analyte-node-success",
+      "type": "actionEvidence",
+      "label": "Action measure-analyte was completed.",
+      "actionId": "measure-analyte"
+    },
+    {
+      "id": "transfer-analyte-node-success",
+      "type": "actionEvidence",
+      "label": "Action transfer-analyte was completed.",
+      "actionId": "transfer-analyte"
+    },
+    {
+      "id": "acidify-analyte-node-success",
+      "type": "actionEvidence",
+      "label": "Action acidify-analyte was completed.",
+      "actionId": "acidify-analyte"
+    },
+    {
+      "id": "fill-permanganate-burette-node-success",
+      "type": "actionEvidence",
+      "label": "Action fill-permanganate-burette was completed.",
+      "actionId": "fill-permanganate-burette"
+    },
+    {
+      "id": "record-redox-initial-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-redox-initial was completed.",
+      "actionId": "record-redox-initial"
+    },
+    {
+      "id": "deliver-permanganate-node-success",
+      "type": "actionEvidence",
+      "label": "Action deliver-permanganate was completed.",
+      "actionId": "deliver-permanganate"
+    },
+    {
+      "id": "record-redox-final-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-redox-final was completed.",
+      "actionId": "record-redox-final"
+    },
+    {
+      "id": "calculate-hydrogen-peroxide-node-success",
+      "type": "actionEvidence",
+      "label": "Action calculate-hydrogen-peroxide was completed.",
+      "actionId": "calculate-hydrogen-peroxide"
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "wrong-order",
+      "when": "current node expects a different action",
+      "message": "That action is out of sequence for the current technique step.",
+      "recovery": "Check the process map and perform the highlighted step first."
+    },
+    {
+      "id": "missing-source",
+      "when": "source equipment or contents are missing",
+      "message": "The selected source does not contain the material required for this action.",
+      "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+    },
+    {
+      "id": "overflow",
+      "when": "target capacity would be exceeded",
+      "message": "The target equipment cannot hold the requested volume.",
+      "recovery": "Use a larger container or transfer a smaller measured amount."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-08-05T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "chemistry",
+      "redox",
+      "titration"
+    ]
+  },
+  "titrationModels": [
+    {
+      "id": "redox-technique-analyte",
+      "type": "redox",
+      "analyteMolarityM": 0.1,
+      "analyteVolumeMl": 10,
+      "titrantMolarityM": 0.02040816326530612,
+      "stoichiometricRatio": {
+        "analyte": 5,
+        "titrant": 1
+      },
+      "dropVolumeMl": 0.2,
+      "endpointOffsetDrops": 0,
+      "maxExtraDrops": 1
+    }
+  ]
+}

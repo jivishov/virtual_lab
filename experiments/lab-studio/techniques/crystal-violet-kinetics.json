@@ -1,0 +1,1187 @@
+{
+  "id": "crystal-violet-kinetics",
+  "title": "Crystal Violet Kinetics",
+  "learningGoal": "Complete one source-faithful scheduled absorbance read-and-record cycle for a prepared crystal violet reaction. Repeat this reusable technique at every approved interval to build a full kinetics series.",
+  "requiredEquipment": [
+    "cuvette",
+    "spectrophotometer",
+    "stopwatch"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "cuvette-blank",
+        "definitionId": "cuvette",
+        "label": "Cuvette",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Teacher-approved photometric blank",
+          "volumeMl": 3,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "cuvette-reaction",
+        "definitionId": "cuvette",
+        "label": "Cuvette",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Prepared crystal violet reaction mixture",
+          "volumeMl": 3,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "purple-solution"
+        }
+      },
+      {
+        "id": "spectrophotometer-1",
+        "definitionId": "spectrophotometer",
+        "label": "Spectrophotometer",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "stopwatch-1",
+        "definitionId": "stopwatch",
+        "label": "Stopwatch",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "configure-cv-wavelength",
+      "verb": "observe",
+      "label": "Record approved wavelength",
+      "parameters": {
+        "measurementId": "cv-scheduled-wavelength-nm",
+        "configurationQuantity": "crystal violet measurement wavelength",
+        "inputMode": "numeric",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Teacher-approved wavelength",
+        "inputMin": 350,
+        "inputMax": 750,
+        "inputStep": 1,
+        "unit": "nm",
+        "tag": "cv-scheduled-wavelength",
+        "note": "Record the teacher-approved wavelength; the source does not supply a universal value."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Record approved wavelength: The approved wavelength is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The approved wavelength is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "configuration",
+        "measurement"
+      ],
+      "atomId": "atom.observe.configure-photometer",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer"
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Record the teacher-approved wavelength for this scheduled reading."
+      }
+    },
+    {
+      "id": "configure-cv-reading-time",
+      "verb": "observe",
+      "label": "Record scheduled reading time",
+      "parameters": {
+        "measurementId": "cv-scheduled-time-s",
+        "configurationQuantity": "scheduled absorbance reading time",
+        "inputKey": "cvScheduledTimeSeconds",
+        "inputMode": "numeric",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Teacher-approved scheduled reading time",
+        "inputMin": 0,
+        "inputMinExclusive": true,
+        "inputStep": 1,
+        "unit": "s",
+        "tag": "cv-scheduled-time",
+        "note": "Record one teacher-approved scheduled time. The source does not supply a universal interval; the full investigation repeats read and record at every approved interval."
+      },
+      "prerequisites": [
+        {
+          "id": "cv-scheduled-wavelength-nm-required",
+          "type": "measurementRecorded",
+          "label": "The approved wavelength is recorded.",
+          "measurementId": "cv-scheduled-wavelength-nm"
+        }
+      ],
+      "stateChanges": [
+        "Record scheduled reading time: The scheduled reading time is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The scheduled reading time is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "configuration",
+        "measurement"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Record the teacher-approved scheduled reading time."
+      }
+    },
+    {
+      "id": "place-cv-spectrophotometer",
+      "verb": "place",
+      "label": "Place spectrophotometer",
+      "parameters": {
+        "equipmentDefinitionId": "spectrophotometer",
+        "location": "workbench"
+      },
+      "prerequisites": [
+        {
+          "id": "cv-scheduled-time-s-required",
+          "type": "measurementRecorded",
+          "label": "The scheduled reading time is recorded.",
+          "measurementId": "cv-scheduled-time-s"
+        }
+      ],
+      "stateChanges": [
+        "Place spectrophotometer: The spectrophotometer is ready on the workbench."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The spectrophotometer is ready on the workbench.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ],
+      "atomId": "atom.place.photometer",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer"
+      },
+      "interaction": {
+        "type": "dragToZone",
+        "sourceDefinitionId": "spectrophotometer",
+        "stationId": "workbench",
+        "accessibleLabel": "Place the spectrophotometer on the workbench."
+      }
+    },
+    {
+      "id": "insert-cv-blank",
+      "verb": "place",
+      "label": "Insert approved blank",
+      "parameters": {
+        "equipmentDefinitionId": "cuvette",
+        "equipmentInstanceId": "cuvette-blank",
+        "sourceDefinitionId": "cuvette",
+        "targetDefinitionId": "spectrophotometer",
+        "snapZoneId": "spectrophotometer-cuvette-slot"
+      },
+      "prerequisites": [
+        {
+          "id": "place-cv-spectrophotometer-required",
+          "type": "actionEvidence",
+          "label": "The spectrophotometer is on the workbench.",
+          "actionId": "place-cv-spectrophotometer"
+        }
+      ],
+      "stateChanges": [
+        "Insert approved blank: The approved blank is seated in the spectrophotometer."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The approved blank is seated in the spectrophotometer.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ],
+      "atomId": "atom.place.insert-cuvette",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer",
+        "photometer-sample-holder": "cuvette"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "cuvette",
+        "targetDefinitionId": "spectrophotometer",
+        "snapZoneId": "spectrophotometer-cuvette-slot",
+        "accessibleLabel": "Insert the approved blank cuvette into the spectrophotometer."
+      }
+    },
+    {
+      "id": "zero-cv-spectrophotometer",
+      "verb": "observe",
+      "label": "Zero spectrophotometer",
+      "parameters": {
+        "sourceDefinitionId": "cuvette",
+        "sourceInstanceId": "cuvette-blank",
+        "photometerOperation": "zero",
+        "photometerDefinitionId": "spectrophotometer",
+        "photometerInstanceId": "spectrophotometer-1",
+        "wavelengthMeasurementId": "cv-scheduled-wavelength-nm",
+        "cuvetteInstanceId": "cuvette-blank",
+        "tag": "cv-scheduled-instrument-blanked",
+        "note": "Zeroed with the teacher-approved blank at the recorded wavelength."
+      },
+      "prerequisites": [
+        {
+          "id": "insert-cv-blank-required",
+          "type": "actionEvidence",
+          "label": "The approved blank is inserted.",
+          "actionId": "insert-cv-blank"
+        }
+      ],
+      "stateChanges": [
+        "Zero spectrophotometer: The spectrophotometer is zeroed."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The spectrophotometer is zeroed.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe"
+      ],
+      "atomId": "atom.observe.blank-photometer",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer",
+        "photometer-sample-holder": "cuvette"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "cuvette",
+        "stationId": "spectrophotometer",
+        "accessibleLabel": "Zero the spectrophotometer with the inserted approved blank."
+      }
+    },
+    {
+      "id": "remove-cv-blank",
+      "verb": "place",
+      "label": "Remove approved blank",
+      "parameters": {
+        "equipmentDefinitionId": "cuvette",
+        "equipmentInstanceId": "cuvette-blank",
+        "location": "workbench"
+      },
+      "prerequisites": [
+        {
+          "id": "cv-scheduled-instrument-blanked-required",
+          "type": "notebookEntry",
+          "label": "The instrument is zeroed.",
+          "notebookTag": "cv-scheduled-instrument-blanked"
+        }
+      ],
+      "stateChanges": [
+        "Remove approved blank: The blank is back on the workbench and the sample slot is clear."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The blank is back on the workbench and the sample slot is clear.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ],
+      "atomId": "atom.place.remove-cuvette",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer",
+        "photometer-sample-holder": "cuvette"
+      },
+      "interaction": {
+        "type": "dragToZone",
+        "sourceDefinitionId": "cuvette",
+        "stationId": "workbench",
+        "accessibleLabel": "Remove the approved blank from the spectrophotometer."
+      }
+    },
+    {
+      "id": "insert-cv-reaction-cuvette",
+      "verb": "place",
+      "label": "Insert prepared reaction cuvette",
+      "parameters": {
+        "equipmentDefinitionId": "cuvette",
+        "equipmentInstanceId": "cuvette-reaction",
+        "sourceDefinitionId": "cuvette",
+        "targetDefinitionId": "spectrophotometer",
+        "snapZoneId": "spectrophotometer-cuvette-slot"
+      },
+      "prerequisites": [
+        {
+          "id": "remove-cv-blank-required",
+          "type": "actionEvidence",
+          "label": "The blank was removed and the sample slot is clear.",
+          "actionId": "remove-cv-blank"
+        }
+      ],
+      "stateChanges": [
+        "Insert prepared reaction cuvette: The prepared reaction cuvette is seated in the spectrophotometer."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The prepared reaction cuvette is seated in the spectrophotometer.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ],
+      "atomId": "atom.place.insert-cuvette",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer",
+        "photometer-sample-holder": "cuvette"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "cuvette",
+        "targetDefinitionId": "spectrophotometer",
+        "snapZoneId": "spectrophotometer-cuvette-slot",
+        "accessibleLabel": "Insert the prepared crystal-violet reaction cuvette."
+      }
+    },
+    {
+      "id": "wait-for-cv-scheduled-time",
+      "verb": "observe",
+      "label": "Wait for scheduled reading time",
+      "parameters": {
+        "timerId": "stopwatch-1",
+        "configurationParameter": "waitSeconds",
+        "configurationRequired": true,
+        "unlocked": false,
+        "inputKey": "cvScheduledTimeSeconds",
+        "inputMode": "numeric",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Teacher-approved scheduled reading time",
+        "inputMin": 0,
+        "inputMinExclusive": true,
+        "inputStep": 1,
+        "unit": "s",
+        "note": "Use the stopwatch to reach the approved scheduled reading point. This is one point, not a hidden time-series loop.",
+        "tag": "cv-scheduled-time-reached"
+      },
+      "prerequisites": [
+        {
+          "id": "insert-cv-reaction-cuvette-required",
+          "type": "actionEvidence",
+          "label": "The prepared reaction cuvette is inserted.",
+          "actionId": "insert-cv-reaction-cuvette"
+        }
+      ],
+      "stateChanges": [
+        "Wait for scheduled reading time: The scheduled reading time is reached."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The scheduled reading time is reached.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "timing"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Advance the stopwatch to the teacher-approved scheduled reading point."
+      }
+    },
+    {
+      "id": "read-cv-scheduled-absorbance",
+      "verb": "observe",
+      "label": "Read scheduled absorbance",
+      "parameters": {
+        "sourceDefinitionId": "cuvette",
+        "sourceInstanceId": "cuvette-reaction",
+        "photometerOperation": "read",
+        "photometerDefinitionId": "spectrophotometer",
+        "photometerInstanceId": "spectrophotometer-1",
+        "photometricQuantity": "absorbance",
+        "wavelengthMeasurementId": "cv-scheduled-wavelength-nm",
+        "requiresZeroNotebookTag": "cv-scheduled-instrument-blanked",
+        "cuvetteInstanceId": "cuvette-reaction",
+        "measurementId": "cv-scheduled-absorbance",
+        "label": "Crystal violet absorbance at the scheduled time",
+        "configurationParameter": "instrumentReadingValue",
+        "configurationRequired": true,
+        "unlocked": false,
+        "inputMode": "numeric",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Simulated instrument absorbance for this scheduled point",
+        "inputMin": 0,
+        "inputStep": 0.001,
+        "unit": "absorbance",
+        "readingProvenance": "teacher-configured simulated instrument profile",
+        "scheduledTimeMeasurementId": "cv-scheduled-time-s"
+      },
+      "prerequisites": [
+        {
+          "id": "wait-for-cv-scheduled-time-required",
+          "type": "actionEvidence",
+          "label": "The scheduled reading time is reached.",
+          "actionId": "wait-for-cv-scheduled-time"
+        }
+      ],
+      "stateChanges": [
+        "Read scheduled absorbance: The scheduled absorbance is available to record."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The scheduled absorbance is available to record.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "measurement",
+        "simulator-output"
+      ],
+      "atomId": "atom.observe.read-photometer",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer",
+        "photometer-sample-holder": "cuvette"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "cuvette",
+        "stationId": "spectrophotometer",
+        "accessibleLabel": "Read the inserted reaction cuvette at the scheduled time."
+      }
+    },
+    {
+      "id": "record-cv-scheduled-absorbance",
+      "verb": "record",
+      "label": "Record scheduled absorbance",
+      "parameters": {
+        "measurementId": "cv-scheduled-absorbance",
+        "label": "Crystal violet absorbance at the scheduled time",
+        "unit": "absorbance",
+        "copyExistingMeasurementOnly": true
+      },
+      "prerequisites": [
+        {
+          "id": "cv-scheduled-absorbance-required",
+          "type": "measurementRecorded",
+          "label": "The scheduled absorbance has been read.",
+          "measurementId": "cv-scheduled-absorbance"
+        }
+      ],
+      "stateChanges": [
+        "Record scheduled absorbance: The scheduled time/absorbance evidence row is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The scheduled time/absorbance evidence row is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement",
+        "scheduled-point"
+      ],
+      "atomId": "atom.record.photometer-reading",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer",
+        "photometer-sample-holder": "cuvette"
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Copy the scheduled absorbance into the notebook with its approved scheduled time."
+      }
+    },
+    {
+      "id": "remove-cv-reaction-cuvette",
+      "verb": "place",
+      "label": "Remove reaction cuvette",
+      "parameters": {
+        "equipmentDefinitionId": "cuvette",
+        "equipmentInstanceId": "cuvette-reaction",
+        "location": "workbench"
+      },
+      "prerequisites": [
+        {
+          "id": "record-cv-scheduled-absorbance-required",
+          "type": "actionEvidence",
+          "label": "The scheduled absorbance is recorded.",
+          "actionId": "record-cv-scheduled-absorbance"
+        }
+      ],
+      "stateChanges": [
+        "Remove reaction cuvette: The reaction cuvette is removed and the instrument slot is clear."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The reaction cuvette is removed and the instrument slot is clear.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ],
+      "atomId": "atom.place.remove-cuvette",
+      "equipmentRoleBindings": {
+        "photometer-instrument": "spectrophotometer",
+        "photometer-sample-holder": "cuvette"
+      },
+      "interaction": {
+        "type": "dragToZone",
+        "sourceDefinitionId": "cuvette",
+        "stationId": "workbench",
+        "accessibleLabel": "Remove the reaction cuvette after recording the scheduled reading."
+      }
+    }
+  ],
+  "process": {
+    "startNodeId": "configure-cv-wavelength-node",
+    "nodes": [
+      {
+        "id": "configure-cv-wavelength-node",
+        "type": "teacherNote",
+        "title": "Set wavelength evidence",
+        "description": "Record the teacher-approved wavelength for this reading.",
+        "actionId": "configure-cv-wavelength",
+        "config": {},
+        "validation": [
+          {
+            "id": "configure-cv-wavelength-node-done",
+            "type": "actionEvidence",
+            "label": "Action configure-cv-wavelength was completed.",
+            "actionId": "configure-cv-wavelength"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Set wavelength evidence complete.",
+          "retry": "Review Set wavelength evidence and try again."
+        }
+      },
+      {
+        "id": "configure-cv-reading-time-node",
+        "type": "teacherNote",
+        "title": "Set reading time",
+        "description": "Record the teacher-approved scheduled reading point.",
+        "actionId": "configure-cv-reading-time",
+        "config": {},
+        "validation": [
+          {
+            "id": "configure-cv-reading-time-node-done",
+            "type": "actionEvidence",
+            "label": "Action configure-cv-reading-time was completed.",
+            "actionId": "configure-cv-reading-time"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Set reading time complete.",
+          "retry": "Review Set reading time and try again."
+        }
+      },
+      {
+        "id": "place-cv-spectrophotometer-node",
+        "type": "action",
+        "title": "Place spectrophotometer",
+        "description": "Place the spectrophotometer on the workbench.",
+        "actionId": "place-cv-spectrophotometer",
+        "config": {},
+        "validation": [
+          {
+            "id": "place-cv-spectrophotometer-node-done",
+            "type": "actionEvidence",
+            "label": "Action place-cv-spectrophotometer was completed.",
+            "actionId": "place-cv-spectrophotometer"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place spectrophotometer complete.",
+          "retry": "Review Place spectrophotometer and try again."
+        }
+      },
+      {
+        "id": "insert-cv-blank-node",
+        "type": "action",
+        "title": "Insert blank",
+        "description": "Insert the approved blank cuvette.",
+        "actionId": "insert-cv-blank",
+        "config": {},
+        "validation": [
+          {
+            "id": "insert-cv-blank-node-done",
+            "type": "actionEvidence",
+            "label": "Action insert-cv-blank was completed.",
+            "actionId": "insert-cv-blank"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Insert blank complete.",
+          "retry": "Review Insert blank and try again."
+        }
+      },
+      {
+        "id": "zero-cv-spectrophotometer-node",
+        "type": "observation",
+        "title": "Zero instrument",
+        "description": "Zero the spectrophotometer at the approved wavelength.",
+        "actionId": "zero-cv-spectrophotometer",
+        "config": {},
+        "validation": [
+          {
+            "id": "zero-cv-spectrophotometer-node-done",
+            "type": "actionEvidence",
+            "label": "Action zero-cv-spectrophotometer was completed.",
+            "actionId": "zero-cv-spectrophotometer"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Zero instrument complete.",
+          "retry": "Review Zero instrument and try again."
+        }
+      },
+      {
+        "id": "remove-cv-blank-node",
+        "type": "action",
+        "title": "Remove blank",
+        "description": "Remove the blank and clear the sample slot.",
+        "actionId": "remove-cv-blank",
+        "config": {},
+        "validation": [
+          {
+            "id": "remove-cv-blank-node-done",
+            "type": "actionEvidence",
+            "label": "Action remove-cv-blank was completed.",
+            "actionId": "remove-cv-blank"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Remove blank complete.",
+          "retry": "Review Remove blank and try again."
+        }
+      },
+      {
+        "id": "insert-cv-reaction-cuvette-node",
+        "type": "action",
+        "title": "Insert reaction cuvette",
+        "description": "Insert the prepared reaction cuvette.",
+        "actionId": "insert-cv-reaction-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "insert-cv-reaction-cuvette-node-done",
+            "type": "actionEvidence",
+            "label": "Action insert-cv-reaction-cuvette was completed.",
+            "actionId": "insert-cv-reaction-cuvette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Insert reaction cuvette complete.",
+          "retry": "Review Insert reaction cuvette and try again."
+        }
+      },
+      {
+        "id": "wait-for-cv-scheduled-time-node",
+        "type": "observation",
+        "title": "Reach scheduled time",
+        "description": "Use the stopwatch to reach the teacher-approved scheduled reading point.",
+        "actionId": "wait-for-cv-scheduled-time",
+        "config": {},
+        "validation": [
+          {
+            "id": "wait-for-cv-scheduled-time-node-done",
+            "type": "actionEvidence",
+            "label": "Action wait-for-cv-scheduled-time was completed.",
+            "actionId": "wait-for-cv-scheduled-time"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Reach scheduled time complete.",
+          "retry": "Review Reach scheduled time and try again."
+        }
+      },
+      {
+        "id": "read-cv-scheduled-absorbance-node",
+        "type": "observation",
+        "title": "Read absorbance",
+        "description": "Read one absorbance value at the scheduled time.",
+        "actionId": "read-cv-scheduled-absorbance",
+        "config": {},
+        "validation": [
+          {
+            "id": "read-cv-scheduled-absorbance-node-done",
+            "type": "actionEvidence",
+            "label": "Action read-cv-scheduled-absorbance was completed.",
+            "actionId": "read-cv-scheduled-absorbance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Read absorbance complete.",
+          "retry": "Review Read absorbance and try again."
+        }
+      },
+      {
+        "id": "record-cv-scheduled-absorbance-node",
+        "type": "observation",
+        "title": "Record absorbance",
+        "description": "Copy the scheduled absorbance into the notebook as one time/absorbance row.",
+        "actionId": "record-cv-scheduled-absorbance",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-cv-scheduled-absorbance-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-cv-scheduled-absorbance was completed.",
+            "actionId": "record-cv-scheduled-absorbance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record absorbance complete.",
+          "retry": "Review Record absorbance and try again."
+        }
+      },
+      {
+        "id": "remove-cv-reaction-cuvette-node",
+        "type": "action",
+        "title": "Remove reaction cuvette",
+        "description": "Remove the reaction cuvette after recording the point.",
+        "actionId": "remove-cv-reaction-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "remove-cv-reaction-cuvette-node-done",
+            "type": "actionEvidence",
+            "label": "Action remove-cv-reaction-cuvette was completed.",
+            "actionId": "remove-cv-reaction-cuvette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Remove reaction cuvette complete.",
+          "retry": "Review Remove reaction cuvette and try again."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "configure-cv-wavelength-node",
+        "to": "configure-cv-reading-time-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "configure-cv-reading-time-node",
+        "to": "place-cv-spectrophotometer-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "place-cv-spectrophotometer-node",
+        "to": "insert-cv-blank-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "insert-cv-blank-node",
+        "to": "zero-cv-spectrophotometer-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "zero-cv-spectrophotometer-node",
+        "to": "remove-cv-blank-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "remove-cv-blank-node",
+        "to": "insert-cv-reaction-cuvette-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "insert-cv-reaction-cuvette-node",
+        "to": "wait-for-cv-scheduled-time-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "wait-for-cv-scheduled-time-node",
+        "to": "read-cv-scheduled-absorbance-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "read-cv-scheduled-absorbance-node",
+        "to": "record-cv-scheduled-absorbance-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-cv-scheduled-absorbance-node",
+        "to": "remove-cv-reaction-cuvette-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "configure-cv-wavelength-node-success",
+      "type": "actionEvidence",
+      "label": "Action configure-cv-wavelength was completed.",
+      "actionId": "configure-cv-wavelength"
+    },
+    {
+      "id": "configure-cv-reading-time-node-success",
+      "type": "actionEvidence",
+      "label": "Action configure-cv-reading-time was completed.",
+      "actionId": "configure-cv-reading-time"
+    },
+    {
+      "id": "place-cv-spectrophotometer-node-success",
+      "type": "actionEvidence",
+      "label": "Action place-cv-spectrophotometer was completed.",
+      "actionId": "place-cv-spectrophotometer"
+    },
+    {
+      "id": "insert-cv-blank-node-success",
+      "type": "actionEvidence",
+      "label": "Action insert-cv-blank was completed.",
+      "actionId": "insert-cv-blank"
+    },
+    {
+      "id": "zero-cv-spectrophotometer-node-success",
+      "type": "actionEvidence",
+      "label": "Action zero-cv-spectrophotometer was completed.",
+      "actionId": "zero-cv-spectrophotometer"
+    },
+    {
+      "id": "remove-cv-blank-node-success",
+      "type": "actionEvidence",
+      "label": "Action remove-cv-blank was completed.",
+      "actionId": "remove-cv-blank"
+    },
+    {
+      "id": "insert-cv-reaction-cuvette-node-success",
+      "type": "actionEvidence",
+      "label": "Action insert-cv-reaction-cuvette was completed.",
+      "actionId": "insert-cv-reaction-cuvette"
+    },
+    {
+      "id": "wait-for-cv-scheduled-time-node-success",
+      "type": "actionEvidence",
+      "label": "Action wait-for-cv-scheduled-time was completed.",
+      "actionId": "wait-for-cv-scheduled-time"
+    },
+    {
+      "id": "read-cv-scheduled-absorbance-node-success",
+      "type": "actionEvidence",
+      "label": "Action read-cv-scheduled-absorbance was completed.",
+      "actionId": "read-cv-scheduled-absorbance"
+    },
+    {
+      "id": "record-cv-scheduled-absorbance-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-cv-scheduled-absorbance was completed.",
+      "actionId": "record-cv-scheduled-absorbance"
+    },
+    {
+      "id": "remove-cv-reaction-cuvette-node-success",
+      "type": "actionEvidence",
+      "label": "Action remove-cv-reaction-cuvette was completed.",
+      "actionId": "remove-cv-reaction-cuvette"
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "wrong-order",
+      "when": "current node expects a different action",
+      "message": "That action is out of sequence for the current technique step.",
+      "recovery": "Check the process map and perform the highlighted step first."
+    },
+    {
+      "id": "missing-source",
+      "when": "source equipment or contents are missing",
+      "message": "The selected source does not contain the material required for this action.",
+      "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+    },
+    {
+      "id": "overflow",
+      "when": "target capacity would be exceeded",
+      "message": "The target equipment cannot hold the requested volume.",
+      "recovery": "Use a larger container or transfer a smaller measured amount."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-08-12T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "chemistry",
+      "kinetics",
+      "spectrophotometry",
+      "scheduled-reading"
+    ]
+  }
+}

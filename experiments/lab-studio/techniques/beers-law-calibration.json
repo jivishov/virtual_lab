@@ -1,0 +1,699 @@
+{
+  "id": "beers-law-calibration",
+  "title": "Beer's Law Calibration",
+  "learningGoal": "Prepare a dye standard, measure transmittance, and convert it to absorbance evidence.",
+  "requiredEquipment": [
+    "sample-bottle",
+    "graduated-cylinder",
+    "volumetric-flask",
+    "wash-bottle",
+    "cuvette",
+    "spectrophotometer",
+    "data-collection-interface"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "sample-bottle-1",
+        "definitionId": "sample-bottle",
+        "label": "Sample bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "solution",
+          "label": "Blue dye stock",
+          "volumeMl": 25,
+          "solutes": [],
+          "concentration": {
+            "value": 0.00001,
+            "unit": "M"
+          },
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "blue-dye-solution"
+        }
+      },
+      {
+        "id": "graduated-cylinder-1",
+        "definitionId": "graduated-cylinder",
+        "label": "Graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "volumetric-flask-1",
+        "definitionId": "volumetric-flask",
+        "label": "Volumetric flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "wash-bottle-1",
+        "definitionId": "wash-bottle",
+        "label": "Wash bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "cuvette-1",
+        "definitionId": "cuvette",
+        "label": "Cuvette",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "spectrophotometer-1",
+        "definitionId": "spectrophotometer",
+        "label": "Spectrophotometer",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "data-collection-interface-1",
+        "definitionId": "data-collection-interface",
+        "label": "Data collection interface",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "place-spectrophotometer",
+      "verb": "place",
+      "label": "Place spectrophotometer",
+      "parameters": {
+        "equipmentDefinitionId": "spectrophotometer",
+        "location": "workbench"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Place spectrophotometer: The spectrophotometer is ready on the workbench."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The spectrophotometer is ready on the workbench.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "measure-stock-dye",
+      "verb": "measureVolume",
+      "label": "Measure stock dye",
+      "parameters": {
+        "sourceDefinitionId": "sample-bottle",
+        "targetDefinitionId": "graduated-cylinder",
+        "measurementId": "stock-dye-volume",
+        "volumeMl": 5,
+        "tolerance": 0.1,
+        "visualState": "blue-dye-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Measure stock dye: A stock dye aliquot is measured."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "A stock dye aliquot is measured.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "measureVolume"
+      ]
+    },
+    {
+      "id": "transfer-stock-dye",
+      "verb": "transfer",
+      "label": "Transfer stock dye",
+      "parameters": {
+        "sourceDefinitionId": "graduated-cylinder",
+        "targetDefinitionId": "volumetric-flask",
+        "volumeMl": 5,
+        "visualState": "blue-dye-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Transfer stock dye: The stock dye aliquot is in the volumetric flask."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The stock dye aliquot is in the volumetric flask.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "dilute-standard",
+      "verb": "dilute",
+      "label": "Dilute standard",
+      "parameters": {
+        "sourceDefinitionId": "wash-bottle",
+        "targetDefinitionId": "volumetric-flask",
+        "volumeMl": 95,
+        "finalVolumeMl": 100,
+        "dilutionFactor": 20
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Dilute standard: The dye standard is diluted to the calibration mark."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The dye standard is diluted to the calibration mark.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "dilute"
+      ]
+    },
+    {
+      "id": "transfer-standard-cuvette",
+      "verb": "transfer",
+      "label": "Transfer standard to cuvette",
+      "parameters": {
+        "sourceDefinitionId": "volumetric-flask",
+        "targetDefinitionId": "cuvette",
+        "volumeMl": 3,
+        "visualState": "blue-dye-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Transfer standard to cuvette: The cuvette contains diluted dye standard."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The cuvette contains diluted dye standard.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "record-percent-transmittance",
+      "verb": "record",
+      "label": "Record percent transmittance",
+      "parameters": {
+        "measurementId": "percent-transmittance",
+        "label": "Percent transmittance",
+        "value": 62.5,
+        "unit": "%T"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Record percent transmittance: Percent transmittance evidence is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Percent transmittance evidence is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement"
+      ]
+    },
+    {
+      "id": "calculate-absorbance",
+      "verb": "calculate",
+      "label": "Calculate absorbance",
+      "parameters": {
+        "calculationId": "absorbance",
+        "template": "absorbanceFromPercentT",
+        "percentTransmittanceMeasurementId": "percent-transmittance",
+        "expected": 0.2041,
+        "tolerance": 0.02,
+        "unit": "absorbance"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Calculate absorbance: Absorbance is calculated from transmittance."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Absorbance is calculated from transmittance.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "calculate"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "place-spectrophotometer-node",
+    "nodes": [
+      {
+        "id": "place-spectrophotometer-node",
+        "type": "action",
+        "title": "Place spectrophotometer",
+        "description": "Place the spectrophotometer on the workbench.",
+        "actionId": "place-spectrophotometer",
+        "config": {},
+        "validation": [
+          {
+            "id": "place-spectrophotometer-node-done",
+            "type": "actionEvidence",
+            "label": "Action place-spectrophotometer was completed.",
+            "actionId": "place-spectrophotometer"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place spectrophotometer complete.",
+          "retry": "Review Place spectrophotometer and try again."
+        }
+      },
+      {
+        "id": "measure-stock-dye-node",
+        "type": "action",
+        "title": "Measure stock dye",
+        "description": "Pour 5 mL of stock dye into the graduated cylinder.",
+        "actionId": "measure-stock-dye",
+        "config": {},
+        "validation": [
+          {
+            "id": "measure-stock-dye-node-done",
+            "type": "actionEvidence",
+            "label": "Action measure-stock-dye was completed.",
+            "actionId": "measure-stock-dye"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure stock dye complete.",
+          "retry": "Review Measure stock dye and try again."
+        }
+      },
+      {
+        "id": "transfer-stock-dye-node",
+        "type": "action",
+        "title": "Transfer stock dye",
+        "description": "Pour the measured dye into the volumetric flask.",
+        "actionId": "transfer-stock-dye",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-stock-dye-node-done",
+            "type": "actionEvidence",
+            "label": "Action transfer-stock-dye was completed.",
+            "actionId": "transfer-stock-dye"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer stock dye complete.",
+          "retry": "Review Transfer stock dye and try again."
+        }
+      },
+      {
+        "id": "dilute-standard-node",
+        "type": "action",
+        "title": "Dilute standard",
+        "description": "Pour deionized water into the volumetric flask to the calibration mark.",
+        "actionId": "dilute-standard",
+        "config": {},
+        "validation": [
+          {
+            "id": "dilute-standard-node-done",
+            "type": "actionEvidence",
+            "label": "Action dilute-standard was completed.",
+            "actionId": "dilute-standard"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dilute standard complete.",
+          "retry": "Review Dilute standard and try again."
+        }
+      },
+      {
+        "id": "transfer-standard-cuvette-node",
+        "type": "action",
+        "title": "Fill cuvette",
+        "description": "Pour the diluted standard into the cuvette.",
+        "actionId": "transfer-standard-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-standard-cuvette-node-done",
+            "type": "actionEvidence",
+            "label": "Action transfer-standard-cuvette was completed.",
+            "actionId": "transfer-standard-cuvette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Fill cuvette complete.",
+          "retry": "Review Fill cuvette and try again."
+        }
+      },
+      {
+        "id": "record-percent-transmittance-node",
+        "type": "observation",
+        "title": "Record transmittance",
+        "description": "Record percent transmittance from the spectrophotometer.",
+        "actionId": "record-percent-transmittance",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-percent-transmittance-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-percent-transmittance was completed.",
+            "actionId": "record-percent-transmittance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record transmittance complete.",
+          "retry": "Review Record transmittance and try again."
+        }
+      },
+      {
+        "id": "calculate-absorbance-node",
+        "type": "calculation",
+        "title": "Calculate absorbance",
+        "description": "Calculate absorbance from the recorded percent transmittance.",
+        "actionId": "calculate-absorbance",
+        "config": {},
+        "validation": [
+          {
+            "id": "calculate-absorbance-node-done",
+            "type": "actionEvidence",
+            "label": "Action calculate-absorbance was completed.",
+            "actionId": "calculate-absorbance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate absorbance complete.",
+          "retry": "Review Calculate absorbance and try again."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "place-spectrophotometer-node",
+        "to": "measure-stock-dye-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "measure-stock-dye-node",
+        "to": "transfer-stock-dye-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-stock-dye-node",
+        "to": "dilute-standard-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "dilute-standard-node",
+        "to": "transfer-standard-cuvette-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-standard-cuvette-node",
+        "to": "record-percent-transmittance-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-percent-transmittance-node",
+        "to": "calculate-absorbance-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "place-spectrophotometer-node-success",
+      "type": "actionEvidence",
+      "label": "Action place-spectrophotometer was completed.",
+      "actionId": "place-spectrophotometer"
+    },
+    {
+      "id": "measure-stock-dye-node-success",
+      "type": "actionEvidence",
+      "label": "Action measure-stock-dye was completed.",
+      "actionId": "measure-stock-dye"
+    },
+    {
+      "id": "transfer-stock-dye-node-success",
+      "type": "actionEvidence",
+      "label": "Action transfer-stock-dye was completed.",
+      "actionId": "transfer-stock-dye"
+    },
+    {
+      "id": "dilute-standard-node-success",
+      "type": "actionEvidence",
+      "label": "Action dilute-standard was completed.",
+      "actionId": "dilute-standard"
+    },
+    {
+      "id": "transfer-standard-cuvette-node-success",
+      "type": "actionEvidence",
+      "label": "Action transfer-standard-cuvette was completed.",
+      "actionId": "transfer-standard-cuvette"
+    },
+    {
+      "id": "record-percent-transmittance-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-percent-transmittance was completed.",
+      "actionId": "record-percent-transmittance"
+    },
+    {
+      "id": "calculate-absorbance-node-success",
+      "type": "actionEvidence",
+      "label": "Action calculate-absorbance was completed.",
+      "actionId": "calculate-absorbance"
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "wrong-order",
+      "when": "current node expects a different action",
+      "message": "That action is out of sequence for the current technique step.",
+      "recovery": "Check the process map and perform the highlighted step first."
+    },
+    {
+      "id": "missing-source",
+      "when": "source equipment or contents are missing",
+      "message": "The selected source does not contain the material required for this action.",
+      "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+    },
+    {
+      "id": "overflow",
+      "when": "target capacity would be exceeded",
+      "message": "The target equipment cannot hold the requested volume.",
+      "recovery": "Use a larger container or transfer a smaller measured amount."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.0.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-06-17T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "chemistry",
+      "spectroscopy",
+      "beers-law"
+    ]
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "id": "green-chemistry-mixture-purification",
+  "title": "Purifying a Mixture with Green Chemistry",
+  "description": "Devise and obtain approval for a method to determine the relative amounts of sodium bicarbonate and sodium carbonate by selective thermal decomposition, collect constant-mass evidence, recover materials separately, calculate composition, and review one teacher-assigned report.",
+  "audience": "Chemistry students preparing for or reflecting on Mixture Purification",
+  "learningGoals": [
+    "Design and justify an approved gravimetric method based on selective thermal decomposition.",
+    "Use lid-askew heating, tongs, cooling, and one balance to establish constant mass safely.",
+    "Determine mixture composition from the balanced decomposition stoichiometry and recorded mass loss.",
+    "Evaluate scientific quality, reporting quality, atom economy, and another green-chemistry principle in a teacher-provided report."
+  ],
+  "safetyNotes": [
+    "Execution remains locked until a teacher approves the proposed method and safety precautions.",
+    "Never ignite a burner under a fully covered crucible; keep the lid askew with a visible vent gap.",
+    "Move a hot or warm crucible with crucible tongs and cool it at the teacher-configured heat-safe location.",
+    "Never place a hot crucible on a balance; heat can damage the instrument and convection can make readings falsely low.",
+    "Use the same balance for the empty, loaded, and every cooled-cycle mass.",
+    "Follow teacher-configured baseline PPE and local safety rules.",
+    "Keep unheated mixture and heated product in their separately labeled recovery containers."
+  ],
+  "equipment": [
+    "analytical-balance",
+    "crucible-with-lid",
+    "ring-stand",
+    "clay-triangle",
+    "bunsen-burner",
+    "crucible-tongs"
+  ],
+  "techniques": [],
+  "actions": [
+    {
+      "id": "open-investigation-seven-workspace",
+      "verb": "observe",
+      "label": "Open the Mixture Purification inquiry workspace",
+      "parameters": {
+        "note": "The dedicated Mixture Purification player preserves the inquiry, teacher approval, safety gates, constant-mass loop, composition analysis, recovery, and assigned-report boundary.",
+        "tag": "investigation-seven-workspace"
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "accessibleLabel": "Open the dedicated Mixture Purification inquiry workspace."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "The dedicated Mixture Purification workflow is available."
+      ],
+      "invalidCases": [
+        {
+          "id": "teacher-approval-required",
+          "when": "execution is attempted before approval",
+          "message": "The proposed method has not been approved.",
+          "recovery": "Complete the inquiry plan and obtain teacher approval."
+        }
+      ],
+      "feedback": {
+        "success": "Mixture Purification workspace opened.",
+        "invalid": "Complete the inquiry and teacher configuration before execution."
+      },
+      "evidence": [
+        "inquiry",
+        "teacher-approval",
+        "safety",
+        "constant-mass",
+        "stoichiometry",
+        "recovery",
+        "peer-review"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "investigation-seven-workspace-node",
+    "nodes": [
+      {
+        "id": "investigation-seven-workspace-node",
+        "type": "technique",
+        "title": "Mixture Purification inquiry and execution",
+        "description": "Use the dedicated investigation workspace to design, approve, run, analyze, recover, and review.",
+        "actionId": "open-investigation-seven-workspace",
+        "config": {
+          "reactionEquation": "2 NaHCO3(s) -> Na2CO3(s) + CO2(g) + H2O(g)",
+          "teacherReportBoundary": true
+        },
+        "validation": [
+          {
+            "id": "investigation-seven-opened",
+            "type": "notebookEntry",
+            "label": "Dedicated Mixture Purification workspace opened.",
+            "notebookTag": "investigation-seven-workspace"
+          }
+        ],
+        "hints": [
+          "Do not begin heating until the plan and safety precautions are approved."
+        ],
+        "feedback": {
+          "success": "Mixture Purification workspace complete.",
+          "retry": "Complete every required Mixture Purification phase."
+        }
+      }
+    ],
+    "edges": []
+  },
+  "assessments": [
+    {
+      "id": "investigation-seven-workspace-assessment",
+      "type": "processCompleted",
+      "label": "The Mixture Purification workflow is complete."
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-07-27T00:00:00Z",
+    "tags": [
+      "lab",
+      "chemistry",
+      "mixture-purification",
+      "inquiry",
+      "thermal-decomposition",
+      "constant-mass",
+      "green-chemistry",
+      "teacher-assigned-report"
+    ]
+  }
+}

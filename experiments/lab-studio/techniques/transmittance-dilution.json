@@ -1,0 +1,1676 @@
+{
+  "id": "transmittance-dilution",
+  "title": "Analyze Transmittance of a Dilution",
+  "learningGoal": "Prepare one assigned dye dilution, blank and read a spectrophotometer, then relate transmittance, absorbance, and concentration evidence.",
+  "requiredEquipment": [
+    "sample-bottle",
+    "graduated-cylinder",
+    "volumetric-flask",
+    "wash-bottle",
+    "rubber-stopper-set",
+    "cuvette",
+    "spectrophotometer"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "sample-bottle-1",
+        "definitionId": "sample-bottle",
+        "label": "Blue dye stock",
+        "location": "shelf",
+        "contents": {
+          "kind": "solution",
+          "label": "Blue dye stock",
+          "volumeMl": 25,
+          "solutes": [
+            {
+              "id": "blue-dye-1",
+              "label": "Blue dye #1",
+              "amount": 2.5e-7,
+              "unit": "mol"
+            }
+          ],
+          "concentration": {
+            "value": 0.00001,
+            "unit": "M"
+          },
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "blue-dye-solution"
+        }
+      },
+      {
+        "id": "graduated-cylinder-1",
+        "definitionId": "graduated-cylinder",
+        "label": "Graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "volumetric-flask-1",
+        "definitionId": "volumetric-flask",
+        "label": "Volumetric flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "wash-bottle-1",
+        "definitionId": "wash-bottle",
+        "label": "Wash bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Deionized water",
+          "volumeMl": 500,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "rubber-stopper-set-1",
+        "definitionId": "rubber-stopper-set",
+        "label": "Rubber stopper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "blank-cuvette-1",
+        "definitionId": "cuvette",
+        "label": "Blank cuvette",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "sample-cuvette-1",
+        "definitionId": "cuvette",
+        "label": "Sample cuvette",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "spectrophotometer-1",
+        "definitionId": "spectrophotometer",
+        "label": "Spectrophotometer",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "place-volumetric-flask",
+      "verb": "place",
+      "label": "Place volumetric flask",
+      "parameters": {
+        "equipmentDefinitionId": "volumetric-flask",
+        "location": "workbench"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Place volumetric flask: The volumetric flask is upright on the bench."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The volumetric flask is upright on the bench.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "place-graduated-cylinder",
+      "verb": "place",
+      "label": "Place graduated cylinder",
+      "parameters": {
+        "equipmentDefinitionId": "graduated-cylinder",
+        "location": "workbench"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Place graduated cylinder: The graduated cylinder is ready beside the flask."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The graduated cylinder is ready beside the flask.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "measure-stock-dye",
+      "verb": "measureVolume",
+      "label": "Measure stock dye aliquot",
+      "parameters": {
+        "sourceDefinitionId": "sample-bottle",
+        "targetDefinitionId": "graduated-cylinder",
+        "measurementId": "stock-dye-aliquot",
+        "volumeMl": 8,
+        "tolerance": 0.1,
+        "visualState": "blue-dye-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Measure stock dye aliquot: Eight milliliters of stock dye are measured in the cylinder."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Eight milliliters of stock dye are measured in the cylinder.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "measureVolume",
+        "measurement"
+      ]
+    },
+    {
+      "id": "transfer-dye-aliquot",
+      "verb": "transfer",
+      "label": "Pour aliquot into flask",
+      "parameters": {
+        "sourceDefinitionId": "graduated-cylinder",
+        "targetDefinitionId": "volumetric-flask",
+        "volumeMl": 8
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Pour aliquot into flask: The measured dye aliquot is in the volumetric flask."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The measured dye aliquot is in the volumetric flask.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "add-water-below-mark",
+      "verb": "transfer",
+      "label": "Add water below mark",
+      "parameters": {
+        "sourceDefinitionId": "wash-bottle",
+        "targetDefinitionId": "volumetric-flask",
+        "volumeMl": 1.5,
+        "visualState": "blue-dye-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Add water below mark: Water is added below the calibration mark."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Water is added below the calibration mark.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "swirl-flask",
+      "verb": "observe",
+      "label": "Swirl flask",
+      "parameters": {
+        "note": "The flask is swirled to mix the dye before the final meniscus adjustment.",
+        "tag": "dilution-swirl"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Swirl flask: The partially diluted dye is swirled."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The partially diluted dye is swirled.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "top-up-to-mark",
+      "verb": "dilute",
+      "label": "Top up dropwise to mark",
+      "parameters": {
+        "sourceDefinitionId": "wash-bottle",
+        "targetDefinitionId": "volumetric-flask",
+        "finalVolumeMl": 10,
+        "dilutionFactor": 1.25,
+        "visualState": "blue-dye-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Top up dropwise to mark: The bottom of the meniscus rests on the calibration mark."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The bottom of the meniscus rests on the calibration mark.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "dilute",
+        "measurement"
+      ]
+    },
+    {
+      "id": "stopper-flask",
+      "verb": "place",
+      "label": "Stopper flask",
+      "parameters": {
+        "equipmentDefinitionId": "rubber-stopper-set",
+        "targetDefinitionId": "volumetric-flask",
+        "snapZoneId": "volumetric-flask-stopper-seat"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "rubber-stopper-set",
+        "targetDefinitionId": "volumetric-flask",
+        "snapZoneId": "volumetric-flask-stopper-seat",
+        "accessibleLabel": "Seat a rubber stopper in the volumetric flask neck.",
+        "successCue": "The stopper is seated in the flask.",
+        "invalidCue": "Use the stopper on the volumetric flask neck."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Stopper flask: The stopper is seated in the volumetric flask."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The stopper is seated in the volumetric flask.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "invert-to-mix",
+      "verb": "observe",
+      "label": "Invert flask to mix",
+      "parameters": {
+        "note": "The stoppered flask is inverted several times so the dilution is uniform from neck to bulb.",
+        "tag": "dilution-inverted"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Invert flask to mix: The dilution is mixed by inversion."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The dilution is mixed by inversion.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "place-spectrophotometer",
+      "verb": "place",
+      "label": "Place spectrophotometer",
+      "parameters": {
+        "equipmentDefinitionId": "spectrophotometer",
+        "location": "workbench"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Place spectrophotometer: The spectrophotometer is ready at 630 nm."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The spectrophotometer is ready at 630 nm.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "fill-blank-cuvette",
+      "verb": "transfer",
+      "label": "Fill blank cuvette",
+      "parameters": {
+        "sourceDefinitionId": "wash-bottle",
+        "targetDefinitionId": "cuvette",
+        "targetInstanceId": "blank-cuvette-1",
+        "volumeMl": 3,
+        "visualState": "clear-liquid"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Fill blank cuvette: The blank cuvette is filled with deionized water."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The blank cuvette is filled with deionized water.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "wipe-blank-cuvette",
+      "verb": "observe",
+      "label": "Wipe blank cuvette",
+      "parameters": {
+        "note": "The outside of the blank cuvette is wiped so fingerprints and droplets do not scatter light.",
+        "tag": "blank-cuvette-wiped"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Wipe blank cuvette: The blank cuvette is wiped clean."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The blank cuvette is wiped clean.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "zero-with-blank",
+      "verb": "observe",
+      "label": "Insert blank and zero",
+      "parameters": {
+        "note": "The blank cuvette is inserted in the correct orientation and the instrument is zeroed to 100% transmittance.",
+        "tag": "spectrophotometer-zeroed",
+        "sourceInstanceId": "blank-cuvette-1",
+        "targetDefinitionId": "spectrophotometer"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "cuvette",
+        "targetDefinitionId": "spectrophotometer",
+        "stationId": "spectrophotometer",
+        "accessibleLabel": "Place the blank cuvette and zero the spectrophotometer.",
+        "successCue": "The spectrophotometer is zeroed with the blank.",
+        "invalidCue": "Use the blank cuvette with the spectrophotometer before reading the sample."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Insert blank and zero: The spectrophotometer is zeroed with the blank."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The spectrophotometer is zeroed with the blank.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "fill-sample-cuvette",
+      "verb": "transfer",
+      "label": "Fill sample cuvette",
+      "parameters": {
+        "sourceDefinitionId": "volumetric-flask",
+        "targetDefinitionId": "cuvette",
+        "targetInstanceId": "sample-cuvette-1",
+        "volumeMl": 3,
+        "visualState": "blue-dye-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Fill sample cuvette: The sample cuvette is filled with diluted dye."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The sample cuvette is filled with diluted dye.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "wipe-orient-sample-cuvette",
+      "verb": "observe",
+      "label": "Wipe and orient sample cuvette",
+      "parameters": {
+        "note": "The sample cuvette is wiped and oriented with the clear faces in the light path.",
+        "tag": "sample-cuvette-oriented"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Wipe and orient sample cuvette: The sample cuvette is clean and correctly oriented."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The sample cuvette is clean and correctly oriented.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "insert-sample-cuvette",
+      "verb": "place",
+      "label": "Insert sample cuvette",
+      "parameters": {
+        "equipmentInstanceId": "sample-cuvette-1",
+        "equipmentDefinitionId": "cuvette",
+        "targetDefinitionId": "spectrophotometer",
+        "snapZoneId": "spectrophotometer-cuvette-slot"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "cuvette",
+        "targetDefinitionId": "spectrophotometer",
+        "snapZoneId": "spectrophotometer-cuvette-slot",
+        "accessibleLabel": "Place the filled sample cuvette into the spectrophotometer slot.",
+        "successCue": "The sample cuvette is inserted.",
+        "invalidCue": "Use the filled sample cuvette with the spectrophotometer slot."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Insert sample cuvette: The sample cuvette is inserted in the spectrophotometer."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The sample cuvette is inserted in the spectrophotometer.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "record-percent-transmittance",
+      "verb": "record",
+      "label": "Read percent transmittance",
+      "parameters": {
+        "measurementId": "percent-transmittance",
+        "label": "Percent transmittance at 630 nm",
+        "value": 42,
+        "unit": "%T"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Read percent transmittance: Percent transmittance evidence recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Percent transmittance evidence recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement",
+        "notebook"
+      ]
+    },
+    {
+      "id": "calculate-decimal-transmittance",
+      "verb": "calculate",
+      "label": "Calculate decimal transmittance",
+      "parameters": {
+        "calculationId": "decimal-transmittance",
+        "template": "decimalTransmittance",
+        "percentTransmittanceMeasurementId": "percent-transmittance",
+        "expected": 0.42,
+        "tolerance": 0.001
+      },
+      "prerequisites": [
+        {
+          "id": "percent-transmittance-required",
+          "type": "measurementRecorded",
+          "label": "Measurement percent-transmittance was recorded.",
+          "measurementId": "percent-transmittance"
+        }
+      ],
+      "stateChanges": [
+        "Calculate decimal transmittance: Decimal transmittance is within tolerance."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Decimal transmittance is within tolerance.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "calculate",
+        "transmittance"
+      ]
+    },
+    {
+      "id": "calculate-absorbance",
+      "verb": "calculate",
+      "label": "Calculate absorbance",
+      "parameters": {
+        "calculationId": "absorbance",
+        "template": "absorbanceFromPercentT",
+        "percentTransmittanceMeasurementId": "percent-transmittance",
+        "expected": 0.3768,
+        "tolerance": 0.0001,
+        "unit": "A"
+      },
+      "prerequisites": [
+        {
+          "id": "percent-transmittance-required",
+          "type": "measurementRecorded",
+          "label": "Measurement percent-transmittance was recorded.",
+          "measurementId": "percent-transmittance"
+        }
+      ],
+      "stateChanges": [
+        "Calculate absorbance: Absorbance is within tolerance."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Absorbance is within tolerance.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "calculate",
+        "absorbance"
+      ]
+    },
+    {
+      "id": "calculate-diluted-concentration",
+      "verb": "calculate",
+      "label": "Calculate diluted concentration",
+      "parameters": {
+        "calculationId": "diluted-concentration",
+        "template": "dilutedConcentration",
+        "stockConcentration": 10,
+        "stockVolumeMl": 8,
+        "finalVolumeMl": 10,
+        "expected": 8,
+        "tolerance": 0.01,
+        "unit": "uM"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Calculate diluted concentration: Diluted concentration is within tolerance."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Diluted concentration is within tolerance.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "calculate",
+        "dilution"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "place-flask-node",
+    "nodes": [
+      {
+        "id": "place-flask-node",
+        "type": "action",
+        "title": "Place flask",
+        "description": "Place the volumetric flask upright on the bench.",
+        "actionId": "place-volumetric-flask",
+        "config": {},
+        "validation": [
+          {
+            "id": "flask-placed",
+            "type": "actionEvidence",
+            "label": "Action place-volumetric-flask was completed.",
+            "actionId": "place-volumetric-flask"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place flask complete.",
+          "retry": "Review Place flask and try again."
+        }
+      },
+      {
+        "id": "place-cylinder-node",
+        "type": "action",
+        "title": "Place cylinder",
+        "description": "Place the graduated cylinder beside the flask.",
+        "actionId": "place-graduated-cylinder",
+        "config": {},
+        "validation": [
+          {
+            "id": "cylinder-placed",
+            "type": "actionEvidence",
+            "label": "Action place-graduated-cylinder was completed.",
+            "actionId": "place-graduated-cylinder"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place cylinder complete.",
+          "retry": "Review Place cylinder and try again."
+        }
+      },
+      {
+        "id": "measure-stock-node",
+        "type": "action",
+        "title": "Measure stock dye",
+        "description": "Use the graduated cylinder to measure 8 mL of stock dye.",
+        "actionId": "measure-stock-dye",
+        "config": {},
+        "validation": [
+          {
+            "id": "stock-measured",
+            "type": "actionEvidence",
+            "label": "Action measure-stock-dye was completed.",
+            "actionId": "measure-stock-dye"
+          },
+          {
+            "id": "stock-aliquot-measured",
+            "type": "measurementRecorded",
+            "label": "Measurement stock-dye-aliquot was recorded.",
+            "measurementId": "stock-dye-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure stock dye complete.",
+          "retry": "Review Measure stock dye and try again."
+        }
+      },
+      {
+        "id": "transfer-aliquot-node",
+        "type": "action",
+        "title": "Transfer aliquot",
+        "description": "Pour the measured stock dye into the volumetric flask.",
+        "actionId": "transfer-dye-aliquot",
+        "config": {},
+        "validation": [
+          {
+            "id": "aliquot-transferred",
+            "type": "actionEvidence",
+            "label": "Action transfer-dye-aliquot was completed.",
+            "actionId": "transfer-dye-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer aliquot complete.",
+          "retry": "Review Transfer aliquot and try again."
+        }
+      },
+      {
+        "id": "add-water-node",
+        "type": "action",
+        "title": "Add water below mark",
+        "description": "Add water below the calibration mark.",
+        "actionId": "add-water-below-mark",
+        "config": {},
+        "validation": [
+          {
+            "id": "water-added-below-mark",
+            "type": "actionEvidence",
+            "label": "Action add-water-below-mark was completed.",
+            "actionId": "add-water-below-mark"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add water below mark complete.",
+          "retry": "Review Add water below mark and try again."
+        }
+      },
+      {
+        "id": "swirl-node",
+        "type": "observation",
+        "title": "Swirl flask",
+        "description": "Use a gentle swirl to mix the partially diluted dye.",
+        "actionId": "swirl-flask",
+        "config": {},
+        "validation": [
+          {
+            "id": "swirl-recorded",
+            "type": "notebookEntry",
+            "label": "Notebook entry dilution-swirl was recorded.",
+            "notebookTag": "dilution-swirl"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Swirl flask complete.",
+          "retry": "Review Swirl flask and try again."
+        }
+      },
+      {
+        "id": "top-up-node",
+        "type": "action",
+        "title": "Top up to mark",
+        "description": "Add water dropwise until the meniscus rests on the mark.",
+        "actionId": "top-up-to-mark",
+        "config": {},
+        "validation": [
+          {
+            "id": "top-up-complete",
+            "type": "actionEvidence",
+            "label": "Action top-up-to-mark was completed.",
+            "actionId": "top-up-to-mark"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Top up to mark complete.",
+          "retry": "Review Top up to mark and try again."
+        }
+      },
+      {
+        "id": "stopper-node",
+        "type": "action",
+        "title": "Stopper flask",
+        "description": "Seat a stopper in the volumetric flask.",
+        "actionId": "stopper-flask",
+        "config": {},
+        "validation": [
+          {
+            "id": "flask-stoppered",
+            "type": "actionEvidence",
+            "label": "Action stopper-flask was completed.",
+            "actionId": "stopper-flask"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Stopper flask complete.",
+          "retry": "Review Stopper flask and try again."
+        }
+      },
+      {
+        "id": "invert-node",
+        "type": "observation",
+        "title": "Invert to mix",
+        "description": "Use repeated inversions to mix the stoppered flask.",
+        "actionId": "invert-to-mix",
+        "config": {},
+        "validation": [
+          {
+            "id": "inversion-recorded",
+            "type": "notebookEntry",
+            "label": "Notebook entry dilution-inverted was recorded.",
+            "notebookTag": "dilution-inverted"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Invert to mix complete.",
+          "retry": "Review Invert to mix and try again."
+        }
+      },
+      {
+        "id": "place-spectro-node",
+        "type": "action",
+        "title": "Place spectrophotometer",
+        "description": "Place the spectrophotometer on the workbench.",
+        "actionId": "place-spectrophotometer",
+        "config": {},
+        "validation": [
+          {
+            "id": "spectro-placed",
+            "type": "actionEvidence",
+            "label": "Action place-spectrophotometer was completed.",
+            "actionId": "place-spectrophotometer"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place spectrophotometer complete.",
+          "retry": "Review Place spectrophotometer and try again."
+        }
+      },
+      {
+        "id": "fill-blank-node",
+        "type": "action",
+        "title": "Fill blank cuvette",
+        "description": "Add deionized water to the blank cuvette.",
+        "actionId": "fill-blank-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "blank-filled",
+            "type": "actionEvidence",
+            "label": "Action fill-blank-cuvette was completed.",
+            "actionId": "fill-blank-cuvette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Fill blank cuvette complete.",
+          "retry": "Review Fill blank cuvette and try again."
+        }
+      },
+      {
+        "id": "wipe-blank-node",
+        "type": "observation",
+        "title": "Wipe blank cuvette",
+        "description": "Use a wipe to clean the outside of the blank cuvette.",
+        "actionId": "wipe-blank-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "blank-wiped",
+            "type": "notebookEntry",
+            "label": "Notebook entry blank-cuvette-wiped was recorded.",
+            "notebookTag": "blank-cuvette-wiped"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wipe blank cuvette complete.",
+          "retry": "Review Wipe blank cuvette and try again."
+        }
+      },
+      {
+        "id": "zero-node",
+        "type": "observation",
+        "title": "Zero instrument",
+        "description": "Place the blank in the instrument and zero it.",
+        "actionId": "zero-with-blank",
+        "config": {},
+        "validation": [
+          {
+            "id": "spectro-zeroed",
+            "type": "notebookEntry",
+            "label": "Notebook entry spectrophotometer-zeroed was recorded.",
+            "notebookTag": "spectrophotometer-zeroed"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Zero instrument complete.",
+          "retry": "Review Zero instrument and try again."
+        }
+      },
+      {
+        "id": "fill-sample-node",
+        "type": "action",
+        "title": "Fill sample cuvette",
+        "description": "Add diluted dye to the sample cuvette.",
+        "actionId": "fill-sample-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "sample-cuvette-filled",
+            "type": "actionEvidence",
+            "label": "Action fill-sample-cuvette was completed.",
+            "actionId": "fill-sample-cuvette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Fill sample cuvette complete.",
+          "retry": "Review Fill sample cuvette and try again."
+        }
+      },
+      {
+        "id": "wipe-sample-node",
+        "type": "observation",
+        "title": "Wipe sample cuvette",
+        "description": "Use a wipe to clean and orient the sample cuvette.",
+        "actionId": "wipe-orient-sample-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "sample-oriented",
+            "type": "notebookEntry",
+            "label": "Notebook entry sample-cuvette-oriented was recorded.",
+            "notebookTag": "sample-cuvette-oriented"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wipe sample cuvette complete.",
+          "retry": "Review Wipe sample cuvette and try again."
+        }
+      },
+      {
+        "id": "insert-sample-node",
+        "type": "action",
+        "title": "Insert sample",
+        "description": "Place the sample cuvette in the spectrophotometer.",
+        "actionId": "insert-sample-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "sample-cuvette-inserted",
+            "type": "actionEvidence",
+            "label": "Action insert-sample-cuvette was completed.",
+            "actionId": "insert-sample-cuvette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Insert sample complete.",
+          "retry": "Review Insert sample and try again."
+        }
+      },
+      {
+        "id": "record-transmittance-node",
+        "type": "observation",
+        "title": "Read %T",
+        "description": "Record the percent transmittance reading.",
+        "actionId": "record-percent-transmittance",
+        "config": {},
+        "validation": [
+          {
+            "id": "percent-transmittance-evidence",
+            "type": "measurementRecorded",
+            "label": "Measurement percent-transmittance was recorded.",
+            "measurementId": "percent-transmittance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Read %T complete.",
+          "retry": "Review Read %T and try again."
+        }
+      },
+      {
+        "id": "decimal-node",
+        "type": "calculation",
+        "title": "Calculate decimal T",
+        "description": "Convert percent transmittance to decimal transmittance.",
+        "actionId": "calculate-decimal-transmittance",
+        "config": {},
+        "validation": [
+          {
+            "id": "decimal-valid",
+            "type": "calculationWithinTolerance",
+            "label": "Calculation decimal-transmittance is within tolerance.",
+            "calculationId": "decimal-transmittance",
+            "tolerance": 0.001
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate decimal T complete.",
+          "retry": "Review Calculate decimal T and try again."
+        }
+      },
+      {
+        "id": "absorbance-node",
+        "type": "calculation",
+        "title": "Calculate absorbance",
+        "description": "Calculate absorbance using A = -log10(T).",
+        "actionId": "calculate-absorbance",
+        "config": {},
+        "validation": [
+          {
+            "id": "absorbance-valid",
+            "type": "calculationWithinTolerance",
+            "label": "Calculation absorbance is within tolerance.",
+            "calculationId": "absorbance",
+            "tolerance": 0.0001
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate absorbance complete.",
+          "retry": "Review Calculate absorbance and try again."
+        }
+      },
+      {
+        "id": "concentration-node",
+        "type": "calculation",
+        "title": "Calculate concentration",
+        "description": "Use M1V1 = M2V2 to calculate diluted dye concentration.",
+        "actionId": "calculate-diluted-concentration",
+        "config": {},
+        "validation": [
+          {
+            "id": "diluted-concentration-valid",
+            "type": "calculationWithinTolerance",
+            "label": "Calculation diluted-concentration is within tolerance.",
+            "calculationId": "diluted-concentration",
+            "tolerance": 0.01
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate concentration complete.",
+          "retry": "Review Calculate concentration and try again."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "place-flask-node",
+        "to": "place-cylinder-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "place-cylinder-node",
+        "to": "measure-stock-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "measure-stock-node",
+        "to": "transfer-aliquot-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-aliquot-node",
+        "to": "add-water-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "add-water-node",
+        "to": "swirl-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "swirl-node",
+        "to": "top-up-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "top-up-node",
+        "to": "stopper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "stopper-node",
+        "to": "invert-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "invert-node",
+        "to": "place-spectro-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "place-spectro-node",
+        "to": "fill-blank-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "fill-blank-node",
+        "to": "wipe-blank-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "wipe-blank-node",
+        "to": "zero-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "zero-node",
+        "to": "fill-sample-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "fill-sample-node",
+        "to": "wipe-sample-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "wipe-sample-node",
+        "to": "insert-sample-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "insert-sample-node",
+        "to": "record-transmittance-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-transmittance-node",
+        "to": "decimal-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "decimal-node",
+        "to": "absorbance-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "absorbance-node",
+        "to": "concentration-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "transmittance-success",
+      "type": "measurementRecorded",
+      "label": "Measurement percent-transmittance was recorded.",
+      "measurementId": "percent-transmittance"
+    },
+    {
+      "id": "absorbance-success",
+      "type": "calculationWithinTolerance",
+      "label": "Calculation absorbance is within tolerance.",
+      "calculationId": "absorbance",
+      "tolerance": 0.0001
+    },
+    {
+      "id": "concentration-success",
+      "type": "calculationWithinTolerance",
+      "label": "Calculation diluted-concentration is within tolerance.",
+      "calculationId": "diluted-concentration",
+      "tolerance": 0.01
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "wrong-order",
+      "when": "current node expects a different action",
+      "message": "That action is out of sequence for the current technique step.",
+      "recovery": "Check the process map and perform the highlighted step first."
+    },
+    {
+      "id": "missing-source",
+      "when": "source equipment or contents are missing",
+      "message": "The selected source does not contain the material required for this action.",
+      "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+    },
+    {
+      "id": "overflow",
+      "when": "target capacity would be exceeded",
+      "message": "The target equipment cannot hold the requested volume.",
+      "recovery": "Use a larger container or transfer a smaller measured amount."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.0.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-06-15T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "spectroscopy",
+      "dilution",
+      "transmittance"
+    ]
+  }
+}

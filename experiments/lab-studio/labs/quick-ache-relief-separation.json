@@ -1,0 +1,2661 @@
+{
+  "id": "quick-ache-relief-separation",
+  "title": "Separating the Components of Quick Ache Relief",
+  "description": "Test pure-component properties, design and obtain approval for a separation, recover sucrose and acetaminophen while testing for possible aspirin, and evaluate consumer label hypotheses with gravimetric evidence.",
+  "audience": "Chemistry students completing a guided-inquiry consumer-product separation investigation.",
+  "learningGoals": [
+    "Use experimental property evidence for pure sucrose, acetaminophen, and aspirin to justify a separation design.",
+    "Execute a teacher-approved liquid-liquid or acid-base extraction with safe venting, labeled fractions, filtration, drying, and gravimetry.",
+    "Calculate component mass percentages and total recovery separately, then evaluate label accuracy and possible aspirin evidence with uncertainty.",
+    "Explain the separation at the particulate level using polarity, ion formation, partitioning, precipitation, filtration, and drying."
+  ],
+  "safetyNotes": [
+    "Wear safety goggles at all times and review relevant SDS information before selecting tests or a separation.",
+    "Treat acid and base solutions as skin and eye burn hazards.",
+    "Keep ethyl acetate away from ignition sources and use extreme caution with any approved heating.",
+    "Vent the separatory funnel away from people and relieve pressure during mixing.",
+    "Place liquid and solid waste only in teacher-designated containers."
+  ],
+  "equipment": [
+    "small-vial",
+    "test-tube",
+    "sample-rack",
+    "reagent-bottle",
+    "ph-paper",
+    "spatula",
+    "analytical-balance",
+    "watch-glass",
+    "beaker-250ml",
+    "erlenmeyer-flask-250ml",
+    "graduated-cylinder",
+    "separatory-funnel",
+    "ph-meter",
+    "stirring-rod",
+    "buchner-funnel",
+    "filter-paper",
+    "side-arm-filter-flask",
+    "vacuum-source",
+    "drying-oven",
+    "waste-beaker",
+    "wash-bottle",
+    "crucible-tongs"
+  ],
+  "techniqueRefs": [
+    {
+      "techniqueId": "quick-ache-property-evidence",
+      "version": "1.1.0",
+      "actionIds": "all"
+    },
+    {
+      "techniqueId": "quick-ache-design-approval",
+      "version": "1.1.0",
+      "actionIds": "all"
+    },
+    {
+      "techniqueId": "quick-ache-extraction-recovery",
+      "version": "1.1.0",
+      "actionIds": "all"
+    },
+    {
+      "techniqueId": "quick-ache-analysis-report",
+      "version": "1.1.0",
+      "actionIds": "all"
+    }
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "qar-sucrose-standard",
+        "definitionId": "small-vial",
+        "label": "Pure sucrose standard",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Pure sucrose",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "powder"
+        }
+      },
+      {
+        "id": "qar-acetaminophen-standard",
+        "definitionId": "small-vial",
+        "label": "Pure acetaminophen standard",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Pure acetaminophen",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "powder"
+        }
+      },
+      {
+        "id": "qar-aspirin-standard",
+        "definitionId": "small-vial",
+        "label": "Pure aspirin standard",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Pure aspirin",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "powder"
+        }
+      },
+      {
+        "id": "qar-property-test-tube",
+        "definitionId": "test-tube",
+        "label": "Property-test tube",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-property-rack",
+        "definitionId": "sample-rack",
+        "label": "Labeled property-test rack",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-property-reagent",
+        "definitionId": "reagent-bottle",
+        "label": "Teacher-approved property-test reagent",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Teacher-approved test reagent",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "qar-property-ph-paper",
+        "definitionId": "ph-paper",
+        "label": "pH paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-property-spatula",
+        "definitionId": "spatula",
+        "label": "Spatula",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-unknown-sample",
+        "definitionId": "watch-glass",
+        "label": "Quick Ache Relief unknown",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Quick Ache Relief unknown powder",
+          "solutes": [
+            {
+              "id": "qar-sucrose-binder",
+              "label": "Sucrose binder",
+              "amount": 0.45,
+              "unit": "g"
+            },
+            {
+              "id": "qar-acetaminophen",
+              "label": "Acetaminophen",
+              "amount": 2.4,
+              "unit": "g"
+            },
+            {
+              "id": "qar-unidentified-acidic-component",
+              "label": "Unidentified acidic component",
+              "amount": 0.15,
+              "unit": "g"
+            }
+          ],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "powder",
+          "massG": 3
+        }
+      },
+      {
+        "id": "qar-balance",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-extraction-beaker",
+        "definitionId": "beaker-250ml",
+        "label": "Labeled extraction beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-aqueous-fraction-flask",
+        "definitionId": "erlenmeyer-flask-250ml",
+        "label": "Labeled aqueous-fraction flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-organic-fraction-flask",
+        "definitionId": "erlenmeyer-flask-250ml",
+        "label": "Labeled organic-fraction flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-cylinder",
+        "definitionId": "graduated-cylinder",
+        "label": "Graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-separatory-funnel",
+        "definitionId": "separatory-funnel",
+        "label": "Separatory funnel",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-ethyl-acetate",
+        "definitionId": "reagent-bottle",
+        "label": "Ethyl acetate",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Ethyl acetate",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid",
+          "volumeMl": 250
+        }
+      },
+      {
+        "id": "qar-bicarbonate",
+        "definitionId": "reagent-bottle",
+        "label": "10% sodium bicarbonate",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "10% NaHCO3",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid",
+          "volumeMl": 250
+        }
+      },
+      {
+        "id": "qar-hydrochloric-acid",
+        "definitionId": "reagent-bottle",
+        "label": "6 M hydrochloric acid",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "6 M HCl",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid",
+          "volumeMl": 250
+        }
+      },
+      {
+        "id": "qar-magnesium-sulfate",
+        "definitionId": "reagent-bottle",
+        "label": "Magnesium sulfate drying agent",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "MgSO4",
+          "solutes": [
+            {
+              "id": "magnesium-sulfate",
+              "label": "Magnesium sulfate",
+              "amount": 50,
+              "unit": "g"
+            }
+          ],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "powder",
+          "massG": 50
+        }
+      },
+      {
+        "id": "qar-ph-paper",
+        "definitionId": "ph-paper",
+        "label": "pH paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-ph-meter",
+        "definitionId": "ph-meter",
+        "label": "pH meter",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-stirring-rod",
+        "definitionId": "stirring-rod",
+        "label": "Stirring rod",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-buchner-funnel",
+        "definitionId": "buchner-funnel",
+        "label": "Buchner funnel",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-filter-paper",
+        "definitionId": "filter-paper",
+        "label": "Filter paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-side-arm-flask",
+        "definitionId": "side-arm-filter-flask",
+        "label": "Side-arm filter flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-vacuum",
+        "definitionId": "vacuum-source",
+        "label": "Vacuum source",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-oven",
+        "definitionId": "drying-oven",
+        "label": "Optional drying oven",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-spatula",
+        "definitionId": "spatula",
+        "label": "Spatula",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-waste",
+        "definitionId": "waste-beaker",
+        "label": "Teacher-designated liquid waste",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-wash-bottle",
+        "definitionId": "wash-bottle",
+        "label": "Distilled-water wash bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Distilled water",
+          "volumeMl": 500,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "qar-tongs",
+        "definitionId": "crucible-tongs",
+        "label": "Crucible tongs",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-acidic-recovery-watch-glass",
+        "definitionId": "watch-glass",
+        "label": "Labeled acidic-fraction recovery watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-organic-recovery-watch-glass",
+        "definitionId": "watch-glass",
+        "label": "Labeled organic-fraction recovery watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "qar-aqueous-recovery-watch-glass",
+        "definitionId": "watch-glass",
+        "label": "Labeled aqueous-fraction recovery watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "techniques": [],
+  "actions": [],
+  "process": {
+    "startNodeId": "qar-consumer-hypotheses-node",
+    "nodes": [
+      {
+        "id": "qar-consumer-hypotheses-node",
+        "type": "decision",
+        "title": "Consumer hypotheses",
+        "description": "Commit the competing label-accuracy hypotheses before seeing the unknown composition.",
+        "actionId": "qar-commit-consumer-hypotheses",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-consumer-hypotheses-node-complete",
+            "type": "actionEvidence",
+            "label": "Consumer hypotheses was completed.",
+            "actionId": "qar-commit-consumer-hypotheses"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Consumer hypotheses complete.",
+          "retry": "Complete consumer hypotheses with the required evidence."
+        }
+      },
+      {
+        "id": "qar-select-pure-tests-node",
+        "type": "decision",
+        "title": "Select property tests",
+        "description": "Choose safe tests that can distinguish the three pure components without prescribing a fixed recipe.",
+        "actionId": "qar-select-pure-component-tests",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "pure-component amounts and accepted property evidence"
+        },
+        "validation": [
+          {
+            "id": "qar-select-pure-tests-node-complete",
+            "type": "actionEvidence",
+            "label": "Select property tests was completed.",
+            "actionId": "qar-select-pure-component-tests"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Select property tests complete.",
+          "retry": "Complete select property tests with the required evidence."
+        }
+      },
+      {
+        "id": "qar-sucrose-properties-node",
+        "type": "observation",
+        "title": "Test sucrose",
+        "description": "Apply the approved test and record sucrose solubility or reactivity evidence.",
+        "actionId": "qar-record-sucrose-properties",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-sucrose-properties-node-complete",
+            "type": "actionEvidence",
+            "label": "Test sucrose was completed.",
+            "actionId": "qar-record-sucrose-properties"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Test sucrose complete.",
+          "retry": "Complete test sucrose with the required evidence."
+        }
+      },
+      {
+        "id": "qar-acetaminophen-properties-node",
+        "type": "observation",
+        "title": "Test acetaminophen",
+        "description": "Apply the approved test and record acetaminophen solubility or reactivity evidence.",
+        "actionId": "qar-record-acetaminophen-properties",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-acetaminophen-properties-node-complete",
+            "type": "actionEvidence",
+            "label": "Test acetaminophen was completed.",
+            "actionId": "qar-record-acetaminophen-properties"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Test acetaminophen complete.",
+          "retry": "Complete test acetaminophen with the required evidence."
+        }
+      },
+      {
+        "id": "qar-aspirin-properties-node",
+        "type": "observation",
+        "title": "Test aspirin",
+        "description": "Apply the approved test and record aspirin solubility or reactivity evidence.",
+        "actionId": "qar-record-aspirin-properties",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-aspirin-properties-node-complete",
+            "type": "actionEvidence",
+            "label": "Test aspirin was completed.",
+            "actionId": "qar-record-aspirin-properties"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Test aspirin complete.",
+          "retry": "Complete test aspirin with the required evidence."
+        }
+      },
+      {
+        "id": "qar-property-matrix-node",
+        "type": "checkpoint",
+        "title": "Compare property evidence",
+        "description": "Build a three-component evidence matrix to support—not replace—the separation design.",
+        "actionId": "qar-compare-property-matrix",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-property-matrix-node-complete",
+            "type": "actionEvidence",
+            "label": "Compare property evidence was completed.",
+            "actionId": "qar-compare-property-matrix"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Compare property evidence complete.",
+          "retry": "Complete compare property evidence with the required evidence."
+        }
+      },
+      {
+        "id": "qar-draft-flowchart-node",
+        "type": "decision",
+        "title": "Draft separation flowchart",
+        "description": "Pair every physical operation with its chemical rationale and fraction provenance.",
+        "actionId": "qar-draft-separation-flowchart",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "amounts, sequence, times, precision, concentrations, endpoints, repeats"
+        },
+        "validation": [
+          {
+            "id": "qar-draft-flowchart-node-complete",
+            "type": "actionEvidence",
+            "label": "Draft separation flowchart was completed.",
+            "actionId": "qar-draft-separation-flowchart"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Draft separation flowchart complete.",
+          "retry": "Complete draft separation flowchart with the required evidence."
+        }
+      },
+      {
+        "id": "qar-safety-audit-node",
+        "type": "checkpoint",
+        "title": "Audit safety and recovery",
+        "description": "Plan safe venting, heat control, disposal, and recoverable responses to layer or emulsion problems.",
+        "actionId": "qar-audit-separation-safety",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-safety-audit-node-complete",
+            "type": "actionEvidence",
+            "label": "Audit safety and recovery was completed.",
+            "actionId": "qar-audit-separation-safety"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Audit safety and recovery complete.",
+          "retry": "Complete audit safety and recovery with the required evidence."
+        }
+      },
+      {
+        "id": "qar-teacher-approval-node",
+        "type": "teacherNote",
+        "title": "Instructor approval gate",
+        "description": "Execution remains locked until the instructor approves the student-authored plan.",
+        "actionId": "qar-record-teacher-approval",
+        "config": {
+          "approvalRequired": true,
+          "approvalRecorded": false,
+          "revealFixedRecipe": false
+        },
+        "validation": [
+          {
+            "id": "qar-teacher-approval-node-complete",
+            "type": "actionEvidence",
+            "label": "Instructor approval gate was completed.",
+            "actionId": "qar-record-teacher-approval"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Instructor approval gate complete.",
+          "retry": "Complete instructor approval gate with the required evidence."
+        }
+      },
+      {
+        "id": "qar-starting-mass-node",
+        "type": "action",
+        "title": "Starting mass",
+        "description": "Measure and record the unknown sample mass with the teacher-configured balance tolerance.",
+        "actionId": "qar-record-starting-mass",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "sample amount and tolerance"
+        },
+        "validation": [
+          {
+            "id": "qar-starting-mass-node-complete",
+            "type": "actionEvidence",
+            "label": "Starting mass was completed.",
+            "actionId": "qar-record-starting-mass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Starting mass complete.",
+          "retry": "Complete starting mass with the required evidence."
+        }
+      },
+      {
+        "id": "qar-transfer-weighed-sample-node",
+        "type": "action",
+        "title": "Transfer the weighed portion into the labeled working vessel",
+        "description": "Move the whole weighed portion into the labeled extraction beaker with the spatula. The mass on record is the mass that moves.",
+        "actionId": "qar-transfer-weighed-sample",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-transfer-weighed-sample-complete",
+            "type": "actionEvidence",
+            "label": "Transfer the weighed portion into the labeled working vessel was completed.",
+            "actionId": "qar-transfer-weighed-sample"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer the weighed portion into the labeled working vessel complete.",
+          "retry": "Complete transfer the weighed portion into the labeled working vessel with the required evidence."
+        }
+      },
+      {
+        "id": "qar-approved-dissolution-node",
+        "type": "observation",
+        "title": "Approved dissolution or reaction",
+        "description": "Execute the first approved material-conditioning stage and record chemical rationale.",
+        "actionId": "qar-execute-approved-dissolution",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-approved-dissolution-node-complete",
+            "type": "actionEvidence",
+            "label": "Approved dissolution or reaction was completed.",
+            "actionId": "qar-execute-approved-dissolution"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Approved dissolution or reaction complete.",
+          "retry": "Complete approved dissolution or reaction with the required evidence."
+        }
+      },
+      {
+        "id": "qar-measure-approved-organic-volume-node",
+        "type": "action",
+        "title": "Measure the approved organic-solvent volume",
+        "description": "Measure the approved volume of ethyl acetate into the graduated cylinder. The volume is the teacher-approved amount, not a fixed recipe.",
+        "actionId": "qar-measure-approved-organic-volume",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-measure-approved-organic-volume-measured",
+            "type": "measurementRecorded",
+            "label": "Measure the approved organic-solvent volume produced a recorded measurement.",
+            "measurementId": "qar-organic-solvent-volume"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure the approved organic-solvent volume complete.",
+          "retry": "Complete measure the approved organic-solvent volume with the required evidence."
+        }
+      },
+      {
+        "id": "qar-transfer-approved-solvent-node",
+        "type": "action",
+        "title": "Add the measured solvent to the weighed portion",
+        "description": "Add the measured solvent to the weighed portion and stir it as the approved plan specifies. Every component the sample contains is still in this vessel.",
+        "actionId": "qar-transfer-approved-solvent",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-transfer-approved-solvent-complete",
+            "type": "actionEvidence",
+            "label": "Add the measured solvent to the weighed portion was completed.",
+            "actionId": "qar-transfer-approved-solvent"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add the measured solvent to the weighed portion complete.",
+          "retry": "Complete add the measured solvent to the weighed portion with the required evidence."
+        }
+      },
+      {
+        "id": "qar-charge-funnel-organic-phase-node",
+        "type": "action",
+        "title": "Load the organic phase into the separatory funnel",
+        "description": "Transfer the solvent mixture into the separatory funnel and close the funnel before it is inverted.",
+        "actionId": "qar-charge-funnel-organic-phase",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-charge-funnel-organic-phase-complete",
+            "type": "actionEvidence",
+            "label": "Load the organic phase into the separatory funnel was completed.",
+            "actionId": "qar-charge-funnel-organic-phase"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Load the organic phase into the separatory funnel complete.",
+          "retry": "Complete load the organic phase into the separatory funnel with the required evidence."
+        }
+      },
+      {
+        "id": "qar-charge-funnel-aqueous-phase-node",
+        "type": "action",
+        "title": "Load the approved aqueous phase into the separatory funnel",
+        "description": "Add the approved volume of the aqueous phase. Which reagent and how much are the approved plan's choices, not the simulator's.",
+        "actionId": "qar-charge-funnel-aqueous-phase",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-charge-funnel-aqueous-phase-complete",
+            "type": "actionEvidence",
+            "label": "Load the approved aqueous phase into the separatory funnel was completed.",
+            "actionId": "qar-charge-funnel-aqueous-phase"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Load the approved aqueous phase into the separatory funnel complete.",
+          "retry": "Complete load the approved aqueous phase into the separatory funnel with the required evidence."
+        }
+      },
+      {
+        "id": "qar-load-extraction-node",
+        "type": "action",
+        "title": "Load extraction phases",
+        "description": "Use the approved liquid-liquid or acid-base extraction choice and configured phase volumes.",
+        "actionId": "qar-load-approved-extraction",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "solvent sequence and phase volumes"
+        },
+        "validation": [
+          {
+            "id": "qar-load-extraction-node-complete",
+            "type": "actionEvidence",
+            "label": "Load extraction phases was completed.",
+            "actionId": "qar-load-approved-extraction"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Load extraction phases complete.",
+          "retry": "Complete load extraction phases with the required evidence."
+        }
+      },
+      {
+        "id": "qar-mix-vent-node",
+        "type": "checkpoint",
+        "title": "Mix and vent",
+        "description": "Secure, invert, and vent away from people according to the approved sequence.",
+        "actionId": "qar-mix-and-vent",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-mix-vent-node-complete",
+            "type": "actionEvidence",
+            "label": "Mix and vent was completed.",
+            "actionId": "qar-mix-and-vent"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Mix and vent complete.",
+          "retry": "Complete mix and vent with the required evidence."
+        }
+      },
+      {
+        "id": "qar-settle-layers-node",
+        "type": "observation",
+        "title": "Settle and inspect layers",
+        "description": "Distinguish clean phase separation from an emulsion before draining.",
+        "actionId": "qar-settle-and-observe-layers",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-settle-layers-node-clean-separation",
+            "type": "notebookEntry",
+            "label": "Two distinguishable layers were observed.",
+            "notebookTag": "two-layer-extraction"
+          }
+        ],
+        "hints": [
+          "An emulsion is a recoverable state, not a layer. Report what the funnel actually shows."
+        ],
+        "feedback": {
+          "success": "Settle and inspect layers complete.",
+          "retry": "Complete settle and inspect layers with the required evidence."
+        }
+      },
+      {
+        "id": "qar-recover-from-emulsion-node",
+        "type": "observation",
+        "title": "Apply the approved emulsion recovery",
+        "description": "Apply the approved emulsion recovery",
+        "actionId": "qar-recover-from-emulsion",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-recover-from-emulsion-recorded",
+            "type": "notebookEntry",
+            "label": "Apply the approved emulsion recovery evidence was recorded.",
+            "notebookTag": "emulsion-recovery"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Apply the approved emulsion recovery complete.",
+          "retry": "Complete apply the approved emulsion recovery with the required evidence."
+        }
+      },
+      {
+        "id": "qar-identify-layer-node",
+        "type": "decision",
+        "title": "Identify layers from evidence",
+        "description": "Assign aqueous and organic identity using density or other observed physical-property evidence.",
+        "actionId": "qar-identify-layer-from-evidence",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-identify-layer-node-complete",
+            "type": "actionEvidence",
+            "label": "Identify layers from evidence was completed.",
+            "actionId": "qar-identify-layer-from-evidence"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Identify layers from evidence complete.",
+          "retry": "Complete identify layers from evidence with the required evidence."
+        }
+      },
+      {
+        "id": "qar-drain-lower-layer-node",
+        "type": "action",
+        "title": "Drain the lower layer into its labeled receiver",
+        "description": "Open the stopcock and take the lower layer into the receiver its recorded identity assigns it to. Retain the other layer in the funnel.",
+        "actionId": "qar-drain-lower-layer",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-drain-lower-layer-complete",
+            "type": "actionEvidence",
+            "label": "Drain the lower layer into its labeled receiver was completed.",
+            "actionId": "qar-drain-lower-layer"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Drain the lower layer into its labeled receiver complete.",
+          "retry": "Complete drain the lower layer into its labeled receiver with the required evidence."
+        }
+      },
+      {
+        "id": "qar-drain-upper-layer-node",
+        "type": "action",
+        "title": "Drain the retained upper layer into its labeled receiver",
+        "description": "Take the retained layer into the second labeled receiver so both fractions keep separate identities.",
+        "actionId": "qar-drain-upper-layer",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-drain-upper-layer-complete",
+            "type": "actionEvidence",
+            "label": "Drain the retained upper layer into its labeled receiver was completed.",
+            "actionId": "qar-drain-upper-layer"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Drain the retained upper layer into its labeled receiver complete.",
+          "retry": "Complete drain the retained upper layer into its labeled receiver with the required evidence."
+        }
+      },
+      {
+        "id": "qar-drain-layers-node",
+        "type": "action",
+        "title": "Drain and retain fractions",
+        "description": "Separate the phases into labeled vessels while retaining provenance and a recovery path.",
+        "actionId": "qar-drain-and-retain-layers",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-drain-layers-node-complete",
+            "type": "actionEvidence",
+            "label": "Drain and retain fractions was completed.",
+            "actionId": "qar-drain-and-retain-layers"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Drain and retain fractions complete.",
+          "retry": "Complete drain and retain fractions with the required evidence."
+        }
+      },
+      {
+        "id": "qar-repeat-extraction-node",
+        "type": "checkpoint",
+        "title": "Approved extraction loop",
+        "description": "Repeat fresh washes or extractions only as approved and combine like fractions deliberately.",
+        "actionId": "qar-repeat-approved-extractions",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "repeat count and recovery rule"
+        },
+        "validation": [
+          {
+            "id": "qar-repeat-extraction-node-complete",
+            "type": "actionEvidence",
+            "label": "Approved extraction loop was completed.",
+            "actionId": "qar-repeat-approved-extractions"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Approved extraction loop complete.",
+          "retry": "Complete approved extraction loop with the required evidence."
+        }
+      },
+      {
+        "id": "qar-acid-base-endpoint-node",
+        "type": "checkpoint",
+        "title": "Acid-base recovery",
+        "description": "If planned, adjust the selected fraction to the approved pH endpoint and record precipitation evidence.",
+        "actionId": "qar-adjust-approved-acid-base-endpoint",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-acid-base-endpoint-node-complete",
+            "type": "actionEvidence",
+            "label": "Acid-base recovery was completed.",
+            "actionId": "qar-adjust-approved-acid-base-endpoint"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Acid-base recovery complete.",
+          "retry": "Complete acid-base recovery with the required evidence."
+        }
+      },
+      {
+        "id": "qar-acidify-recovered-fraction-node",
+        "type": "action",
+        "title": "Acidify the selected fraction to the approved endpoint",
+        "description": "Add acid gradually to the selected fraction and check pH against the approved endpoint. Both the fraction and the endpoint are approved-plan choices.",
+        "actionId": "qar-acidify-recovered-fraction",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-acidify-recovered-fraction-complete",
+            "type": "actionEvidence",
+            "label": "Acidify the selected fraction to the approved endpoint was completed.",
+            "actionId": "qar-acidify-recovered-fraction"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Acidify the selected fraction to the approved endpoint complete.",
+          "retry": "Complete acidify the selected fraction to the approved endpoint with the required evidence."
+        }
+      },
+      {
+        "id": "qar-precipitate-recovered-component-node",
+        "type": "action",
+        "title": "Let the acidified fraction give up its solid",
+        "description": "Whatever the bicarbonate layer carried comes out of solution at the approved endpoint. The mass is whatever was there, which may be nothing.",
+        "actionId": "qar-precipitate-recovered-component",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-precipitate-recovered-component-complete",
+            "type": "actionEvidence",
+            "label": "Let the acidified fraction give up its solid was completed.",
+            "actionId": "qar-precipitate-recovered-component"
+          }
+        ],
+        "hints": [
+          "Recovery by bicarbonate extraction and re-acidification establishes that the component is an acid. It does not identify it."
+        ],
+        "feedback": {
+          "success": "Let the acidified fraction give up its solid complete.",
+          "retry": "Complete let the acidified fraction give up its solid with the required evidence."
+        }
+      },
+      {
+        "id": "qar-dry-organic-phase-with-mgso4-node",
+        "type": "action",
+        "title": "Add the drying agent to the organic fraction",
+        "description": "Add MgSO4 to the organic fraction until the approved visual endpoint. The amount and the endpoint are configuration points; the source states neither.",
+        "actionId": "qar-dry-organic-phase-with-mgso4",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-dry-organic-phase-with-mgso4-complete",
+            "type": "actionEvidence",
+            "label": "Add the drying agent to the organic fraction was completed.",
+            "actionId": "qar-dry-organic-phase-with-mgso4"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add the drying agent to the organic fraction complete.",
+          "retry": "Complete add the drying agent to the organic fraction with the required evidence."
+        }
+      },
+      {
+        "id": "qar-organic-drying-node",
+        "type": "checkpoint",
+        "title": "Dry organic phase",
+        "description": "If planned, use MgSO4 to the approved endpoint and remove it before recovering material.",
+        "actionId": "qar-dry-organic-phase",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-organic-drying-node-complete",
+            "type": "actionEvidence",
+            "label": "Dry organic phase was completed.",
+            "actionId": "qar-dry-organic-phase"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry organic phase complete.",
+          "retry": "Complete dry organic phase with the required evidence."
+        }
+      },
+      {
+        "id": "qar-place-buchner-funnel-node",
+        "type": "action",
+        "title": "Place the Buchner funnel",
+        "description": "Place the Buchner funnel on the bench.",
+        "actionId": "qar-place-buchner-funnel",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-place-buchner-funnel-complete",
+            "type": "actionEvidence",
+            "label": "Place the Buchner funnel was completed.",
+            "actionId": "qar-place-buchner-funnel"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place the Buchner funnel complete.",
+          "retry": "Complete place the buchner funnel with the required evidence."
+        }
+      },
+      {
+        "id": "qar-weigh-filter-paper-tare-node",
+        "type": "action",
+        "title": "Weigh the dry filter paper",
+        "description": "Weigh the clean, dry filter paper before it is seated or wetted; afterwards this tare cannot be taken.",
+        "actionId": "qar-weigh-filter-paper-tare",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-weigh-filter-paper-tare-measured",
+            "type": "measurementRecorded",
+            "label": "Weigh the dry filter paper produced a recorded measurement.",
+            "measurementId": "qar-filter-paper-mass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh the dry filter paper complete.",
+          "retry": "Complete weigh the dry filter paper with the required evidence."
+        }
+      },
+      {
+        "id": "qar-seat-filter-paper-node",
+        "type": "action",
+        "title": "Seat the filter paper in the funnel",
+        "description": "Seat the preweighed paper flat on the perforated plate.",
+        "actionId": "qar-seat-filter-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-seat-filter-paper-complete",
+            "type": "actionEvidence",
+            "label": "Seat the filter paper in the funnel was completed.",
+            "actionId": "qar-seat-filter-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Seat the filter paper in the funnel complete.",
+          "retry": "Complete seat the filter paper in the funnel with the required evidence."
+        }
+      },
+      {
+        "id": "qar-wet-filter-paper-node",
+        "type": "action",
+        "title": "Wet the seated filter paper",
+        "description": "Wet the seated paper so it seals against the plate; an unsealed paper lets solid past.",
+        "actionId": "qar-wet-filter-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-wet-filter-paper-complete",
+            "type": "actionEvidence",
+            "label": "Wet the seated filter paper was completed.",
+            "actionId": "qar-wet-filter-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wet the seated filter paper complete.",
+          "retry": "Complete wet the seated filter paper with the required evidence."
+        }
+      },
+      {
+        "id": "qar-place-side-arm-flask-node",
+        "type": "action",
+        "title": "Place the side-arm flask under the funnel",
+        "description": "Seat the funnel on the side-arm flask so the filtrate is collected rather than lost.",
+        "actionId": "qar-place-side-arm-flask",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-place-side-arm-flask-complete",
+            "type": "actionEvidence",
+            "label": "Place the side-arm flask under the funnel was completed.",
+            "actionId": "qar-place-side-arm-flask"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place the side-arm flask under the funnel complete.",
+          "retry": "Complete place the side-arm flask under the funnel with the required evidence."
+        }
+      },
+      {
+        "id": "qar-place-vacuum-source-node",
+        "type": "action",
+        "title": "Connect the vacuum source",
+        "description": "Connect the vacuum source to the side-arm flask.",
+        "actionId": "qar-place-vacuum-source",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-place-vacuum-source-complete",
+            "type": "actionEvidence",
+            "label": "Connect the vacuum source was completed.",
+            "actionId": "qar-place-vacuum-source"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Connect the vacuum source complete.",
+          "retry": "Complete connect the vacuum source with the required evidence."
+        }
+      },
+      {
+        "id": "qar-filtration-assembly-node",
+        "type": "checkpoint",
+        "title": "Assemble vacuum filtration",
+        "description": "Prepare the Buchner funnel, filter paper, side-arm flask, and vacuum source as one inspected setup.",
+        "actionId": "qar-assemble-vacuum-filtration",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-filtration-assembly-node-complete",
+            "type": "actionEvidence",
+            "label": "Assemble vacuum filtration was completed.",
+            "actionId": "qar-assemble-vacuum-filtration"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Assemble vacuum filtration complete.",
+          "retry": "Complete assemble vacuum filtration with the required evidence."
+        }
+      },
+      {
+        "id": "qar-filter-solid-node",
+        "type": "action",
+        "title": "Filter recovered solid",
+        "description": "Collect a selected precipitated or insoluble component without losing fraction identity.",
+        "actionId": "qar-filter-recovered-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-filter-solid-node-complete",
+            "type": "actionEvidence",
+            "label": "Filter recovered solid was completed.",
+            "actionId": "qar-filter-recovered-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Filter recovered solid complete.",
+          "retry": "Complete filter recovered solid with the required evidence."
+        }
+      },
+      {
+        "id": "qar-rinse-collected-solid-node",
+        "type": "action",
+        "title": "Wash the collected solid on the paper",
+        "description": "Wash the collected solid with the approved rinse so residual acid is not weighed as product.",
+        "actionId": "qar-rinse-collected-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-rinse-collected-solid-complete",
+            "type": "actionEvidence",
+            "label": "Wash the collected solid on the paper was completed.",
+            "actionId": "qar-rinse-collected-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wash the collected solid on the paper complete.",
+          "retry": "Complete wash the collected solid on the paper with the required evidence."
+        }
+      },
+      {
+        "id": "qar-weigh-acidic-watch-glass-tare-node",
+        "type": "action",
+        "title": "Weigh the labeled acidic recovery watch glass",
+        "description": "Weigh the clean, dry, labeled acidic watch glass before anything is put on it.",
+        "actionId": "qar-weigh-acidic-watch-glass-tare",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-weigh-acidic-watch-glass-tare-measured",
+            "type": "measurementRecorded",
+            "label": "Weigh the labeled acidic recovery watch glass produced a recorded measurement.",
+            "measurementId": "qar-acidic-recovery-watch-glass-mass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh the labeled acidic recovery watch glass complete.",
+          "retry": "Complete weigh the labeled acidic recovery watch glass with the required evidence."
+        }
+      },
+      {
+        "id": "qar-transfer-solid-to-watch-glass-node",
+        "type": "action",
+        "title": "Move the washed paper and solid onto the labeled watch glass",
+        "description": "Lift the washed paper and its solid onto the tared, labeled watch glass.",
+        "actionId": "qar-transfer-solid-to-watch-glass",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-transfer-solid-to-watch-glass-complete",
+            "type": "actionEvidence",
+            "label": "Move the washed paper and solid onto the labeled watch glass was completed.",
+            "actionId": "qar-transfer-solid-to-watch-glass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Move the washed paper and solid onto the labeled watch glass complete.",
+          "retry": "Complete move the washed paper and solid onto the labeled watch glass with the required evidence."
+        }
+      },
+      {
+        "id": "qar-dry-acidic-solid-node",
+        "type": "action",
+        "title": "Dry the recovered acidic solid to the approved endpoint",
+        "description": "Dry the acidic solid on its labeled watch glass to the approved endpoint. A wet mass is not accepted as final evidence.",
+        "actionId": "qar-dry-acidic-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-dry-acidic-solid-complete",
+            "type": "actionEvidence",
+            "label": "Dry the recovered acidic solid to the approved endpoint was completed.",
+            "actionId": "qar-dry-acidic-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry the recovered acidic solid to the approved endpoint complete.",
+          "retry": "Complete dry the recovered acidic solid to the approved endpoint with the required evidence."
+        }
+      },
+      {
+        "id": "qar-cool-acidic-solid-node",
+        "type": "action",
+        "title": "Cool the acidic watch glass before weighing",
+        "description": "Move the acidic watch glass aside with the tongs and let it reach room temperature.",
+        "actionId": "qar-cool-acidic-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-cool-acidic-solid-complete",
+            "type": "actionEvidence",
+            "label": "Cool the acidic watch glass before weighing was completed.",
+            "actionId": "qar-cool-acidic-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Cool the acidic watch glass before weighing complete.",
+          "retry": "Complete cool the acidic watch glass before weighing with the required evidence."
+        }
+      },
+      {
+        "id": "qar-weigh-acidic-solid-node",
+        "type": "action",
+        "title": "Read the dry acidic recovered mass",
+        "description": "Read the dry acidic recovered mass on the same balance. The balance refuses a warm or wet assembly.",
+        "actionId": "qar-weigh-acidic-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-weigh-acidic-solid-measured",
+            "type": "measurementRecorded",
+            "label": "Read the dry acidic recovered mass produced a recorded measurement.",
+            "measurementId": "qar-recovered-acidic-component-mass"
+          }
+        ],
+        "hints": [
+          "This fraction was recovered by bicarbonate extraction and re-acidification, so it is acidic. Nothing here identifies it as aspirin."
+        ],
+        "feedback": {
+          "success": "Read the dry acidic recovered mass complete.",
+          "retry": "Complete read the dry acidic recovered mass with the required evidence."
+        }
+      },
+      {
+        "id": "qar-weigh-organic-watch-glass-tare-node",
+        "type": "action",
+        "title": "Weigh the labeled organic recovery watch glass",
+        "description": "Weigh the clean, dry, labeled organic watch glass before anything is put on it.",
+        "actionId": "qar-weigh-organic-watch-glass-tare",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-weigh-organic-watch-glass-tare-measured",
+            "type": "measurementRecorded",
+            "label": "Weigh the labeled organic recovery watch glass produced a recorded measurement.",
+            "measurementId": "qar-organic-recovery-watch-glass-mass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh the labeled organic recovery watch glass complete.",
+          "retry": "Complete weigh the labeled organic recovery watch glass with the required evidence."
+        }
+      },
+      {
+        "id": "qar-recover-organic-component-node",
+        "type": "action",
+        "title": "Remove the solvent so the organic component separates as a solid",
+        "description": "Take the solvent off the organic fraction by the approved method so whatever it carried is left as a solid.",
+        "actionId": "qar-recover-organic-component",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-recover-organic-component-complete",
+            "type": "actionEvidence",
+            "label": "Remove the solvent so the organic component separates as a solid was completed.",
+            "actionId": "qar-recover-organic-component"
+          }
+        ],
+        "hints": [
+          "This fraction was the ethyl-acetate-soluble layer. Its solubility behaviour is evidence about the component; it is not an identification."
+        ],
+        "feedback": {
+          "success": "Remove the solvent so the organic component separates as a solid complete.",
+          "retry": "Complete remove the solvent so the organic component separates as a solid with the required evidence."
+        }
+      },
+      {
+        "id": "qar-wash-organic-solid-node",
+        "type": "action",
+        "title": "Wash the recovered organic solid",
+        "description": "Wash the recovered organic solid with the approved rinse before it is dried.",
+        "actionId": "qar-wash-organic-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-wash-organic-solid-complete",
+            "type": "actionEvidence",
+            "label": "Wash the recovered organic solid was completed.",
+            "actionId": "qar-wash-organic-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wash the recovered organic solid complete.",
+          "retry": "Complete wash the recovered organic solid with the required evidence."
+        }
+      },
+      {
+        "id": "qar-dry-organic-solid-node",
+        "type": "action",
+        "title": "Dry the recovered organic solid to the approved endpoint",
+        "description": "Dry the organic solid on its labeled watch glass to the approved endpoint. A wet mass is not accepted as final evidence.",
+        "actionId": "qar-dry-organic-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-dry-organic-solid-complete",
+            "type": "actionEvidence",
+            "label": "Dry the recovered organic solid to the approved endpoint was completed.",
+            "actionId": "qar-dry-organic-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry the recovered organic solid to the approved endpoint complete.",
+          "retry": "Complete dry the recovered organic solid to the approved endpoint with the required evidence."
+        }
+      },
+      {
+        "id": "qar-cool-organic-solid-node",
+        "type": "action",
+        "title": "Cool the organic watch glass before weighing",
+        "description": "Move the organic watch glass aside with the tongs and let it reach room temperature.",
+        "actionId": "qar-cool-organic-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-cool-organic-solid-complete",
+            "type": "actionEvidence",
+            "label": "Cool the organic watch glass before weighing was completed.",
+            "actionId": "qar-cool-organic-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Cool the organic watch glass before weighing complete.",
+          "retry": "Complete cool the organic watch glass before weighing with the required evidence."
+        }
+      },
+      {
+        "id": "qar-weigh-organic-solid-node",
+        "type": "action",
+        "title": "Read the dry organic recovered mass",
+        "description": "Read the dry organic recovered mass on the same balance. The balance refuses a warm or wet assembly.",
+        "actionId": "qar-weigh-organic-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-weigh-organic-solid-measured",
+            "type": "measurementRecorded",
+            "label": "Read the dry organic recovered mass produced a recorded measurement.",
+            "measurementId": "qar-recovered-organic-component-mass"
+          }
+        ],
+        "hints": [
+          "This fraction was the ethyl-acetate-soluble layer. Its solubility behaviour is evidence about the component; it is not an identification."
+        ],
+        "feedback": {
+          "success": "Read the dry organic recovered mass complete.",
+          "retry": "Complete read the dry organic recovered mass with the required evidence."
+        }
+      },
+      {
+        "id": "qar-decant-filtrate-to-beaker-node",
+        "type": "action",
+        "title": "Decant the aqueous filtrate into its labeled working vessel",
+        "description": "Empty the suction flask into the labeled working vessel. This fraction is what stayed in solution, and it keeps that label.",
+        "actionId": "qar-decant-filtrate-to-beaker",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-decant-filtrate-to-beaker-complete",
+            "type": "actionEvidence",
+            "label": "Decant the aqueous filtrate into its labeled working vessel was completed.",
+            "actionId": "qar-decant-filtrate-to-beaker"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Decant the aqueous filtrate into its labeled working vessel complete.",
+          "retry": "Complete decant the aqueous filtrate into its labeled working vessel with the required evidence."
+        }
+      },
+      {
+        "id": "qar-weigh-aqueous-watch-glass-tare-node",
+        "type": "action",
+        "title": "Weigh the labeled aqueous recovery watch glass",
+        "description": "Weigh the clean, dry, labeled aqueous watch glass before anything is put on it.",
+        "actionId": "qar-weigh-aqueous-watch-glass-tare",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-weigh-aqueous-watch-glass-tare-measured",
+            "type": "measurementRecorded",
+            "label": "Weigh the labeled aqueous recovery watch glass produced a recorded measurement.",
+            "measurementId": "qar-aqueous-recovery-watch-glass-mass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh the labeled aqueous recovery watch glass complete.",
+          "retry": "Complete weigh the labeled aqueous recovery watch glass with the required evidence."
+        }
+      },
+      {
+        "id": "qar-recover-aqueous-component-node",
+        "type": "action",
+        "title": "Remove the solvent so the aqueous component separates as a solid",
+        "description": "Take the solvent off the aqueous fraction by the approved method so whatever it carried is left as a solid.",
+        "actionId": "qar-recover-aqueous-component",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-recover-aqueous-component-complete",
+            "type": "actionEvidence",
+            "label": "Remove the solvent so the aqueous component separates as a solid was completed.",
+            "actionId": "qar-recover-aqueous-component"
+          }
+        ],
+        "hints": [
+          "This fraction is what stayed in the aqueous filtrate. Its water solubility is evidence about the component; it is not an identification."
+        ],
+        "feedback": {
+          "success": "Remove the solvent so the aqueous component separates as a solid complete.",
+          "retry": "Complete remove the solvent so the aqueous component separates as a solid with the required evidence."
+        }
+      },
+      {
+        "id": "qar-wash-aqueous-solid-node",
+        "type": "action",
+        "title": "Wash the recovered aqueous solid",
+        "description": "Wash the recovered aqueous solid with the approved rinse before it is dried.",
+        "actionId": "qar-wash-aqueous-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-wash-aqueous-solid-complete",
+            "type": "actionEvidence",
+            "label": "Wash the recovered aqueous solid was completed.",
+            "actionId": "qar-wash-aqueous-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wash the recovered aqueous solid complete.",
+          "retry": "Complete wash the recovered aqueous solid with the required evidence."
+        }
+      },
+      {
+        "id": "qar-dry-aqueous-solid-node",
+        "type": "action",
+        "title": "Dry the recovered aqueous solid to the approved endpoint",
+        "description": "Dry the aqueous solid on its labeled watch glass to the approved endpoint. A wet mass is not accepted as final evidence.",
+        "actionId": "qar-dry-aqueous-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-dry-aqueous-solid-complete",
+            "type": "actionEvidence",
+            "label": "Dry the recovered aqueous solid to the approved endpoint was completed.",
+            "actionId": "qar-dry-aqueous-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry the recovered aqueous solid to the approved endpoint complete.",
+          "retry": "Complete dry the recovered aqueous solid to the approved endpoint with the required evidence."
+        }
+      },
+      {
+        "id": "qar-cool-aqueous-solid-node",
+        "type": "action",
+        "title": "Cool the aqueous watch glass before weighing",
+        "description": "Move the aqueous watch glass aside with the tongs and let it reach room temperature.",
+        "actionId": "qar-cool-aqueous-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-cool-aqueous-solid-complete",
+            "type": "actionEvidence",
+            "label": "Cool the aqueous watch glass before weighing was completed.",
+            "actionId": "qar-cool-aqueous-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Cool the aqueous watch glass before weighing complete.",
+          "retry": "Complete cool the aqueous watch glass before weighing with the required evidence."
+        }
+      },
+      {
+        "id": "qar-weigh-aqueous-solid-node",
+        "type": "action",
+        "title": "Read the dry aqueous recovered mass",
+        "description": "Read the dry aqueous recovered mass on the same balance. The balance refuses a warm or wet assembly.",
+        "actionId": "qar-weigh-aqueous-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-weigh-aqueous-solid-measured",
+            "type": "measurementRecorded",
+            "label": "Read the dry aqueous recovered mass produced a recorded measurement.",
+            "measurementId": "qar-recovered-aqueous-component-mass"
+          }
+        ],
+        "hints": [
+          "This fraction is what stayed in the aqueous filtrate. Its water solubility is evidence about the component; it is not an identification."
+        ],
+        "feedback": {
+          "success": "Read the dry aqueous recovered mass complete.",
+          "retry": "Complete read the dry aqueous recovered mass with the required evidence."
+        }
+      },
+      {
+        "id": "qar-dry-fractions-node",
+        "type": "checkpoint",
+        "title": "Dry recovered fractions",
+        "description": "Dry each fraction to the configured endpoint; wet mass is not accepted as final evidence.",
+        "actionId": "qar-dry-recovered-fractions",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-dry-fractions-node-complete",
+            "type": "actionEvidence",
+            "label": "Dry recovered fractions was completed.",
+            "actionId": "qar-dry-recovered-fractions"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry recovered fractions complete.",
+          "retry": "Complete dry recovered fractions with the required evidence."
+        }
+      },
+      {
+        "id": "qar-record-masses-node",
+        "type": "checkpoint",
+        "title": "Record dry component masses",
+        "description": "Record independent stable masses, identities, replicates, and uncertainties for every recovered component.",
+        "actionId": "qar-record-dry-component-masses",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-record-masses-node-complete",
+            "type": "actionEvidence",
+            "label": "Record dry component masses was completed.",
+            "actionId": "qar-record-dry-component-masses"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record dry component masses complete.",
+          "retry": "Complete record dry component masses with the required evidence."
+        }
+      },
+      {
+        "id": "qar-confirm-formula-node",
+        "type": "checkpoint",
+        "title": "Confirm calculation formulas",
+        "description": "Separate component percent by mass from total percent recovery before calculating.",
+        "actionId": "qar-confirm-composition-formula",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-confirm-formula-node-complete",
+            "type": "actionEvidence",
+            "label": "Confirm calculation formulas was completed.",
+            "actionId": "qar-confirm-composition-formula"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Confirm calculation formulas complete.",
+          "retry": "Complete confirm calculation formulas with the required evidence."
+        }
+      },
+      {
+        "id": "qar-sucrose-percent-node",
+        "type": "calculation",
+        "title": "Sucrose percentage",
+        "description": "Calculate recovered sucrose percent by mass from its independent dry mass.",
+        "actionId": "qar-calculate-sucrose-percentage",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "rounding and uncertainty rule"
+        },
+        "validation": [
+          {
+            "id": "qar-sucrose-percent-node-complete",
+            "type": "actionEvidence",
+            "label": "Sucrose percentage was completed.",
+            "actionId": "qar-calculate-sucrose-percentage"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Sucrose percentage complete.",
+          "retry": "Complete sucrose percentage with the required evidence."
+        }
+      },
+      {
+        "id": "qar-acetaminophen-percent-node",
+        "type": "calculation",
+        "title": "Acetaminophen percentage",
+        "description": "Calculate recovered acetaminophen percent by mass from its independent dry mass.",
+        "actionId": "qar-calculate-acetaminophen-percentage",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "rounding and uncertainty rule"
+        },
+        "validation": [
+          {
+            "id": "qar-acetaminophen-percent-node-complete",
+            "type": "actionEvidence",
+            "label": "Acetaminophen percentage was completed.",
+            "actionId": "qar-calculate-acetaminophen-percentage"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Acetaminophen percentage complete.",
+          "retry": "Complete acetaminophen percentage with the required evidence."
+        }
+      },
+      {
+        "id": "qar-possible-aspirin-percent-node",
+        "type": "calculation",
+        "title": "Possible aspirin percentage",
+        "description": "Calculate possible recovered aspirin percent by mass without converting non-recovery into a false absence claim.",
+        "actionId": "qar-calculate-possible-aspirin-percentage",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "rounding, uncertainty, and non-detection rule"
+        },
+        "validation": [
+          {
+            "id": "qar-possible-aspirin-percent-node-complete",
+            "type": "actionEvidence",
+            "label": "Possible aspirin percentage was completed.",
+            "actionId": "qar-calculate-possible-aspirin-percentage"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Possible aspirin percentage complete.",
+          "retry": "Complete possible aspirin percentage with the required evidence."
+        }
+      },
+      {
+        "id": "qar-total-recovery-node",
+        "type": "calculation",
+        "title": "Total percent recovery",
+        "description": "Calculate total recovery separately from the individual composition percentages.",
+        "actionId": "qar-calculate-total-recovery",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "recovery tolerance"
+        },
+        "validation": [
+          {
+            "id": "qar-total-recovery-node-complete",
+            "type": "actionEvidence",
+            "label": "Total percent recovery was completed.",
+            "actionId": "qar-calculate-total-recovery"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Total percent recovery complete.",
+          "retry": "Complete total percent recovery with the required evidence."
+        }
+      },
+      {
+        "id": "qar-label-accuracy-node",
+        "type": "decision",
+        "title": "Consumer conclusion",
+        "description": "Use the stated binder and acetaminophen ranges plus aspirin evidence to evaluate Team A or Team B.",
+        "actionId": "qar-evaluate-label-accuracy",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-label-accuracy-node-complete",
+            "type": "actionEvidence",
+            "label": "Consumer conclusion was completed.",
+            "actionId": "qar-evaluate-label-accuracy"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Consumer conclusion complete.",
+          "retry": "Complete consumer conclusion with the required evidence."
+        }
+      },
+      {
+        "id": "qar-uncertainty-node",
+        "type": "observation",
+        "title": "Uncertainty and error",
+        "description": "Relate uncertainty and recovery limits to the strength of the consumer conclusion.",
+        "actionId": "qar-analyze-uncertainty",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-uncertainty-node-complete",
+            "type": "actionEvidence",
+            "label": "Uncertainty and error was completed.",
+            "actionId": "qar-analyze-uncertainty"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Uncertainty and error complete.",
+          "retry": "Complete uncertainty and error with the required evidence."
+        }
+      },
+      {
+        "id": "qar-report-node",
+        "type": "checkpoint",
+        "title": "Investigation report",
+        "description": "Submit a claim-evidence-reasoning report with complete procedural and quantitative evidence.",
+        "actionId": "qar-submit-report-evidence",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-report-node-complete",
+            "type": "actionEvidence",
+            "label": "Investigation report was completed.",
+            "actionId": "qar-submit-report-evidence"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Investigation report complete.",
+          "retry": "Complete investigation report with the required evidence."
+        }
+      },
+      {
+        "id": "qar-particulate-postlab-node",
+        "type": "checkpoint",
+        "title": "Particulate-level postlab",
+        "description": "Connect molecular and ionic behavior to the macroscopic separation and recovery evidence.",
+        "actionId": "qar-submit-particulate-postlab",
+        "config": {},
+        "validation": [
+          {
+            "id": "qar-particulate-postlab-node-complete",
+            "type": "actionEvidence",
+            "label": "Particulate-level postlab was completed.",
+            "actionId": "qar-submit-particulate-postlab"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Particulate-level postlab complete.",
+          "retry": "Complete particulate-level postlab with the required evidence."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "qar-consumer-hypotheses-node",
+        "to": "qar-select-pure-tests-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-select-pure-tests-node",
+        "to": "qar-sucrose-properties-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-sucrose-properties-node",
+        "to": "qar-acetaminophen-properties-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-acetaminophen-properties-node",
+        "to": "qar-aspirin-properties-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-aspirin-properties-node",
+        "to": "qar-property-matrix-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-property-matrix-node",
+        "to": "qar-draft-flowchart-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-draft-flowchart-node",
+        "to": "qar-safety-audit-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-safety-audit-node",
+        "to": "qar-teacher-approval-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-teacher-approval-node",
+        "to": "qar-starting-mass-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-starting-mass-node",
+        "to": "qar-transfer-weighed-sample-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-transfer-weighed-sample-node",
+        "to": "qar-approved-dissolution-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-approved-dissolution-node",
+        "to": "qar-measure-approved-organic-volume-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-measure-approved-organic-volume-node",
+        "to": "qar-transfer-approved-solvent-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-transfer-approved-solvent-node",
+        "to": "qar-charge-funnel-organic-phase-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-charge-funnel-organic-phase-node",
+        "to": "qar-charge-funnel-aqueous-phase-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-charge-funnel-aqueous-phase-node",
+        "to": "qar-load-extraction-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-load-extraction-node",
+        "to": "qar-mix-vent-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-mix-vent-node",
+        "to": "qar-settle-layers-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-identify-layer-node",
+        "to": "qar-drain-lower-layer-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-drain-lower-layer-node",
+        "to": "qar-drain-upper-layer-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-drain-upper-layer-node",
+        "to": "qar-drain-layers-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-drain-layers-node",
+        "to": "qar-repeat-extraction-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-repeat-extraction-node",
+        "to": "qar-acid-base-endpoint-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-acid-base-endpoint-node",
+        "to": "qar-acidify-recovered-fraction-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-acidify-recovered-fraction-node",
+        "to": "qar-precipitate-recovered-component-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-precipitate-recovered-component-node",
+        "to": "qar-dry-organic-phase-with-mgso4-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-dry-organic-phase-with-mgso4-node",
+        "to": "qar-organic-drying-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-organic-drying-node",
+        "to": "qar-place-buchner-funnel-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-place-buchner-funnel-node",
+        "to": "qar-weigh-filter-paper-tare-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-weigh-filter-paper-tare-node",
+        "to": "qar-seat-filter-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-seat-filter-paper-node",
+        "to": "qar-wet-filter-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-wet-filter-paper-node",
+        "to": "qar-place-side-arm-flask-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-place-side-arm-flask-node",
+        "to": "qar-place-vacuum-source-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-place-vacuum-source-node",
+        "to": "qar-filtration-assembly-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-filtration-assembly-node",
+        "to": "qar-filter-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-filter-solid-node",
+        "to": "qar-rinse-collected-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-rinse-collected-solid-node",
+        "to": "qar-weigh-acidic-watch-glass-tare-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-weigh-acidic-watch-glass-tare-node",
+        "to": "qar-transfer-solid-to-watch-glass-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-transfer-solid-to-watch-glass-node",
+        "to": "qar-dry-acidic-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-dry-acidic-solid-node",
+        "to": "qar-cool-acidic-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-cool-acidic-solid-node",
+        "to": "qar-weigh-acidic-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-weigh-acidic-solid-node",
+        "to": "qar-weigh-organic-watch-glass-tare-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-weigh-organic-watch-glass-tare-node",
+        "to": "qar-recover-organic-component-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-recover-organic-component-node",
+        "to": "qar-wash-organic-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-wash-organic-solid-node",
+        "to": "qar-dry-organic-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-dry-organic-solid-node",
+        "to": "qar-cool-organic-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-cool-organic-solid-node",
+        "to": "qar-weigh-organic-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-weigh-organic-solid-node",
+        "to": "qar-decant-filtrate-to-beaker-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-decant-filtrate-to-beaker-node",
+        "to": "qar-weigh-aqueous-watch-glass-tare-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-weigh-aqueous-watch-glass-tare-node",
+        "to": "qar-recover-aqueous-component-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-recover-aqueous-component-node",
+        "to": "qar-wash-aqueous-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-wash-aqueous-solid-node",
+        "to": "qar-dry-aqueous-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-dry-aqueous-solid-node",
+        "to": "qar-cool-aqueous-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-cool-aqueous-solid-node",
+        "to": "qar-weigh-aqueous-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-weigh-aqueous-solid-node",
+        "to": "qar-dry-fractions-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-dry-fractions-node",
+        "to": "qar-record-masses-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-record-masses-node",
+        "to": "qar-confirm-formula-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-confirm-formula-node",
+        "to": "qar-sucrose-percent-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-sucrose-percent-node",
+        "to": "qar-acetaminophen-percent-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-acetaminophen-percent-node",
+        "to": "qar-possible-aspirin-percent-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-possible-aspirin-percent-node",
+        "to": "qar-total-recovery-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-total-recovery-node",
+        "to": "qar-label-accuracy-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-label-accuracy-node",
+        "to": "qar-uncertainty-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-uncertainty-node",
+        "to": "qar-report-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-report-node",
+        "to": "qar-particulate-postlab-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-settle-layers-node",
+        "to": "qar-recover-from-emulsion-node",
+        "label": "Emulsion observed",
+        "condition": {
+          "type": "retry"
+        }
+      },
+      {
+        "from": "qar-recover-from-emulsion-node",
+        "to": "qar-settle-layers-node",
+        "label": "Re-observe the funnel",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "qar-settle-layers-node",
+        "to": "qar-identify-layer-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "assessments": [
+    {
+      "id": "quick-ache-property-evidence-complete",
+      "type": "actionEvidence",
+      "label": "Quick Ache Pure-Component Property Evidence final evidence was recorded.",
+      "actionId": "qar-compare-property-matrix"
+    },
+    {
+      "id": "quick-ache-design-approval-complete",
+      "type": "actionEvidence",
+      "label": "Quick Ache Separation Design and Approval final evidence was recorded.",
+      "actionId": "qar-record-teacher-approval"
+    },
+    {
+      "id": "quick-ache-extraction-recovery-complete",
+      "type": "actionEvidence",
+      "label": "Quick Ache Extraction, Recovery, and Gravimetry final evidence was recorded.",
+      "actionId": "qar-record-dry-component-masses"
+    },
+    {
+      "id": "quick-ache-analysis-report-complete",
+      "type": "actionEvidence",
+      "label": "Quick Ache Composition Analysis and Report final evidence was recorded.",
+      "actionId": "qar-submit-particulate-postlab"
+    },
+    {
+      "id": "quick-ache-acidic-mass-assessment",
+      "type": "measurementRecorded",
+      "label": "The acidic fraction's dry recovered mass was measured.",
+      "measurementId": "qar-recovered-acidic-component-mass"
+    },
+    {
+      "id": "quick-ache-organic-mass-assessment",
+      "type": "measurementRecorded",
+      "label": "The organic fraction's dry recovered mass was measured.",
+      "measurementId": "qar-recovered-organic-component-mass"
+    },
+    {
+      "id": "quick-ache-aqueous-mass-assessment",
+      "type": "measurementRecorded",
+      "label": "The aqueous fraction's dry recovered mass was measured.",
+      "measurementId": "qar-recovered-aqueous-component-mass"
+    }
+  ],
+  "metadata": {
+    "version": "1.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-08-05T00:00:00.000Z",
+    "tags": [
+      "chemistry",
+      "quick-ache-relief",
+      "guided-inquiry",
+      "consumer-chemistry",
+      "separation",
+      "extraction",
+      "gravimetry"
+    ]
+  }
+}

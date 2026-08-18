@@ -1,0 +1,1893 @@
+{
+  "id": "bonding-solids-tests",
+  "title": "Bonding Solids Tests",
+  "learningGoal": "Collect appearance, solubility, conductivity, melting, and magnetism evidence for unknown solids.",
+  "requiredEquipment": [
+    "small-vial",
+    "reagent-tray",
+    "conductivity-tester",
+    "melting-point-apparatus",
+    "hot-plate-stirrer",
+    "spatula",
+    "watch-glass",
+    "magnet",
+    "test-tube",
+    "distilled-water-bottle",
+    "ph-paper"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "small-vial-1",
+        "definitionId": "small-vial",
+        "label": "Small vial",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Unknown solid",
+          "massG": 1,
+          "solutes": [
+            {
+              "id": "unknown-solid",
+              "label": "Unknown solid",
+              "amount": 1,
+              "unit": "g"
+            }
+          ],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "powder"
+        }
+      },
+      {
+        "id": "distilled-water-bottle-1",
+        "definitionId": "distilled-water-bottle",
+        "label": "Distilled water bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Distilled water",
+          "volumeMl": 500,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "test-tube-1",
+        "definitionId": "test-tube",
+        "label": "Test tube",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "test-tube-2",
+        "definitionId": "test-tube",
+        "label": "Test tube",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "reagent-tray-1",
+        "definitionId": "reagent-tray",
+        "label": "Reagent tray",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "conductivity-tester-1",
+        "definitionId": "conductivity-tester",
+        "label": "Conductivity tester",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "melting-point-apparatus-1",
+        "definitionId": "melting-point-apparatus",
+        "label": "Melting point apparatus",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "hot-plate-stirrer-1",
+        "definitionId": "hot-plate-stirrer",
+        "label": "Hot plate stirrer",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "spatula-1",
+        "definitionId": "spatula",
+        "label": "Spatula",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "watch-glass-1",
+        "definitionId": "watch-glass",
+        "label": "Watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "magnet-1",
+        "definitionId": "magnet",
+        "label": "Magnet",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "ph-paper-1",
+        "definitionId": "ph-paper",
+        "label": "pH paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "inspect-solid-appearance",
+      "verb": "observe",
+      "label": "Inspect solid appearance",
+      "parameters": {
+        "sourceDefinitionId": "small-vial",
+        "sourceInstanceId": "small-vial-1",
+        "note": "Inspect color, crystal form, luster, and visible heterogeneity before testing.",
+        "readingProvenance": "student-observed"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Inspect solid appearance: The solid's visible appearance is inspected."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The solid's visible appearance is inspected.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "visual-read"
+      ],
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "small-vial",
+        "stationId": "workbench",
+        "accessibleLabel": "Inspect the unknown solid's visible appearance before testing."
+      }
+    },
+    {
+      "id": "record-solid-appearance",
+      "verb": "record",
+      "label": "Record solid appearance",
+      "parameters": {
+        "tag": "solid-appearance",
+        "note": "Record appearance before any destructive test: color, crystal form, luster, and uncertainty.",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Appearance evidence",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "inspect-solid-appearance-required",
+          "type": "actionEvidence",
+          "label": "The solid's appearance was inspected.",
+          "actionId": "inspect-solid-appearance"
+        }
+      ],
+      "stateChanges": [
+        "Record solid appearance: Solid appearance is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Solid appearance is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "notebook",
+        "student-observation"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record the unknown solid's appearance before testing."
+      }
+    },
+    {
+      "id": "label-aqueous-test-location",
+      "verb": "observe",
+      "label": "Label aqueous test location",
+      "parameters": {
+        "tag": "aqueous-test-location,label",
+        "note": "Record the assigned sample/test-line label for the fresh aqueous-test location before transferring a microsample. Preserve the blind identity; do not infer or reveal a chemical identity.",
+        "inputKey": "bonding-aqueous-test-location-label",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Assigned aqueous test-location label",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "record-solid-appearance-required",
+          "type": "actionEvidence",
+          "label": "Appearance evidence is recorded.",
+          "actionId": "record-solid-appearance"
+        }
+      ],
+      "stateChanges": [
+        "Label aqueous test location: The aqueous test-location label is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The aqueous test-location label is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook",
+        "label",
+        "aqueous-test-location"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record the assigned label for the fresh aqueous test location before transferring a microsample."
+      }
+    },
+    {
+      "id": "dispense-aqueous-microsample",
+      "verb": "transfer",
+      "label": "Dispense aqueous-test microsample",
+      "parameters": {
+        "sourceDefinitionId": "small-vial",
+        "sourceInstanceId": "small-vial-1",
+        "targetDefinitionId": "test-tube",
+        "targetInstanceId": "test-tube-1",
+        "massG": 0.05,
+        "amountProvenance": "teacher-configuration",
+        "visualState": "granular-solid",
+        "configurationParameter": "massG",
+        "configurationRequired": true,
+        "unlocked": false,
+        "inputKey": "bondingMicrosampleMassG",
+        "inputMode": "numeric",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Teacher-approved microsample mass",
+        "inputMin": 0,
+        "inputMinExclusive": true,
+        "inputStep": 0.01,
+        "unit": "g"
+      },
+      "prerequisites": [
+        {
+          "id": "label-aqueous-test-location-required",
+          "type": "actionEvidence",
+          "label": "The aqueous test location is labelled.",
+          "actionId": "label-aqueous-test-location"
+        }
+      ],
+      "stateChanges": [
+        "Dispense aqueous-test microsample: A fresh microsample is in the aqueous test tube."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "A fresh microsample is in the aqueous test tube.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ],
+      "atomId": "atom.transfer.microsample-portion",
+      "equipmentRoleBindings": {
+        "sample-source": "small-vial",
+        "bonding-test-vessel": "test-tube",
+        "solid-transfer-tool": "spatula"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "small-vial",
+        "targetDefinitionId": "test-tube",
+        "valueParameter": "massG",
+        "accessibleLabel": "Dispense a fresh teacher-approved microsample into the aqueous test tube."
+      }
+    },
+    {
+      "id": "test-water-solubility",
+      "verb": "transfer",
+      "label": "Apply water to microsample",
+      "parameters": {
+        "sourceDefinitionId": "distilled-water-bottle",
+        "sourceInstanceId": "distilled-water-bottle-1",
+        "targetDefinitionId": "test-tube",
+        "targetInstanceId": "test-tube-1",
+        "volumeMl": 2,
+        "volumeProvenance": "teacher-configuration",
+        "configurationParameter": "volumeMl",
+        "configurationRequired": true,
+        "unlocked": false,
+        "inputMode": "numeric",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Teacher-approved water volume",
+        "inputMin": 0,
+        "inputMinExclusive": true,
+        "inputStep": 0.1,
+        "unit": "mL"
+      },
+      "prerequisites": [
+        {
+          "id": "dispense-aqueous-microsample-required",
+          "type": "actionEvidence",
+          "label": "A fresh aqueous-test microsample is present.",
+          "actionId": "dispense-aqueous-microsample"
+        }
+      ],
+      "stateChanges": [
+        "Apply water to microsample: Water is applied to the fresh microsample."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Water is applied to the fresh microsample.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ],
+      "atomId": "atom.transfer.apply-test-solvent",
+      "equipmentRoleBindings": {
+        "bonding-test-solvent-source": "distilled-water-bottle",
+        "bonding-test-vessel": "test-tube"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "distilled-water-bottle",
+        "targetDefinitionId": "test-tube",
+        "valueParameter": "volumeMl",
+        "accessibleLabel": "Apply the teacher-approved water amount to the aqueous-test microsample."
+      }
+    },
+    {
+      "id": "inspect-water-solubility",
+      "verb": "observe",
+      "label": "Inspect water solubility",
+      "parameters": {
+        "sourceDefinitionId": "test-tube",
+        "sourceInstanceId": "test-tube-1",
+        "note": "Inspect whether solid remains, dissolves, or gives an ambiguous intermediate state without inferring bonding type.",
+        "readingProvenance": "student-observed"
+      },
+      "prerequisites": [
+        {
+          "id": "test-water-solubility-required",
+          "type": "actionEvidence",
+          "label": "Water was applied to the microsample.",
+          "actionId": "test-water-solubility"
+        }
+      ],
+      "stateChanges": [
+        "Inspect water solubility: The aqueous-test mixture is inspected."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The aqueous-test mixture is inspected.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "visual-read"
+      ],
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "test-tube",
+        "stationId": "workbench",
+        "accessibleLabel": "Inspect the aqueous-test mixture for visible solubility evidence."
+      }
+    },
+    {
+      "id": "record-water-solubility",
+      "verb": "record",
+      "label": "Record water solubility",
+      "parameters": {
+        "tag": "water-solubility",
+        "note": "Record soluble, partially soluble, or insoluble, plus time and anomalies; do not infer bonding type yet.",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Water-solubility evidence",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "inspect-water-solubility-required",
+          "type": "actionEvidence",
+          "label": "The aqueous-test mixture was inspected.",
+          "actionId": "inspect-water-solubility"
+        }
+      ],
+      "stateChanges": [
+        "Record water solubility: Solubility evidence is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Solubility evidence is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "notebook",
+        "student-observation"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record the water-solubility observation without adding a new test action."
+      }
+    },
+    {
+      "id": "read-aqueous-conductivity",
+      "verb": "observe",
+      "label": "Read aqueous conductivity",
+      "parameters": {
+        "sourceDefinitionId": "test-tube",
+        "sourceInstanceId": "test-tube-1",
+        "targetDefinitionId": "conductivity-tester",
+        "note": "Read only an aqueous test mixture. If no solution exists, record no-aqueous-sample rather than inventing a value.",
+        "readingProvenance": "student-measured"
+      },
+      "prerequisites": [
+        {
+          "id": "test-water-solubility-required",
+          "type": "actionEvidence",
+          "label": "Water has been applied to the aqueous-test microsample.",
+          "actionId": "test-water-solubility"
+        },
+        {
+          "id": "record-water-solubility-required",
+          "type": "actionEvidence",
+          "label": "Solubility evidence is recorded.",
+          "actionId": "record-water-solubility"
+        }
+      ],
+      "stateChanges": [
+        "Read aqueous conductivity: The conductivity tester is read against the aqueous test mixture."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The conductivity tester is read against the aqueous test mixture.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe"
+      ],
+      "atomId": "atom.observe.read-aqueous-conductivity",
+      "equipmentRoleBindings": {
+        "immersed-probe-instrument": "conductivity-tester",
+        "bonding-test-vessel": "test-tube"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "test-tube",
+        "targetDefinitionId": "conductivity-tester",
+        "stationId": "conductivity-tester",
+        "accessibleLabel": "Read the conductivity tester against the aqueous test mixture."
+      }
+    },
+    {
+      "id": "record-aqueous-conductivity",
+      "verb": "observe",
+      "label": "Record aqueous conductivity",
+      "parameters": {
+        "tag": "aqueous-conductivity",
+        "note": "Record the reading with units or the approved category; record insoluble/no-aqueous-sample when appropriate.",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Conductivity evidence",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "read-aqueous-conductivity-required",
+          "type": "actionEvidence",
+          "label": "The aqueous conductivity test was read.",
+          "actionId": "read-aqueous-conductivity"
+        }
+      ],
+      "stateChanges": [
+        "Record aqueous conductivity: Aqueous conductivity evidence is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Aqueous conductivity evidence is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook",
+        "student-observation"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record the conductivity reading or approved category."
+      }
+    },
+    {
+      "id": "label-dry-test-location",
+      "verb": "observe",
+      "label": "Label dry test location",
+      "parameters": {
+        "tag": "dry-test-location,label",
+        "note": "Record the assigned sample/test-line label for the fresh dry-test location before transferring a microsample. Preserve the blind identity; do not infer or reveal a chemical identity.",
+        "inputKey": "bonding-dry-test-location-label",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Assigned dry test-location label",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "record-aqueous-conductivity-required",
+          "type": "actionEvidence",
+          "label": "Aqueous conductivity evidence is recorded.",
+          "actionId": "record-aqueous-conductivity"
+        }
+      ],
+      "stateChanges": [
+        "Label dry test location: The dry test-location label is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The dry test-location label is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook",
+        "label",
+        "dry-test-location"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record the assigned label for the fresh dry test location before transferring a microsample."
+      }
+    },
+    {
+      "id": "dispense-dry-microsample",
+      "verb": "transfer",
+      "label": "Dispense dry-test microsample",
+      "parameters": {
+        "sourceDefinitionId": "small-vial",
+        "sourceInstanceId": "small-vial-1",
+        "targetDefinitionId": "test-tube",
+        "targetInstanceId": "test-tube-2",
+        "massG": 0.05,
+        "amountProvenance": "teacher-configuration",
+        "visualState": "granular-solid",
+        "configurationParameter": "massG",
+        "configurationRequired": true,
+        "unlocked": false,
+        "inputKey": "bondingMicrosampleMassG",
+        "inputMode": "numeric",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Teacher-approved microsample mass",
+        "inputMin": 0,
+        "inputMinExclusive": true,
+        "inputStep": 0.01,
+        "unit": "g"
+      },
+      "prerequisites": [
+        {
+          "id": "label-dry-test-location-required",
+          "type": "actionEvidence",
+          "label": "The dry test location is labelled.",
+          "actionId": "label-dry-test-location"
+        }
+      ],
+      "stateChanges": [
+        "Dispense dry-test microsample: A fresh microsample is in the dry test tube."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "A fresh microsample is in the dry test tube.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ],
+      "atomId": "atom.transfer.microsample-portion",
+      "equipmentRoleBindings": {
+        "sample-source": "small-vial",
+        "bonding-test-vessel": "test-tube",
+        "solid-transfer-tool": "spatula"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "small-vial",
+        "targetDefinitionId": "test-tube",
+        "valueParameter": "massG",
+        "accessibleLabel": "Dispense a separate dry microsample for magnetic and melting tests."
+      }
+    },
+    {
+      "id": "test-magnetic-response",
+      "verb": "observe",
+      "label": "Test magnetic response",
+      "parameters": {
+        "sourceDefinitionId": "test-tube",
+        "sourceInstanceId": "test-tube-2",
+        "targetDefinitionId": "magnet",
+        "note": "Bring the magnet near the contained dry microsample without touching or mixing it.",
+        "readingProvenance": "student-observed"
+      },
+      "prerequisites": [
+        {
+          "id": "dispense-dry-microsample-required",
+          "type": "actionEvidence",
+          "label": "A fresh dry microsample is present.",
+          "actionId": "dispense-dry-microsample"
+        }
+      ],
+      "stateChanges": [
+        "Test magnetic response: The magnetic response is observed."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The magnetic response is observed.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe"
+      ],
+      "atomId": "atom.observe.test-magnetic-response",
+      "equipmentRoleBindings": {
+        "magnetic-response-tool": "magnet",
+        "bonding-test-vessel": "test-tube"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "test-tube",
+        "targetDefinitionId": "magnet",
+        "stationId": "magnet",
+        "accessibleLabel": "Bring the magnet near the contained dry microsample."
+      }
+    },
+    {
+      "id": "record-magnetic-response",
+      "verb": "observe",
+      "label": "Record magnetic response",
+      "parameters": {
+        "tag": "magnetism",
+        "note": "Record attraction, no attraction, or ambiguous response without forcing a bonding classification.",
+        "inputMode": "choice",
+        "inputRole": "studentResponse",
+        "inputLabel": "Magnetic response",
+        "inputOptions": [
+          "Attraction",
+          "No attraction",
+          "Ambiguous"
+        ]
+      },
+      "prerequisites": [
+        {
+          "id": "test-magnetic-response-required",
+          "type": "actionEvidence",
+          "label": "The magnetic response was tested.",
+          "actionId": "test-magnetic-response"
+        }
+      ],
+      "stateChanges": [
+        "Record magnetic response: Magnetic-response evidence is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Magnetic-response evidence is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook",
+        "student-observation"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record the magnetic response."
+      }
+    },
+    {
+      "id": "stage-melting-sample",
+      "verb": "place",
+      "label": "Stage melting-test microsample",
+      "parameters": {
+        "equipmentDefinitionId": "test-tube",
+        "equipmentInstanceId": "test-tube-2",
+        "sourceDefinitionId": "test-tube",
+        "sourceInstanceId": "test-tube-2",
+        "targetDefinitionId": "melting-point-apparatus",
+        "methodProvenance": "teacher-configured",
+        "configurationRequired": true,
+        "unlocked": false,
+        "inputMode": "choice",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Melting-method approval",
+        "inputOptions": [
+          "Teacher approved"
+        ]
+      },
+      "prerequisites": [
+        {
+          "id": "record-magnetic-response-required",
+          "type": "actionEvidence",
+          "label": "Magnetic evidence is recorded before destructive testing.",
+          "actionId": "record-magnetic-response"
+        }
+      ],
+      "stateChanges": [
+        "Stage melting-test microsample: The dry microsample is staged at the melting-point apparatus."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The dry microsample is staged at the melting-point apparatus.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ],
+      "atomId": "atom.place.melting-point-sample",
+      "equipmentRoleBindings": {
+        "melting-point-instrument": "melting-point-apparatus",
+        "bonding-test-vessel": "test-tube"
+      },
+      "interaction": {
+        "type": "dragToZone",
+        "sourceDefinitionId": "test-tube",
+        "stationId": "melting-point-apparatus",
+        "accessibleLabel": "Stage the dry microsample at the melting-point apparatus."
+      }
+    },
+    {
+      "id": "read-melting-behavior",
+      "verb": "observe",
+      "label": "Read melting behavior",
+      "parameters": {
+        "sourceDefinitionId": "test-tube",
+        "sourceInstanceId": "test-tube-2",
+        "targetDefinitionId": "melting-point-apparatus",
+        "note": "Use the teacher-approved method and read raw temperature, high/low category, decomposition, or no melt.",
+        "readingProvenance": "student-measured"
+      },
+      "prerequisites": [
+        {
+          "id": "stage-melting-sample-required",
+          "type": "actionEvidence",
+          "label": "The microsample is staged at the apparatus.",
+          "actionId": "stage-melting-sample"
+        }
+      ],
+      "stateChanges": [
+        "Read melting behavior: Melting behavior is read at the apparatus."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Melting behavior is read at the apparatus.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe"
+      ],
+      "atomId": "atom.observe.read-melting-behavior",
+      "equipmentRoleBindings": {
+        "melting-point-instrument": "melting-point-apparatus",
+        "bonding-test-vessel": "test-tube"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "test-tube",
+        "targetDefinitionId": "melting-point-apparatus",
+        "stationId": "melting-point-apparatus",
+        "accessibleLabel": "Read the staged microsample at the melting-point apparatus."
+      }
+    },
+    {
+      "id": "record-melting-behavior",
+      "verb": "observe",
+      "label": "Record melting behavior",
+      "parameters": {
+        "tag": "melting-behavior",
+        "note": "Record the raw temperature or approved category, including decomposition or no melt when observed.",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Melting evidence",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "read-melting-behavior-required",
+          "type": "actionEvidence",
+          "label": "Melting behavior was read at the apparatus.",
+          "actionId": "read-melting-behavior"
+        }
+      ],
+      "stateChanges": [
+        "Record melting behavior: Melting-behavior evidence is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Melting-behavior evidence is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook",
+        "student-observation"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record the melting behavior read at the apparatus."
+      }
+    },
+    {
+      "id": "record-bonding-classification",
+      "verb": "observe",
+      "label": "Record evidence-based classification",
+      "parameters": {
+        "tag": "bonding-classification",
+        "note": "Classify the unknown from the complete evidence pattern and state uncertainty or conflicting evidence.",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Classification, evidence, and uncertainty",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "record-melting-behavior-required",
+          "type": "actionEvidence",
+          "label": "Melting evidence is recorded.",
+          "actionId": "record-melting-behavior"
+        }
+      ],
+      "stateChanges": [
+        "Record evidence-based classification: Bonding classification evidence is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Bonding classification evidence is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook",
+        "student-claim"
+      ],
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record a classification supported by the collected evidence and uncertainty."
+      }
+    }
+  ],
+  "process": {
+    "startNodeId": "inspect-solid-appearance-node",
+    "nodes": [
+      {
+        "id": "inspect-solid-appearance-node",
+        "type": "observation",
+        "title": "Inspect appearance",
+        "description": "Inspect the unknown's visible appearance before destructive testing.",
+        "actionId": "inspect-solid-appearance",
+        "config": {},
+        "validation": [
+          {
+            "id": "inspect-solid-appearance-node-done",
+            "type": "actionEvidence",
+            "label": "Action inspect-solid-appearance was completed.",
+            "actionId": "inspect-solid-appearance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Inspect appearance complete.",
+          "retry": "Review Inspect appearance and try again."
+        }
+      },
+      {
+        "id": "record-solid-appearance-node",
+        "type": "observation",
+        "title": "Record appearance",
+        "description": "Record the visible appearance and uncertainty.",
+        "actionId": "record-solid-appearance",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-solid-appearance-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-solid-appearance was completed.",
+            "actionId": "record-solid-appearance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record appearance complete.",
+          "retry": "Review Record appearance and try again."
+        }
+      },
+      {
+        "id": "label-aqueous-test-location-node",
+        "type": "observation",
+        "title": "Label aqueous test location",
+        "description": "Record the assigned label for the fresh aqueous test location before transferring its microsample.",
+        "actionId": "label-aqueous-test-location",
+        "config": {},
+        "validation": [
+          {
+            "id": "label-aqueous-test-location-node-done",
+            "type": "actionEvidence",
+            "label": "Action label-aqueous-test-location was completed.",
+            "actionId": "label-aqueous-test-location"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Label aqueous test location complete.",
+          "retry": "Review Label aqueous test location and try again."
+        }
+      },
+      {
+        "id": "dispense-aqueous-microsample-node",
+        "type": "action",
+        "title": "Dispense aqueous microsample",
+        "description": "Transfer a fresh microsample into its aqueous test tube.",
+        "actionId": "dispense-aqueous-microsample",
+        "config": {},
+        "validation": [
+          {
+            "id": "dispense-aqueous-microsample-node-done",
+            "type": "actionEvidence",
+            "label": "Action dispense-aqueous-microsample was completed.",
+            "actionId": "dispense-aqueous-microsample"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dispense aqueous microsample complete.",
+          "retry": "Review Dispense aqueous microsample and try again."
+        }
+      },
+      {
+        "id": "test-water-solubility-node",
+        "type": "action",
+        "title": "Apply water",
+        "description": "Apply the approved amount of water to the fresh microsample.",
+        "actionId": "test-water-solubility",
+        "config": {},
+        "validation": [
+          {
+            "id": "test-water-solubility-node-done",
+            "type": "actionEvidence",
+            "label": "Action test-water-solubility was completed.",
+            "actionId": "test-water-solubility"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Apply water complete.",
+          "retry": "Review Apply water and try again."
+        }
+      },
+      {
+        "id": "inspect-water-solubility-node",
+        "type": "observation",
+        "title": "Inspect solubility",
+        "description": "Inspect the aqueous-test mixture for visible solubility evidence.",
+        "actionId": "inspect-water-solubility",
+        "config": {},
+        "validation": [
+          {
+            "id": "inspect-water-solubility-node-done",
+            "type": "actionEvidence",
+            "label": "Action inspect-water-solubility was completed.",
+            "actionId": "inspect-water-solubility"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Inspect solubility complete.",
+          "retry": "Review Inspect solubility and try again."
+        }
+      },
+      {
+        "id": "record-water-solubility-node",
+        "type": "observation",
+        "title": "Record solubility",
+        "description": "Record the water-solubility observation and uncertainty.",
+        "actionId": "record-water-solubility",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-water-solubility-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-water-solubility was completed.",
+            "actionId": "record-water-solubility"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record solubility complete.",
+          "retry": "Review Record solubility and try again."
+        }
+      },
+      {
+        "id": "read-aqueous-conductivity-node",
+        "type": "observation",
+        "title": "Read conductivity",
+        "description": "Read the tester only against an aqueous test mixture.",
+        "actionId": "read-aqueous-conductivity",
+        "config": {},
+        "validation": [
+          {
+            "id": "read-aqueous-conductivity-node-done",
+            "type": "actionEvidence",
+            "label": "Action read-aqueous-conductivity was completed.",
+            "actionId": "read-aqueous-conductivity"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Read conductivity complete.",
+          "retry": "Review Read conductivity and try again."
+        }
+      },
+      {
+        "id": "record-aqueous-conductivity-node",
+        "type": "observation",
+        "title": "Record conductivity",
+        "description": "Record the reading, units/category, or no-aqueous-sample.",
+        "actionId": "record-aqueous-conductivity",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-aqueous-conductivity-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-aqueous-conductivity was completed.",
+            "actionId": "record-aqueous-conductivity"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record conductivity complete.",
+          "retry": "Review Record conductivity and try again."
+        }
+      },
+      {
+        "id": "label-dry-test-location-node",
+        "type": "observation",
+        "title": "Label dry test location",
+        "description": "Record the assigned label for the fresh dry test location before transferring its microsample.",
+        "actionId": "label-dry-test-location",
+        "config": {},
+        "validation": [
+          {
+            "id": "label-dry-test-location-node-done",
+            "type": "actionEvidence",
+            "label": "Action label-dry-test-location was completed.",
+            "actionId": "label-dry-test-location"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Label dry test location complete.",
+          "retry": "Review Label dry test location and try again."
+        }
+      },
+      {
+        "id": "dispense-dry-microsample-node",
+        "type": "action",
+        "title": "Dispense dry microsample",
+        "description": "Transfer a separate fresh microsample for dry tests.",
+        "actionId": "dispense-dry-microsample",
+        "config": {},
+        "validation": [
+          {
+            "id": "dispense-dry-microsample-node-done",
+            "type": "actionEvidence",
+            "label": "Action dispense-dry-microsample was completed.",
+            "actionId": "dispense-dry-microsample"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dispense dry microsample complete.",
+          "retry": "Review Dispense dry microsample and try again."
+        }
+      },
+      {
+        "id": "test-magnetic-response-node",
+        "type": "observation",
+        "title": "Test magnetism",
+        "description": "Bring the magnet near the contained dry microsample.",
+        "actionId": "test-magnetic-response",
+        "config": {},
+        "validation": [
+          {
+            "id": "test-magnetic-response-node-done",
+            "type": "actionEvidence",
+            "label": "Action test-magnetic-response was completed.",
+            "actionId": "test-magnetic-response"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Test magnetism complete.",
+          "retry": "Review Test magnetism and try again."
+        }
+      },
+      {
+        "id": "record-magnetic-response-node",
+        "type": "observation",
+        "title": "Record magnetism",
+        "description": "Record attraction, no attraction, or ambiguous response.",
+        "actionId": "record-magnetic-response",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-magnetic-response-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-magnetic-response was completed.",
+            "actionId": "record-magnetic-response"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record magnetism complete.",
+          "retry": "Review Record magnetism and try again."
+        }
+      },
+      {
+        "id": "stage-melting-sample-node",
+        "type": "action",
+        "title": "Stage melting sample",
+        "description": "Stage the dry microsample at the teacher-approved apparatus.",
+        "actionId": "stage-melting-sample",
+        "config": {},
+        "validation": [
+          {
+            "id": "stage-melting-sample-node-done",
+            "type": "actionEvidence",
+            "label": "Action stage-melting-sample was completed.",
+            "actionId": "stage-melting-sample"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Stage melting sample complete.",
+          "retry": "Review Stage melting sample and try again."
+        }
+      },
+      {
+        "id": "read-melting-behavior-node",
+        "type": "observation",
+        "title": "Read melting behavior",
+        "description": "Read the staged sample using the teacher-approved method.",
+        "actionId": "read-melting-behavior",
+        "config": {},
+        "validation": [
+          {
+            "id": "read-melting-behavior-node-done",
+            "type": "actionEvidence",
+            "label": "Action read-melting-behavior was completed.",
+            "actionId": "read-melting-behavior"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Read melting behavior complete.",
+          "retry": "Review Read melting behavior and try again."
+        }
+      },
+      {
+        "id": "record-melting-behavior-node",
+        "type": "observation",
+        "title": "Record melting behavior",
+        "description": "Record the temperature/category and anomalies.",
+        "actionId": "record-melting-behavior",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-melting-behavior-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-melting-behavior was completed.",
+            "actionId": "record-melting-behavior"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record melting behavior complete.",
+          "retry": "Review Record melting behavior and try again."
+        }
+      },
+      {
+        "id": "record-bonding-classification-node",
+        "type": "observation",
+        "title": "Record classification",
+        "description": "Record the bonding classification supported by the tests.",
+        "actionId": "record-bonding-classification",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-bonding-classification-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-bonding-classification was completed.",
+            "actionId": "record-bonding-classification"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record classification complete.",
+          "retry": "Review Record classification and try again."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "inspect-solid-appearance-node",
+        "to": "record-solid-appearance-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-solid-appearance-node",
+        "to": "label-aqueous-test-location-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "label-aqueous-test-location-node",
+        "to": "dispense-aqueous-microsample-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "dispense-aqueous-microsample-node",
+        "to": "test-water-solubility-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "test-water-solubility-node",
+        "to": "inspect-water-solubility-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inspect-water-solubility-node",
+        "to": "record-water-solubility-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-water-solubility-node",
+        "to": "read-aqueous-conductivity-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "read-aqueous-conductivity-node",
+        "to": "record-aqueous-conductivity-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-aqueous-conductivity-node",
+        "to": "label-dry-test-location-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "label-dry-test-location-node",
+        "to": "dispense-dry-microsample-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "dispense-dry-microsample-node",
+        "to": "test-magnetic-response-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "test-magnetic-response-node",
+        "to": "record-magnetic-response-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-magnetic-response-node",
+        "to": "stage-melting-sample-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "stage-melting-sample-node",
+        "to": "read-melting-behavior-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "read-melting-behavior-node",
+        "to": "record-melting-behavior-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-melting-behavior-node",
+        "to": "record-bonding-classification-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "inspect-solid-appearance-node-success",
+      "type": "actionEvidence",
+      "label": "Action inspect-solid-appearance was completed.",
+      "actionId": "inspect-solid-appearance"
+    },
+    {
+      "id": "record-solid-appearance-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-solid-appearance was completed.",
+      "actionId": "record-solid-appearance"
+    },
+    {
+      "id": "label-aqueous-test-location-node-success",
+      "type": "actionEvidence",
+      "label": "Action label-aqueous-test-location was completed.",
+      "actionId": "label-aqueous-test-location"
+    },
+    {
+      "id": "dispense-aqueous-microsample-node-success",
+      "type": "actionEvidence",
+      "label": "Action dispense-aqueous-microsample was completed.",
+      "actionId": "dispense-aqueous-microsample"
+    },
+    {
+      "id": "test-water-solubility-node-success",
+      "type": "actionEvidence",
+      "label": "Action test-water-solubility was completed.",
+      "actionId": "test-water-solubility"
+    },
+    {
+      "id": "inspect-water-solubility-node-success",
+      "type": "actionEvidence",
+      "label": "Action inspect-water-solubility was completed.",
+      "actionId": "inspect-water-solubility"
+    },
+    {
+      "id": "record-water-solubility-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-water-solubility was completed.",
+      "actionId": "record-water-solubility"
+    },
+    {
+      "id": "read-aqueous-conductivity-node-success",
+      "type": "actionEvidence",
+      "label": "Action read-aqueous-conductivity was completed.",
+      "actionId": "read-aqueous-conductivity"
+    },
+    {
+      "id": "record-aqueous-conductivity-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-aqueous-conductivity was completed.",
+      "actionId": "record-aqueous-conductivity"
+    },
+    {
+      "id": "label-dry-test-location-node-success",
+      "type": "actionEvidence",
+      "label": "Action label-dry-test-location was completed.",
+      "actionId": "label-dry-test-location"
+    },
+    {
+      "id": "dispense-dry-microsample-node-success",
+      "type": "actionEvidence",
+      "label": "Action dispense-dry-microsample was completed.",
+      "actionId": "dispense-dry-microsample"
+    },
+    {
+      "id": "test-magnetic-response-node-success",
+      "type": "actionEvidence",
+      "label": "Action test-magnetic-response was completed.",
+      "actionId": "test-magnetic-response"
+    },
+    {
+      "id": "record-magnetic-response-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-magnetic-response was completed.",
+      "actionId": "record-magnetic-response"
+    },
+    {
+      "id": "stage-melting-sample-node-success",
+      "type": "actionEvidence",
+      "label": "Action stage-melting-sample was completed.",
+      "actionId": "stage-melting-sample"
+    },
+    {
+      "id": "read-melting-behavior-node-success",
+      "type": "actionEvidence",
+      "label": "Action read-melting-behavior was completed.",
+      "actionId": "read-melting-behavior"
+    },
+    {
+      "id": "record-melting-behavior-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-melting-behavior was completed.",
+      "actionId": "record-melting-behavior"
+    },
+    {
+      "id": "record-bonding-classification-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-bonding-classification was completed.",
+      "actionId": "record-bonding-classification"
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "wrong-order",
+      "when": "current node expects a different action",
+      "message": "That action is out of sequence for the current technique step.",
+      "recovery": "Check the process map and perform the highlighted step first."
+    },
+    {
+      "id": "missing-source",
+      "when": "source equipment or contents are missing",
+      "message": "The selected source does not contain the material required for this action.",
+      "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+    },
+    {
+      "id": "overflow",
+      "when": "target capacity would be exceeded",
+      "message": "The target equipment cannot hold the requested volume.",
+      "recovery": "Use a larger container or transfer a smaller measured amount."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-08-12T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "chemistry",
+      "bonding",
+      "qualitative-analysis"
+    ]
+  }
+}
