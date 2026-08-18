@@ -1,0 +1,190 @@
+{
+  "id": "acid-base-titration-curves",
+  "title": "Exploring Acid-Base Titration Curves",
+  "description": "Validator-clean Lab Studio definition for the custom Acid-Base Titration Curves experience. The dedicated route loads the teacher configuration and full comparative titration workflow.",
+  "audience": "Chemistry students",
+  "learningGoals": [
+    "Compare how strong and weak acid/base structure changes pH-volume titration curves.",
+    "Determine an unknown molarity from equivalence stoichiometry.",
+    "Use weak-system curve evidence to calculate percent ionization, Ka or Kb, and percent error."
+  ],
+  "safetyNotes": [
+    "Wear splash-proof goggles and chemical-resistant gloves.",
+    "Review the instructor-provided SDS information for every assigned acid and base.",
+    "Add acid to water when dilution is authorized; never add water to concentrated acid.",
+    "Report spills immediately and rinse exposed skin with running water for 15 minutes.",
+    "Neutralize waste, test pH, and dispose only by the instructor's configured procedure."
+  ],
+  "equipment": [],
+  "techniques": [
+    {
+      "id": "titration-curves-custom-experience-entry",
+      "title": "Open the comparative titration-curve inquiry",
+      "learningGoal": "Enter the dedicated Acid-Base Titration Curves experience through its catalog route.",
+      "requiredEquipment": [],
+      "initialState": {
+        "equipment": []
+      },
+      "actions": [
+        {
+          "id": "acknowledge-titration-curves-custom-experience",
+          "verb": "observe",
+          "label": "Acknowledge the dedicated Acid-Base Titration Curves experience",
+          "parameters": {
+            "note": "The dedicated route provides the complete approval-gated comparative titration workflow."
+          },
+          "interaction": {
+            "type": "recordNotebook",
+            "valueParameter": "note",
+            "accessibleLabel": "Record that the dedicated Acid-Base Titration Curves experience provides the complete comparative workflow.",
+            "successCue": "Acid-Base Titration Curves experience acknowledged.",
+            "invalidCue": "Open the dedicated Acid-Base Titration Curves route from the lab catalog."
+          },
+          "prerequisites": [],
+          "stateChanges": [
+            "Records the dedicated-experience handoff note."
+          ],
+          "invalidCases": [],
+          "feedback": {
+            "success": "Acid-Base Titration Curves experience acknowledged.",
+            "invalid": "Open the dedicated Acid-Base Titration Curves route from the lab catalog."
+          },
+          "evidence": [
+            "dedicated-investigation-route"
+          ]
+        }
+      ],
+      "process": {
+        "startNodeId": "acknowledge-titration-curves-custom-experience-node",
+        "nodes": [
+          {
+            "id": "acknowledge-titration-curves-custom-experience-node",
+            "type": "teacherNote",
+            "title": "Dedicated Acid-Base Titration Curves experience",
+            "description": "Use the catalog route for the complete four-sample titration-curve investigation.",
+            "actionId": "acknowledge-titration-curves-custom-experience",
+            "config": {
+              "customRoute": "#/play/acid-base-titration-curves"
+            },
+            "validation": [
+              {
+                "id": "acknowledge-titration-curves-custom-experience-evidence",
+                "type": "actionEvidence",
+                "label": "Dedicated Acid-Base Titration Curves route was acknowledged.",
+                "actionId": "acknowledge-titration-curves-custom-experience"
+              }
+            ],
+            "hints": [
+              "The dedicated route reads its teacher-editable configuration separately from this validator-clean fallback definition."
+            ],
+            "feedback": {
+              "success": "Dedicated Acid-Base Titration Curves experience acknowledged.",
+              "retry": "Open the dedicated Acid-Base Titration Curves catalog route."
+            }
+          }
+        ],
+        "edges": []
+      },
+      "successCriteria": [
+        {
+          "id": "titration-curves-custom-experience-entry-complete",
+          "type": "actionEvidence",
+          "label": "Dedicated Acid-Base Titration Curves route was acknowledged.",
+          "actionId": "acknowledge-titration-curves-custom-experience"
+        }
+      ],
+      "commonMistakes": [],
+      "resetBehavior": "resetTechnique",
+      "metadata": {
+        "version": "1.0.0",
+        "author": "Lab Studio",
+        "updatedAt": "2026-07-27T00:00:00.000Z",
+        "tags": [
+          "chemistry",
+          "titration-curves",
+          "custom-experience"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "acknowledge-titration-curves-custom-experience",
+      "verb": "observe",
+      "label": "Acknowledge the dedicated Acid-Base Titration Curves experience",
+      "parameters": {
+        "note": "The dedicated route provides the complete approval-gated comparative titration workflow."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record that the dedicated Acid-Base Titration Curves experience provides the complete comparative workflow.",
+        "successCue": "Acid-Base Titration Curves experience acknowledged.",
+        "invalidCue": "Open the dedicated Acid-Base Titration Curves route from the lab catalog."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Records the dedicated-experience handoff note."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Acid-Base Titration Curves experience acknowledged.",
+        "invalid": "Open the dedicated Acid-Base Titration Curves route from the lab catalog."
+      },
+      "evidence": [
+        "dedicated-investigation-route"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "acknowledge-titration-curves-custom-experience-node",
+    "nodes": [
+      {
+        "id": "acknowledge-titration-curves-custom-experience-node",
+        "type": "teacherNote",
+        "title": "Dedicated Acid-Base Titration Curves experience",
+        "description": "Use the catalog route for the complete four-sample titration-curve investigation.",
+        "actionId": "acknowledge-titration-curves-custom-experience",
+        "config": {
+          "customRoute": "#/play/acid-base-titration-curves"
+        },
+        "validation": [
+          {
+            "id": "acknowledge-titration-curves-custom-experience-evidence",
+            "type": "actionEvidence",
+            "label": "Dedicated Acid-Base Titration Curves route was acknowledged.",
+            "actionId": "acknowledge-titration-curves-custom-experience"
+          }
+        ],
+        "hints": [
+          "The dedicated route reads its teacher-editable configuration separately from this validator-clean fallback definition."
+        ],
+        "feedback": {
+          "success": "Dedicated Acid-Base Titration Curves experience acknowledged.",
+          "retry": "Open the dedicated Acid-Base Titration Curves catalog route."
+        }
+      }
+    ],
+    "edges": []
+  },
+  "assessments": [
+    {
+      "id": "titration-curves-custom-experience-entry-complete",
+      "type": "actionEvidence",
+      "label": "Dedicated Acid-Base Titration Curves route was acknowledged.",
+      "actionId": "acknowledge-titration-curves-custom-experience"
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-07-27T00:00:00.000Z",
+    "tags": [
+      "lab",
+      "chemistry",
+      "inquiry",
+      "titration-curves",
+      "custom-experience"
+    ]
+  }
+}

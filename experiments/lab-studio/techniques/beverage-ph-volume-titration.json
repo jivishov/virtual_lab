@@ -1,0 +1,927 @@
+{
+  "id": "beverage-ph-volume-titration",
+  "title": "Beverage pH-Volume Titration",
+  "learningGoal": "Run a teacher-approved beverage titration while preserving separate pH, indicator-color, burette, stoichiometric-model, and provenance evidence.",
+  "requiredEquipment": [
+    "sample-bottle",
+    "graduated-pipette-10ml",
+    "pipette-pump",
+    "erlenmeyer-flask-250ml",
+    "burette-50ml",
+    "ring-stand-clamp",
+    "naoh-bottle",
+    "dropper-bottle",
+    "ph-meter",
+    "stirring-rod",
+    "wash-bottle",
+    "waste-beaker"
+  ],
+  "teacherConfiguration": {
+    "requiredBeforeRun": true,
+    "beverageIdentity": "Teacher-assigned; do not infer from the sample image.",
+    "primaryAcidModel": "Teacher-approved identity or mixture model.",
+    "stoichiometricRatio": "Teacher-approved balanced-equation ratio.",
+    "degassing": "Required only when the teacher confirms a method and endpoint criterion for a carbonated sample.",
+    "aliquotMl": "Teacher-approved quantitative aliquot.",
+    "naohMolarityChoicesM": [
+      0.1,
+      0.25
+    ],
+    "incrementStrategy": "Teacher-approved increments, including any smaller increments near equivalence.",
+    "replicateCount": "Teacher-approved minimum.",
+    "indicator": "Teacher-approved for the modeled equivalence region and beverage color.",
+    "endpointPersistence": "Teacher-approved visual criterion.",
+    "precisionAndTolerance": "Teacher-approved instrument precision and calculation tolerances.",
+    "disposal": "Teacher-provided disposal protocol."
+  },
+  "initialState": {
+    "equipment": [
+      {
+        "id": "beverage-technique-burette",
+        "definitionId": "burette-50ml",
+        "label": "Teacher-configured NaOH burette",
+        "contents": {
+          "kind": "empty",
+          "label": "empty until conditioned and filled with the approved NaOH",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-stand",
+        "definitionId": "ring-stand-clamp",
+        "label": "Ring stand and burette clamp",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-flask",
+        "definitionId": "erlenmeyer-flask-250ml",
+        "label": "Teacher-configured beverage aliquot flask",
+        "contents": {
+          "kind": "empty",
+          "label": "awaiting the teacher-configured beverage aliquot",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-sample",
+        "definitionId": "sample-bottle",
+        "label": "Teacher-assigned beverage sample",
+        "contents": {
+          "kind": "empty",
+          "label": "awaiting the teacher-assigned beverage identity and sample state",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-pipette",
+        "definitionId": "graduated-pipette-10ml",
+        "label": "10 mL graduated quantitative pipette",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-pipette-pump",
+        "definitionId": "pipette-pump",
+        "label": "Pipette pump",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-naoh",
+        "definitionId": "naoh-bottle",
+        "label": "Teacher-approved standardized NaOH choice",
+        "contents": {
+          "kind": "empty",
+          "label": "awaiting the approved 0.10 M or 0.25 M NaOH selection",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-indicator",
+        "definitionId": "dropper-bottle",
+        "label": "Teacher-approved indicator",
+        "contents": {
+          "kind": "empty",
+          "label": "awaiting the approved indicator identity and transition range",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-ph-meter",
+        "definitionId": "ph-meter",
+        "label": "pH meter and probe",
+        "contents": {
+          "kind": "empty",
+          "label": "requires the teacher-approved calibration and rinse protocol",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-stirring-rod",
+        "definitionId": "stirring-rod",
+        "label": "Clean stirring rod",
+        "contents": {
+          "kind": "empty",
+          "label": "clean stirring rod",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-wash-bottle",
+        "definitionId": "wash-bottle",
+        "label": "Deionized-water wash bottle",
+        "contents": {
+          "kind": "empty",
+          "label": "awaiting teacher-approved rinse use",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      },
+      {
+        "id": "beverage-technique-waste",
+        "definitionId": "waste-beaker",
+        "label": "Teacher-directed titration waste receiver",
+        "contents": {
+          "kind": "empty",
+          "label": "use only under the teacher-provided disposal protocol",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        },
+        "location": "shelf"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "record-approved-run-configuration",
+      "verb": "observe",
+      "label": "Record approved beverage titration configuration",
+      "parameters": {
+        "note": "Confirm and preserve the teacher-approved beverage identity, sample state, acid model, stoichiometry, aliquot, selected 0.10 M or 0.25 M NaOH, indicator, increments, replicates, endpoint rule, tolerances, and disposal protocol.",
+        "tag": "approved-run-configuration",
+        "configurationRequired": true,
+        "unlocked": false,
+        "inputMode": "text",
+        "inputRole": "teacherConfiguration",
+        "inputLabel": "Approved titration configuration and instructor approval record",
+        "inputRequired": true,
+        "inputKey": "beverage-technique-approved-configuration"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Record beverage identity, sample state, acid model, stoichiometry, aliquot, NaOH choice, indicator, increments, replicates, endpoint rule, tolerances, and disposal."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "The teacher-approved run configuration is recorded.",
+        "invalid": "Do not begin a quantitative run until every required configuration field is approved."
+      },
+      "evidence": [
+        "approved-plan",
+        "configuration"
+      ]
+    },
+    {
+      "id": "prepare-beverage-as-approved",
+      "verb": "observe",
+      "label": "Prepare beverage sample as approved",
+      "parameters": {
+        "note": "Use the assigned beverage identity and state. Degass only when the teacher-approved plan requires it, using the approved method and completion criterion.",
+        "tag": "sample-preparation",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Beverage identity, sample state, and preparation evidence",
+        "inputRequired": true
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Record beverage identity and whether the sample is carbonated, degassed, or not applicable."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Beverage preparation state is recorded.",
+        "invalid": "Do not silently assume that a carbonated sample has been degassed."
+      },
+      "evidence": [
+        "sample-state",
+        "degassing-provenance"
+      ]
+    },
+    {
+      "id": "assemble-burette-setup",
+      "verb": "place",
+      "label": "Mount the burette on the ring stand",
+      "parameters": {
+        "equipmentDefinitionId": "burette-50ml",
+        "targetDefinitionId": "ring-stand-clamp",
+        "snapZoneId": "ring-stand-burette-clamp",
+        "sourceDefinitionId": "burette-50ml"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "burette-50ml",
+        "targetDefinitionId": "ring-stand-clamp",
+        "snapZoneId": "ring-stand-burette-clamp",
+        "successCue": "The burette is upright and secured in the clamp.",
+        "invalidCue": "Use the burette clamp on the ring stand.",
+        "accessibleLabel": "Mount the 50 mL burette upright in the ring stand clamp."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Mount the burette upright above the flask position."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "The burette is mounted.",
+        "invalid": "Mount the burette securely before conditioning or reading it."
+      },
+      "evidence": [
+        "apparatus-setup"
+      ],
+      "atomId": "atom.place.mount-burette",
+      "equipmentRoleBindings": {
+        "titrant-delivery-device": "burette-50ml",
+        "burette-support": "ring-stand-clamp"
+      }
+    },
+    {
+      "id": "condition-fill-and-read-burette",
+      "verb": "observe",
+      "label": "Condition, fill, and record the initial burette reading",
+      "parameters": {
+        "note": "Condition and fill the burette with the approved standardized NaOH, clear the tip, read the meniscus at the approved precision, and preserve the actual initial reading in the run record.",
+        "tag": "beverage-burette-initial-volume",
+        "inputMode": "numeric",
+        "inputRole": "studentResponse",
+        "inputLabel": "Observed initial burette reading",
+        "inputMin": 0,
+        "inputMax": 50,
+        "inputStep": 0.01,
+        "inputRequired": true,
+        "measurementId": "beverage-technique-initial-burette-volume",
+        "unit": "mL"
+      },
+      "prerequisites": [
+        {
+          "id": "burette-mounted",
+          "type": "actionEvidence",
+          "label": "The burette is mounted.",
+          "actionId": "assemble-burette-setup"
+        }
+      ],
+      "stateChanges": [
+        "Condition and fill the burette with the selected standardized NaOH, clear the tip, read the meniscus, and record the initial volume."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "The conditioned burette and initial reading are documented.",
+        "invalid": "Record the selected 0.10 M or 0.25 M NaOH and the initial burette reading."
+      },
+      "evidence": [
+        "burette-conditioning",
+        "measurement"
+      ]
+    },
+    {
+      "id": "prepare-quantitative-aliquot",
+      "verb": "observe",
+      "label": "Prepare and record the approved beverage aliquot",
+      "parameters": {
+        "note": "Use the approved quantitative pipette and pump to place a fresh beverage aliquot in the flask, then preserve the actual aliquot in milliliters in the run record.",
+        "tag": "beverage-aliquot-volume",
+        "inputMode": "numeric",
+        "inputRole": "studentResponse",
+        "inputLabel": "Observed beverage aliquot volume",
+        "inputMin": 0,
+        "inputMinExclusive": true,
+        "inputMax": 50,
+        "inputStep": 0.01,
+        "inputRequired": true,
+        "measurementId": "beverage-technique-aliquot-volume",
+        "unit": "mL"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Use the approved quantitative pipette and pump to place a fresh beverage aliquot in the Erlenmeyer flask."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "The fresh quantitative aliquot is recorded.",
+        "invalid": "Use the teacher-approved aliquot and apparatus; do not substitute the practice drop-count method."
+      },
+      "evidence": [
+        "aliquot",
+        "fresh-trial"
+      ]
+    },
+    {
+      "id": "add-approved-indicator-and-probe",
+      "verb": "place",
+      "label": "Insert the approved pH probe in the analyte",
+      "parameters": {
+        "note": "Immerse the probe bulb without letting the stirrer strike it. Record the indicator identity and transition range separately from the probe evidence, and note any beverage colour interference. Probe calibration and rinsing stay teacher-configured (confirmation point 5).",
+        "tag": "indicator-probe",
+        "equipmentDefinitionId": "ph-meter",
+        "sourceDefinitionId": "ph-meter",
+        "location": "workbench",
+        "probeCalibrationIsTeacherConfigured": true,
+        "indicatorChoiceIsTeacherConfigured": true
+      },
+      "interaction": {
+      "type": "dragToZone",
+      "sourceDefinitionId": "ph-meter",
+      "stationId": "workbench",
+        "successCue": "The probe bulb is immersed in the analyte.",
+        "invalidCue": "Place the pH probe so the bulb is immersed and clear of the stirrer.",
+        "accessibleLabel": "Insert the pH probe into the analyte so the bulb is immersed."
+      },
+      "prerequisites": [
+        {
+          "id": "aliquot-recorded",
+          "type": "actionEvidence",
+          "label": "The beverage aliquot is recorded.",
+          "actionId": "prepare-quantitative-aliquot"
+        }
+      ],
+      "stateChanges": [
+        "Prepare distinct pH and indicator-color evidence channels."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Indicator and pH-probe setup is documented.",
+        "invalid": "Record the approved indicator and address colored-sample interference."
+      },
+      "evidence": [
+        "indicator",
+        "ph-probe",
+        "color-interference",
+        "place"
+      ],
+      "atomId": "atom.place.immersed-ph-probe",
+      "equipmentRoleBindings": {
+        "immersed-probe-instrument": "ph-meter",
+        "immersed-probe-vessel": "erlenmeyer-flask-250ml",
+        "stirring-device": "stirring-rod"
+      }
+    },
+    {
+      "id": "record-ph-volume-color-series",
+      "verb": "observe",
+      "label": "Record cumulative NaOH volume, pH, and indicator color through and after endpoint",
+      "parameters": {
+        "note": "Preserve a table whose first row is zero delivered NaOH and initial pH, followed by one row per approved increment with cumulative NaOH volume in mL, stable pH, and observed indicator color. Continue through and after the endpoint.",
+        "tag": "beverage-ph-volume-color-series",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Cumulative NaOH volume, stable pH, and color series",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "initial-burette-recorded",
+          "type": "actionEvidence",
+          "label": "The initial burette reading is recorded.",
+          "actionId": "condition-fill-and-read-burette"
+        },
+        {
+          "id": "indicator-probe-ready",
+          "type": "actionEvidence",
+          "label": "Indicator and probe setup is documented.",
+          "actionId": "add-approved-indicator-and-probe"
+        }
+      ],
+      "stateChanges": [
+        "Record the initial pH at zero delivered volume.",
+        "For each approved increment, mix, wait for a stable reading, and record cumulative delivered volume, pH, and color.",
+        "Continue through and after the endpoint according to the approved plan."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "The pH-volume-color series is documented.",
+        "invalid": "Each row must preserve cumulative NaOH volume, pH, and observed color; do not replace the curve with one endpoint value."
+      },
+      "evidence": [
+        "ph-volume-series",
+        "indicator-color-series",
+        "initial-ph"
+      ]
+    },
+    {
+      "id": "distinguish-endpoint-and-equivalence",
+      "verb": "observe",
+      "label": "Identify indicator endpoint and curve equivalence separately",
+      "parameters": {
+        "note": "Mark the indicator color-change volume and pH on the pH-versus-volume curve, then identify the equivalence region from the curve. Explain any difference.",
+        "tag": "endpoint-equivalence",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Endpoint and curve-equivalence evidence",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "series-recorded",
+          "type": "actionEvidence",
+          "label": "The pH-volume-color series is recorded.",
+          "actionId": "record-ph-volume-color-series"
+        }
+      ],
+      "stateChanges": [
+        "Preserve endpoint and equivalence as distinct evidence."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Endpoint and equivalence evidence are distinguished.",
+        "invalid": "Do not use endpoint and equivalence as interchangeable terms."
+      },
+      "evidence": [
+        "indicator-endpoint",
+        "curve-equivalence",
+        "graph-annotation"
+      ]
+    },
+    {
+      "id": "calculate-beverage-acid-concentration",
+      "verb": "observe",
+      "label": "Calculate beverage acid concentration with the approved acid model",
+      "parameters": {
+        "note": "Calculate and preserve acid concentration in mol/L using the recorded aliquot, selected standardized NaOH molarity, curve-derived equivalence volume, approved balanced equation, and approved stoichiometric ratio. Show units and significant figures; label mixed-acid results as model-dependent.",
+        "tag": "beverage-acid-concentration",
+        "inputMode": "numeric",
+        "inputRole": "studentResponse",
+        "inputLabel": "Calculated beverage acid concentration",
+        "inputMin": 0,
+        "inputMinExclusive": true,
+        "inputStep": 0.0001,
+        "inputRequired": true,
+        "measurementId": "beverage-technique-acid-concentration",
+        "unit": "mol/L"
+      },
+      "prerequisites": [
+        {
+          "id": "endpoint-equivalence-distinguished",
+          "type": "actionEvidence",
+          "label": "Endpoint and equivalence are distinguished.",
+          "actionId": "distinguish-endpoint-and-equivalence"
+        }
+      ],
+      "stateChanges": [
+        "Calculate acid concentration with units and appropriate significant figures without assuming a one-to-one ratio unless the approved balanced equation supports it."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "The beverage acid concentration calculation is recorded.",
+        "invalid": "Use the teacher-approved acid identity and stoichiometric ratio; mixed-acid results must be labeled as model-dependent."
+      },
+      "evidence": [
+        "calculation",
+        "stoichiometry",
+        "units",
+        "significant-figures"
+      ]
+    },
+    {
+      "id": "record-replicate-and-provenance",
+      "verb": "observe",
+      "label": "Record replicate identity and data provenance",
+      "parameters": {
+        "note": "Preserve beverage identity, sample state, replicate, group, method, indicator, NaOH concentration, aliquot, and acid model. Start every additional replicate with a fresh aliquot and fresh burette readings.",
+        "tag": "beverage-run-provenance",
+        "inputMode": "text",
+        "inputRole": "studentResponse",
+        "inputLabel": "Replicate identity and run provenance",
+        "inputRequired": true
+      },
+      "prerequisites": [
+        {
+          "id": "concentration-submitted",
+          "type": "actionEvidence",
+          "label": "The acid-concentration calculation is submitted for teacher-configured review.",
+          "actionId": "calculate-beverage-acid-concentration"
+        }
+      ],
+      "stateChanges": [
+        "Label the beverage, sample state, replicate, group, method, indicator, NaOH concentration, and acid model.",
+        "Start each additional replicate with a fresh aliquot and fresh burette readings."
+      ],
+      "invalidCases": [],
+      "feedback": {
+        "success": "Run provenance is preserved.",
+        "invalid": "Do not merge or overwrite runs from different beverages, replicates, groups, or acid models."
+      },
+      "evidence": [
+        "replicate",
+        "provenance",
+        "fresh-trial"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "record-approved-run-configuration-node",
+    "nodes": [
+      {
+        "id": "record-approved-run-configuration-node",
+        "type": "teacherNote",
+        "title": "Confirm the approved run",
+        "description": "Record every teacher-configured quantitative condition before handling the beverage.",
+        "actionId": "record-approved-run-configuration",
+        "config": {},
+        "validation": [
+          {
+            "id": "configuration-recorded",
+            "type": "actionEvidence",
+            "label": "Approved configuration is recorded.",
+            "actionId": "record-approved-run-configuration"
+          }
+        ],
+        "hints": [
+          "The available standardized NaOH choices are 0.10 M and 0.25 M."
+        ],
+        "feedback": {
+          "success": "Approved configuration recorded.",
+          "retry": "Complete the teacher-approved run configuration."
+        }
+      },
+      {
+        "id": "prepare-beverage-as-approved-node",
+        "type": "action",
+        "title": "Prepare the beverage",
+        "description": "Record sample identity and carbonation or degassing state without assuming a preparation method.",
+        "actionId": "prepare-beverage-as-approved",
+        "config": {},
+        "validation": [
+          {
+            "id": "preparation-recorded",
+            "type": "actionEvidence",
+            "label": "Sample preparation state is recorded.",
+            "actionId": "prepare-beverage-as-approved"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Sample preparation recorded.",
+          "retry": "Record the actual preparation state."
+        }
+      },
+      {
+        "id": "assemble-burette-setup-node",
+        "type": "action",
+        "title": "Assemble burette setup",
+        "description": "Mount the burette upright in the ring stand clamp.",
+        "actionId": "assemble-burette-setup",
+        "config": {},
+        "validation": [
+          {
+            "id": "assembly-recorded",
+            "type": "actionEvidence",
+            "label": "Burette setup is assembled.",
+            "actionId": "assemble-burette-setup"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Burette setup assembled.",
+          "retry": "Mount the burette in the correct clamp."
+        }
+      },
+      {
+        "id": "condition-fill-and-read-burette-node",
+        "type": "action",
+        "title": "Prepare the burette",
+        "description": "Condition, fill, clear the tip, and record the initial reading.",
+        "actionId": "condition-fill-and-read-burette",
+        "config": {},
+        "validation": [
+          {
+            "id": "initial-reading-recorded",
+            "type": "actionEvidence",
+            "label": "Initial burette reading is recorded.",
+            "actionId": "condition-fill-and-read-burette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Burette preparation documented.",
+          "retry": "Document conditioning and the initial reading."
+        }
+      },
+      {
+        "id": "prepare-quantitative-aliquot-node",
+        "type": "action",
+        "title": "Prepare a fresh aliquot",
+        "description": "Use the approved quantitative apparatus and record the aliquot.",
+        "actionId": "prepare-quantitative-aliquot",
+        "config": {},
+        "validation": [
+          {
+            "id": "aliquot-measured",
+            "type": "actionEvidence",
+            "label": "Beverage aliquot is recorded.",
+            "actionId": "prepare-quantitative-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Fresh aliquot documented.",
+          "retry": "Record the approved aliquot."
+        }
+      },
+      {
+        "id": "add-approved-indicator-and-probe-node",
+        "type": "action",
+        "title": "Prepare indicator and pH probe",
+        "description": "Record the approved indicator and position the pH probe.",
+        "actionId": "add-approved-indicator-and-probe",
+        "config": {},
+        "validation": [
+          {
+            "id": "indicator-probe-documented",
+            "type": "actionEvidence",
+            "label": "Indicator and probe are documented.",
+            "actionId": "add-approved-indicator-and-probe"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Indicator and pH probe documented.",
+          "retry": "Address the indicator, transition range, and sample-color interference."
+        }
+      },
+      {
+        "id": "record-ph-volume-color-series-node",
+        "type": "action",
+        "title": "Collect the titration series",
+        "description": "Record initial pH, then cumulative NaOH volume, stable pH, and observed color for every approved increment.",
+        "actionId": "record-ph-volume-color-series",
+        "config": {},
+        "validation": [
+          {
+            "id": "series-complete",
+            "type": "actionEvidence",
+            "label": "pH-volume-color series is recorded.",
+            "actionId": "record-ph-volume-color-series"
+          }
+        ],
+        "hints": [
+          "Keep the indicator color-change observation attached to the corresponding pH and cumulative volume."
+        ],
+        "feedback": {
+          "success": "Titration series documented.",
+          "retry": "Record a complete series through and after the endpoint."
+        }
+      },
+      {
+        "id": "distinguish-endpoint-and-equivalence-node",
+        "type": "observation",
+        "title": "Interpret endpoint and equivalence",
+        "description": "Graph pH versus NaOH volume and mark the color change separately from the curve-derived equivalence region.",
+        "actionId": "distinguish-endpoint-and-equivalence",
+        "config": {},
+        "validation": [
+          {
+            "id": "interpretation-recorded",
+            "type": "actionEvidence",
+            "label": "Endpoint and equivalence interpretation is recorded.",
+            "actionId": "distinguish-endpoint-and-equivalence"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Endpoint and equivalence distinguished.",
+          "retry": "Mark both observations and explain any difference."
+        }
+      },
+      {
+        "id": "calculate-beverage-acid-concentration-node",
+        "type": "calculation",
+        "title": "Calculate acid concentration",
+        "description": "Use the approved balanced equation, ratio, aliquot, NaOH molarity, and equivalence volume.",
+        "actionId": "calculate-beverage-acid-concentration",
+        "config": {},
+        "validation": [
+          {
+            "id": "concentration-calculated",
+            "type": "actionEvidence",
+            "label": "Acid concentration is submitted for teacher-configured review.",
+            "actionId": "calculate-beverage-acid-concentration"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Acid concentration submitted.",
+          "retry": "Check units, stoichiometry, significant figures, and model assumptions."
+        }
+      },
+      {
+        "id": "record-replicate-and-provenance-node",
+        "type": "observation",
+        "title": "Preserve run provenance",
+        "description": "Label the result by beverage, state, replicate, group, method, indicator, titrant, and acid model.",
+        "actionId": "record-replicate-and-provenance",
+        "config": {},
+        "validation": [
+          {
+            "id": "provenance-recorded",
+            "type": "actionEvidence",
+            "label": "Run provenance is recorded.",
+            "actionId": "record-replicate-and-provenance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Run provenance preserved.",
+          "retry": "Record enough provenance to compare without overwriting group results."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "record-approved-run-configuration-node",
+        "to": "prepare-beverage-as-approved-node",
+        "label": "Approved",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "prepare-beverage-as-approved-node",
+        "to": "assemble-burette-setup-node",
+        "label": "Prepared",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "assemble-burette-setup-node",
+        "to": "condition-fill-and-read-burette-node",
+        "label": "Mounted",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "condition-fill-and-read-burette-node",
+        "to": "prepare-quantitative-aliquot-node",
+        "label": "Burette ready",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "prepare-quantitative-aliquot-node",
+        "to": "add-approved-indicator-and-probe-node",
+        "label": "Aliquot ready",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "add-approved-indicator-and-probe-node",
+        "to": "record-ph-volume-color-series-node",
+        "label": "Evidence channels ready",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-ph-volume-color-series-node",
+        "to": "distinguish-endpoint-and-equivalence-node",
+        "label": "Series complete",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "distinguish-endpoint-and-equivalence-node",
+        "to": "calculate-beverage-acid-concentration-node",
+        "label": "Curve interpreted",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "calculate-beverage-acid-concentration-node",
+        "to": "record-replicate-and-provenance-node",
+        "label": "Calculated",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "approved-config-success",
+      "type": "actionEvidence",
+      "label": "Teacher-approved run configuration is recorded.",
+      "actionId": "record-approved-run-configuration"
+    },
+    {
+      "id": "series-success",
+      "type": "actionEvidence",
+      "label": "pH-volume-color series is recorded.",
+      "actionId": "record-ph-volume-color-series"
+    },
+    {
+      "id": "calculation-success",
+      "type": "actionEvidence",
+      "label": "Acid concentration is submitted for teacher-configured review.",
+      "actionId": "calculate-beverage-acid-concentration"
+    },
+    {
+      "id": "provenance-success",
+      "type": "actionEvidence",
+      "label": "Run provenance is recorded.",
+      "actionId": "record-replicate-and-provenance"
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "invented-configuration",
+      "when": "a beverage identity, acid model, ratio, preparation, aliquot, increment, endpoint, tolerance, replicate count, or disposal rule is assumed",
+      "message": "This investigation leaves those values to the teacher-approved plan.",
+      "recovery": "Return to the approved run configuration and record the supplied value or rule."
+    },
+    {
+      "id": "endpoint-equivalence-collapse",
+      "when": "the indicator color change is treated as identical to equivalence without curve evidence",
+      "message": "Indicator endpoint and equivalence are related but distinct.",
+      "recovery": "Mark the color change and identify the equivalence region from the pH-volume curve separately."
+    },
+    {
+      "id": "stale-aliquot",
+      "when": "a replicate reuses an overshot or completed aliquot",
+      "message": "A completed or overshot trial cannot be rewound.",
+      "recovery": "Start a new replicate with a fresh aliquot and fresh burette readings."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-08-05T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "chemistry",
+      "titration",
+      "beverage",
+      "ph-curve",
+      "inquiry"
+    ]
+  }
+}

@@ -24,1447 +24,170 @@
     "erlenmeyer-flask-250ml",
     "reagent-bottle"
   ],
-  "techniques": [
+  "techniqueRefs": [
     {
-      "id": "measuring-volume",
-      "title": "Measure Liquid Volume",
-      "learningGoal": "Measure a fixed liquid volume using a calibrated cylinder.",
-      "requiredEquipment": [
-        "graduated-cylinder",
-        "sample-bottle",
-        "erlenmeyer-flask-250ml"
-      ],
-      "initialState": {
-        "equipment": [
-          {
-            "id": "graduated-cylinder-1",
-            "definitionId": "graduated-cylinder",
-            "label": "Graduated cylinder",
-            "location": "shelf",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          },
-          {
-            "id": "sample-bottle-1",
-            "definitionId": "sample-bottle",
-            "label": "Sample bottle",
-            "location": "shelf",
-            "contents": {
-              "kind": "liquid",
-              "label": "Hard water sample",
-              "volumeMl": 120,
-              "solutes": [],
-              "contamination": [],
-              "wetState": "wet",
-              "visualState": "clear-liquid"
-            }
-          },
-          {
-            "id": "erlenmeyer-flask-250ml-1",
-            "definitionId": "erlenmeyer-flask-250ml",
-            "label": "Receiving flask",
-            "location": "shelf",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          }
-        ]
-      },
-      "actions": [
-        {
-          "id": "place-cylinder",
-          "verb": "place",
-          "label": "Place graduated cylinder",
-          "parameters": {
-            "equipmentDefinitionId": "graduated-cylinder",
-            "location": "workbench"
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "place updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "The graduated cylinder is ready on the bench.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "place"
-          ]
-        },
-        {
-          "id": "measure-20ml",
-          "verb": "measureVolume",
-          "label": "Measure 20 mL sample",
-          "parameters": {
-            "sourceDefinitionId": "sample-bottle",
-            "targetDefinitionId": "graduated-cylinder",
-            "measurementId": "sample-volume",
-            "volumeMl": 20,
-            "tolerance": 1
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "measureVolume updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "The graduated cylinder contains 20 mL of sample.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "measureVolume",
-            "measurement"
-          ],
-          "interaction": {
-            "type": "pourInto",
-            "sourceDefinitionId": "sample-bottle",
-            "targetDefinitionId": "graduated-cylinder",
-            "valueParameter": "volumeMl",
-            "accessibleLabel": "Pour water sample from the sample bottle into the graduated cylinder until the meniscus reaches 20 mL.",
-            "successCue": "The meniscus is at 20 mL in the graduated cylinder.",
-            "invalidCue": "Use the sample bottle as the source and the graduated cylinder as the measuring instrument."
-          }
-        },
-        {
-          "id": "record-volume",
-          "verb": "record",
-          "label": "Record sample volume",
-          "parameters": {
-            "measurementId": "sample-volume",
-            "label": "Sample volume",
-            "unit": "mL"
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "record updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "Volume evidence recorded in the notebook.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "record",
-            "notebook"
-          ]
-        }
-      ],
-      "process": {
-        "startNodeId": "place-cylinder-node",
-        "nodes": [
-          {
-            "id": "place-cylinder-node",
-            "type": "action",
-            "title": "Place cylinder",
-            "description": "Place the graduated cylinder on the workbench.",
-            "actionId": "place-cylinder",
-            "config": {},
-            "validation": [
-              {
-                "id": "placed-cylinder",
-                "type": "actionEvidence",
-                "label": "Action place-cylinder was completed.",
-                "actionId": "place-cylinder"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Place cylinder complete.",
-              "retry": "Review Place cylinder and try again."
-            }
-          },
-          {
-            "id": "measure-sample-node",
-            "type": "action",
-            "title": "Measure sample",
-            "description": "Pour water sample from the sample bottle into the graduated cylinder until the meniscus reaches 20 mL.",
-            "actionId": "measure-20ml",
-            "config": {},
-            "validation": [
-              {
-                "id": "measured-sample",
-                "type": "actionEvidence",
-                "label": "Action measure-20ml was completed.",
-                "actionId": "measure-20ml"
-              },
-              {
-                "id": "sample-volume-evidence",
-                "type": "measurementRecorded",
-                "label": "Measurement sample-volume was recorded.",
-                "measurementId": "sample-volume"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Measure sample complete.",
-              "retry": "Review Measure sample and try again."
-            }
-          },
-          {
-            "id": "record-volume-node",
-            "type": "observation",
-            "title": "Record volume",
-            "description": "Record the 20 mL sample volume in the notebook.",
-            "actionId": "record-volume",
-            "config": {},
-            "validation": [
-              {
-                "id": "recorded-volume",
-                "type": "actionEvidence",
-                "label": "Action record-volume was completed.",
-                "actionId": "record-volume"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Record volume complete.",
-              "retry": "Review Record volume and try again."
-            }
-          }
-        ],
-        "edges": [
-          {
-            "from": "place-cylinder-node",
-            "to": "measure-sample-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          },
-          {
-            "from": "measure-sample-node",
-            "to": "record-volume-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          }
-        ]
-      },
-      "successCriteria": [
-        {
-          "id": "volume-success",
-          "type": "measurementRecorded",
-          "label": "Measurement sample-volume was recorded.",
-          "measurementId": "sample-volume"
-        }
-      ],
-      "commonMistakes": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "resetBehavior": "resetTechnique",
-      "metadata": {
-        "version": "1.0.0",
-        "author": "Lab Studio",
-        "updatedAt": "2026-05-12T00:00:00.000Z",
-        "tags": [
-          "technique",
-          "volume"
-        ]
-      }
+      "techniqueId": "measuring-volume",
+      "version": "1.0.0",
+      "actionIds": [
+        "place-cylinder",
+        "measure-20ml",
+        "record-volume"
+      ]
     },
     {
-      "id": "transfer",
-      "title": "Transfer Liquid",
-      "learningGoal": "Move a measured liquid volume between containers without overflow.",
-      "requiredEquipment": [
-        "graduated-cylinder",
-        "beaker-250ml",
-        "erlenmeyer-flask-250ml"
-      ],
-      "initialState": {
-        "equipment": [
-          {
-            "id": "graduated-cylinder-1",
-            "definitionId": "graduated-cylinder",
-            "label": "Graduated cylinder",
-            "location": "shelf",
-            "contents": {
-              "kind": "liquid",
-              "label": "Measured water sample",
-              "volumeMl": 20,
-              "solutes": [],
-              "contamination": [],
-              "wetState": "wet",
-              "visualState": "clear-liquid"
-            }
-          },
-          {
-            "id": "beaker-250ml-1",
-            "definitionId": "beaker-250ml",
-            "label": "250 mL beaker",
-            "location": "shelf",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          },
-          {
-            "id": "erlenmeyer-flask-250ml-1",
-            "definitionId": "erlenmeyer-flask-250ml",
-            "label": "Receiving flask",
-            "location": "shelf",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          }
-        ]
-      },
-      "actions": [
-        {
-          "id": "place-beaker",
-          "verb": "place",
-          "label": "Place beaker",
-          "parameters": {
-            "equipmentDefinitionId": "beaker-250ml",
-            "location": "workbench"
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "place updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "The beaker is ready.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "place"
-          ]
-        },
-        {
-          "id": "transfer-sample",
-          "verb": "transfer",
-          "label": "Transfer measured sample",
-          "parameters": {
-            "sourceDefinitionId": "graduated-cylinder",
-            "targetDefinitionId": "beaker-250ml",
-            "volumeMl": 20
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "transfer updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "The 20 mL sample is transferred to the beaker.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "transfer"
-          ],
-          "interaction": {
-            "type": "pourInto",
-            "sourceDefinitionId": "graduated-cylinder",
-            "targetDefinitionId": "beaker-250ml",
-            "valueParameter": "volumeMl",
-            "accessibleLabel": "Pour 20 mL of sample from the graduated cylinder into the 250 mL beaker.",
-            "successCue": "The graduated cylinder is emptied into the beaker.",
-            "invalidCue": "Use the graduated cylinder as the source and the beaker as the receiving container."
-          }
-        },
-        {
-          "id": "observe-transfer",
-          "verb": "observe",
-          "label": "Observe transferred sample",
-          "parameters": {
-            "note": "Transferred sample is clear with no spill.",
-            "tag": "transfer-observation"
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "observe updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "Observation recorded.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "observe",
-            "notebook"
-          ]
-        }
-      ],
-      "process": {
-        "startNodeId": "place-beaker-node",
-        "nodes": [
-          {
-            "id": "place-beaker-node",
-            "type": "action",
-            "title": "Place beaker",
-            "description": "Place the 250 mL beaker on the workbench.",
-            "actionId": "place-beaker",
-            "config": {},
-            "validation": [
-              {
-                "id": "placed-beaker",
-                "type": "actionEvidence",
-                "label": "Action place-beaker was completed.",
-                "actionId": "place-beaker"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Place beaker complete.",
-              "retry": "Review Place beaker and try again."
-            }
-          },
-          {
-            "id": "transfer-sample-node",
-            "type": "action",
-            "title": "Transfer sample",
-            "description": "Pour 20 mL of sample from the graduated cylinder into the 250 mL beaker.",
-            "actionId": "transfer-sample",
-            "config": {},
-            "validation": [
-              {
-                "id": "transferred-sample",
-                "type": "actionEvidence",
-                "label": "Action transfer-sample was completed.",
-                "actionId": "transfer-sample"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Transfer sample complete.",
-              "retry": "Review Transfer sample and try again."
-            }
-          },
-          {
-            "id": "observe-transfer-node",
-            "type": "observation",
-            "title": "Observe transfer",
-            "description": "Record whether the transferred sample is clear and unspilled.",
-            "actionId": "observe-transfer",
-            "config": {},
-            "validation": [
-              {
-                "id": "observed-transfer",
-                "type": "actionEvidence",
-                "label": "Action observe-transfer was completed.",
-                "actionId": "observe-transfer"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Observe transfer complete.",
-              "retry": "Review Observe transfer and try again."
-            }
-          }
-        ],
-        "edges": [
-          {
-            "from": "place-beaker-node",
-            "to": "transfer-sample-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          },
-          {
-            "from": "transfer-sample-node",
-            "to": "observe-transfer-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          }
-        ]
-      },
-      "successCriteria": [
-        {
-          "id": "transfer-success",
-          "type": "actionEvidence",
-          "label": "Action transfer-sample was completed.",
-          "actionId": "transfer-sample"
-        }
-      ],
-      "commonMistakes": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "resetBehavior": "resetTechnique",
-      "metadata": {
-        "version": "1.0.0",
-        "author": "Lab Studio",
-        "updatedAt": "2026-05-12T00:00:00.000Z",
-        "tags": [
-          "technique",
-          "transfer"
-        ]
-      }
+      "techniqueId": "transfer",
+      "version": "1.0.0",
+      "actionIds": [
+        "place-beaker",
+        "observe-transfer"
+      ]
     },
     {
-      "id": "filtration",
-      "title": "Filter a Precipitate",
-      "learningGoal": "Collect a precipitate with filter paper, rinse it, and preserve evidence.",
-      "requiredEquipment": [
-        "beaker-250ml",
-        "ring-stand",
-        "funnel",
-        "filter-paper",
-        "funnel-stand",
-        "wash-bottle",
-        "erlenmeyer-flask-250ml"
-      ],
-      "initialState": {
-        "equipment": [
-          {
-            "id": "beaker-250ml-1",
-            "definitionId": "beaker-250ml",
-            "label": "250 mL beaker",
-            "location": "shelf",
-            "contents": {
-              "kind": "mixture",
-              "label": "Calcium carbonate mixture",
-              "volumeMl": 40,
-              "solutes": [
-                {
-                  "id": "calcium-carbonate",
-                  "label": "Calcium carbonate",
-                  "amount": 0.0075,
-                  "unit": "g"
-                }
-              ],
-              "precipitate": {
-                "substance": "Calcium carbonate",
-                "massG": 0.0075,
-                "rinsed": false,
-                "dryness": "wet"
-              },
-              "contamination": [],
-              "wetState": "wet",
-              "visualState": "cloudy-precipitate"
-            }
-          },
-          {
-            "id": "ring-stand-1",
-            "definitionId": "ring-stand",
-            "label": "Ring stand",
-            "location": "shelf",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          },
-          {
-            "id": "funnel-1",
-            "definitionId": "funnel",
-            "label": "Glass funnel",
-            "location": "shelf",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          },
-          {
-            "id": "filter-paper-1",
-            "definitionId": "filter-paper",
-            "label": "Filter paper",
-            "location": "shelf",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          },
-          {
-            "id": "funnel-stand-1",
-            "definitionId": "funnel-stand",
-            "label": "Funnel and stand",
-            "location": "storage",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          },
-          {
-            "id": "wash-bottle-1",
-            "definitionId": "wash-bottle",
-            "label": "Wash bottle",
-            "location": "shelf",
-            "contents": {
-              "kind": "liquid",
-              "label": "Deionized water",
-              "volumeMl": 500,
-              "solutes": [],
-              "contamination": [],
-              "wetState": "wet",
-              "visualState": "clear-liquid"
-            }
-          },
-          {
-            "id": "erlenmeyer-flask-250ml-1",
-            "definitionId": "erlenmeyer-flask-250ml",
-            "label": "Receiving flask",
-            "location": "shelf",
-            "contents": {
-              "kind": "empty",
-              "label": "empty",
-              "solutes": [],
-              "contamination": [],
-              "wetState": "dry",
-              "visualState": "empty"
-            }
-          }
-        ]
-      },
-      "actions": [
-        {
-          "id": "assemble-funnel-stand",
-          "verb": "place",
-          "label": "Assemble funnel stand",
-          "parameters": {
-            "equipmentDefinitionId": "funnel",
-            "targetDefinitionId": "ring-stand",
-            "snapZoneId": "ring-stand-funnel-seat",
-            "compositeDefinitionId": "funnel-stand"
-          },
-          "interaction": {
-            "type": "snapIntoTarget",
-            "sourceDefinitionId": "funnel",
-            "targetDefinitionId": "ring-stand",
-            "snapZoneId": "ring-stand-funnel-seat",
-            "accessibleLabel": "Seat the glass funnel in the circular support ring on the stand.",
-            "successCue": "The funnel is centered in the circular support ring.",
-            "invalidCue": "Use the circular support ring on the stand so the funnel cone rests evenly."
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "place updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "The funnel is seated in the circular support ring.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "place"
-          ]
-        },
-        {
-          "id": "place-filter-paper",
-          "verb": "place",
-          "label": "Place filter paper",
-          "parameters": {
-            "equipmentDefinitionId": "filter-paper",
-            "targetDefinitionId": "funnel-stand"
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "place updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "Filter paper is seated in the funnel.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "place"
-          ],
-          "interaction": {
-            "type": "snapIntoTarget",
-            "sourceDefinitionId": "filter-paper",
-            "targetDefinitionId": "funnel-stand",
-            "snapZoneId": "funnel-stand-paper-seat",
-            "accessibleLabel": "Seat the filter paper in the funnel.",
-            "successCue": "Filter paper is seated in the funnel.",
-            "invalidCue": "Align the paper with the funnel cone before releasing it."
-          }
-        },
-        {
-          "id": "wet-filter-paper",
-          "verb": "rinse",
-          "label": "Wet filter paper",
-          "parameters": {
-            "sourceDefinitionId": "wash-bottle",
-            "targetDefinitionId": "filter-paper",
-            "rinseType": "pre-wet"
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "rinse updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "Filter paper is wetted and sealed.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "rinse",
-            "notebook"
-          ],
-          "interaction": {
-            "type": "rinseTarget",
-            "sourceDefinitionId": "wash-bottle",
-            "targetDefinitionId": "filter-paper",
-            "accessibleLabel": "Wet the seated filter paper with the wash bottle.",
-            "successCue": "Filter paper is wetted and sealed.",
-            "invalidCue": "Seat the filter paper in the funnel before wetting it."
-          }
-        },
-        {
-          "id": "place-filtration-receiver",
-          "verb": "place",
-          "label": "Place receiving flask",
-          "parameters": {
-            "equipmentDefinitionId": "erlenmeyer-flask-250ml",
-            "targetDefinitionId": "funnel-stand",
-            "snapZoneId": "funnel-receiving-vessel-zone"
-          },
-          "interaction": {
-            "type": "snapIntoTarget",
-            "sourceDefinitionId": "erlenmeyer-flask-250ml",
-            "targetDefinitionId": "funnel-stand",
-            "snapZoneId": "funnel-receiving-vessel-zone",
-            "accessibleLabel": "Place the receiving flask under the funnel.",
-            "successCue": "Receiving flask is under the funnel.",
-            "invalidCue": "Use a beaker or Erlenmeyer flask under the funnel stem."
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "Place the receiving vessel below the prepared funnel."
-          ],
-          "invalidCases": [],
-          "feedback": {
-            "success": "Receiving flask is under the funnel.",
-            "invalid": "Place a receiving vessel below the funnel before filtering."
-          },
-          "evidence": [
-            "place"
-          ]
-        },
-        {
-          "id": "filter-mixture",
-          "verb": "filter",
-          "label": "Filter mixture",
-          "parameters": {
-            "sourceDefinitionId": "beaker-250ml",
-            "targetDefinitionId": "funnel-stand"
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "filter updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "Precipitate remains on the filter paper.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "filter"
-          ],
-          "interaction": {
-            "type": "pourInto",
-            "sourceDefinitionId": "beaker-250ml",
-            "targetDefinitionId": "funnel-stand",
-            "accessibleLabel": "Pour the beaker mixture through the prepared funnel with seated, wetted filter paper.",
-            "successCue": "The precipitate remains on the seated filter paper.",
-            "invalidCue": "Use the beaker as the source and the prepared funnel with filter paper as the target."
-          }
-        },
-        {
-          "id": "rinse-precipitate",
-          "verb": "rinse",
-          "label": "Rinse precipitate",
-          "parameters": {
-            "sourceDefinitionId": "wash-bottle",
-            "targetDefinitionId": "filter-paper",
-            "rinseType": "precipitate"
-          },
-          "prerequisites": [],
-          "stateChanges": [
-            "rinse updates runtime state through structured equipment contents."
-          ],
-          "invalidCases": [
-            {
-              "id": "wrong-order",
-              "when": "current node expects a different action",
-              "message": "That action is out of sequence for the current technique step.",
-              "recovery": "Check the process map and perform the highlighted step first."
-            },
-            {
-              "id": "missing-source",
-              "when": "source equipment or contents are missing",
-              "message": "The selected source does not contain the material required for this action.",
-              "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-            },
-            {
-              "id": "overflow",
-              "when": "target capacity would be exceeded",
-              "message": "The target equipment cannot hold the requested volume.",
-              "recovery": "Use a larger container or transfer a smaller measured amount."
-            }
-          ],
-          "feedback": {
-            "success": "Precipitate rinse evidence recorded.",
-            "invalid": "The simulator could not complete that action. Review the step requirements."
-          },
-          "evidence": [
-            "rinse",
-            "notebook"
-          ],
-          "interaction": {
-            "type": "rinseTarget",
-            "sourceDefinitionId": "wash-bottle",
-            "targetDefinitionId": "filter-paper",
-            "accessibleLabel": "Rinse the collected filter cake on the filter paper with the wash bottle.",
-            "successCue": "Precipitate rinse evidence recorded.",
-            "invalidCue": "Collect precipitate in the funnel before rinsing it."
-          }
-        }
-      ],
-      "process": {
-        "startNodeId": "assemble-funnel-stand-node",
-        "nodes": [
-          {
-            "id": "assemble-funnel-stand-node",
-            "title": "Assemble funnel stand",
-            "description": "Seat the glass funnel in the circular support ring on the stand.",
-            "actionId": "assemble-funnel-stand",
-            "type": "action",
-            "config": {},
-            "validation": [
-              {
-                "id": "assembled-funnel-stand",
-                "type": "actionEvidence",
-                "label": "Action assemble-funnel-stand was completed.",
-                "actionId": "assemble-funnel-stand"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Assemble funnel stand complete.",
-              "retry": "Review Assemble funnel stand and try again."
-            }
-          },
-          {
-            "id": "place-filter-node",
-            "type": "action",
-            "title": "Place filter paper",
-            "description": "Seat the filter paper in the funnel.",
-            "actionId": "place-filter-paper",
-            "config": {},
-            "validation": [
-              {
-                "id": "placed-filter-paper",
-                "type": "actionEvidence",
-                "label": "Action place-filter-paper was completed.",
-                "actionId": "place-filter-paper"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Place filter paper complete.",
-              "retry": "Review Place filter paper and try again."
-            }
-          },
-          {
-            "id": "wet-filter-node",
-            "type": "action",
-            "title": "Wet filter paper",
-            "description": "Wet the seated filter paper with the wash bottle.",
-            "actionId": "wet-filter-paper",
-            "config": {},
-            "validation": [
-              {
-                "id": "wetted-filter-paper",
-                "type": "actionEvidence",
-                "label": "Action wet-filter-paper was completed.",
-                "actionId": "wet-filter-paper"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Wet filter paper complete.",
-              "retry": "Review Wet filter paper and try again."
-            }
-          },
-          {
-            "id": "place-receiver-node",
-            "type": "action",
-            "title": "Place receiver",
-            "description": "Place the receiving flask under the funnel.",
-            "actionId": "place-filtration-receiver",
-            "config": {},
-            "validation": [
-              {
-                "id": "placed-filtration-receiver",
-                "type": "actionEvidence",
-                "label": "Receiving flask has been placed.",
-                "actionId": "place-filtration-receiver"
-              }
-            ],
-            "hints": [
-              "Place the receiving flask in the receiving vessel zone below the funnel."
-            ],
-            "feedback": {
-              "success": "Receiver placement checkpoint passed.",
-              "retry": "Place a receiving vessel below the funnel before filtering."
-            }
-          },
-          {
-            "id": "filter-mixture-node",
-            "type": "action",
-            "title": "Filter mixture",
-            "description": "Pour the beaker mixture through the prepared funnel with seated, wetted filter paper.",
-            "actionId": "filter-mixture",
-            "config": {},
-            "validation": [
-              {
-                "id": "filtered-mixture",
-                "type": "actionEvidence",
-                "label": "Action filter-mixture was completed.",
-                "actionId": "filter-mixture"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Filter mixture complete.",
-              "retry": "Review Filter mixture and try again."
-            }
-          },
-          {
-            "id": "rinse-precipitate-node",
-            "type": "checkpoint",
-            "title": "Rinse precipitate",
-            "description": "Rinse the collected filter cake on the filter paper with the wash bottle.",
-            "actionId": "rinse-precipitate",
-            "config": {},
-            "validation": [
-              {
-                "id": "rinsed-precipitate",
-                "type": "actionEvidence",
-                "label": "Action rinse-precipitate was completed.",
-                "actionId": "rinse-precipitate"
-              }
-            ],
-            "hints": [],
-            "feedback": {
-              "success": "Rinse precipitate complete.",
-              "retry": "Review Rinse precipitate and try again."
-            }
-          }
-        ],
-        "edges": [
-          {
-            "from": "assemble-funnel-stand-node",
-            "to": "place-filter-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          },
-          {
-            "from": "place-filter-node",
-            "to": "wet-filter-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          },
-          {
-            "from": "wet-filter-node",
-            "to": "place-receiver-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          },
-          {
-            "from": "place-receiver-node",
-            "to": "filter-mixture-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          },
-          {
-            "from": "filter-mixture-node",
-            "to": "rinse-precipitate-node",
-            "label": "Next",
-            "condition": {
-              "type": "validationPassed"
-            }
-          }
-        ]
-      },
-      "successCriteria": [
-        {
-          "id": "filtration-success",
-          "type": "actionEvidence",
-          "label": "Action filter-mixture was completed.",
-          "actionId": "filter-mixture"
-        }
-      ],
-      "commonMistakes": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "resetBehavior": "resetTechnique",
-      "metadata": {
-        "version": "1.0.0",
-        "author": "Lab Studio",
-        "updatedAt": "2026-05-12T00:00:00.000Z",
-        "tags": [
-          "technique",
-          "filtration"
-        ]
-      }
+      "techniqueId": "filtration",
+      "version": "1.0.0",
+      "actionIds": [
+        "assemble-funnel-stand",
+        "place-filter-paper",
+        "wet-filter-paper",
+        "place-filtration-receiver",
+        "rinse-precipitate"
+      ]
     }
   ],
-  "actions": [
-    {
-      "id": "place-cylinder",
-      "verb": "place",
-      "label": "Place graduated cylinder",
-      "parameters": {
-        "equipmentDefinitionId": "graduated-cylinder",
-        "location": "workbench"
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "place updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
+  "techniques": [],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "graduated-cylinder-1",
+        "definitionId": "graduated-cylinder",
+        "label": "Graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
         }
-      ],
-      "feedback": {
-        "success": "The graduated cylinder is ready on the bench.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
       },
-      "evidence": [
-        "place"
-      ]
-    },
-    {
-      "id": "measure-20ml",
-      "verb": "measureVolume",
-      "label": "Measure 20 mL sample",
-      "parameters": {
-        "sourceDefinitionId": "sample-bottle",
-        "targetDefinitionId": "graduated-cylinder",
-        "measurementId": "sample-volume",
-        "volumeMl": 20,
-        "tolerance": 1
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "measureVolume updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
+      {
+        "id": "sample-bottle-1",
+        "definitionId": "sample-bottle",
+        "label": "Sample bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Hard water sample",
+          "volumeMl": 120,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
         }
-      ],
-      "feedback": {
-        "success": "The graduated cylinder contains 20 mL of sample.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
       },
-      "evidence": [
-        "measureVolume",
-        "measurement"
-      ],
-      "interaction": {
-        "type": "pourInto",
-        "sourceDefinitionId": "sample-bottle",
-        "targetDefinitionId": "graduated-cylinder",
-        "valueParameter": "volumeMl",
-        "accessibleLabel": "Pour water sample from the sample bottle into the graduated cylinder until the meniscus reaches 20 mL.",
-        "successCue": "The meniscus is at 20 mL in the graduated cylinder.",
-        "invalidCue": "Use the sample bottle as the source and the graduated cylinder as the measuring instrument."
+      {
+        "id": "erlenmeyer-flask-250ml-1",
+        "definitionId": "erlenmeyer-flask-250ml",
+        "label": "Receiving flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "beaker-250ml-1",
+        "definitionId": "beaker-250ml",
+        "label": "250 mL beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "ring-stand-1",
+        "definitionId": "ring-stand",
+        "label": "Ring stand",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "funnel-1",
+        "definitionId": "funnel",
+        "label": "Glass funnel",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "filter-paper-1",
+        "definitionId": "filter-paper",
+        "label": "Filter paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "funnel-stand-1",
+        "definitionId": "funnel-stand",
+        "label": "Funnel and stand",
+        "location": "storage",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "wash-bottle-1",
+        "definitionId": "wash-bottle",
+        "label": "Wash bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Deionized water",
+          "volumeMl": 500,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
       }
-    },
-    {
-      "id": "record-volume",
-      "verb": "record",
-      "label": "Record sample volume",
-      "parameters": {
-        "measurementId": "sample-volume",
-        "label": "Sample volume",
-        "unit": "mL"
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "record updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "feedback": {
-        "success": "Volume evidence recorded in the notebook.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
-      },
-      "evidence": [
-        "record",
-        "notebook"
-      ]
-    },
-    {
-      "id": "place-beaker",
-      "verb": "place",
-      "label": "Place beaker",
-      "parameters": {
-        "equipmentDefinitionId": "beaker-250ml",
-        "location": "workbench"
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "place updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "feedback": {
-        "success": "The beaker is ready.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
-      },
-      "evidence": [
-        "place"
-      ]
-    },
+    ]
+  },
+  "actions": [
     {
       "id": "transfer-sample",
       "verb": "transfer",
@@ -1516,49 +239,8 @@
       }
     },
     {
-      "id": "observe-transfer",
-      "verb": "observe",
-      "label": "Observe transferred sample",
-      "parameters": {
-        "note": "Transferred sample is clear with no spill.",
-        "tag": "transfer-observation"
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "observe updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "feedback": {
-        "success": "Observation recorded.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
-      },
-      "evidence": [
-        "observe",
-        "notebook"
-      ]
-    },
-    {
       "id": "precipitate-caco3",
-      "verb": "dissolve",
+      "verb": "precipitate",
       "label": "Precipitate calcium carbonate",
       "parameters": {
         "sourceDefinitionId": "reagent-bottle",
@@ -1607,187 +289,6 @@
       }
     },
     {
-      "id": "assemble-funnel-stand",
-      "verb": "place",
-      "label": "Assemble funnel stand",
-      "parameters": {
-        "equipmentDefinitionId": "funnel",
-        "targetDefinitionId": "ring-stand",
-        "snapZoneId": "ring-stand-funnel-seat",
-        "compositeDefinitionId": "funnel-stand"
-      },
-      "interaction": {
-        "type": "snapIntoTarget",
-        "sourceDefinitionId": "funnel",
-        "targetDefinitionId": "ring-stand",
-        "snapZoneId": "ring-stand-funnel-seat",
-        "accessibleLabel": "Seat the glass funnel in the circular support ring on the stand.",
-        "successCue": "The funnel is centered in the circular support ring.",
-        "invalidCue": "Use the circular support ring on the stand so the funnel cone rests evenly."
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "place updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "feedback": {
-        "success": "The funnel is seated in the circular support ring.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
-      },
-      "evidence": [
-        "place"
-      ]
-    },
-    {
-      "id": "place-filter-paper",
-      "verb": "place",
-      "label": "Place filter paper",
-      "parameters": {
-        "equipmentDefinitionId": "filter-paper",
-        "targetDefinitionId": "funnel-stand"
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "place updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "feedback": {
-        "success": "Filter paper is seated in the funnel.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
-      },
-      "evidence": [
-        "place"
-      ],
-      "interaction": {
-        "type": "snapIntoTarget",
-        "sourceDefinitionId": "filter-paper",
-        "targetDefinitionId": "funnel-stand",
-        "snapZoneId": "funnel-stand-paper-seat",
-        "accessibleLabel": "Seat the filter paper in the funnel.",
-        "successCue": "Filter paper is seated in the funnel.",
-        "invalidCue": "Align the paper with the funnel cone before releasing it."
-      }
-    },
-    {
-      "id": "wet-filter-paper",
-      "verb": "rinse",
-      "label": "Wet filter paper",
-      "parameters": {
-        "sourceDefinitionId": "wash-bottle",
-        "targetDefinitionId": "filter-paper",
-        "rinseType": "pre-wet"
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "rinse updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "feedback": {
-        "success": "Filter paper is wetted and sealed.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
-      },
-      "evidence": [
-        "rinse",
-        "notebook"
-      ],
-      "interaction": {
-        "type": "rinseTarget",
-        "sourceDefinitionId": "wash-bottle",
-        "targetDefinitionId": "filter-paper",
-        "accessibleLabel": "Wet the seated filter paper with the wash bottle.",
-        "successCue": "Filter paper is wetted and sealed.",
-        "invalidCue": "Seat the filter paper in the funnel before wetting it."
-      }
-    },
-    {
-      "id": "place-filtration-receiver",
-      "verb": "place",
-      "label": "Place receiving flask",
-      "parameters": {
-        "equipmentDefinitionId": "erlenmeyer-flask-250ml",
-        "targetDefinitionId": "funnel-stand",
-        "snapZoneId": "funnel-receiving-vessel-zone"
-      },
-      "interaction": {
-        "type": "snapIntoTarget",
-        "sourceDefinitionId": "erlenmeyer-flask-250ml",
-        "targetDefinitionId": "funnel-stand",
-        "snapZoneId": "funnel-receiving-vessel-zone",
-        "accessibleLabel": "Place the receiving flask under the funnel.",
-        "successCue": "Receiving flask is under the funnel.",
-        "invalidCue": "Use a beaker or Erlenmeyer flask under the funnel stem."
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "Place the receiving vessel below the prepared funnel."
-      ],
-      "invalidCases": [],
-      "feedback": {
-        "success": "Receiving flask is under the funnel.",
-        "invalid": "Place a receiving vessel below the funnel before filtering."
-      },
-      "evidence": [
-        "place"
-      ]
-    },
-    {
       "id": "filter-mixture",
       "verb": "filter",
       "label": "Filter mixture",
@@ -1833,56 +334,6 @@
         "accessibleLabel": "Pour the beaker mixture through the prepared funnel with seated, wetted filter paper.",
         "successCue": "The precipitate remains on the seated filter paper.",
         "invalidCue": "Use the beaker as the source and the prepared funnel with filter paper as the target."
-      }
-    },
-    {
-      "id": "rinse-precipitate",
-      "verb": "rinse",
-      "label": "Rinse precipitate",
-      "parameters": {
-        "sourceDefinitionId": "wash-bottle",
-        "targetDefinitionId": "filter-paper",
-        "rinseType": "precipitate"
-      },
-      "prerequisites": [],
-      "stateChanges": [
-        "rinse updates runtime state through structured equipment contents."
-      ],
-      "invalidCases": [
-        {
-          "id": "wrong-order",
-          "when": "current node expects a different action",
-          "message": "That action is out of sequence for the current technique step.",
-          "recovery": "Check the process map and perform the highlighted step first."
-        },
-        {
-          "id": "missing-source",
-          "when": "source equipment or contents are missing",
-          "message": "The selected source does not contain the material required for this action.",
-          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
-        },
-        {
-          "id": "overflow",
-          "when": "target capacity would be exceeded",
-          "message": "The target equipment cannot hold the requested volume.",
-          "recovery": "Use a larger container or transfer a smaller measured amount."
-        }
-      ],
-      "feedback": {
-        "success": "Precipitate rinse evidence recorded.",
-        "invalid": "The simulator could not complete that action. Review the step requirements."
-      },
-      "evidence": [
-        "rinse",
-        "notebook"
-      ],
-      "interaction": {
-        "type": "rinseTarget",
-        "sourceDefinitionId": "wash-bottle",
-        "targetDefinitionId": "filter-paper",
-        "accessibleLabel": "Rinse the collected filter cake on the filter paper with the wash bottle.",
-        "successCue": "Precipitate rinse evidence recorded.",
-        "invalidCue": "Collect precipitate in the funnel before rinsing it."
       }
     }
   ],

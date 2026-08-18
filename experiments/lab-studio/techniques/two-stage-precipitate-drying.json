@@ -1,0 +1,1862 @@
+{
+  "id": "two-stage-precipitate-drying",
+  "title": "Two-Stage Precipitate Drying",
+  "learningGoal": "Preserve separate tare masses, complete two timed oven stages with an intervening breakup, cool before weighing, and calculate collected precipitate mass.",
+  "requiredEquipment": [
+    "analytical-balance",
+    "filter-paper",
+    "watch-glass",
+    "side-arm-filter-flask",
+    "drying-oven",
+    "crucible-tongs",
+    "scoopula",
+    "permanent-marker",
+    "rubbing-alcohol-bottle",
+    "waste-beaker"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "practice-dry-balance",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-dry-paper",
+        "definitionId": "filter-paper",
+        "label": "Filter paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "precipitate",
+          "label": "Calcium carbonate",
+          "massG": 1.71,
+          "solutes": [
+            {
+              "id": "calcium-carbonate",
+              "label": "Calcium carbonate",
+              "amount": 1.71,
+              "unit": "g"
+            }
+          ],
+          "precipitate": {
+            "substance": "Calcium carbonate",
+            "massG": 1.71,
+            "rinsed": true,
+            "dryness": "wet"
+          },
+          "contamination": [],
+          "wetState": "rinsed",
+          "visualState": "filter-cake"
+        }
+      },
+      {
+        "id": "practice-watch-glass",
+        "definitionId": "watch-glass",
+        "label": "Watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-dry-flask",
+        "definitionId": "side-arm-filter-flask",
+        "label": "Side-arm filter flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Practice filtrate",
+          "volumeMl": 50,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-filtrate"
+        }
+      },
+      {
+        "id": "practice-drying-oven",
+        "definitionId": "drying-oven",
+        "label": "Drying oven",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-tongs",
+        "definitionId": "crucible-tongs",
+        "label": "Crucible tongs",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-scoopula",
+        "definitionId": "scoopula",
+        "label": "Metal scoopula",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-marker",
+        "definitionId": "permanent-marker",
+        "label": "Permanent marker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-rubbing-alcohol",
+        "definitionId": "rubbing-alcohol-bottle",
+        "label": "Rubbing alcohol bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Rubbing alcohol",
+          "volumeMl": 100,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "practice-waste",
+        "definitionId": "waste-beaker",
+        "label": "Waste beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "label-practice-watch-glass",
+      "verb": "observe",
+      "label": "Label clean, dry watch glass",
+      "parameters": {
+        "note": "The clean, dry watch glass is labeled with group identity before weighing.",
+        "tag": "practice-watch-glass-identity",
+        "instruction": "Use the permanent marker to identify the clean, dry watch glass."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Use the permanent marker to identify the clean, dry watch glass.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Label clean, dry watch glass complete.",
+        "invalid": "Review the scientific and physical prerequisites for label clean, dry watch glass."
+      },
+      "evidence": [
+        "observe"
+      ]
+    },
+    {
+      "id": "weigh-practice-watch-glass",
+      "verb": "weigh",
+      "label": "Weigh watch-glass tare",
+      "atomId": "atom.weigh.tare-vessel",
+      "equipmentRoleBindings": {
+        "balance-instrument": "analytical-balance",
+        "weighed-vessel": "watch-glass"
+      },
+      "parameters": {
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "analytical-balance",
+        "sourceInstanceId": "practice-watch-glass",
+        "targetInstanceId": "practice-dry-balance",
+        "instrumentDefinitionId": "analytical-balance",
+        "measurementId": "practice-watch-glass-mass",
+        "expectedMassG": 32.842,
+        "tolerance": 0.001,
+        "evidenceProvenance": "teacher-configured simulated balance output",
+        "instruction": "Read the clean, dry watch-glass tare independently of the filter-paper tare."
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "analytical-balance",
+        "stationId": "analytical-balance",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Read the clean, dry watch-glass tare independently of the filter-paper tare.",
+        "successCue": "The balance reading is available as simulated measurement evidence.",
+        "invalidCue": "Use the named item on the analytical balance and do not weigh it warm."
+      },
+      "prerequisites": [
+        {
+          "id": "balance-precision-configuration-recorded-required",
+          "type": "notebookEntry",
+          "label": "The teacher-selected balance readability is recorded.",
+          "notebookTag": "balance-precision-configuration"
+        },
+        {
+          "id": "practice-watch-glass-identity-recorded-required",
+          "type": "notebookEntry",
+          "label": "The clean, dry watch glass is labelled.",
+          "notebookTag": "practice-watch-glass-identity"
+        }
+      ],
+      "stateChanges": [
+        "weigh updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Weigh watch-glass tare complete.",
+        "invalid": "Review the scientific and physical prerequisites for weigh watch-glass tare."
+      },
+      "evidence": [
+        "weigh",
+        "measurement",
+        "simulated-output"
+      ]
+    },
+    {
+      "id": "record-practice-watch-glass",
+      "verb": "record",
+      "label": "Record watch-glass tare",
+      "parameters": {
+        "measurementId": "practice-watch-glass-mass",
+        "label": "Practice watch-glass mass",
+        "unit": "g",
+        "instruction": "Record the watch-glass tare before it receives the paper and precipitate."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Record the watch-glass tare before it receives the paper and precipitate.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "record updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Record watch-glass tare complete.",
+        "invalid": "Review the scientific and physical prerequisites for record watch-glass tare."
+      },
+      "evidence": [
+        "record"
+      ]
+    },
+    {
+      "id": "transfer-practice-paper-to-watch",
+      "verb": "place",
+      "label": "Transfer paper and precipitate to watch glass",
+      "atomId": "atom.place.transfer-medium-to-drying-vessel",
+      "equipmentRoleBindings": {
+        "filter-medium": "filter-paper",
+        "dried-assembly": "watch-glass"
+      },
+      "parameters": {
+        "equipmentDefinitionId": "filter-paper",
+        "equipmentInstanceId": "practice-dry-paper",
+        "targetDefinitionId": "watch-glass",
+        "targetInstanceId": "practice-watch-glass",
+        "snapZoneId": "watch-glass-paper-seat",
+        "detachBeforeAttach": true,
+        "instruction": "Carefully lift the filter paper and precipitate onto the labeled watch glass without losing solid."
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "filter-paper",
+        "targetDefinitionId": "watch-glass",
+        "snapZoneId": "watch-glass-paper-seat",
+        "accessibleLabel": "Carefully lift the filter paper and precipitate onto the labeled watch glass without losing solid.",
+        "successCue": "The apparatus component is seated in the required position.",
+        "invalidCue": "Use the named component and target zone."
+      },
+      "prerequisites": [
+        {
+          "id": "practice-watch-glass-mass-recorded-required",
+          "type": "notebookEntry",
+          "label": "The watch-glass tare is recorded.",
+          "notebookTag": "practice-watch-glass-mass"
+        }
+      ],
+      "stateChanges": [
+        "place updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Transfer paper and precipitate to watch glass complete.",
+        "invalid": "Review the scientific and physical prerequisites for transfer paper and precipitate to watch glass."
+      },
+      "evidence": [
+        "place",
+        "quantitative-transfer"
+      ]
+    },
+    {
+      "id": "dispose-practice-filtrate",
+      "verb": "observe",
+      "label": "Dispose of configured filtrate",
+      "parameters": {
+        "note": "The source-approved practice filtrate is routed to the configured drain-disposal action; local instructor rules remain authoritative.",
+        "tag": "drain-disposal",
+        "instruction": "Dispose of the filtrate only through the source-approved, teacher-configured drain action."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Dispose of the filtrate only through the source-approved, teacher-configured drain action.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Dispose of configured filtrate complete.",
+        "invalid": "Review the scientific and physical prerequisites for dispose of configured filtrate."
+      },
+      "evidence": [
+        "observe"
+      ]
+    },
+    {
+      "id": "set-practice-oven",
+      "verb": "observe",
+      "label": "Set oven to 110-120 C",
+      "parameters": {
+        "note": "The drying oven is configured at 115 C, within the manual-stated 110-120 C range.",
+        "tag": "teacher-configured-temperature",
+        "instruction": "Confirm the oven setting is between 110 C and 120 C before inserting the watch glass."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Confirm the oven setting is between 110 C and 120 C before inserting the watch glass.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Set oven to 110-120 C complete.",
+        "invalid": "Review the scientific and physical prerequisites for set oven to 110-120 c."
+      },
+      "evidence": [
+        "observe"
+      ]
+    },
+    {
+      "id": "first-practice-drying",
+      "verb": "dry",
+      "label": "Dry for 10-15 minutes",
+      "atomId": "atom.dry.oven-stage",
+      "equipmentRoleBindings": {
+        "drying-instrument": "drying-oven",
+        "dried-assembly": "watch-glass"
+      },
+      "parameters": {
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "watch-glass",
+        "sourceInstanceId": "practice-watch-glass",
+        "targetInstanceId": "practice-drying-oven",
+        "ovenDefinitionId": "drying-oven",
+        "precipitateSourceInstanceId": "practice-dry-paper",
+        "dryMassG": 1.73,
+        "drynessResult": "damp",
+        "temperatureC": 115,
+        "visualState": "partially-dry-precipitate",
+        "durationMinutes": 12,
+        "instruction": "Place the watch-glass assembly in the 115 C oven for the first configured 12-minute drying stage."
+      },
+      "interaction": {
+        "type": "placeInInstrument",
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "drying-oven",
+        "stationId": "drying-oven",
+        "accessibleLabel": "Place the watch-glass assembly in the 115 C oven for the first configured 12-minute drying stage.",
+        "successCue": "The configured drying stage is complete.",
+        "invalidCue": "Use the watch glass and the 110-120 C drying oven."
+      },
+      "prerequisites": [
+        {
+          "id": "transfer-practice-paper-to-watch-required",
+          "type": "actionEvidence",
+          "label": "The paper and solid are on the watch glass.",
+          "actionId": "transfer-practice-paper-to-watch"
+        },
+        {
+          "id": "teacher-configured-temperature-recorded-required",
+          "type": "notebookEntry",
+          "label": "The oven setpoint is recorded.",
+          "notebookTag": "teacher-configured-temperature"
+        }
+      ],
+      "stateChanges": [
+        "dry updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Dry for 10-15 minutes complete.",
+        "invalid": "Review the scientific and physical prerequisites for dry for 10-15 minutes."
+      },
+      "evidence": [
+        "dry"
+      ]
+    },
+    {
+      "id": "remove-warm-practice-watch",
+      "verb": "observe",
+      "label": "Remove warm watch glass safely",
+      "parameters": {
+        "note": "The warm, partially dry watch-glass assembly is removed with heat-safe handling and is not placed on the balance.",
+        "tag": "warm-glassware",
+        "instruction": "Use heat-safe handling to remove the warm assembly; do not weigh it."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Use heat-safe handling to remove the warm assembly; do not weigh it.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Remove warm watch glass safely complete.",
+        "invalid": "Review the scientific and physical prerequisites for remove warm watch glass safely."
+      },
+      "evidence": [
+        "observe"
+      ]
+    },
+    {
+      "id": "break-practice-precipitate",
+      "verb": "observe",
+      "label": "Break precipitate into small pieces",
+      "parameters": {
+        "note": "The warm, partially dried precipitate is broken into small pieces with the metal scoopula to expose moist interior surfaces.",
+        "tag": "practice-breakup",
+        "instruction": "Use the metal scoopula to break the precipitate into small pieces before the second drying stage."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Use the metal scoopula to break the precipitate into small pieces before the second drying stage.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Break precipitate into small pieces complete.",
+        "invalid": "Review the scientific and physical prerequisites for break precipitate into small pieces."
+      },
+      "evidence": [
+        "observe"
+      ]
+    },
+    {
+      "id": "second-practice-drying",
+      "verb": "dry",
+      "label": "Dry for another 5 minutes",
+      "atomId": "atom.dry.oven-stage",
+      "equipmentRoleBindings": {
+        "drying-instrument": "drying-oven",
+        "dried-assembly": "watch-glass"
+      },
+      "parameters": {
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "watch-glass",
+        "sourceInstanceId": "practice-watch-glass",
+        "targetInstanceId": "practice-drying-oven",
+        "ovenDefinitionId": "drying-oven",
+        "precipitateSourceInstanceId": "practice-dry-paper",
+        "dryMassG": 1.71,
+        "drynessResult": "dry",
+        "temperatureC": 115,
+        "visualState": "broken-dry-precipitate",
+        "durationMinutes": 5,
+        "instruction": "Return the broken precipitate assembly to the oven for the separate five-minute drying stage."
+      },
+      "interaction": {
+        "type": "placeInInstrument",
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "drying-oven",
+        "stationId": "drying-oven",
+        "accessibleLabel": "Return the broken precipitate assembly to the oven for the separate five-minute drying stage.",
+        "successCue": "The configured drying stage is complete.",
+        "invalidCue": "Use the watch glass and the 110-120 C drying oven."
+      },
+      "prerequisites": [
+        {
+          "id": "first-practice-drying-required",
+          "type": "actionEvidence",
+          "label": "The first drying stage is complete.",
+          "actionId": "first-practice-drying"
+        },
+        {
+          "id": "practice-breakup-recorded-required",
+          "type": "notebookEntry",
+          "label": "The solid was broken into small pieces.",
+          "notebookTag": "practice-breakup"
+        }
+      ],
+      "stateChanges": [
+        "dry updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Dry for another 5 minutes complete.",
+        "invalid": "Review the scientific and physical prerequisites for dry for another 5 minutes."
+      },
+      "evidence": [
+        "dry"
+      ]
+    },
+    {
+      "id": "cool-practice-assembly",
+      "verb": "cool",
+      "label": "Cool the dried assembly",
+      "atomId": "atom.cool.before-weighing",
+      "equipmentRoleBindings": {
+        "dried-assembly": "watch-glass",
+        "cooling-tool": "crucible-tongs"
+      },
+      "parameters": {
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "crucible-tongs",
+        "sourceInstanceId": "practice-watch-glass",
+        "targetInstanceId": "practice-tongs",
+        "cooledTemperatureC": 25,
+        "cooledObjectLabel": "Watch-glass, paper, and precipitate assembly",
+        "visualState": "cooled-dry-precipitate",
+        "instruction": "Remove the assembly with heat-safe handling and set it aside until it reaches a safe weighing temperature."
+      },
+      "interaction": {
+        "type": "placeInInstrument",
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "crucible-tongs",
+        "stationId": "crucible-tongs",
+        "accessibleLabel": "Remove the assembly with heat-safe handling and set it aside until it reaches a safe weighing temperature.",
+        "successCue": "The assembly has cooled before weighing.",
+        "invalidCue": "Use heat-safe handling and cool the assembly before weighing."
+      },
+      "prerequisites": [
+        {
+          "id": "second-practice-drying-required",
+          "type": "actionEvidence",
+          "label": "The second drying stage is complete.",
+          "actionId": "second-practice-drying"
+        }
+      ],
+      "stateChanges": [
+        "cool updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Cool the dried assembly complete.",
+        "invalid": "Review the scientific and physical prerequisites for cool the dried assembly."
+      },
+      "evidence": [
+        "cool"
+      ]
+    },
+    {
+      "id": "weigh-practice-combined",
+      "verb": "weigh",
+      "label": "Weigh cooled combined assembly",
+      "atomId": "atom.weigh.dry-assembly",
+      "equipmentRoleBindings": {
+        "balance-instrument": "analytical-balance",
+        "dried-assembly": "watch-glass"
+      },
+      "parameters": {
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "analytical-balance",
+        "sourceInstanceId": "practice-watch-glass",
+        "targetInstanceId": "practice-dry-balance",
+        "instrumentDefinitionId": "analytical-balance",
+        "measurementId": "practice-combined-mass",
+        "expectedMassG": 35.376,
+        "maxSafeTemperatureC": 40,
+        "tolerance": 0.001,
+        "evidenceProvenance": "teacher-configured simulated balance output",
+        "instruction": "Only after cooling, read the simulated combined mass of watch glass, filter paper, and precipitate.",
+        "requiresDryPrecipitate": true
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "analytical-balance",
+        "stationId": "analytical-balance",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Only after cooling, read the simulated combined mass of watch glass, filter paper, and precipitate.",
+        "successCue": "The balance reading is available as simulated measurement evidence.",
+        "invalidCue": "Use the named item on the analytical balance and do not weigh it warm."
+      },
+      "prerequisites": [
+        {
+          "id": "cool-practice-assembly-required",
+          "type": "actionEvidence",
+          "label": "The assembly has cooled.",
+          "actionId": "cool-practice-assembly"
+        },
+        {
+          "id": "practice-watch-glass-mass-recorded-required",
+          "type": "notebookEntry",
+          "label": "The watch-glass tare is recorded.",
+          "notebookTag": "practice-watch-glass-mass"
+        },
+        {
+          "id": "practice-filter-paper-mass-recorded-required",
+          "type": "notebookEntry",
+          "label": "The dry filter-paper tare is recorded.",
+          "notebookTag": "practice-filter-paper-mass"
+        }
+      ],
+      "stateChanges": [
+        "weigh updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Weigh cooled combined assembly complete.",
+        "invalid": "Review the scientific and physical prerequisites for weigh cooled combined assembly."
+      },
+      "evidence": [
+        "weigh",
+        "measurement",
+        "simulated-output"
+      ]
+    },
+    {
+      "id": "record-practice-combined",
+      "verb": "record",
+      "label": "Record cooled combined mass",
+      "parameters": {
+        "measurementId": "practice-combined-mass",
+        "label": "Cooled watch glass, filter paper, and precipitate mass",
+        "unit": "g",
+        "instruction": "Record the cooled combined mass without silently treating it as precipitate-only mass."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Record the cooled combined mass without silently treating it as precipitate-only mass.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "record updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Record cooled combined mass complete.",
+        "invalid": "Review the scientific and physical prerequisites for record cooled combined mass."
+      },
+      "evidence": [
+        "record"
+      ]
+    },
+    {
+      "id": "calculate-practice-theoretical",
+      "verb": "calculate",
+      "label": "Calculate theoretical CaCO3 mass",
+      "parameters": {
+        "calculationId": "practice-theoretical-caco3",
+        "template": "calciumCarbonateTheoreticalMass",
+        "sodiumCarbonateMassMeasurementId": "practice-sodium-carbonate-mass",
+        "calciumChlorideMassMeasurementId": "practice-calcium-chloride-mass",
+        "tolerance": 0.001,
+        "instruction": "Use the recorded reactant masses, 1:1 limiting-reactant stoichiometry, and CaCO3 molar mass. The configured model treats the printed Na2CO3 and CaCl2 formulas as anhydrous; an instructor must change the molar-mass model if a hydrate is supplied."
+      },
+      "interaction": {
+        "type": "submitCalculation",
+        "valueParameter": "calculationId",
+        "accessibleLabel": "Use the recorded reactant masses, 1:1 limiting-reactant stoichiometry, and CaCO3 molar mass. The configured model treats the printed Na2CO3 and CaCl2 formulas as anhydrous; an instructor must change the molar-mass model if a hydrate is supplied.",
+        "successCue": "The calculation is recorded with its units.",
+        "invalidCue": "Record all required measurements before calculating."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "calculate updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Calculate theoretical CaCO3 mass complete.",
+        "invalid": "Review the scientific and physical prerequisites for calculate theoretical caco3 mass."
+      },
+      "evidence": [
+        "calculate"
+      ]
+    },
+    {
+      "id": "calculate-practice-collected",
+      "verb": "calculate",
+      "label": "Calculate collected CaCO3 mass",
+      "parameters": {
+        "calculationId": "practice-collected-caco3",
+        "template": "gravimetricPrecipitateMass",
+        "combinedMassMeasurementId": "practice-combined-mass",
+        "watchGlassMassMeasurementId": "practice-watch-glass-mass",
+        "filterPaperMassMeasurementId": "practice-filter-paper-mass",
+        "tolerance": 0.001,
+        "instruction": "Subtract both tare masses from the cooled combined mass to obtain collected precipitate mass."
+      },
+      "interaction": {
+        "type": "submitCalculation",
+        "valueParameter": "calculationId",
+        "accessibleLabel": "Subtract both tare masses from the cooled combined mass to obtain collected precipitate mass.",
+        "successCue": "The calculation is recorded with its units.",
+        "invalidCue": "Record all required measurements before calculating."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "calculate updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Calculate collected CaCO3 mass complete.",
+        "invalid": "Review the scientific and physical prerequisites for calculate collected caco3 mass."
+      },
+      "evidence": [
+        "calculate"
+      ]
+    },
+    {
+      "id": "compare-practice-yield",
+      "verb": "observe",
+      "label": "Compare collected and theoretical mass",
+      "parameters": {
+        "note": "Compare the two calculation records and explain incomplete transfer, soluble loss, retained moisture, incomplete washing, or contamination without claiming unsupported precision.",
+        "tag": "yield-comparison",
+        "instruction": "Explain the difference between theoretical and collected CaCO3 mass using procedure evidence."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Explain the difference between theoretical and collected CaCO3 mass using procedure evidence.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Compare collected and theoretical mass complete.",
+        "invalid": "Review the scientific and physical prerequisites for compare collected and theoretical mass."
+      },
+      "evidence": [
+        "observe"
+      ]
+    },
+    {
+      "id": "evaluate-extra-carbonate-branch",
+      "verb": "observe",
+      "label": "Evaluate optional 1 g carbonate rerun",
+      "parameters": {
+        "note": "Practice Question 2 remains an optional full-rerun branch. Predict whether 1 g more Na2CO3 changes the limiting-reactant CaCO3 yield; do not silently replace the completed trial.",
+        "tag": "optional-rerun-branch",
+        "instruction": "Record the prediction for an optional full rerun with 1 g more sodium carbonate."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Record the prediction for an optional full rerun with 1 g more sodium carbonate.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Evaluate optional 1 g carbonate rerun complete.",
+        "invalid": "Review the scientific and physical prerequisites for evaluate optional 1 g carbonate rerun."
+      },
+      "evidence": [
+        "observe"
+      ]
+    },
+    {
+      "id": "explain-wet-unwashed-bias",
+      "verb": "observe",
+      "label": "Explain wet and unwashed bias",
+      "parameters": {
+        "note": "Unwashed precipitate can retain soluble ions and wet precipitate retains water; either can bias apparent solid mass upward. Washing can also cause loss if technique is poor.",
+        "tag": "uncertainty",
+        "instruction": "Explain how inadequate washing, inadequate drying, and material loss affect the gravimetric result."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Explain how inadequate washing, inadequate drying, and material loss affect the gravimetric result.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Explain wet and unwashed bias complete.",
+        "invalid": "Review the scientific and physical prerequisites for explain wet and unwashed bias."
+      },
+      "evidence": [
+        "observe"
+      ]
+    },
+    {
+      "id": "complete-practice-cleanup",
+      "verb": "observe",
+      "label": "Complete practice cleanup",
+      "parameters": {
+        "note": "Filter paper and precipitate are routed to solid waste. Marker is removed from the watch glass with teacher-supplied rubbing alcohol.",
+        "tag": "cleanup",
+        "instruction": "Discard paper and precipitate in the configured wastebasket and remove marker with rubbing alcohol."
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "valueParameter": "note",
+        "accessibleLabel": "Discard paper and precipitate in the configured wastebasket and remove marker with rubbing alcohol.",
+        "successCue": "The evidence is recorded in the notebook.",
+        "invalidCue": "Complete and record the named evidence."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "observe updates only the structured simulator state and evidence named by this action."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "the current process node expects a different action",
+          "message": "That action is out of sequence for this gravimetric workflow.",
+          "recovery": "Return to the highlighted process node and preserve each sample identity."
+        },
+        {
+          "id": "missing-evidence",
+          "when": "a calculation or approval step lacks its required evidence",
+          "message": "Required measured or teacher-approved evidence is missing.",
+          "recovery": "Collect and record the named evidence before continuing."
+        },
+        {
+          "id": "unsafe-or-invalid-state",
+          "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+          "message": "The apparatus is not in a safe, valid gravimetric state.",
+          "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+        }
+      ],
+      "feedback": {
+        "success": "Complete practice cleanup complete.",
+        "invalid": "Review the scientific and physical prerequisites for complete practice cleanup."
+      },
+      "evidence": [
+        "observe"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "label-practice-watch-glass-node",
+    "nodes": [
+      {
+        "id": "label-practice-watch-glass-node",
+        "type": "observation",
+        "title": "Label clean, dry watch glass",
+        "description": "Use the permanent marker to identify the clean, dry watch glass.",
+        "actionId": "label-practice-watch-glass",
+        "config": {},
+        "validation": [
+          {
+            "id": "label-practice-watch-glass-evidence",
+            "type": "actionEvidence",
+            "label": "Label clean, dry watch glass was completed.",
+            "actionId": "label-practice-watch-glass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Label clean, dry watch glass complete.",
+          "retry": "Correct the named prerequisite and retry label clean, dry watch glass."
+        }
+      },
+      {
+        "id": "weigh-practice-watch-glass-node",
+        "type": "action",
+        "title": "Weigh watch-glass tare",
+        "description": "Read the clean, dry watch-glass tare independently of the filter-paper tare.",
+        "actionId": "weigh-practice-watch-glass",
+        "config": {},
+        "validation": [
+          {
+            "id": "weigh-practice-watch-glass-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh watch-glass tare was completed.",
+            "actionId": "weigh-practice-watch-glass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh watch-glass tare complete.",
+          "retry": "Correct the named prerequisite and retry weigh watch-glass tare."
+        }
+      },
+      {
+        "id": "record-practice-watch-glass-node",
+        "type": "observation",
+        "title": "Record watch-glass tare",
+        "description": "Record the watch-glass tare before it receives the paper and precipitate.",
+        "actionId": "record-practice-watch-glass",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-practice-watch-glass-evidence",
+            "type": "actionEvidence",
+            "label": "Record watch-glass tare was completed.",
+            "actionId": "record-practice-watch-glass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record watch-glass tare complete.",
+          "retry": "Correct the named prerequisite and retry record watch-glass tare."
+        }
+      },
+      {
+        "id": "transfer-practice-paper-to-watch-node",
+        "type": "action",
+        "title": "Transfer paper and precipitate to watch glass",
+        "description": "Carefully lift the filter paper and precipitate onto the labeled watch glass without losing solid.",
+        "actionId": "transfer-practice-paper-to-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-practice-paper-to-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Transfer paper and precipitate to watch glass was completed.",
+            "actionId": "transfer-practice-paper-to-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer paper and precipitate to watch glass complete.",
+          "retry": "Correct the named prerequisite and retry transfer paper and precipitate to watch glass."
+        }
+      },
+      {
+        "id": "dispose-practice-filtrate-node",
+        "type": "observation",
+        "title": "Dispose of configured filtrate",
+        "description": "Dispose of the filtrate only through the source-approved, teacher-configured drain action.",
+        "actionId": "dispose-practice-filtrate",
+        "config": {},
+        "validation": [
+          {
+            "id": "dispose-practice-filtrate-evidence",
+            "type": "actionEvidence",
+            "label": "Dispose of configured filtrate was completed.",
+            "actionId": "dispose-practice-filtrate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dispose of configured filtrate complete.",
+          "retry": "Correct the named prerequisite and retry dispose of configured filtrate."
+        }
+      },
+      {
+        "id": "set-practice-oven-node",
+        "type": "observation",
+        "title": "Set oven to 110-120 C",
+        "description": "Confirm the oven setting is between 110 C and 120 C before inserting the watch glass.",
+        "actionId": "set-practice-oven",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "oven setpoint within the manual-stated 110-120 C range"
+        },
+        "validation": [
+          {
+            "id": "set-practice-oven-evidence",
+            "type": "actionEvidence",
+            "label": "Set oven to 110-120 C was completed.",
+            "actionId": "set-practice-oven"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Set oven to 110-120 C complete.",
+          "retry": "Correct the named prerequisite and retry set oven to 110-120 c."
+        }
+      },
+      {
+        "id": "first-practice-drying-node",
+        "type": "checkpoint",
+        "title": "Dry for 10-15 minutes",
+        "description": "Place the watch-glass assembly in the 115 C oven for the first configured 12-minute drying stage.",
+        "actionId": "first-practice-drying",
+        "config": {},
+        "validation": [
+          {
+            "id": "first-practice-drying-evidence",
+            "type": "actionEvidence",
+            "label": "Dry for 10-15 minutes was completed.",
+            "actionId": "first-practice-drying"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry for 10-15 minutes complete.",
+          "retry": "Correct the named prerequisite and retry dry for 10-15 minutes."
+        }
+      },
+      {
+        "id": "remove-warm-practice-watch-node",
+        "type": "observation",
+        "title": "Remove warm watch glass safely",
+        "description": "Use heat-safe handling to remove the warm assembly; do not weigh it.",
+        "actionId": "remove-warm-practice-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "remove-warm-practice-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Remove warm watch glass safely was completed.",
+            "actionId": "remove-warm-practice-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Remove warm watch glass safely complete.",
+          "retry": "Correct the named prerequisite and retry remove warm watch glass safely."
+        }
+      },
+      {
+        "id": "break-practice-precipitate-node",
+        "type": "observation",
+        "title": "Break precipitate into small pieces",
+        "description": "Use the metal scoopula to break the precipitate into small pieces before the second drying stage.",
+        "actionId": "break-practice-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "break-practice-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Break precipitate into small pieces was completed.",
+            "actionId": "break-practice-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Break precipitate into small pieces complete.",
+          "retry": "Correct the named prerequisite and retry break precipitate into small pieces."
+        }
+      },
+      {
+        "id": "second-practice-drying-node",
+        "type": "checkpoint",
+        "title": "Dry for another 5 minutes",
+        "description": "Return the broken precipitate assembly to the oven for the separate five-minute drying stage.",
+        "actionId": "second-practice-drying",
+        "config": {},
+        "validation": [
+          {
+            "id": "second-practice-drying-evidence",
+            "type": "actionEvidence",
+            "label": "Dry for another 5 minutes was completed.",
+            "actionId": "second-practice-drying"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry for another 5 minutes complete.",
+          "retry": "Correct the named prerequisite and retry dry for another 5 minutes."
+        }
+      },
+      {
+        "id": "cool-practice-assembly-node",
+        "type": "action",
+        "title": "Cool the dried assembly",
+        "description": "Remove the assembly with heat-safe handling and set it aside until it reaches a safe weighing temperature.",
+        "actionId": "cool-practice-assembly",
+        "config": {},
+        "validation": [
+          {
+            "id": "cool-practice-assembly-evidence",
+            "type": "actionEvidence",
+            "label": "Cool the dried assembly was completed.",
+            "actionId": "cool-practice-assembly"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Cool the dried assembly complete.",
+          "retry": "Correct the named prerequisite and retry cool the dried assembly."
+        }
+      },
+      {
+        "id": "weigh-practice-combined-node",
+        "type": "action",
+        "title": "Weigh cooled combined assembly",
+        "description": "Only after cooling, read the simulated combined mass of watch glass, filter paper, and precipitate.",
+        "actionId": "weigh-practice-combined",
+        "config": {},
+        "validation": [
+          {
+            "id": "weigh-practice-combined-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh cooled combined assembly was completed.",
+            "actionId": "weigh-practice-combined"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh cooled combined assembly complete.",
+          "retry": "Correct the named prerequisite and retry weigh cooled combined assembly."
+        }
+      },
+      {
+        "id": "record-practice-combined-node",
+        "type": "observation",
+        "title": "Record cooled combined mass",
+        "description": "Record the cooled combined mass without silently treating it as precipitate-only mass.",
+        "actionId": "record-practice-combined",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-practice-combined-evidence",
+            "type": "actionEvidence",
+            "label": "Record cooled combined mass was completed.",
+            "actionId": "record-practice-combined"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record cooled combined mass complete.",
+          "retry": "Correct the named prerequisite and retry record cooled combined mass."
+        }
+      },
+      {
+        "id": "calculate-practice-theoretical-node",
+        "type": "calculation",
+        "title": "Calculate theoretical CaCO3 mass",
+        "description": "Use the recorded reactant masses, 1:1 limiting-reactant stoichiometry, and CaCO3 molar mass. The configured model treats the printed Na2CO3 and CaCl2 formulas as anhydrous; an instructor must change the molar-mass model if a hydrate is supplied.",
+        "actionId": "calculate-practice-theoretical",
+        "config": {},
+        "validation": [
+          {
+            "id": "calculate-practice-theoretical-evidence",
+            "type": "actionEvidence",
+            "label": "Calculate theoretical CaCO3 mass was completed.",
+            "actionId": "calculate-practice-theoretical"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate theoretical CaCO3 mass complete.",
+          "retry": "Correct the named prerequisite and retry calculate theoretical caco3 mass."
+        }
+      },
+      {
+        "id": "calculate-practice-collected-node",
+        "type": "calculation",
+        "title": "Calculate collected CaCO3 mass",
+        "description": "Subtract both tare masses from the cooled combined mass to obtain collected precipitate mass.",
+        "actionId": "calculate-practice-collected",
+        "config": {},
+        "validation": [
+          {
+            "id": "calculate-practice-collected-evidence",
+            "type": "actionEvidence",
+            "label": "Calculate collected CaCO3 mass was completed.",
+            "actionId": "calculate-practice-collected"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate collected CaCO3 mass complete.",
+          "retry": "Correct the named prerequisite and retry calculate collected caco3 mass."
+        }
+      },
+      {
+        "id": "compare-practice-yield-node",
+        "type": "observation",
+        "title": "Compare collected and theoretical mass",
+        "description": "Explain the difference between theoretical and collected CaCO3 mass using procedure evidence.",
+        "actionId": "compare-practice-yield",
+        "config": {},
+        "validation": [
+          {
+            "id": "compare-practice-yield-evidence",
+            "type": "actionEvidence",
+            "label": "Compare collected and theoretical mass was completed.",
+            "actionId": "compare-practice-yield"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Compare collected and theoretical mass complete.",
+          "retry": "Correct the named prerequisite and retry compare collected and theoretical mass."
+        }
+      },
+      {
+        "id": "evaluate-extra-carbonate-branch-node",
+        "type": "observation",
+        "title": "Evaluate optional 1 g carbonate rerun",
+        "description": "Record the prediction for an optional full rerun with 1 g more sodium carbonate.",
+        "actionId": "evaluate-extra-carbonate-branch",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "whether the optional Practice Question 2 rerun is assigned"
+        },
+        "validation": [
+          {
+            "id": "evaluate-extra-carbonate-branch-evidence",
+            "type": "actionEvidence",
+            "label": "Evaluate optional 1 g carbonate rerun was completed.",
+            "actionId": "evaluate-extra-carbonate-branch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Evaluate optional 1 g carbonate rerun complete.",
+          "retry": "Correct the named prerequisite and retry evaluate optional 1 g carbonate rerun."
+        }
+      },
+      {
+        "id": "explain-wet-unwashed-bias-node",
+        "type": "observation",
+        "title": "Explain wet and unwashed bias",
+        "description": "Explain how inadequate washing, inadequate drying, and material loss affect the gravimetric result.",
+        "actionId": "explain-wet-unwashed-bias",
+        "config": {},
+        "validation": [
+          {
+            "id": "explain-wet-unwashed-bias-evidence",
+            "type": "actionEvidence",
+            "label": "Explain wet and unwashed bias was completed.",
+            "actionId": "explain-wet-unwashed-bias"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Explain wet and unwashed bias complete.",
+          "retry": "Correct the named prerequisite and retry explain wet and unwashed bias."
+        }
+      },
+      {
+        "id": "complete-practice-cleanup-node",
+        "type": "observation",
+        "title": "Complete practice cleanup",
+        "description": "Discard paper and precipitate in the configured wastebasket and remove marker with rubbing alcohol.",
+        "actionId": "complete-practice-cleanup",
+        "config": {},
+        "validation": [
+          {
+            "id": "complete-practice-cleanup-evidence",
+            "type": "actionEvidence",
+            "label": "Complete practice cleanup was completed.",
+            "actionId": "complete-practice-cleanup"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Complete practice cleanup complete.",
+          "retry": "Correct the named prerequisite and retry complete practice cleanup."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "label-practice-watch-glass-node",
+        "to": "weigh-practice-watch-glass-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "weigh-practice-watch-glass-node",
+        "to": "record-practice-watch-glass-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-practice-watch-glass-node",
+        "to": "transfer-practice-paper-to-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-practice-paper-to-watch-node",
+        "to": "dispose-practice-filtrate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "dispose-practice-filtrate-node",
+        "to": "set-practice-oven-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "set-practice-oven-node",
+        "to": "first-practice-drying-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "first-practice-drying-node",
+        "to": "remove-warm-practice-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "remove-warm-practice-watch-node",
+        "to": "break-practice-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "break-practice-precipitate-node",
+        "to": "second-practice-drying-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "second-practice-drying-node",
+        "to": "cool-practice-assembly-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "cool-practice-assembly-node",
+        "to": "weigh-practice-combined-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "weigh-practice-combined-node",
+        "to": "record-practice-combined-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-practice-combined-node",
+        "to": "calculate-practice-theoretical-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "calculate-practice-theoretical-node",
+        "to": "calculate-practice-collected-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "calculate-practice-collected-node",
+        "to": "compare-practice-yield-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "compare-practice-yield-node",
+        "to": "evaluate-extra-carbonate-branch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "evaluate-extra-carbonate-branch-node",
+        "to": "explain-wet-unwashed-bias-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "explain-wet-unwashed-bias-node",
+        "to": "complete-practice-cleanup-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "two-stage-precipitate-drying-success",
+      "type": "actionEvidence",
+      "label": "Two-Stage Precipitate Drying reached its final evidence step.",
+      "actionId": "complete-practice-cleanup"
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "wrong-order",
+      "when": "the current process node expects a different action",
+      "message": "That action is out of sequence for this gravimetric workflow.",
+      "recovery": "Return to the highlighted process node and preserve each sample identity."
+    },
+    {
+      "id": "missing-evidence",
+      "when": "a calculation or approval step lacks its required evidence",
+      "message": "Required measured or teacher-approved evidence is missing.",
+      "recovery": "Collect and record the named evidence before continuing."
+    },
+    {
+      "id": "unsafe-or-invalid-state",
+      "when": "paper is unseated, a receiver is missing, or warm glassware is weighed",
+      "message": "The apparatus is not in a safe, valid gravimetric state.",
+      "recovery": "Correct the physical prerequisite named in the feedback, then retry."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-08-04T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "chemistry",
+      "hard-water",
+      "gravimetry",
+      "drying",
+      "constant-mass-awareness"
+    ]
+  }
+}

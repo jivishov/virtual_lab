@@ -1,0 +1,2327 @@
+{
+  "id": "paper-chromatography",
+  "title": "Paper Chromatography",
+  "learningGoal": "Prepare, spot, develop, mark, measure, and calculate Rf values from a paper chromatogram.",
+  "requiredEquipment": [
+    "chromatography-chamber",
+    "chromatography-paper",
+    "capillary-spotter",
+    "metric-ruler",
+    "reagent-bottle",
+    "sample-bottle",
+    "pencil"
+  ],
+  "chromatographyModels": [
+    {
+      "id": "food-dyes-paper",
+      "solventFrontMm": 80,
+      "bands": [
+        {
+          "id": "blue",
+          "label": "Blue",
+          "color": "#2563eb",
+          "distanceMm": 64,
+          "expectedRf": 0.8
+        },
+        {
+          "id": "red",
+          "label": "Red",
+          "color": "#dc2626",
+          "distanceMm": 48,
+          "expectedRf": 0.6
+        },
+        {
+          "id": "yellow",
+          "label": "Yellow",
+          "color": "#facc15",
+          "distanceMm": 24,
+          "expectedRf": 0.3
+        }
+      ]
+    }
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "chromatography-chamber-1",
+        "definitionId": "chromatography-chamber",
+        "label": "Chromatography chamber",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "chromatography-paper-1",
+        "definitionId": "chromatography-paper",
+        "label": "Chromatography paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "paper-unspotted"
+        }
+      },
+      {
+        "id": "capillary-spotter-1",
+        "definitionId": "capillary-spotter",
+        "label": "Capillary spotter",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "metric-ruler-1",
+        "definitionId": "metric-ruler",
+        "label": "Metric ruler",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "reagent-bottle-1",
+        "definitionId": "reagent-bottle",
+        "label": "Solvent bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Chromatography solvent",
+          "volumeMl": 20,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "sample-bottle-1",
+        "definitionId": "sample-bottle",
+        "label": "Food dye sample",
+        "location": "shelf",
+        "contents": {
+          "kind": "mixture",
+          "label": "Food dye sample",
+          "volumeMl": 1,
+          "solutes": [
+            {
+              "id": "food-dye-mixture",
+              "label": "Food dye mixture",
+              "amount": 1,
+              "unit": "mg"
+            }
+          ],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "blue-dye-solution"
+        }
+      },
+      {
+        "id": "pencil-1",
+        "definitionId": "pencil",
+        "label": "Pencil",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "place-chamber",
+      "verb": "place",
+      "label": "Place chromatography chamber",
+      "atomId": "atom.place.developing-chamber",
+      "equipmentRoleBindings": {
+        "developing-chamber": "chromatography-chamber"
+      },
+      "parameters": {
+        "equipmentDefinitionId": "chromatography-chamber",
+        "location": "workbench"
+      },
+      "interaction": {
+        "type": "dragToZone",
+        "sourceDefinitionId": "chromatography-chamber",
+        "stationId": "workbench",
+        "accessibleLabel": "Place the empty chromatography chamber upright on the workbench.",
+        "successCue": "The chromatography chamber is upright on the workbench.",
+        "invalidCue": "Start with the chamber on the bench before adding solvent."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Place chromatography chamber: The chromatography chamber is upright on the workbench."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The chromatography chamber is upright on the workbench.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "charge-chromatography-chamber",
+      "verb": "transfer",
+      "label": "Add shallow solvent",
+      "atomId": "atom.transfer.charge-developing-chamber",
+      "equipmentRoleBindings": {
+        "liquid-source": "reagent-bottle",
+        "developing-chamber": "chromatography-chamber"
+      },
+      "parameters": {
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "chromatography-chamber",
+        "volumeMl": 10,
+        "solventDepthMm": 5,
+        "depthProvenance": "teacher-configured"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "reagent-bottle",
+        "targetDefinitionId": "chromatography-chamber",
+        "valueParameter": "volumeMl",
+        "accessibleLabel": "Pour a shallow layer of solvent into the chamber, below where the paper baseline will sit.",
+        "successCue": "The solvent layer is shallow enough to stay below the baseline.",
+        "invalidCue": "Use the solvent bottle as the source and the chamber as the receiving vessel."
+      },
+      "prerequisites": [
+        {
+          "id": "chamber-placed-before-charging",
+          "type": "actionEvidence",
+          "label": "Action place-chamber was completed.",
+          "actionId": "place-chamber"
+        }
+      ],
+      "stateChanges": [
+        "Add shallow solvent: A shallow solvent layer is below the future baseline."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "submerged-origin",
+          "when": "the pencil origin sits at or below the solvent layer",
+          "message": "A submerged origin dissolves the sample into the mobile phase instead of letting it travel up the paper.",
+          "recovery": "Lower the solvent depth or raise the origin, then develop a fresh strip."
+        }
+      ],
+      "feedback": {
+        "success": "A shallow solvent layer is below the future baseline.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "place-paper-flat",
+      "verb": "place",
+      "label": "Lay chromatography paper flat",
+      "atomId": "atom.place.stationary-phase",
+      "equipmentRoleBindings": {
+        "stationary-phase": "chromatography-paper"
+      },
+      "parameters": {
+        "equipmentDefinitionId": "chromatography-paper",
+        "equipmentInstanceId": "chromatography-paper-1",
+        "location": "workbench"
+      },
+      "interaction": {
+        "type": "dragToZone",
+        "sourceDefinitionId": "chromatography-paper",
+        "stationId": "workbench",
+        "accessibleLabel": "Place the chromatography paper flat on the workbench.",
+        "successCue": "The chromatography paper is flat on the bench.",
+        "invalidCue": "Place the paper on the bench before marking the baseline."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Lay chromatography paper flat: The chromatography paper is flat on the bench for marking."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The chromatography paper is flat on the bench for marking.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "draw-pencil-baseline",
+      "verb": "observe",
+      "label": "Draw pencil baseline",
+      "parameters": {
+        "note": "A light pencil baseline is drawn near the bottom edge; ink is avoided because it would dissolve in the solvent.",
+        "tag": "chromatography-baseline",
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "chromatographyOperation": "markBaseline",
+        "chromatographyModelId": "food-dyes-paper",
+        "baselineHeightMm": 15,
+        "markingToolDefinitionId": "pencil",
+        "markingToolInstanceId": "pencil-1",
+        "baselineProvenance": "teacher-configured"
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "accessibleLabel": "Use the pencil to draw a light baseline near the bottom of the chromatography paper.",
+        "successCue": "The pencil baseline is marked.",
+        "invalidCue": "Use pencil, not ink, to mark the baseline."
+      },
+      "prerequisites": [
+        {
+          "id": "paper-flat-before-baseline",
+          "type": "actionEvidence",
+          "label": "Action place-paper-flat was completed.",
+          "actionId": "place-paper-flat"
+        }
+      ],
+      "stateChanges": [
+        "Draw pencil baseline: The pencil origin is on the paper and above the solvent level."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "ink-baseline",
+          "when": "the origin or the solvent front is marked with ink instead of pencil",
+          "message": "Ink components separate in the mobile phase and add bands that did not come from the sample.",
+          "recovery": "Use the pencil for the origin and for the solvent front."
+        },
+        {
+          "id": "submerged-origin",
+          "when": "the pencil origin sits at or below the solvent layer",
+          "message": "A submerged origin dissolves the sample into the mobile phase instead of letting it travel up the paper.",
+          "recovery": "Lower the solvent depth or raise the origin, then develop a fresh strip."
+        }
+      ],
+      "feedback": {
+        "success": "The pencil origin is on the paper and above the solvent level.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "load-capillary",
+      "verb": "transfer",
+      "label": "Load capillary spotter",
+      "atomId": "atom.transfer.load-spotting-tool",
+      "equipmentRoleBindings": {
+        "sample-source": "sample-bottle",
+        "spotting-tool": "capillary-spotter"
+      },
+      "parameters": {
+        "sourceDefinitionId": "sample-bottle",
+        "targetDefinitionId": "capillary-spotter",
+        "volumeMl": 0.1,
+        "visualState": "blue-dye-solution",
+        "sampleProvenance": "teacher-provided food dye sample",
+        "toolProvenance": "inferred spotting tool, not listed in the source materials"
+      },
+      "interaction": {
+        "type": "pourInto",
+        "sourceDefinitionId": "sample-bottle",
+        "targetDefinitionId": "capillary-spotter",
+        "valueParameter": "volumeMl",
+        "accessibleLabel": "Touch the capillary spotter to the dye sample so a small volume rises into the tube.",
+        "successCue": "The capillary contains a small dye sample.",
+        "invalidCue": "Load the capillary from the dye sample bottle."
+      },
+      "prerequisites": [
+        {
+          "id": "baseline-before-loading",
+          "type": "notebookEntry",
+          "label": "Notebook entry chromatography-baseline was recorded.",
+          "notebookTag": "chromatography-baseline"
+        }
+      ],
+      "stateChanges": [
+        "Load capillary spotter: The capillary contains a small dye sample."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The capillary contains a small dye sample.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "spot-sample",
+      "verb": "spotSample",
+      "label": "Touch sample to baseline",
+      "atomId": "atom.spotSample.apply-baseline-spot",
+      "equipmentRoleBindings": {
+        "spotting-tool": "capillary-spotter",
+        "stationary-phase": "chromatography-paper",
+        "sample-source": "sample-bottle"
+      },
+      "parameters": {
+        "sourceDefinitionId": "capillary-spotter",
+        "targetDefinitionId": "chromatography-paper",
+        "targetInstanceId": "chromatography-paper-1",
+        "chromatographyModelId": "food-dyes-paper",
+        "requiresBaselineMarked": true,
+        "requiresDrying": true,
+        "originDistanceMm": 15,
+        "spottedLabel": "Food dye spot on the pencil origin"
+      },
+      "interaction": {
+        "type": "spotOnto",
+        "sourceDefinitionId": "capillary-spotter",
+        "targetDefinitionId": "chromatography-paper",
+        "accessibleLabel": "Touch the loaded capillary to the pencil baseline without scraping the paper.",
+        "successCue": "A small dye spot is on the baseline.",
+        "invalidCue": "Use the loaded capillary on the chromatography paper baseline."
+      },
+      "prerequisites": [
+        {
+          "id": "baseline-before-spotting",
+          "type": "notebookEntry",
+          "label": "Notebook entry chromatography-baseline was recorded.",
+          "notebookTag": "chromatography-baseline"
+        },
+        {
+          "id": "capillary-loaded-before-spotting",
+          "type": "actionEvidence",
+          "label": "Action load-capillary was completed.",
+          "actionId": "load-capillary"
+        }
+      ],
+      "stateChanges": [
+        "Touch sample to baseline: A small dye spot is on the pencil baseline."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "A small dye spot is on the pencil baseline.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "spotSample"
+      ]
+    },
+    {
+      "id": "dry-sample-spot",
+      "verb": "observe",
+      "label": "Let the sample spot dry",
+      "parameters": {
+        "note": "The spot is allowed to dry so it stays compact before the paper is developed.",
+        "tag": "chromatography-spot-dry",
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "chromatographyOperation": "drySpot",
+        "dryingIntervalProvenance": "teacher-configured"
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "accessibleLabel": "Wait until the origin spot is dry and compact before developing the strip.",
+        "successCue": "The origin spot is dry.",
+        "invalidCue": "Apply the sample to the origin before drying it."
+      },
+      "prerequisites": [
+        {
+          "id": "spotted-before-drying",
+          "type": "actionEvidence",
+          "label": "Action spot-sample was completed.",
+          "actionId": "spot-sample"
+        }
+      ],
+      "stateChanges": [
+        "Let the sample spot dry: The compact sample spot is dry."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "wet-spot-developed",
+          "when": "development is attempted while the origin spot is still wet",
+          "message": "A wet origin spreads into the solvent and streaks instead of resolving into bands.",
+          "recovery": "Let the spot dry to a compact mark, then insert the paper."
+        }
+      ],
+      "feedback": {
+        "success": "The compact sample spot is dry.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "develop-paper",
+      "verb": "developChromatogram",
+      "label": "Place paper into chamber",
+      "atomId": "atom.developChromatogram.develop-strip",
+      "equipmentRoleBindings": {
+        "stationary-phase": "chromatography-paper",
+        "developing-chamber": "chromatography-chamber"
+      },
+      "parameters": {
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "targetDefinitionId": "chromatography-chamber",
+        "targetInstanceId": "chromatography-chamber-1",
+        "snapZoneId": "chromatography-chamber-paper-slot",
+        "chromatographyModelId": "food-dyes-paper",
+        "baselineHeightMm": 15,
+        "solventDepthMm": 5,
+        "chamberSealed": true,
+        "requireDrySpot": true,
+        "trackWetState": true,
+        "recordMeasurementsOnDevelop": false,
+        "developedLabel": "Developed food dye chromatogram",
+        "stopConditionProvenance": "teacher-configured"
+      },
+      "interaction": {
+        "type": "snapIntoTarget",
+        "sourceDefinitionId": "chromatography-paper",
+        "targetDefinitionId": "chromatography-chamber",
+        "snapZoneId": "chromatography-chamber-paper-slot",
+        "accessibleLabel": "Place the spotted paper in the chamber with the solvent below the spot, then close the lid.",
+        "successCue": "The paper is suspended and the chromatogram develops in a closed chamber.",
+        "invalidCue": "Use spotted, dry chromatography paper and a chamber containing a shallow solvent layer."
+      },
+      "prerequisites": [
+        {
+          "id": "spot-dry-before-development",
+          "type": "notebookEntry",
+          "label": "Notebook entry chromatography-spot-dry was recorded.",
+          "notebookTag": "chromatography-spot-dry"
+        },
+        {
+          "id": "chamber-charged-before-development",
+          "type": "actionEvidence",
+          "label": "Action charge-chromatography-chamber was completed.",
+          "actionId": "charge-chromatography-chamber"
+        }
+      ],
+      "stateChanges": [
+        "Place paper into chamber: The paper is suspended in the chamber and the chromatogram develops."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "submerged-origin",
+          "when": "the pencil origin sits at or below the solvent layer",
+          "message": "A submerged origin dissolves the sample into the mobile phase instead of letting it travel up the paper.",
+          "recovery": "Lower the solvent depth or raise the origin, then develop a fresh strip."
+        },
+        {
+          "id": "wet-spot-developed",
+          "when": "development is attempted while the origin spot is still wet",
+          "message": "A wet origin spreads into the solvent and streaks instead of resolving into bands.",
+          "recovery": "Let the spot dry to a compact mark, then insert the paper."
+        },
+        {
+          "id": "chamber-not-sealed",
+          "when": "the chamber lid is left off during development",
+          "message": "An open chamber lets the mobile phase evaporate before it saturates the paper, so the front rises unevenly.",
+          "recovery": "Keep the lid closed for the whole development and reject a trial developed open."
+        }
+      ],
+      "feedback": {
+        "success": "The paper is suspended in the chamber and the chromatogram develops.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "developChromatogram"
+      ]
+    },
+    {
+      "id": "remove-developed-paper",
+      "verb": "place",
+      "label": "Remove the developed paper",
+      "atomId": "atom.place.remove-developed-strip",
+      "equipmentRoleBindings": {
+        "stationary-phase": "chromatography-paper"
+      },
+      "parameters": {
+        "equipmentDefinitionId": "chromatography-paper",
+        "equipmentInstanceId": "chromatography-paper-1",
+        "location": "workbench"
+      },
+      "interaction": {
+        "type": "dragToZone",
+        "sourceDefinitionId": "chromatography-paper",
+        "stationId": "workbench",
+        "accessibleLabel": "Lift the wet strip out of the chamber and lay it flat.",
+        "successCue": "The wet chromatogram is out of the chamber and ready for an immediate front mark.",
+        "invalidCue": "Develop the chromatogram before removing it."
+      },
+      "prerequisites": [
+        {
+          "id": "developed-before-removal",
+          "type": "actionEvidence",
+          "label": "Action develop-paper was completed.",
+          "actionId": "develop-paper"
+        }
+      ],
+      "stateChanges": [
+        "Remove the developed paper: The wet developed chromatogram is flat on the bench."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "front-not-marked",
+          "when": "the paper dries before the solvent front is marked",
+          "message": "Once the solvent evaporates the front cannot be located, and every Rf in the trial loses its denominator.",
+          "recovery": "Mark the front in pencil as the strip leaves the chamber. If it dried unmarked, repeat the trial on fresh paper."
+        }
+      ],
+      "feedback": {
+        "success": "The wet developed chromatogram is flat on the bench.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "mark-solvent-front",
+      "verb": "observe",
+      "label": "Mark the solvent front",
+      "parameters": {
+        "note": "The solvent front is marked with pencil as soon as the paper leaves the chamber, before it can evaporate.",
+        "tag": "chromatography-solvent-front-marked",
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "chromatographyOperation": "markSolventFront",
+        "markingToolDefinitionId": "pencil",
+        "markingToolInstanceId": "pencil-1"
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "accessibleLabel": "Mark the solvent front in pencil while the strip is still wet.",
+        "successCue": "The solvent front is marked.",
+        "invalidCue": "Mark the front while the paper is still wet; a dry strip no longer shows it."
+      },
+      "prerequisites": [
+        {
+          "id": "removed-before-marking",
+          "type": "actionEvidence",
+          "label": "Action remove-developed-paper was completed.",
+          "actionId": "remove-developed-paper"
+        }
+      ],
+      "stateChanges": [
+        "Mark the solvent front: The solvent front is marked before it can evaporate."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "front-not-marked",
+          "when": "the paper dries before the solvent front is marked",
+          "message": "Once the solvent evaporates the front cannot be located, and every Rf in the trial loses its denominator.",
+          "recovery": "Mark the front in pencil as the strip leaves the chamber. If it dried unmarked, repeat the trial on fresh paper."
+        },
+        {
+          "id": "ink-baseline",
+          "when": "the origin or the solvent front is marked with ink instead of pencil",
+          "message": "Ink components separate in the mobile phase and add bands that did not come from the sample.",
+          "recovery": "Use the pencil for the origin and for the solvent front."
+        }
+      ],
+      "feedback": {
+        "success": "The solvent front is marked before it can evaporate.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "dry-developed-paper",
+      "verb": "observe",
+      "label": "Dry developed chromatogram",
+      "parameters": {
+        "note": "The developed paper is laid flat until the solvent evaporates before measurements are taken.",
+        "tag": "chromatogram-dried",
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "chromatographyOperation": "dryDevelopedPaper"
+      },
+      "interaction": {
+        "type": "recordNotebook",
+        "accessibleLabel": "Let the marked chromatogram dry flat before measuring any distance.",
+        "successCue": "The marked chromatogram is dry.",
+        "invalidCue": "Mark the solvent front before drying the paper."
+      },
+      "prerequisites": [
+        {
+          "id": "front-marked-before-drying",
+          "type": "notebookEntry",
+          "label": "Notebook entry chromatography-solvent-front-marked was recorded.",
+          "notebookTag": "chromatography-solvent-front-marked"
+        }
+      ],
+      "stateChanges": [
+        "Dry developed chromatogram: The developed chromatogram is dry for measurement."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "front-not-marked",
+          "when": "the paper dries before the solvent front is marked",
+          "message": "Once the solvent evaporates the front cannot be located, and every Rf in the trial loses its denominator.",
+          "recovery": "Mark the front in pencil as the strip leaves the chamber. If it dried unmarked, repeat the trial on fresh paper."
+        }
+      ],
+      "feedback": {
+        "success": "The developed chromatogram is dry for measurement.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "place-measuring-ruler",
+      "verb": "place",
+      "label": "Place the metric ruler",
+      "atomId": "atom.place.measuring-ruler",
+      "equipmentRoleBindings": {
+        "distance-measuring-instrument": "metric-ruler"
+      },
+      "parameters": {
+        "equipmentDefinitionId": "metric-ruler",
+        "equipmentInstanceId": "metric-ruler-1",
+        "location": "workbench",
+        "rulerPrecisionMm": 1
+      },
+      "interaction": {
+        "type": "dragToZone",
+        "sourceDefinitionId": "metric-ruler",
+        "stationId": "workbench",
+        "accessibleLabel": "Place the metric ruler on the workbench.",
+        "successCue": "The metric ruler is on the bench.",
+        "invalidCue": "Bring the ruler out before measuring a distance."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Place the metric ruler: The metric ruler is on the bench for millimetre readings."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The metric ruler is on the bench for millimetre readings.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "place"
+      ]
+    },
+    {
+      "id": "measure-solvent-front",
+      "verb": "observe",
+      "label": "Solvent front distance",
+      "parameters": {
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "targetDefinitionId": "metric-ruler",
+        "targetInstanceId": "metric-ruler-1",
+        "measurementId": "chromatography-solvent-front",
+        "label": "Solvent front distance",
+        "unit": "mm",
+        "chromatographyMeasurementType": "solventFront",
+        "measurementPoint": "the pencil solvent-front mark",
+        "rulerPrecisionMm": 1,
+        "measurementToleranceMm": 0.5,
+        "evidenceProvenance": "student ruler reading"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "chromatography-paper",
+        "targetDefinitionId": "metric-ruler",
+        "stationId": "metric-ruler",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Align the ruler zero on the pencil origin and read the distance to the pencil solvent-front mark.",
+        "successCue": "Solvent front distance is available as a student ruler reading.",
+        "invalidCue": "Measure only a dry chromatogram whose solvent front is already marked."
+      },
+      "prerequisites": [
+        {
+          "id": "chromatogram-dried-before-measurement",
+          "type": "notebookEntry",
+          "label": "Notebook entry chromatogram-dried was recorded.",
+          "notebookTag": "chromatogram-dried"
+        },
+        {
+          "id": "ruler-placed-before-measurement",
+          "type": "actionEvidence",
+          "label": "Action place-measuring-ruler was completed.",
+          "actionId": "place-measuring-ruler"
+        }
+      ],
+      "stateChanges": [
+        "Solvent front distance: Solvent front distance is read from the ruler to the nearest millimetre."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "front-not-marked",
+          "when": "the paper dries before the solvent front is marked",
+          "message": "Once the solvent evaporates the front cannot be located, and every Rf in the trial loses its denominator.",
+          "recovery": "Mark the front in pencil as the strip leaves the chamber. If it dried unmarked, repeat the trial on fresh paper."
+        },
+        {
+          "id": "measured-while-wet",
+          "when": "distances are measured before the marked paper dries",
+          "message": "Bands keep migrating and smearing while the paper is wet, so a wet reading is not the band centre.",
+          "recovery": "Let the marked strip dry flat, then align the ruler on the origin."
+        }
+      ],
+      "feedback": {
+        "success": "Solvent front distance is read from the ruler to the nearest millimetre.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "measurement",
+        "chromatography-solvent-front"
+      ]
+    },
+    {
+      "id": "record-solvent-front",
+      "verb": "record",
+      "label": "Solvent front distance",
+      "parameters": {
+        "measurementId": "chromatography-solvent-front",
+        "label": "Solvent front distance",
+        "unit": "mm",
+        "readActionId": "measure-solvent-front",
+        "evidenceProvenance": "student ruler reading"
+      },
+      "prerequisites": [
+        {
+          "id": "chromatography-solvent-front-read-first",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-solvent-front was recorded.",
+          "measurementId": "chromatography-solvent-front"
+        }
+      ],
+      "stateChanges": [
+        "Solvent front distance: Solvent front distance is written into the data table."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "measured-while-wet",
+          "when": "distances are measured before the marked paper dries",
+          "message": "Bands keep migrating and smearing while the paper is wet, so a wet reading is not the band centre.",
+          "recovery": "Let the marked strip dry flat, then align the ruler on the origin."
+        }
+      ],
+      "feedback": {
+        "success": "Solvent front distance is written into the data table.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement",
+        "notebook"
+      ]
+    },
+    {
+      "id": "measure-blue-band",
+      "verb": "observe",
+      "label": "Blue band distance",
+      "parameters": {
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "targetDefinitionId": "metric-ruler",
+        "targetInstanceId": "metric-ruler-1",
+        "measurementId": "chromatography-band-blue",
+        "label": "Blue band distance",
+        "unit": "mm",
+        "chromatographyMeasurementType": "band",
+        "chromatographyBandId": "blue",
+        "measurementPoint": "the centre of the blue band",
+        "rulerPrecisionMm": 1,
+        "measurementToleranceMm": 0.5,
+        "evidenceProvenance": "student ruler reading"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "chromatography-paper",
+        "targetDefinitionId": "metric-ruler",
+        "stationId": "metric-ruler",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Align the ruler zero on the pencil origin and read the distance to the centre of the blue band.",
+        "successCue": "Blue band distance is available as a student ruler reading.",
+        "invalidCue": "Measure only a dry chromatogram whose solvent front is already marked."
+      },
+      "prerequisites": [
+        {
+          "id": "chromatogram-dried-before-measurement",
+          "type": "notebookEntry",
+          "label": "Notebook entry chromatogram-dried was recorded.",
+          "notebookTag": "chromatogram-dried"
+        },
+        {
+          "id": "ruler-placed-before-measurement",
+          "type": "actionEvidence",
+          "label": "Action place-measuring-ruler was completed.",
+          "actionId": "place-measuring-ruler"
+        },
+        {
+          "id": "front-before-blue",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-solvent-front was recorded.",
+          "measurementId": "chromatography-solvent-front"
+        }
+      ],
+      "stateChanges": [
+        "Blue band distance: Blue band distance is read from the ruler to the nearest millimetre."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "front-not-marked",
+          "when": "the paper dries before the solvent front is marked",
+          "message": "Once the solvent evaporates the front cannot be located, and every Rf in the trial loses its denominator.",
+          "recovery": "Mark the front in pencil as the strip leaves the chamber. If it dried unmarked, repeat the trial on fresh paper."
+        },
+        {
+          "id": "measured-while-wet",
+          "when": "distances are measured before the marked paper dries",
+          "message": "Bands keep migrating and smearing while the paper is wet, so a wet reading is not the band centre.",
+          "recovery": "Let the marked strip dry flat, then align the ruler on the origin."
+        }
+      ],
+      "feedback": {
+        "success": "Blue band distance is read from the ruler to the nearest millimetre.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "measurement",
+        "chromatography-band-blue"
+      ]
+    },
+    {
+      "id": "record-blue-band",
+      "verb": "record",
+      "label": "Blue band distance",
+      "parameters": {
+        "measurementId": "chromatography-band-blue",
+        "label": "Blue band distance",
+        "unit": "mm",
+        "readActionId": "measure-blue-band",
+        "evidenceProvenance": "student ruler reading"
+      },
+      "prerequisites": [
+        {
+          "id": "chromatography-band-blue-read-first",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-band-blue was recorded.",
+          "measurementId": "chromatography-band-blue"
+        }
+      ],
+      "stateChanges": [
+        "Blue band distance: Blue band distance is written into the data table."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "measured-while-wet",
+          "when": "distances are measured before the marked paper dries",
+          "message": "Bands keep migrating and smearing while the paper is wet, so a wet reading is not the band centre.",
+          "recovery": "Let the marked strip dry flat, then align the ruler on the origin."
+        }
+      ],
+      "feedback": {
+        "success": "Blue band distance is written into the data table.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement",
+        "notebook"
+      ]
+    },
+    {
+      "id": "measure-red-band",
+      "verb": "observe",
+      "label": "Red band distance",
+      "parameters": {
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "targetDefinitionId": "metric-ruler",
+        "targetInstanceId": "metric-ruler-1",
+        "measurementId": "chromatography-band-red",
+        "label": "Red band distance",
+        "unit": "mm",
+        "chromatographyMeasurementType": "band",
+        "chromatographyBandId": "red",
+        "measurementPoint": "the centre of the red band",
+        "rulerPrecisionMm": 1,
+        "measurementToleranceMm": 0.5,
+        "evidenceProvenance": "student ruler reading"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "chromatography-paper",
+        "targetDefinitionId": "metric-ruler",
+        "stationId": "metric-ruler",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Align the ruler zero on the pencil origin and read the distance to the centre of the red band.",
+        "successCue": "Red band distance is available as a student ruler reading.",
+        "invalidCue": "Measure only a dry chromatogram whose solvent front is already marked."
+      },
+      "prerequisites": [
+        {
+          "id": "chromatogram-dried-before-measurement",
+          "type": "notebookEntry",
+          "label": "Notebook entry chromatogram-dried was recorded.",
+          "notebookTag": "chromatogram-dried"
+        },
+        {
+          "id": "ruler-placed-before-measurement",
+          "type": "actionEvidence",
+          "label": "Action place-measuring-ruler was completed.",
+          "actionId": "place-measuring-ruler"
+        },
+        {
+          "id": "front-before-red",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-solvent-front was recorded.",
+          "measurementId": "chromatography-solvent-front"
+        }
+      ],
+      "stateChanges": [
+        "Red band distance: Red band distance is read from the ruler to the nearest millimetre."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "front-not-marked",
+          "when": "the paper dries before the solvent front is marked",
+          "message": "Once the solvent evaporates the front cannot be located, and every Rf in the trial loses its denominator.",
+          "recovery": "Mark the front in pencil as the strip leaves the chamber. If it dried unmarked, repeat the trial on fresh paper."
+        },
+        {
+          "id": "measured-while-wet",
+          "when": "distances are measured before the marked paper dries",
+          "message": "Bands keep migrating and smearing while the paper is wet, so a wet reading is not the band centre.",
+          "recovery": "Let the marked strip dry flat, then align the ruler on the origin."
+        }
+      ],
+      "feedback": {
+        "success": "Red band distance is read from the ruler to the nearest millimetre.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "measurement",
+        "chromatography-band-red"
+      ]
+    },
+    {
+      "id": "record-red-band",
+      "verb": "record",
+      "label": "Red band distance",
+      "parameters": {
+        "measurementId": "chromatography-band-red",
+        "label": "Red band distance",
+        "unit": "mm",
+        "readActionId": "measure-red-band",
+        "evidenceProvenance": "student ruler reading"
+      },
+      "prerequisites": [
+        {
+          "id": "chromatography-band-red-read-first",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-band-red was recorded.",
+          "measurementId": "chromatography-band-red"
+        }
+      ],
+      "stateChanges": [
+        "Red band distance: Red band distance is written into the data table."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "measured-while-wet",
+          "when": "distances are measured before the marked paper dries",
+          "message": "Bands keep migrating and smearing while the paper is wet, so a wet reading is not the band centre.",
+          "recovery": "Let the marked strip dry flat, then align the ruler on the origin."
+        }
+      ],
+      "feedback": {
+        "success": "Red band distance is written into the data table.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement",
+        "notebook"
+      ]
+    },
+    {
+      "id": "measure-yellow-band",
+      "verb": "observe",
+      "label": "Yellow band distance",
+      "parameters": {
+        "sourceDefinitionId": "chromatography-paper",
+        "sourceInstanceId": "chromatography-paper-1",
+        "targetDefinitionId": "metric-ruler",
+        "targetInstanceId": "metric-ruler-1",
+        "measurementId": "chromatography-band-yellow",
+        "label": "Yellow band distance",
+        "unit": "mm",
+        "chromatographyMeasurementType": "band",
+        "chromatographyBandId": "yellow",
+        "measurementPoint": "the centre of the yellow band",
+        "rulerPrecisionMm": 1,
+        "measurementToleranceMm": 0.5,
+        "evidenceProvenance": "student ruler reading"
+      },
+      "interaction": {
+        "type": "readInstrument",
+        "sourceDefinitionId": "chromatography-paper",
+        "targetDefinitionId": "metric-ruler",
+        "stationId": "metric-ruler",
+        "valueParameter": "measurementId",
+        "accessibleLabel": "Align the ruler zero on the pencil origin and read the distance to the centre of the yellow band.",
+        "successCue": "Yellow band distance is available as a student ruler reading.",
+        "invalidCue": "Measure only a dry chromatogram whose solvent front is already marked."
+      },
+      "prerequisites": [
+        {
+          "id": "chromatogram-dried-before-measurement",
+          "type": "notebookEntry",
+          "label": "Notebook entry chromatogram-dried was recorded.",
+          "notebookTag": "chromatogram-dried"
+        },
+        {
+          "id": "ruler-placed-before-measurement",
+          "type": "actionEvidence",
+          "label": "Action place-measuring-ruler was completed.",
+          "actionId": "place-measuring-ruler"
+        },
+        {
+          "id": "front-before-yellow",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-solvent-front was recorded.",
+          "measurementId": "chromatography-solvent-front"
+        }
+      ],
+      "stateChanges": [
+        "Yellow band distance: Yellow band distance is read from the ruler to the nearest millimetre."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "front-not-marked",
+          "when": "the paper dries before the solvent front is marked",
+          "message": "Once the solvent evaporates the front cannot be located, and every Rf in the trial loses its denominator.",
+          "recovery": "Mark the front in pencil as the strip leaves the chamber. If it dried unmarked, repeat the trial on fresh paper."
+        },
+        {
+          "id": "measured-while-wet",
+          "when": "distances are measured before the marked paper dries",
+          "message": "Bands keep migrating and smearing while the paper is wet, so a wet reading is not the band centre.",
+          "recovery": "Let the marked strip dry flat, then align the ruler on the origin."
+        }
+      ],
+      "feedback": {
+        "success": "Yellow band distance is read from the ruler to the nearest millimetre.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "measurement",
+        "chromatography-band-yellow"
+      ]
+    },
+    {
+      "id": "record-yellow-band",
+      "verb": "record",
+      "label": "Yellow band distance",
+      "parameters": {
+        "measurementId": "chromatography-band-yellow",
+        "label": "Yellow band distance",
+        "unit": "mm",
+        "readActionId": "measure-yellow-band",
+        "evidenceProvenance": "student ruler reading"
+      },
+      "prerequisites": [
+        {
+          "id": "chromatography-band-yellow-read-first",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-band-yellow was recorded.",
+          "measurementId": "chromatography-band-yellow"
+        }
+      ],
+      "stateChanges": [
+        "Yellow band distance: Yellow band distance is written into the data table."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        },
+        {
+          "id": "measured-while-wet",
+          "when": "distances are measured before the marked paper dries",
+          "message": "Bands keep migrating and smearing while the paper is wet, so a wet reading is not the band centre.",
+          "recovery": "Let the marked strip dry flat, then align the ruler on the origin."
+        }
+      ],
+      "feedback": {
+        "success": "Yellow band distance is written into the data table.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement",
+        "notebook"
+      ]
+    },
+    {
+      "id": "calculate-rf-values",
+      "verb": "calculate",
+      "label": "Calculate Rf values",
+      "parameters": {
+        "calculationId": "chromatography-rf",
+        "template": "chromatographyRf",
+        "chromatographyModelId": "food-dyes-paper",
+        "bandIds": [
+          "blue",
+          "red",
+          "yellow"
+        ],
+        "tolerance": 0.005,
+        "significantFigures": 2,
+        "requireRecordedMeasurements": true,
+        "evidenceProvenance": "student ruler readings only",
+        "interpretationLimit": "Rf is conditional on this solvent system and these conditions; a matching Rf does not prove identity."
+      },
+      "interaction": {
+        "type": "submitCalculation",
+        "stationId": "calculator",
+        "valueParameter": "rf",
+        "accessibleLabel": "For each band, divide the distance the band travelled by the distance the solvent front travelled.",
+        "successCue": "Rf values are calculated from the recorded distances.",
+        "invalidCue": "Read and record the solvent front and every band distance before calculating Rf."
+      },
+      "prerequisites": [
+        {
+          "id": "front-recorded-for-rf",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-solvent-front was recorded.",
+          "measurementId": "chromatography-solvent-front"
+        },
+        {
+          "id": "blue-recorded-for-rf",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-band-blue was recorded.",
+          "measurementId": "chromatography-band-blue"
+        },
+        {
+          "id": "red-recorded-for-rf",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-band-red was recorded.",
+          "measurementId": "chromatography-band-red"
+        },
+        {
+          "id": "yellow-recorded-for-rf",
+          "type": "measurementRecorded",
+          "label": "Measurement chromatography-band-yellow was recorded.",
+          "measurementId": "chromatography-band-yellow"
+        }
+      ],
+      "stateChanges": [
+        "Calculate Rf values: Rf values are calculated from the measured distances."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Rf values are calculated from the measured distances.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "calculate",
+        "measurement"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "place-chamber-node",
+    "nodes": [
+      {
+        "id": "place-chamber-node",
+        "type": "action",
+        "title": "Place chamber",
+        "description": "Place the empty chamber upright on the workbench.",
+        "actionId": "place-chamber",
+        "config": {},
+        "validation": [
+          {
+            "id": "placed-chamber",
+            "type": "actionEvidence",
+            "label": "Action place-chamber was completed.",
+            "actionId": "place-chamber"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place chamber complete.",
+          "retry": "Review Place chamber and try again."
+        }
+      },
+      {
+        "id": "add-solvent-node",
+        "type": "action",
+        "title": "Add solvent",
+        "description": "Pour a shallow solvent layer into the chamber below the future baseline.",
+        "actionId": "charge-chromatography-chamber",
+        "config": {},
+        "validation": [
+          {
+            "id": "solvent-added",
+            "type": "actionEvidence",
+            "label": "Action charge-chromatography-chamber was completed.",
+            "actionId": "charge-chromatography-chamber"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add solvent complete.",
+          "retry": "Review Add solvent and try again."
+        }
+      },
+      {
+        "id": "place-paper-node",
+        "type": "action",
+        "title": "Lay paper flat",
+        "description": "Place the chromatography paper flat before marking.",
+        "actionId": "place-paper-flat",
+        "config": {},
+        "validation": [
+          {
+            "id": "paper-placed",
+            "type": "actionEvidence",
+            "label": "Action place-paper-flat was completed.",
+            "actionId": "place-paper-flat"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Lay paper flat complete.",
+          "retry": "Review Lay paper flat and try again."
+        }
+      },
+      {
+        "id": "draw-baseline-node",
+        "type": "observation",
+        "title": "Draw baseline",
+        "description": "Use the pencil to draw a light baseline near the bottom edge.",
+        "actionId": "draw-pencil-baseline",
+        "config": {},
+        "validation": [
+          {
+            "id": "baseline-recorded",
+            "type": "notebookEntry",
+            "label": "Notebook entry chromatography-baseline was recorded.",
+            "notebookTag": "chromatography-baseline"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Draw baseline complete.",
+          "retry": "Review Draw baseline and try again."
+        }
+      },
+      {
+        "id": "load-capillary-node",
+        "type": "action",
+        "title": "Load capillary",
+        "description": "Touch the capillary tip to the dye sample.",
+        "actionId": "load-capillary",
+        "config": {},
+        "validation": [
+          {
+            "id": "capillary-loaded",
+            "type": "actionEvidence",
+            "label": "Action load-capillary was completed.",
+            "actionId": "load-capillary"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Load capillary complete.",
+          "retry": "Review Load capillary and try again."
+        }
+      },
+      {
+        "id": "spot-sample-node",
+        "type": "action",
+        "title": "Spot sample",
+        "description": "Touch the loaded capillary to the baseline.",
+        "actionId": "spot-sample",
+        "config": {},
+        "validation": [
+          {
+            "id": "sample-spotted",
+            "type": "actionEvidence",
+            "label": "Action spot-sample was completed.",
+            "actionId": "spot-sample"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Spot sample complete.",
+          "retry": "Review Spot sample and try again."
+        }
+      },
+      {
+        "id": "dry-spot-node",
+        "type": "observation",
+        "title": "Dry spot",
+        "description": "Observe the spot until it dries before development.",
+        "actionId": "dry-sample-spot",
+        "config": {},
+        "validation": [
+          {
+            "id": "spot-dried",
+            "type": "notebookEntry",
+            "label": "Notebook entry chromatography-spot-dry was recorded.",
+            "notebookTag": "chromatography-spot-dry"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry spot complete.",
+          "retry": "Review Dry spot and try again."
+        }
+      },
+      {
+        "id": "develop-paper-node",
+        "type": "checkpoint",
+        "title": "Develop paper",
+        "description": "Place the paper in the chamber with the solvent below the spot and the lid closed.",
+        "actionId": "develop-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "paper-developed",
+            "type": "actionEvidence",
+            "label": "Action develop-paper was completed.",
+            "actionId": "develop-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Develop paper complete.",
+          "retry": "Review Develop paper and try again."
+        }
+      },
+      {
+        "id": "remove-paper-node",
+        "type": "action",
+        "title": "Remove paper",
+        "description": "Lift the wet strip out and lay it flat.",
+        "actionId": "remove-developed-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "paper-removed",
+            "type": "actionEvidence",
+            "label": "Action remove-developed-paper was completed.",
+            "actionId": "remove-developed-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Remove paper complete.",
+          "retry": "Review Remove paper and try again."
+        }
+      },
+      {
+        "id": "mark-front-node",
+        "type": "observation",
+        "title": "Mark solvent front",
+        "description": "Mark the solvent front in pencil while the strip is still wet.",
+        "actionId": "mark-solvent-front",
+        "config": {},
+        "validation": [
+          {
+            "id": "front-marked",
+            "type": "notebookEntry",
+            "label": "Notebook entry chromatography-solvent-front-marked was recorded.",
+            "notebookTag": "chromatography-solvent-front-marked"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Mark solvent front complete.",
+          "retry": "Review Mark solvent front and try again."
+        }
+      },
+      {
+        "id": "dry-developed-node",
+        "type": "observation",
+        "title": "Dry chromatogram",
+        "description": "Place the developed chromatogram flat to dry.",
+        "actionId": "dry-developed-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "chromatogram-dried",
+            "type": "notebookEntry",
+            "label": "Notebook entry chromatogram-dried was recorded.",
+            "notebookTag": "chromatogram-dried"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry chromatogram complete.",
+          "retry": "Review Dry chromatogram and try again."
+        }
+      },
+      {
+        "id": "place-ruler-node",
+        "type": "action",
+        "title": "Place ruler",
+        "description": "Bring out the millimetre ruler; the simulator supplies no distance.",
+        "actionId": "place-measuring-ruler",
+        "config": {},
+        "validation": [
+          {
+            "id": "ruler-placed",
+            "type": "actionEvidence",
+            "label": "Action place-measuring-ruler was completed.",
+            "actionId": "place-measuring-ruler"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place ruler complete.",
+          "retry": "Review Place ruler and try again."
+        }
+      },
+      {
+        "id": "measure-front-node",
+        "type": "observation",
+        "title": "Measure solvent front",
+        "description": "Read the distance from the origin to the solvent-front mark.",
+        "actionId": "measure-solvent-front",
+        "config": {},
+        "validation": [
+          {
+            "id": "front-measured",
+            "type": "measurementRecorded",
+            "label": "Measurement chromatography-solvent-front was recorded.",
+            "measurementId": "chromatography-solvent-front"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure solvent front complete.",
+          "retry": "Review Measure solvent front and try again."
+        }
+      },
+      {
+        "id": "record-front-node",
+        "type": "observation",
+        "title": "Record solvent front",
+        "description": "Write the solvent-front distance into the data table.",
+        "actionId": "record-solvent-front",
+        "config": {},
+        "validation": [
+          {
+            "id": "front-written-down",
+            "type": "actionEvidence",
+            "label": "Action record-solvent-front was completed.",
+            "actionId": "record-solvent-front"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record solvent front complete.",
+          "retry": "Review Record solvent front and try again."
+        }
+      },
+      {
+        "id": "measure-blue-node",
+        "type": "observation",
+        "title": "Measure blue band",
+        "description": "Read the distance from the origin to the centre of the blue band.",
+        "actionId": "measure-blue-band",
+        "config": {},
+        "validation": [
+          {
+            "id": "blue-measured",
+            "type": "measurementRecorded",
+            "label": "Measurement chromatography-band-blue was recorded.",
+            "measurementId": "chromatography-band-blue"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure blue band complete.",
+          "retry": "Review Measure blue band and try again."
+        }
+      },
+      {
+        "id": "record-blue-node",
+        "type": "observation",
+        "title": "Record blue band",
+        "description": "Write the blue band distance into the data table.",
+        "actionId": "record-blue-band",
+        "config": {},
+        "validation": [
+          {
+            "id": "blue-written-down",
+            "type": "actionEvidence",
+            "label": "Action record-blue-band was completed.",
+            "actionId": "record-blue-band"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record blue band complete.",
+          "retry": "Review Record blue band and try again."
+        }
+      },
+      {
+        "id": "measure-red-node",
+        "type": "observation",
+        "title": "Measure red band",
+        "description": "Read the distance from the origin to the centre of the red band.",
+        "actionId": "measure-red-band",
+        "config": {},
+        "validation": [
+          {
+            "id": "red-measured",
+            "type": "measurementRecorded",
+            "label": "Measurement chromatography-band-red was recorded.",
+            "measurementId": "chromatography-band-red"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure red band complete.",
+          "retry": "Review Measure red band and try again."
+        }
+      },
+      {
+        "id": "record-red-node",
+        "type": "observation",
+        "title": "Record red band",
+        "description": "Write the red band distance into the data table.",
+        "actionId": "record-red-band",
+        "config": {},
+        "validation": [
+          {
+            "id": "red-written-down",
+            "type": "actionEvidence",
+            "label": "Action record-red-band was completed.",
+            "actionId": "record-red-band"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record red band complete.",
+          "retry": "Review Record red band and try again."
+        }
+      },
+      {
+        "id": "measure-yellow-node",
+        "type": "observation",
+        "title": "Measure yellow band",
+        "description": "Read the distance from the origin to the centre of the yellow band.",
+        "actionId": "measure-yellow-band",
+        "config": {},
+        "validation": [
+          {
+            "id": "yellow-measured",
+            "type": "measurementRecorded",
+            "label": "Measurement chromatography-band-yellow was recorded.",
+            "measurementId": "chromatography-band-yellow"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure yellow band complete.",
+          "retry": "Review Measure yellow band and try again."
+        }
+      },
+      {
+        "id": "record-yellow-node",
+        "type": "observation",
+        "title": "Record yellow band",
+        "description": "Write the yellow band distance into the data table.",
+        "actionId": "record-yellow-band",
+        "config": {},
+        "validation": [
+          {
+            "id": "yellow-written-down",
+            "type": "actionEvidence",
+            "label": "Action record-yellow-band was completed.",
+            "actionId": "record-yellow-band"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record yellow band complete.",
+          "retry": "Review Record yellow band and try again."
+        }
+      },
+      {
+        "id": "calculate-rf-node",
+        "type": "calculation",
+        "title": "Calculate Rf",
+        "description": "Calculate Rf by dividing each band distance by the solvent-front distance.",
+        "actionId": "calculate-rf-values",
+        "config": {},
+        "validation": [
+          {
+            "id": "blue-rf-valid",
+            "type": "calculationWithinTolerance",
+            "label": "Calculation chromatography-rf-blue is within tolerance.",
+            "calculationId": "chromatography-rf-blue",
+            "tolerance": 0.005
+          },
+          {
+            "id": "red-rf-valid",
+            "type": "calculationWithinTolerance",
+            "label": "Calculation chromatography-rf-red is within tolerance.",
+            "calculationId": "chromatography-rf-red",
+            "tolerance": 0.005
+          },
+          {
+            "id": "yellow-rf-valid",
+            "type": "calculationWithinTolerance",
+            "label": "Calculation chromatography-rf-yellow is within tolerance.",
+            "calculationId": "chromatography-rf-yellow",
+            "tolerance": 0.005
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate Rf complete.",
+          "retry": "Review Calculate Rf and try again."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "place-chamber-node",
+        "to": "add-solvent-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "add-solvent-node",
+        "to": "place-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "place-paper-node",
+        "to": "draw-baseline-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "draw-baseline-node",
+        "to": "load-capillary-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "load-capillary-node",
+        "to": "spot-sample-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "spot-sample-node",
+        "to": "dry-spot-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "dry-spot-node",
+        "to": "develop-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "develop-paper-node",
+        "to": "remove-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "remove-paper-node",
+        "to": "mark-front-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "mark-front-node",
+        "to": "dry-developed-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "dry-developed-node",
+        "to": "place-ruler-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "place-ruler-node",
+        "to": "measure-front-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "measure-front-node",
+        "to": "record-front-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-front-node",
+        "to": "measure-blue-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "measure-blue-node",
+        "to": "record-blue-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-blue-node",
+        "to": "measure-red-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "measure-red-node",
+        "to": "record-red-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-red-node",
+        "to": "measure-yellow-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "measure-yellow-node",
+        "to": "record-yellow-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-yellow-node",
+        "to": "calculate-rf-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "blue-rf-success",
+      "type": "calculationWithinTolerance",
+      "label": "Calculation chromatography-rf-blue is within tolerance.",
+      "calculationId": "chromatography-rf-blue",
+      "tolerance": 0.005
+    },
+    {
+      "id": "red-rf-success",
+      "type": "calculationWithinTolerance",
+      "label": "Calculation chromatography-rf-red is within tolerance.",
+      "calculationId": "chromatography-rf-red",
+      "tolerance": 0.005
+    },
+    {
+      "id": "yellow-rf-success",
+      "type": "calculationWithinTolerance",
+      "label": "Calculation chromatography-rf-yellow is within tolerance.",
+      "calculationId": "chromatography-rf-yellow",
+      "tolerance": 0.005
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "ink-baseline",
+      "when": "baseline is marked with soluble ink",
+      "message": "Use pencil for the baseline so the line does not dissolve.",
+      "recovery": "Mark the baseline with pencil before spotting."
+    },
+    {
+      "id": "spot-under-solvent",
+      "when": "spot is below the solvent surface",
+      "message": "The sample spot must stay above the solvent.",
+      "recovery": "Use a shallow solvent layer and suspend the paper carefully."
+    },
+    {
+      "id": "front-not-marked",
+      "when": "the paper dries before the solvent front is marked",
+      "message": "An unmarked front leaves every Rf without a denominator.",
+      "recovery": "Mark the front as the strip leaves the chamber; otherwise repeat the trial."
+    },
+    {
+      "id": "measured-while-wet",
+      "when": "distances are read before the marked paper dries",
+      "message": "Wet bands keep migrating, so the reading is not the band centre.",
+      "recovery": "Dry the marked strip flat, then align the ruler on the origin."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-08-05T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "chromatography",
+      "rf"
+    ]
+  }
+}

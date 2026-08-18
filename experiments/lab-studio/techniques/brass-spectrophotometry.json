@@ -1,0 +1,714 @@
+{
+  "id": "brass-spectrophotometry",
+  "title": "Brass Spectrophotometry",
+  "learningGoal": "Prepare a diluted brass sample and record absorbance evidence for copper percent analysis.",
+  "requiredEquipment": [
+    "analytical-balance",
+    "watch-glass",
+    "sample-bottle",
+    "volumetric-flask",
+    "wash-bottle",
+    "cuvette",
+    "spectrophotometer",
+    "data-collection-interface"
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "watch-glass-1",
+        "definitionId": "watch-glass",
+        "label": "Watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "sample-bottle-1",
+        "definitionId": "sample-bottle",
+        "label": "Sample bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "solution",
+          "label": "Teacher-prepared dissolved brass sample",
+          "volumeMl": 50,
+          "solutes": [],
+          "concentration": {
+            "value": 0.2,
+            "unit": "M"
+          },
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "copper-blue-solution"
+        }
+      },
+      {
+        "id": "analytical-balance-1",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "volumetric-flask-1",
+        "definitionId": "volumetric-flask",
+        "label": "Volumetric flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "wash-bottle-1",
+        "definitionId": "wash-bottle",
+        "label": "Wash bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "cuvette-1",
+        "definitionId": "cuvette",
+        "label": "Cuvette",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "spectrophotometer-1",
+        "definitionId": "spectrophotometer",
+        "label": "Spectrophotometer",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "data-collection-interface-1",
+        "definitionId": "data-collection-interface",
+        "label": "Data collection interface",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "actions": [
+    {
+      "id": "weigh-brass",
+      "verb": "weigh",
+      "label": "Weigh brass sample",
+      "parameters": {
+        "sourceDefinitionId": "watch-glass",
+        "targetDefinitionId": "analytical-balance",
+        "instrumentDefinitionId": "analytical-balance",
+        "measurementId": "brass-mass",
+        "expectedMassG": 1.25,
+        "tolerance": 0.005
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Weigh brass sample: The brass sample mass is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The brass sample mass is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "weigh",
+        "measurement"
+      ]
+    },
+    {
+      "id": "observe-dissolution",
+      "verb": "observe",
+      "label": "Observe teacher dissolution",
+      "parameters": {
+        "tag": "brass-dissolution",
+        "note": "The teacher-dissolved brass sample is ready for dilution after fume-hood nitric acid handling."
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Observe teacher dissolution: The teacher-prepared brass solution is noted."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The teacher-prepared brass solution is noted.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "observe",
+        "notebook"
+      ]
+    },
+    {
+      "id": "transfer-brass-solution",
+      "verb": "transfer",
+      "label": "Transfer brass solution",
+      "parameters": {
+        "sourceDefinitionId": "sample-bottle",
+        "targetDefinitionId": "volumetric-flask",
+        "volumeMl": 50,
+        "visualState": "copper-blue-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Transfer brass solution: The dissolved brass solution is in the volumetric flask."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The dissolved brass solution is in the volumetric flask.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "dilute-brass-solution",
+      "verb": "dilute",
+      "label": "Dilute brass solution",
+      "parameters": {
+        "sourceDefinitionId": "wash-bottle",
+        "targetDefinitionId": "volumetric-flask",
+        "volumeMl": 50,
+        "finalVolumeMl": 100,
+        "dilutionFactor": 2
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Dilute brass solution: The brass solution is diluted to volume."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The brass solution is diluted to volume.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "dilute"
+      ]
+    },
+    {
+      "id": "transfer-brass-cuvette",
+      "verb": "transfer",
+      "label": "Transfer brass sample to cuvette",
+      "parameters": {
+        "sourceDefinitionId": "volumetric-flask",
+        "targetDefinitionId": "cuvette",
+        "volumeMl": 3,
+        "visualState": "copper-blue-solution"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Transfer brass sample to cuvette: The cuvette contains the brass sample solution."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "The cuvette contains the brass sample solution.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "transfer"
+      ]
+    },
+    {
+      "id": "record-brass-absorbance",
+      "verb": "record",
+      "label": "Record brass absorbance",
+      "parameters": {
+        "measurementId": "brass-absorbance",
+        "label": "Brass solution absorbance",
+        "value": 0.48,
+        "unit": "absorbance"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Record brass absorbance: Brass sample absorbance is recorded."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Brass sample absorbance is recorded.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "record",
+        "measurement"
+      ]
+    },
+    {
+      "id": "calculate-copper-percent",
+      "verb": "calculate",
+      "label": "Calculate copper percent",
+      "parameters": {
+        "calculationId": "copper-percent",
+        "expected": 67.5,
+        "tolerance": 2,
+        "unit": "% Cu"
+      },
+      "prerequisites": [],
+      "stateChanges": [
+        "Calculate copper percent: Copper percent is calculated from the calibration evidence."
+      ],
+      "invalidCases": [
+        {
+          "id": "wrong-order",
+          "when": "current node expects a different action",
+          "message": "That action is out of sequence for the current technique step.",
+          "recovery": "Check the process map and perform the highlighted step first."
+        },
+        {
+          "id": "missing-source",
+          "when": "source equipment or contents are missing",
+          "message": "The selected source does not contain the material required for this action.",
+          "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+        },
+        {
+          "id": "overflow",
+          "when": "target capacity would be exceeded",
+          "message": "The target equipment cannot hold the requested volume.",
+          "recovery": "Use a larger container or transfer a smaller measured amount."
+        }
+      ],
+      "feedback": {
+        "success": "Copper percent is calculated from the calibration evidence.",
+        "invalid": "The simulator could not complete that action. Review the step requirements."
+      },
+      "evidence": [
+        "calculate"
+      ]
+    }
+  ],
+  "process": {
+    "startNodeId": "weigh-brass-node",
+    "nodes": [
+      {
+        "id": "weigh-brass-node",
+        "type": "action",
+        "title": "Weigh brass",
+        "description": "Weigh the brass sample on the analytical balance.",
+        "actionId": "weigh-brass",
+        "config": {},
+        "validation": [
+          {
+            "id": "weigh-brass-node-done",
+            "type": "actionEvidence",
+            "label": "Action weigh-brass was completed.",
+            "actionId": "weigh-brass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh brass complete.",
+          "retry": "Review Weigh brass and try again."
+        }
+      },
+      {
+        "id": "observe-dissolution-node",
+        "type": "observation",
+        "title": "Observe dissolution",
+        "description": "Record that nitric acid dissolution is complete before dilution.",
+        "actionId": "observe-dissolution",
+        "config": {},
+        "validation": [
+          {
+            "id": "observe-dissolution-node-done",
+            "type": "actionEvidence",
+            "label": "Action observe-dissolution was completed.",
+            "actionId": "observe-dissolution"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Observe dissolution complete.",
+          "retry": "Review Observe dissolution and try again."
+        }
+      },
+      {
+        "id": "transfer-brass-solution-node",
+        "type": "action",
+        "title": "Transfer brass solution",
+        "description": "Pour the dissolved brass solution into the volumetric flask.",
+        "actionId": "transfer-brass-solution",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-brass-solution-node-done",
+            "type": "actionEvidence",
+            "label": "Action transfer-brass-solution was completed.",
+            "actionId": "transfer-brass-solution"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer brass solution complete.",
+          "retry": "Review Transfer brass solution and try again."
+        }
+      },
+      {
+        "id": "dilute-brass-solution-node",
+        "type": "action",
+        "title": "Dilute brass solution",
+        "description": "Pour deionized water into the brass solution to the calibration mark.",
+        "actionId": "dilute-brass-solution",
+        "config": {},
+        "validation": [
+          {
+            "id": "dilute-brass-solution-node-done",
+            "type": "actionEvidence",
+            "label": "Action dilute-brass-solution was completed.",
+            "actionId": "dilute-brass-solution"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dilute brass solution complete.",
+          "retry": "Review Dilute brass solution and try again."
+        }
+      },
+      {
+        "id": "transfer-brass-cuvette-node",
+        "type": "action",
+        "title": "Fill cuvette",
+        "description": "Pour the diluted brass sample into the cuvette.",
+        "actionId": "transfer-brass-cuvette",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-brass-cuvette-node-done",
+            "type": "actionEvidence",
+            "label": "Action transfer-brass-cuvette was completed.",
+            "actionId": "transfer-brass-cuvette"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Fill cuvette complete.",
+          "retry": "Review Fill cuvette and try again."
+        }
+      },
+      {
+        "id": "record-brass-absorbance-node",
+        "type": "observation",
+        "title": "Record absorbance",
+        "description": "Record absorbance for the diluted brass solution.",
+        "actionId": "record-brass-absorbance",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-brass-absorbance-node-done",
+            "type": "actionEvidence",
+            "label": "Action record-brass-absorbance was completed.",
+            "actionId": "record-brass-absorbance"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record absorbance complete.",
+          "retry": "Review Record absorbance and try again."
+        }
+      },
+      {
+        "id": "calculate-copper-percent-node",
+        "type": "calculation",
+        "title": "Calculate copper percent",
+        "description": "Calculate copper percent from the calibration curve and brass mass.",
+        "actionId": "calculate-copper-percent",
+        "config": {},
+        "validation": [
+          {
+            "id": "calculate-copper-percent-node-done",
+            "type": "actionEvidence",
+            "label": "Action calculate-copper-percent was completed.",
+            "actionId": "calculate-copper-percent"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate copper percent complete.",
+          "retry": "Review Calculate copper percent and try again."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "weigh-brass-node",
+        "to": "observe-dissolution-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "observe-dissolution-node",
+        "to": "transfer-brass-solution-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-brass-solution-node",
+        "to": "dilute-brass-solution-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "dilute-brass-solution-node",
+        "to": "transfer-brass-cuvette-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "transfer-brass-cuvette-node",
+        "to": "record-brass-absorbance-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "record-brass-absorbance-node",
+        "to": "calculate-copper-percent-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "successCriteria": [
+    {
+      "id": "weigh-brass-node-success",
+      "type": "actionEvidence",
+      "label": "Action weigh-brass was completed.",
+      "actionId": "weigh-brass"
+    },
+    {
+      "id": "observe-dissolution-node-success",
+      "type": "actionEvidence",
+      "label": "Action observe-dissolution was completed.",
+      "actionId": "observe-dissolution"
+    },
+    {
+      "id": "transfer-brass-solution-node-success",
+      "type": "actionEvidence",
+      "label": "Action transfer-brass-solution was completed.",
+      "actionId": "transfer-brass-solution"
+    },
+    {
+      "id": "dilute-brass-solution-node-success",
+      "type": "actionEvidence",
+      "label": "Action dilute-brass-solution was completed.",
+      "actionId": "dilute-brass-solution"
+    },
+    {
+      "id": "transfer-brass-cuvette-node-success",
+      "type": "actionEvidence",
+      "label": "Action transfer-brass-cuvette was completed.",
+      "actionId": "transfer-brass-cuvette"
+    },
+    {
+      "id": "record-brass-absorbance-node-success",
+      "type": "actionEvidence",
+      "label": "Action record-brass-absorbance was completed.",
+      "actionId": "record-brass-absorbance"
+    },
+    {
+      "id": "calculate-copper-percent-node-success",
+      "type": "actionEvidence",
+      "label": "Action calculate-copper-percent was completed.",
+      "actionId": "calculate-copper-percent"
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "wrong-order",
+      "when": "current node expects a different action",
+      "message": "That action is out of sequence for the current technique step.",
+      "recovery": "Check the process map and perform the highlighted step first."
+    },
+    {
+      "id": "missing-source",
+      "when": "source equipment or contents are missing",
+      "message": "The selected source does not contain the material required for this action.",
+      "recovery": "Select equipment that contains the required liquid, solid, solution, or precipitate."
+    },
+    {
+      "id": "overflow",
+      "when": "target capacity would be exceeded",
+      "message": "The target equipment cannot hold the requested volume.",
+      "recovery": "Use a larger container or transfer a smaller measured amount."
+    }
+  ],
+  "resetBehavior": "resetTechnique",
+  "metadata": {
+    "version": "1.0.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-06-17T00:00:00.000Z",
+    "tags": [
+      "technique",
+      "chemistry",
+      "spectrophotometry",
+      "brass"
+    ]
+  }
+}

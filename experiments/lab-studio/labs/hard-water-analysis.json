@@ -1,0 +1,4792 @@
+{
+  "id": "hard-water-analysis",
+  "title": "What Makes Hard Water Hard?",
+  "description": "Chemistry Hard-Water Analysis: a manual-faithful practice sequence followed by teacher-approved gravimetric analysis of two preconcentrated water samples, six-sample class ranking, and a qualified client recommendation. All balance outputs and peer results in this standalone simulator are explicitly teacher-configured simulated evidence.",
+  "audience": "Chemistry students",
+  "learningGoals": [
+    "Use limiting-reactant and Ksp reasoning to design complete Ca2+ precipitation as CaCO3.",
+    "Collect separate observations, simulated measurements, tare-corrected calculations, and uncertainty evidence through gravimetric analysis.",
+    "Correct a 20 mL preconcentrated aliquot result by the stated 200x factor and report original-source hardness in mg/L as CaCO3.",
+    "Pool six class results, defend the method, and write a qualified client recommendation."
+  ],
+  "safetyNotes": [
+    "Wear splash-proof goggles; solutions may be harmful if swallowed and may irritate eyes.",
+    "Use only the teacher-approved vacuum-filtration configuration and confirm the receiver before pouring.",
+    "Use heat-safe handling at 110-120 C and never weigh a warm watch-glass assembly.",
+    "Follow the configured disposal path: approved liquids to the drain, paper and precipitate to solid waste, and rubbing alcohol for marker cleanup."
+  ],
+  "equipment": [
+    "analytical-balance",
+    "beaker-250ml",
+    "reagent-bottle",
+    "distilled-water-bottle",
+    "graduated-cylinder",
+    "stirring-rod",
+    "stopwatch",
+    "filter-paper",
+    "buchner-funnel",
+    "side-arm-filter-flask",
+    "vacuum-source",
+    "wash-bottle",
+    "watch-glass",
+    "drying-oven",
+    "crucible-tongs",
+    "scoopula",
+    "permanent-marker",
+    "rubbing-alcohol-bottle",
+    "waste-beaker",
+    "sample-rack",
+    "sample-bottle"
+  ],
+  "techniqueRefs": [
+    {
+      "techniqueId": "hard-water-practice-preparation",
+      "version": "1.1.0",
+      "actionIds": "all"
+    },
+    {
+      "techniqueId": "gravimetric-vacuum-filtration",
+      "version": "1.1.0",
+      "actionIds": "all"
+    },
+    {
+      "techniqueId": "two-stage-precipitate-drying",
+      "version": "1.1.0",
+      "actionIds": "all"
+    },
+    {
+      "techniqueId": "inquiry-plan-approval",
+      "version": "1.1.0",
+      "actionIds": "all"
+    },
+    {
+      "techniqueId": "hard-water-two-sample-inquiry",
+      "version": "1.1.0",
+      "actionIds": "all"
+    }
+  ],
+  "initialState": {
+    "equipment": [
+      {
+        "id": "practice-balance",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-sodium-beaker",
+        "definitionId": "beaker-250ml",
+        "label": "250 mL beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-calcium-beaker",
+        "definitionId": "beaker-250ml",
+        "label": "250 mL beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-sodium-carbonate",
+        "definitionId": "reagent-bottle",
+        "label": "Anhydrous sodium carbonate",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Anhydrous sodium carbonate",
+          "massG": 25,
+          "solutes": [
+            {
+              "id": "sodium-carbonate",
+              "label": "Anhydrous sodium carbonate",
+              "amount": 25,
+              "unit": "g"
+            }
+          ],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "white-solid"
+        }
+      },
+      {
+        "id": "practice-calcium-chloride",
+        "definitionId": "reagent-bottle",
+        "label": "Anhydrous calcium chloride",
+        "location": "shelf",
+        "contents": {
+          "kind": "solid",
+          "label": "Anhydrous calcium chloride",
+          "massG": 25,
+          "solutes": [
+            {
+              "id": "calcium-chloride",
+              "label": "Anhydrous calcium chloride",
+              "amount": 25,
+              "unit": "g"
+            }
+          ],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "white-solid"
+        }
+      },
+      {
+        "id": "practice-distilled-water",
+        "definitionId": "distilled-water-bottle",
+        "label": "Distilled water bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Distilled water",
+          "volumeMl": 500,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "practice-cylinder",
+        "definitionId": "graduated-cylinder",
+        "label": "100 mL graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-stirring-rod",
+        "definitionId": "stirring-rod",
+        "label": "Stirring rod",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-stopwatch",
+        "definitionId": "stopwatch",
+        "label": "Stopwatch",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-filter-balance",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-filter-paper",
+        "definitionId": "filter-paper",
+        "label": "Filter paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-buchner",
+        "definitionId": "buchner-funnel",
+        "label": "Buchner funnel",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-filter-flask",
+        "definitionId": "side-arm-filter-flask",
+        "label": "Side-arm filter flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-vacuum",
+        "definitionId": "vacuum-source",
+        "label": "Vacuum source",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-wash-bottle",
+        "definitionId": "wash-bottle",
+        "label": "Deionized-water wash bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Deionized water",
+          "volumeMl": 500,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "practice-mixture-beaker",
+        "definitionId": "beaker-250ml",
+        "label": "250 mL beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "mixture",
+          "label": "Practice CaCO3 suspension",
+          "volumeMl": 40,
+          "solutes": [
+            {
+              "id": "calcium-carbonate",
+              "label": "Calcium carbonate",
+              "amount": 1.71,
+              "unit": "g"
+            }
+          ],
+          "precipitate": {
+            "substance": "Calcium carbonate",
+            "massG": 1.71,
+            "rinsed": false,
+            "dryness": "wet"
+          },
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "cloudy-precipitate"
+        }
+      },
+      {
+        "id": "practice-dry-balance",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-dry-paper",
+        "definitionId": "filter-paper",
+        "label": "Filter paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "precipitate",
+          "label": "Calcium carbonate",
+          "massG": 1.71,
+          "solutes": [
+            {
+              "id": "calcium-carbonate",
+              "label": "Calcium carbonate",
+              "amount": 1.71,
+              "unit": "g"
+            }
+          ],
+          "precipitate": {
+            "substance": "Calcium carbonate",
+            "massG": 1.71,
+            "rinsed": true,
+            "dryness": "wet"
+          },
+          "contamination": [],
+          "wetState": "rinsed",
+          "visualState": "filter-cake"
+        }
+      },
+      {
+        "id": "practice-watch-glass",
+        "definitionId": "watch-glass",
+        "label": "Watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-dry-flask",
+        "definitionId": "side-arm-filter-flask",
+        "label": "Side-arm filter flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Practice filtrate",
+          "volumeMl": 50,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-filtrate"
+        }
+      },
+      {
+        "id": "practice-drying-oven",
+        "definitionId": "drying-oven",
+        "label": "Drying oven",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-tongs",
+        "definitionId": "crucible-tongs",
+        "label": "Crucible tongs",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-scoopula",
+        "definitionId": "scoopula",
+        "label": "Metal scoopula",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-marker",
+        "definitionId": "permanent-marker",
+        "label": "Permanent marker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "practice-rubbing-alcohol",
+        "definitionId": "rubbing-alcohol-bottle",
+        "label": "Rubbing alcohol bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Rubbing alcohol",
+          "volumeMl": 100,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "practice-waste",
+        "definitionId": "waste-beaker",
+        "label": "Waste beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "inquiry-sample-rack",
+        "definitionId": "sample-rack",
+        "label": "Six-sample class rack",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "inquiry-sample-c",
+        "definitionId": "sample-bottle",
+        "label": "Water sample bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Preconcentrated sample C",
+          "volumeMl": 25,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "inquiry-sample-d",
+        "definitionId": "sample-bottle",
+        "label": "Water sample bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Preconcentrated sample D",
+          "volumeMl": 25,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "inquiry-carbonate",
+        "definitionId": "reagent-bottle",
+        "label": "Reagent bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "solution",
+          "label": "0.50 M sodium carbonate",
+          "volumeMl": 120,
+          "concentration": {
+            "value": 0.5,
+            "unit": "M"
+          },
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-solution"
+        }
+      },
+      {
+        "id": "unknown-balance",
+        "definitionId": "analytical-balance",
+        "label": "Analytical balance",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-carbonate",
+        "definitionId": "reagent-bottle",
+        "label": "Reagent bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "solution",
+          "label": "0.50 M sodium carbonate",
+          "volumeMl": 120,
+          "concentration": {
+            "value": 0.5,
+            "unit": "M"
+          },
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-solution"
+        }
+      },
+      {
+        "id": "unknown-wash-bottle",
+        "definitionId": "wash-bottle",
+        "label": "Deionized-water wash bottle",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Deionized water",
+          "volumeMl": 500,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "unknown-oven",
+        "definitionId": "drying-oven",
+        "label": "Drying oven",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-tongs",
+        "definitionId": "crucible-tongs",
+        "label": "Crucible tongs",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-scoopula",
+        "definitionId": "scoopula",
+        "label": "Metal scoopula",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-marker",
+        "definitionId": "permanent-marker",
+        "label": "Permanent marker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-class-rack",
+        "definitionId": "sample-rack",
+        "label": "Six-sample class rack",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-c-bottle",
+        "definitionId": "sample-bottle",
+        "label": "Sample C",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Preconcentrated Sample C",
+          "volumeMl": 25,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "unknown-c-cylinder",
+        "definitionId": "graduated-cylinder",
+        "label": "100 mL graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-c-beaker",
+        "definitionId": "beaker-250ml",
+        "label": "250 mL beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-c-paper",
+        "definitionId": "filter-paper",
+        "label": "Filter paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-c-buchner",
+        "definitionId": "buchner-funnel",
+        "label": "Buchner funnel",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-c-flask",
+        "definitionId": "side-arm-filter-flask",
+        "label": "Side-arm filter flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-c-vacuum",
+        "definitionId": "vacuum-source",
+        "label": "Vacuum source",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-c-watch",
+        "definitionId": "watch-glass",
+        "label": "Watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-d-bottle",
+        "definitionId": "sample-bottle",
+        "label": "Sample D",
+        "location": "shelf",
+        "contents": {
+          "kind": "liquid",
+          "label": "Preconcentrated Sample D",
+          "volumeMl": 25,
+          "solutes": [],
+          "contamination": [],
+          "wetState": "wet",
+          "visualState": "clear-liquid"
+        }
+      },
+      {
+        "id": "unknown-d-cylinder",
+        "definitionId": "graduated-cylinder",
+        "label": "100 mL graduated cylinder",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-d-beaker",
+        "definitionId": "beaker-250ml",
+        "label": "250 mL beaker",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-d-paper",
+        "definitionId": "filter-paper",
+        "label": "Filter paper",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-d-buchner",
+        "definitionId": "buchner-funnel",
+        "label": "Buchner funnel",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-d-flask",
+        "definitionId": "side-arm-filter-flask",
+        "label": "Side-arm filter flask",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-d-vacuum",
+        "definitionId": "vacuum-source",
+        "label": "Vacuum source",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      },
+      {
+        "id": "unknown-d-watch",
+        "definitionId": "watch-glass",
+        "label": "Watch glass",
+        "location": "shelf",
+        "contents": {
+          "kind": "empty",
+          "label": "empty",
+          "solutes": [],
+          "contamination": [],
+          "wetState": "dry",
+          "visualState": "empty"
+        }
+      }
+    ]
+  },
+  "techniques": [],
+  "actions": [],
+  "process": {
+    "startNodeId": "hard-water-practice-preparation--review-practice-safety-node",
+    "nodes": [
+      {
+        "id": "hard-water-practice-preparation--review-practice-safety-node",
+        "type": "observation",
+        "title": "Review practice safety and balance configuration",
+        "description": "Review goggles, eye/ingestion hazards, and the teacher-selected balance precision before handling reagents.",
+        "actionId": "review-practice-safety",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "analytical balance readability, +/-0.001 g or +/-0.0001 g (Investigation 3 finding 2, confirmation point 2)"
+        },
+        "validation": [
+          {
+            "id": "review-practice-safety-evidence",
+            "type": "actionEvidence",
+            "label": "Review practice safety and balance configuration was completed.",
+            "actionId": "review-practice-safety"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Review practice safety and balance configuration complete.",
+          "retry": "Correct the named prerequisite and retry review practice safety and balance configuration."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--create-practice-data-table-node",
+        "type": "observation",
+        "title": "Create the practice data table",
+        "description": "Create a data table before collecting practice measurements.",
+        "actionId": "create-practice-data-table",
+        "config": {},
+        "validation": [
+          {
+            "id": "create-practice-data-table-evidence",
+            "type": "actionEvidence",
+            "label": "Create the practice data table was completed.",
+            "actionId": "create-practice-data-table"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Create the practice data table complete.",
+          "retry": "Correct the named prerequisite and retry create the practice data table."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--add-sodium-carbonate-solid-node",
+        "type": "action",
+        "title": "Add about 2 g sodium carbonate",
+        "description": "Use a clean, dry beaker and transfer about 2 g of anhydrous sodium carbonate.",
+        "actionId": "add-sodium-carbonate-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "add-sodium-carbonate-solid-evidence",
+            "type": "actionEvidence",
+            "label": "Add about 2 g sodium carbonate was completed.",
+            "actionId": "add-sodium-carbonate-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add about 2 g sodium carbonate complete.",
+          "retry": "Correct the named prerequisite and retry add about 2 g sodium carbonate."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--weigh-sodium-carbonate-node",
+        "type": "action",
+        "title": "Read sodium carbonate mass",
+        "description": "Read the teacher-configured simulated balance output; do not treat it as a real measured value.",
+        "actionId": "weigh-sodium-carbonate",
+        "config": {},
+        "validation": [
+          {
+            "id": "weigh-sodium-carbonate-evidence",
+            "type": "actionEvidence",
+            "label": "Read sodium carbonate mass was completed.",
+            "actionId": "weigh-sodium-carbonate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Read sodium carbonate mass complete.",
+          "retry": "Correct the named prerequisite and retry read sodium carbonate mass."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--record-sodium-carbonate-node",
+        "type": "observation",
+        "title": "Record sodium carbonate mass",
+        "description": "Record the displayed sodium carbonate mass to the configured balance precision.",
+        "actionId": "record-sodium-carbonate",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-sodium-carbonate-evidence",
+            "type": "actionEvidence",
+            "label": "Record sodium carbonate mass was completed.",
+            "actionId": "record-sodium-carbonate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record sodium carbonate mass complete.",
+          "retry": "Correct the named prerequisite and retry record sodium carbonate mass."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--add-calcium-chloride-solid-node",
+        "type": "action",
+        "title": "Add about 2 g calcium chloride",
+        "description": "Use a second clean, dry beaker and transfer about 2 g of anhydrous calcium chloride.",
+        "actionId": "add-calcium-chloride-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "add-calcium-chloride-solid-evidence",
+            "type": "actionEvidence",
+            "label": "Add about 2 g calcium chloride was completed.",
+            "actionId": "add-calcium-chloride-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add about 2 g calcium chloride complete.",
+          "retry": "Correct the named prerequisite and retry add about 2 g calcium chloride."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--weigh-calcium-chloride-node",
+        "type": "action",
+        "title": "Read calcium chloride mass",
+        "description": "Read the separate teacher-configured simulated calcium chloride balance output.",
+        "actionId": "weigh-calcium-chloride",
+        "config": {},
+        "validation": [
+          {
+            "id": "weigh-calcium-chloride-evidence",
+            "type": "actionEvidence",
+            "label": "Read calcium chloride mass was completed.",
+            "actionId": "weigh-calcium-chloride"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Read calcium chloride mass complete.",
+          "retry": "Correct the named prerequisite and retry read calcium chloride mass."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--record-calcium-chloride-node",
+        "type": "observation",
+        "title": "Record calcium chloride mass",
+        "description": "Record the displayed calcium chloride mass to the configured balance precision.",
+        "actionId": "record-calcium-chloride",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-calcium-chloride-evidence",
+            "type": "actionEvidence",
+            "label": "Record calcium chloride mass was completed.",
+            "actionId": "record-calcium-chloride"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record calcium chloride mass complete.",
+          "retry": "Correct the named prerequisite and retry record calcium chloride mass."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--measure-water-for-sodium-node",
+        "type": "action",
+        "title": "Measure about 20 mL water for sodium carbonate",
+        "description": "Measure about 20 mL distilled water for the sodium carbonate beaker.",
+        "actionId": "measure-water-for-sodium",
+        "config": {},
+        "validation": [
+          {
+            "id": "measure-water-for-sodium-evidence",
+            "type": "actionEvidence",
+            "label": "Measure about 20 mL water for sodium carbonate was completed.",
+            "actionId": "measure-water-for-sodium"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure about 20 mL water for sodium carbonate complete.",
+          "retry": "Correct the named prerequisite and retry measure about 20 ml water for sodium carbonate."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--transfer-water-to-sodium-node",
+        "type": "action",
+        "title": "Add water to sodium carbonate",
+        "description": "Transfer the separately measured distilled water into the sodium carbonate beaker.",
+        "actionId": "transfer-water-to-sodium",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-water-to-sodium-evidence",
+            "type": "actionEvidence",
+            "label": "Add water to sodium carbonate was completed.",
+            "actionId": "transfer-water-to-sodium"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add water to sodium carbonate complete.",
+          "retry": "Correct the named prerequisite and retry add water to sodium carbonate."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--dissolve-sodium-solid-node",
+        "type": "action",
+        "title": "Stir until sodium carbonate dissolves",
+        "description": "Use the stirring rod until the sodium carbonate is visibly dissolved; keep this dissolution loop separate from the other beaker.",
+        "actionId": "dissolve-sodium-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "dissolve-sodium-solid-evidence",
+            "type": "actionEvidence",
+            "label": "Stir until sodium carbonate dissolves was completed.",
+            "actionId": "dissolve-sodium-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Stir until sodium carbonate dissolves complete.",
+          "retry": "Correct the named prerequisite and retry stir until sodium carbonate dissolves."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--observe-sodium-solution-node",
+        "type": "observation",
+        "title": "Record sodium carbonate dissolution",
+        "description": "Observe and record the dissolution endpoint for sodium carbonate.",
+        "actionId": "observe-sodium-solution",
+        "config": {},
+        "validation": [
+          {
+            "id": "observe-sodium-solution-evidence",
+            "type": "actionEvidence",
+            "label": "Record sodium carbonate dissolution was completed.",
+            "actionId": "observe-sodium-solution"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record sodium carbonate dissolution complete.",
+          "retry": "Correct the named prerequisite and retry record sodium carbonate dissolution."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--measure-water-for-calcium-node",
+        "type": "action",
+        "title": "Measure about 20 mL water for calcium chloride",
+        "description": "Measure about 20 mL distilled water for the calcium chloride beaker.",
+        "actionId": "measure-water-for-calcium",
+        "config": {},
+        "validation": [
+          {
+            "id": "measure-water-for-calcium-evidence",
+            "type": "actionEvidence",
+            "label": "Measure about 20 mL water for calcium chloride was completed.",
+            "actionId": "measure-water-for-calcium"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure about 20 mL water for calcium chloride complete.",
+          "retry": "Correct the named prerequisite and retry measure about 20 ml water for calcium chloride."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--transfer-water-to-calcium-node",
+        "type": "action",
+        "title": "Add water to calcium chloride",
+        "description": "Transfer the separately measured distilled water into the calcium chloride beaker.",
+        "actionId": "transfer-water-to-calcium",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-water-to-calcium-evidence",
+            "type": "actionEvidence",
+            "label": "Add water to calcium chloride was completed.",
+            "actionId": "transfer-water-to-calcium"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add water to calcium chloride complete.",
+          "retry": "Correct the named prerequisite and retry add water to calcium chloride."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--dissolve-calcium-solid-node",
+        "type": "action",
+        "title": "Stir until calcium chloride dissolves",
+        "description": "Use the stirring rod until the calcium chloride is visibly dissolved; keep this dissolution loop separate from the other beaker.",
+        "actionId": "dissolve-calcium-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "dissolve-calcium-solid-evidence",
+            "type": "actionEvidence",
+            "label": "Stir until calcium chloride dissolves was completed.",
+            "actionId": "dissolve-calcium-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Stir until calcium chloride dissolves complete.",
+          "retry": "Correct the named prerequisite and retry stir until calcium chloride dissolves."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--observe-calcium-solution-node",
+        "type": "observation",
+        "title": "Record calcium chloride dissolution",
+        "description": "Observe and record the dissolution endpoint for calcium chloride.",
+        "actionId": "observe-calcium-solution",
+        "config": {},
+        "validation": [
+          {
+            "id": "observe-calcium-solution-evidence",
+            "type": "actionEvidence",
+            "label": "Record calcium chloride dissolution was completed.",
+            "actionId": "observe-calcium-solution"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record calcium chloride dissolution complete.",
+          "retry": "Correct the named prerequisite and retry record calcium chloride dissolution."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--add-carbonate-portion-1-node",
+        "type": "action",
+        "title": "Add sodium carbonate portion 1",
+        "description": "While stirring, add portion 1 of 4 from the sodium carbonate solution to the calcium chloride solution.",
+        "actionId": "add-carbonate-portion-1",
+        "config": {},
+        "validation": [
+          {
+            "id": "add-carbonate-portion-1-evidence",
+            "type": "actionEvidence",
+            "label": "Add sodium carbonate portion 1 was completed.",
+            "actionId": "add-carbonate-portion-1"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add sodium carbonate portion 1 complete.",
+          "retry": "Correct the named prerequisite and retry add sodium carbonate portion 1."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--observe-carbonate-portion-1-node",
+        "type": "observation",
+        "title": "Observe precipitation after portion 1",
+        "description": "Record a fresh observation after portion 1; do not collapse the incremental additions into one bulk-mix step.",
+        "actionId": "observe-carbonate-portion-1",
+        "config": {},
+        "validation": [
+          {
+            "id": "observe-carbonate-portion-1-evidence",
+            "type": "actionEvidence",
+            "label": "Observe precipitation after portion 1 was completed.",
+            "actionId": "observe-carbonate-portion-1"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Observe precipitation after portion 1 complete.",
+          "retry": "Correct the named prerequisite and retry observe precipitation after portion 1."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--add-carbonate-portion-2-node",
+        "type": "action",
+        "title": "Add sodium carbonate portion 2",
+        "description": "While stirring, add portion 2 of 4 from the sodium carbonate solution to the calcium chloride solution.",
+        "actionId": "add-carbonate-portion-2",
+        "config": {},
+        "validation": [
+          {
+            "id": "add-carbonate-portion-2-evidence",
+            "type": "actionEvidence",
+            "label": "Add sodium carbonate portion 2 was completed.",
+            "actionId": "add-carbonate-portion-2"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add sodium carbonate portion 2 complete.",
+          "retry": "Correct the named prerequisite and retry add sodium carbonate portion 2."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--observe-carbonate-portion-2-node",
+        "type": "observation",
+        "title": "Observe precipitation after portion 2",
+        "description": "Record a fresh observation after portion 2; do not collapse the incremental additions into one bulk-mix step.",
+        "actionId": "observe-carbonate-portion-2",
+        "config": {},
+        "validation": [
+          {
+            "id": "observe-carbonate-portion-2-evidence",
+            "type": "actionEvidence",
+            "label": "Observe precipitation after portion 2 was completed.",
+            "actionId": "observe-carbonate-portion-2"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Observe precipitation after portion 2 complete.",
+          "retry": "Correct the named prerequisite and retry observe precipitation after portion 2."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--add-carbonate-portion-3-node",
+        "type": "action",
+        "title": "Add sodium carbonate portion 3",
+        "description": "While stirring, add portion 3 of 4 from the sodium carbonate solution to the calcium chloride solution.",
+        "actionId": "add-carbonate-portion-3",
+        "config": {},
+        "validation": [
+          {
+            "id": "add-carbonate-portion-3-evidence",
+            "type": "actionEvidence",
+            "label": "Add sodium carbonate portion 3 was completed.",
+            "actionId": "add-carbonate-portion-3"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add sodium carbonate portion 3 complete.",
+          "retry": "Correct the named prerequisite and retry add sodium carbonate portion 3."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--observe-carbonate-portion-3-node",
+        "type": "observation",
+        "title": "Observe precipitation after portion 3",
+        "description": "Record a fresh observation after portion 3; do not collapse the incremental additions into one bulk-mix step.",
+        "actionId": "observe-carbonate-portion-3",
+        "config": {},
+        "validation": [
+          {
+            "id": "observe-carbonate-portion-3-evidence",
+            "type": "actionEvidence",
+            "label": "Observe precipitation after portion 3 was completed.",
+            "actionId": "observe-carbonate-portion-3"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Observe precipitation after portion 3 complete.",
+          "retry": "Correct the named prerequisite and retry observe precipitation after portion 3."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--add-carbonate-portion-4-node",
+        "type": "action",
+        "title": "Add sodium carbonate portion 4",
+        "description": "While stirring, add portion 4 of 4 from the sodium carbonate solution to the calcium chloride solution.",
+        "actionId": "add-carbonate-portion-4",
+        "config": {},
+        "validation": [
+          {
+            "id": "add-carbonate-portion-4-evidence",
+            "type": "actionEvidence",
+            "label": "Add sodium carbonate portion 4 was completed.",
+            "actionId": "add-carbonate-portion-4"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add sodium carbonate portion 4 complete.",
+          "retry": "Correct the named prerequisite and retry add sodium carbonate portion 4."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--observe-carbonate-portion-4-node",
+        "type": "observation",
+        "title": "Observe precipitation after portion 4",
+        "description": "Record a fresh observation after portion 4; do not collapse the incremental additions into one bulk-mix step.",
+        "actionId": "observe-carbonate-portion-4",
+        "config": {},
+        "validation": [
+          {
+            "id": "observe-carbonate-portion-4-evidence",
+            "type": "actionEvidence",
+            "label": "Observe precipitation after portion 4 was completed.",
+            "actionId": "observe-carbonate-portion-4"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Observe precipitation after portion 4 complete.",
+          "retry": "Correct the named prerequisite and retry observe precipitation after portion 4."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--establish-practice-precipitate-state-node",
+        "type": "action",
+        "title": "Establish the simulated wet precipitate state",
+        "description": "After all portions are added, represent the wet CaCO3 suspension for filtration; its configured state mass is not student measurement evidence.",
+        "actionId": "establish-practice-precipitate-state",
+        "config": {},
+        "validation": [
+          {
+            "id": "establish-practice-precipitate-state-evidence",
+            "type": "actionEvidence",
+            "label": "Establish the simulated wet precipitate state was completed.",
+            "actionId": "establish-practice-precipitate-state"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Establish the simulated wet precipitate state complete.",
+          "retry": "Correct the named prerequisite and retry establish the simulated wet precipitate state."
+        }
+      },
+      {
+        "id": "hard-water-practice-preparation--age-practice-precipitate-node",
+        "type": "observation",
+        "title": "Stir for another two minutes",
+        "description": "Continue stirring the complete mixture for about two minutes.",
+        "actionId": "age-practice-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "age-practice-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Stir for another two minutes was completed.",
+            "actionId": "age-practice-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Stir for another two minutes complete.",
+          "retry": "Correct the named prerequisite and retry stir for another two minutes."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--weigh-practice-filter-paper-node",
+        "type": "action",
+        "title": "Weigh dry filter paper",
+        "description": "Weigh the clean, dry filter paper before seating or wetting it.",
+        "actionId": "weigh-practice-filter-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "weigh-practice-filter-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh dry filter paper was completed.",
+            "actionId": "weigh-practice-filter-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh dry filter paper complete.",
+          "retry": "Correct the named prerequisite and retry weigh dry filter paper."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--record-practice-filter-paper-node",
+        "type": "observation",
+        "title": "Record filter-paper tare",
+        "description": "Record the filter-paper tare separately from the watch-glass tare.",
+        "actionId": "record-practice-filter-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-practice-filter-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Record filter-paper tare was completed.",
+            "actionId": "record-practice-filter-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record filter-paper tare complete.",
+          "retry": "Correct the named prerequisite and retry record filter-paper tare."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--select-filtration-configuration-node",
+        "type": "observation",
+        "title": "Record the selected filtration configuration",
+        "description": "Record which filtration configuration the teacher selected before assembling any apparatus.",
+        "actionId": "select-filtration-configuration",
+        "config": {
+          "teacherConfigurable": true,
+          "configurationChoice": true,
+          "requiredConfiguration": "gravity or vacuum filtration apparatus and its components (Investigation 3 finding 3, confirmation point 1)"
+        },
+        "validation": [
+          {
+            "id": "gravimetric-vacuum-filtration--select-filtration-configuration-evidence",
+            "type": "actionEvidence",
+            "label": "Record the selected filtration configuration was completed.",
+            "actionId": "select-filtration-configuration"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record the selected filtration configuration complete.",
+          "retry": "Record the teacher-selected gravity or vacuum configuration, then continue."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--place-practice-buchner-node",
+        "type": "action",
+        "title": "Place Buchner funnel",
+        "description": "Place the teacher-approved Buchner funnel for vacuum filtration.",
+        "actionId": "place-practice-buchner",
+        "config": {},
+        "validation": [
+          {
+            "id": "place-practice-buchner-evidence",
+            "type": "actionEvidence",
+            "label": "Place Buchner funnel was completed.",
+            "actionId": "place-practice-buchner"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place Buchner funnel complete.",
+          "retry": "Correct the named prerequisite and retry place buchner funnel."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--seat-practice-filter-paper-node",
+        "type": "action",
+        "title": "Seat preweighed filter paper",
+        "description": "Seat the preweighed filter paper flat on the Buchner funnel perforated plate.",
+        "actionId": "seat-practice-filter-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "seat-practice-filter-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Seat preweighed filter paper was completed.",
+            "actionId": "seat-practice-filter-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Seat preweighed filter paper complete.",
+          "retry": "Correct the named prerequisite and retry seat preweighed filter paper."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--attach-practice-filter-flask-node",
+        "type": "action",
+        "title": "Attach side-arm receiver",
+        "description": "Align the side-arm filter flask beneath the Buchner funnel before pouring.",
+        "actionId": "attach-practice-filter-flask",
+        "config": {},
+        "validation": [
+          {
+            "id": "attach-practice-filter-flask-evidence",
+            "type": "actionEvidence",
+            "label": "Attach side-arm receiver was completed.",
+            "actionId": "attach-practice-filter-flask"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Attach side-arm receiver complete.",
+          "retry": "Correct the named prerequisite and retry attach side-arm receiver."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--place-practice-vacuum-node",
+        "type": "action",
+        "title": "Place vacuum source",
+        "description": "Place the teacher-approved vacuum source beside the side-arm flask.",
+        "actionId": "place-practice-vacuum",
+        "config": {},
+        "validation": [
+          {
+            "id": "place-practice-vacuum-evidence",
+            "type": "actionEvidence",
+            "label": "Place vacuum source was completed.",
+            "actionId": "place-practice-vacuum"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place vacuum source complete.",
+          "retry": "Correct the named prerequisite and retry place vacuum source."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--confirm-practice-vacuum-connection-node",
+        "type": "observation",
+        "title": "Confirm vacuum connection",
+        "description": "Confirm the vacuum path and receiver alignment before wetting the paper.",
+        "actionId": "confirm-practice-vacuum-connection",
+        "config": {},
+        "validation": [
+          {
+            "id": "confirm-practice-vacuum-connection-evidence",
+            "type": "actionEvidence",
+            "label": "Confirm vacuum connection was completed.",
+            "actionId": "confirm-practice-vacuum-connection"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Confirm vacuum connection complete.",
+          "retry": "Correct the named prerequisite and retry confirm vacuum connection."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--wet-practice-filter-paper-node",
+        "type": "action",
+        "title": "Wet and seal filter paper",
+        "description": "Wet the seated paper with deionized water so it remains sealed to the funnel plate.",
+        "actionId": "wet-practice-filter-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "wet-practice-filter-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Wet and seal filter paper was completed.",
+            "actionId": "wet-practice-filter-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wet and seal filter paper complete.",
+          "retry": "Correct the named prerequisite and retry wet and seal filter paper."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--filter-practice-mixture-node",
+        "type": "checkpoint",
+        "title": "Filter the practice suspension",
+        "description": "Pour slowly so no mixture flows outside the paper or funnel; the aligned flask receives the filtrate.",
+        "actionId": "filter-practice-mixture",
+        "config": {},
+        "validation": [
+          {
+            "id": "filter-practice-mixture-evidence",
+            "type": "actionEvidence",
+            "label": "Filter the practice suspension was completed.",
+            "actionId": "filter-practice-mixture"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Filter the practice suspension complete.",
+          "retry": "Correct the named prerequisite and retry filter the practice suspension."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--rinse-practice-beaker-node",
+        "type": "action",
+        "title": "Rinse residual precipitate from beaker",
+        "description": "Use a small quantity of deionized water to rinse remaining precipitate from the beaker.",
+        "actionId": "rinse-practice-beaker",
+        "config": {},
+        "validation": [
+          {
+            "id": "rinse-practice-beaker-evidence",
+            "type": "actionEvidence",
+            "label": "Rinse residual precipitate from beaker was completed.",
+            "actionId": "rinse-practice-beaker"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Rinse residual precipitate from beaker complete.",
+          "retry": "Correct the named prerequisite and retry rinse residual precipitate from beaker."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--wash-practice-precipitate-node",
+        "type": "action",
+        "title": "Wash collected precipitate",
+        "description": "Wash the collected precipitate with a little more deionized water to remove soluble impurities.",
+        "actionId": "wash-practice-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "wash-practice-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Wash collected precipitate was completed.",
+            "actionId": "wash-practice-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wash collected precipitate complete.",
+          "retry": "Correct the named prerequisite and retry wash collected precipitate."
+        }
+      },
+      {
+        "id": "gravimetric-vacuum-filtration--record-practice-filtration-node",
+        "type": "observation",
+        "title": "Record filtration and wash observations",
+        "description": "Record observed filtration and washing evidence without treating visual appearance as measured mass.",
+        "actionId": "record-practice-filtration",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-practice-filtration-evidence",
+            "type": "actionEvidence",
+            "label": "Record filtration and wash observations was completed.",
+            "actionId": "record-practice-filtration"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record filtration and wash observations complete.",
+          "retry": "Correct the named prerequisite and retry record filtration and wash observations."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--label-practice-watch-glass-node",
+        "type": "observation",
+        "title": "Label clean, dry watch glass",
+        "description": "Use the permanent marker to identify the clean, dry watch glass.",
+        "actionId": "label-practice-watch-glass",
+        "config": {},
+        "validation": [
+          {
+            "id": "label-practice-watch-glass-evidence",
+            "type": "actionEvidence",
+            "label": "Label clean, dry watch glass was completed.",
+            "actionId": "label-practice-watch-glass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Label clean, dry watch glass complete.",
+          "retry": "Correct the named prerequisite and retry label clean, dry watch glass."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--weigh-practice-watch-glass-node",
+        "type": "action",
+        "title": "Weigh watch-glass tare",
+        "description": "Read the clean, dry watch-glass tare independently of the filter-paper tare.",
+        "actionId": "weigh-practice-watch-glass",
+        "config": {},
+        "validation": [
+          {
+            "id": "weigh-practice-watch-glass-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh watch-glass tare was completed.",
+            "actionId": "weigh-practice-watch-glass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh watch-glass tare complete.",
+          "retry": "Correct the named prerequisite and retry weigh watch-glass tare."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--record-practice-watch-glass-node",
+        "type": "observation",
+        "title": "Record watch-glass tare",
+        "description": "Record the watch-glass tare before it receives the paper and precipitate.",
+        "actionId": "record-practice-watch-glass",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-practice-watch-glass-evidence",
+            "type": "actionEvidence",
+            "label": "Record watch-glass tare was completed.",
+            "actionId": "record-practice-watch-glass"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record watch-glass tare complete.",
+          "retry": "Correct the named prerequisite and retry record watch-glass tare."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--transfer-practice-paper-to-watch-node",
+        "type": "action",
+        "title": "Transfer paper and precipitate to watch glass",
+        "description": "Carefully lift the filter paper and precipitate onto the labeled watch glass without losing solid.",
+        "actionId": "transfer-practice-paper-to-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "transfer-practice-paper-to-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Transfer paper and precipitate to watch glass was completed.",
+            "actionId": "transfer-practice-paper-to-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer paper and precipitate to watch glass complete.",
+          "retry": "Correct the named prerequisite and retry transfer paper and precipitate to watch glass."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--dispose-practice-filtrate-node",
+        "type": "observation",
+        "title": "Dispose of configured filtrate",
+        "description": "Dispose of the filtrate only through the source-approved, teacher-configured drain action.",
+        "actionId": "dispose-practice-filtrate",
+        "config": {},
+        "validation": [
+          {
+            "id": "dispose-practice-filtrate-evidence",
+            "type": "actionEvidence",
+            "label": "Dispose of configured filtrate was completed.",
+            "actionId": "dispose-practice-filtrate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dispose of configured filtrate complete.",
+          "retry": "Correct the named prerequisite and retry dispose of configured filtrate."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--set-practice-oven-node",
+        "type": "observation",
+        "title": "Set oven to 110-120 C",
+        "description": "Confirm the oven setting is between 110 C and 120 C before inserting the watch glass.",
+        "actionId": "set-practice-oven",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "oven setpoint within the manual-stated 110-120 C range"
+        },
+        "validation": [
+          {
+            "id": "set-practice-oven-evidence",
+            "type": "actionEvidence",
+            "label": "Set oven to 110-120 C was completed.",
+            "actionId": "set-practice-oven"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Set oven to 110-120 C complete.",
+          "retry": "Correct the named prerequisite and retry set oven to 110-120 c."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--first-practice-drying-node",
+        "type": "checkpoint",
+        "title": "Dry for 10-15 minutes",
+        "description": "Place the watch-glass assembly in the 115 C oven for the first configured 12-minute drying stage.",
+        "actionId": "first-practice-drying",
+        "config": {},
+        "validation": [
+          {
+            "id": "first-practice-drying-evidence",
+            "type": "actionEvidence",
+            "label": "Dry for 10-15 minutes was completed.",
+            "actionId": "first-practice-drying"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry for 10-15 minutes complete.",
+          "retry": "Correct the named prerequisite and retry dry for 10-15 minutes."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--remove-warm-practice-watch-node",
+        "type": "observation",
+        "title": "Remove warm watch glass safely",
+        "description": "Use heat-safe handling to remove the warm assembly; do not weigh it.",
+        "actionId": "remove-warm-practice-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "remove-warm-practice-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Remove warm watch glass safely was completed.",
+            "actionId": "remove-warm-practice-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Remove warm watch glass safely complete.",
+          "retry": "Correct the named prerequisite and retry remove warm watch glass safely."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--break-practice-precipitate-node",
+        "type": "observation",
+        "title": "Break precipitate into small pieces",
+        "description": "Use the metal scoopula to break the precipitate into small pieces before the second drying stage.",
+        "actionId": "break-practice-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "break-practice-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Break precipitate into small pieces was completed.",
+            "actionId": "break-practice-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Break precipitate into small pieces complete.",
+          "retry": "Correct the named prerequisite and retry break precipitate into small pieces."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--second-practice-drying-node",
+        "type": "checkpoint",
+        "title": "Dry for another 5 minutes",
+        "description": "Return the broken precipitate assembly to the oven for the separate five-minute drying stage.",
+        "actionId": "second-practice-drying",
+        "config": {},
+        "validation": [
+          {
+            "id": "second-practice-drying-evidence",
+            "type": "actionEvidence",
+            "label": "Dry for another 5 minutes was completed.",
+            "actionId": "second-practice-drying"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Dry for another 5 minutes complete.",
+          "retry": "Correct the named prerequisite and retry dry for another 5 minutes."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--cool-practice-assembly-node",
+        "type": "action",
+        "title": "Cool the dried assembly",
+        "description": "Remove the assembly with heat-safe handling and set it aside until it reaches a safe weighing temperature.",
+        "actionId": "cool-practice-assembly",
+        "config": {},
+        "validation": [
+          {
+            "id": "cool-practice-assembly-evidence",
+            "type": "actionEvidence",
+            "label": "Cool the dried assembly was completed.",
+            "actionId": "cool-practice-assembly"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Cool the dried assembly complete.",
+          "retry": "Correct the named prerequisite and retry cool the dried assembly."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--weigh-practice-combined-node",
+        "type": "action",
+        "title": "Weigh cooled combined assembly",
+        "description": "Only after cooling, read the simulated combined mass of watch glass, filter paper, and precipitate.",
+        "actionId": "weigh-practice-combined",
+        "config": {},
+        "validation": [
+          {
+            "id": "weigh-practice-combined-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh cooled combined assembly was completed.",
+            "actionId": "weigh-practice-combined"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh cooled combined assembly complete.",
+          "retry": "Correct the named prerequisite and retry weigh cooled combined assembly."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--record-practice-combined-node",
+        "type": "observation",
+        "title": "Record cooled combined mass",
+        "description": "Record the cooled combined mass without silently treating it as precipitate-only mass.",
+        "actionId": "record-practice-combined",
+        "config": {},
+        "validation": [
+          {
+            "id": "record-practice-combined-evidence",
+            "type": "actionEvidence",
+            "label": "Record cooled combined mass was completed.",
+            "actionId": "record-practice-combined"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record cooled combined mass complete.",
+          "retry": "Correct the named prerequisite and retry record cooled combined mass."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--calculate-practice-theoretical-node",
+        "type": "calculation",
+        "title": "Calculate theoretical CaCO3 mass",
+        "description": "Use the recorded reactant masses, 1:1 limiting-reactant stoichiometry, and CaCO3 molar mass. The configured model treats the printed Na2CO3 and CaCl2 formulas as anhydrous; an instructor must change the molar-mass model if a hydrate is supplied.",
+        "actionId": "calculate-practice-theoretical",
+        "config": {},
+        "validation": [
+          {
+            "id": "calculate-practice-theoretical-evidence",
+            "type": "actionEvidence",
+            "label": "Calculate theoretical CaCO3 mass was completed.",
+            "actionId": "calculate-practice-theoretical"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate theoretical CaCO3 mass complete.",
+          "retry": "Correct the named prerequisite and retry calculate theoretical caco3 mass."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--calculate-practice-collected-node",
+        "type": "calculation",
+        "title": "Calculate collected CaCO3 mass",
+        "description": "Subtract both tare masses from the cooled combined mass to obtain collected precipitate mass.",
+        "actionId": "calculate-practice-collected",
+        "config": {},
+        "validation": [
+          {
+            "id": "calculate-practice-collected-evidence",
+            "type": "actionEvidence",
+            "label": "Calculate collected CaCO3 mass was completed.",
+            "actionId": "calculate-practice-collected"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate collected CaCO3 mass complete.",
+          "retry": "Correct the named prerequisite and retry calculate collected caco3 mass."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--compare-practice-yield-node",
+        "type": "observation",
+        "title": "Compare collected and theoretical mass",
+        "description": "Explain the difference between theoretical and collected CaCO3 mass using procedure evidence.",
+        "actionId": "compare-practice-yield",
+        "config": {},
+        "validation": [
+          {
+            "id": "compare-practice-yield-evidence",
+            "type": "actionEvidence",
+            "label": "Compare collected and theoretical mass was completed.",
+            "actionId": "compare-practice-yield"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Compare collected and theoretical mass complete.",
+          "retry": "Correct the named prerequisite and retry compare collected and theoretical mass."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--evaluate-extra-carbonate-branch-node",
+        "type": "observation",
+        "title": "Evaluate optional 1 g carbonate rerun",
+        "description": "Record the prediction for an optional full rerun with 1 g more sodium carbonate.",
+        "actionId": "evaluate-extra-carbonate-branch",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "whether the optional Practice Question 2 rerun is assigned"
+        },
+        "validation": [
+          {
+            "id": "evaluate-extra-carbonate-branch-evidence",
+            "type": "actionEvidence",
+            "label": "Evaluate optional 1 g carbonate rerun was completed.",
+            "actionId": "evaluate-extra-carbonate-branch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Evaluate optional 1 g carbonate rerun complete.",
+          "retry": "Correct the named prerequisite and retry evaluate optional 1 g carbonate rerun."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--explain-wet-unwashed-bias-node",
+        "type": "observation",
+        "title": "Explain wet and unwashed bias",
+        "description": "Explain how inadequate washing, inadequate drying, and material loss affect the gravimetric result.",
+        "actionId": "explain-wet-unwashed-bias",
+        "config": {},
+        "validation": [
+          {
+            "id": "explain-wet-unwashed-bias-evidence",
+            "type": "actionEvidence",
+            "label": "Explain wet and unwashed bias was completed.",
+            "actionId": "explain-wet-unwashed-bias"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Explain wet and unwashed bias complete.",
+          "retry": "Correct the named prerequisite and retry explain wet and unwashed bias."
+        }
+      },
+      {
+        "id": "two-stage-precipitate-drying--complete-practice-cleanup-node",
+        "type": "observation",
+        "title": "Complete practice cleanup",
+        "description": "Discard paper and precipitate in the configured wastebasket and remove marker with rubbing alcohol.",
+        "actionId": "complete-practice-cleanup",
+        "config": {},
+        "validation": [
+          {
+            "id": "complete-practice-cleanup-evidence",
+            "type": "actionEvidence",
+            "label": "Complete practice cleanup was completed.",
+            "actionId": "complete-practice-cleanup"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Complete practice cleanup complete.",
+          "retry": "Correct the named prerequisite and retry complete practice cleanup."
+        }
+      },
+      {
+        "id": "inquiry-plan-approval--review-ksp-and-precipitation-model-node",
+        "type": "observation",
+        "title": "Review Ksp and precipitation reasoning",
+        "description": "Use the prelab Ksp evidence to justify CaCO3 precipitation without treating the selection as hidden outcome instruction.",
+        "actionId": "review-ksp-and-precipitation-model",
+        "config": {},
+        "validation": [
+          {
+            "id": "review-ksp-and-precipitation-model-evidence",
+            "type": "actionEvidence",
+            "label": "Review Ksp and precipitation reasoning was completed.",
+            "actionId": "review-ksp-and-precipitation-model"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Review Ksp and precipitation reasoning complete.",
+          "retry": "Correct the named prerequisite and retry review ksp and precipitation reasoning."
+        }
+      },
+      {
+        "id": "inquiry-plan-approval--select-two-assigned-samples-node",
+        "type": "observation",
+        "title": "Select two assigned sample IDs",
+        "description": "Record the two teacher-assigned samples and keep independent evidence for each.",
+        "actionId": "select-two-assigned-samples",
+        "config": {},
+        "validation": [
+          {
+            "id": "select-two-assigned-samples-evidence",
+            "type": "actionEvidence",
+            "label": "Select two assigned sample IDs was completed.",
+            "actionId": "select-two-assigned-samples"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Select two assigned sample IDs complete.",
+          "retry": "Correct the named prerequisite and retry select two assigned sample ids."
+        }
+      },
+      {
+        "id": "inquiry-plan-approval--define-carbonate-excess-plan-node",
+        "type": "observation",
+        "title": "Define carbonate-excess plan",
+        "description": "Specify how sufficient carbonate will completely precipitate calcium from each aliquot.",
+        "actionId": "define-carbonate-excess-plan",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "reagent excess sufficient to precipitate all calcium (Investigation 3 finding 12, R/C)"
+        },
+        "validation": [
+          {
+            "id": "define-carbonate-excess-plan-evidence",
+            "type": "actionEvidence",
+            "label": "Define carbonate-excess plan was completed.",
+            "actionId": "define-carbonate-excess-plan"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Define carbonate-excess plan complete.",
+          "retry": "Correct the named prerequisite and retry define carbonate-excess plan."
+        }
+      },
+      {
+        "id": "inquiry-plan-approval--select-inquiry-apparatus-node",
+        "type": "observation",
+        "title": "Select apparatus and requested materials",
+        "description": "List the available materials and identify any extra request for teacher approval.",
+        "actionId": "select-inquiry-apparatus",
+        "config": {
+          "teacherConfigurable": true,
+          "configurationChoice": true,
+          "requiredConfiguration": "the inquiry filtration apparatus and any requested extra material (Investigation 3 confirmation point 1)"
+        },
+        "validation": [
+          {
+            "id": "select-inquiry-apparatus-evidence",
+            "type": "actionEvidence",
+            "label": "Select apparatus and requested materials was completed.",
+            "actionId": "select-inquiry-apparatus"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Select apparatus and requested materials complete.",
+          "retry": "Correct the named prerequisite and retry select apparatus and requested materials."
+        }
+      },
+      {
+        "id": "inquiry-plan-approval--define-inquiry-evidence-node",
+        "type": "observation",
+        "title": "Define measurements and observations",
+        "description": "Create an independent data and observation table for both samples.",
+        "actionId": "define-inquiry-evidence",
+        "config": {},
+        "validation": [
+          {
+            "id": "define-inquiry-evidence-evidence",
+            "type": "actionEvidence",
+            "label": "Define measurements and observations was completed.",
+            "actionId": "define-inquiry-evidence"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Define measurements and observations complete.",
+          "retry": "Correct the named prerequisite and retry define measurements and observations."
+        }
+      },
+      {
+        "id": "inquiry-plan-approval--define-inquiry-quality-choices-node",
+        "type": "observation",
+        "title": "Define replicate and dry-mass choices",
+        "description": "Record the teacher-approved replicate count, drying criterion, balance readability, and calculation tolerance.",
+        "actionId": "define-inquiry-quality-choices",
+        "config": {
+          "teacherConfigurable": true,
+          "requiredConfiguration": "replicate count, dry-mass criterion, balance readability, and calculation tolerance (Investigation 3 finding 12, R/C; confirmation point 3 leaves constant mass unresolved)"
+        },
+        "validation": [
+          {
+            "id": "define-inquiry-quality-choices-evidence",
+            "type": "actionEvidence",
+            "label": "Define replicate and dry-mass choices was completed.",
+            "actionId": "define-inquiry-quality-choices"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Define replicate and dry-mass choices complete.",
+          "retry": "Correct the named prerequisite and retry define replicate and dry-mass choices."
+        }
+      },
+      {
+        "id": "inquiry-plan-approval--submit-inquiry-procedure-node",
+        "type": "observation",
+        "title": "Submit detailed inquiry procedure",
+        "description": "Submit the step-by-step procedure, materials list, data table, calculations, and safety controls.",
+        "actionId": "submit-inquiry-procedure",
+        "config": {},
+        "validation": [
+          {
+            "id": "submit-inquiry-procedure-evidence",
+            "type": "actionEvidence",
+            "label": "Submit detailed inquiry procedure was completed.",
+            "actionId": "submit-inquiry-procedure"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Submit detailed inquiry procedure complete.",
+          "retry": "Correct the named prerequisite and retry submit detailed inquiry procedure."
+        }
+      },
+      {
+        "id": "inquiry-plan-approval--approve-inquiry-procedure-node",
+        "type": "observation",
+        "title": "Record teacher approval",
+        "description": "Do not execute the unknown analysis until teacher approval is recorded.",
+        "actionId": "approve-inquiry-procedure",
+        "config": {
+          "approvalRequired": true,
+          "approvalRecorded": false
+        },
+        "validation": [
+          {
+            "id": "approve-inquiry-procedure-evidence",
+            "type": "actionEvidence",
+            "label": "Record teacher approval was completed.",
+            "actionId": "approve-inquiry-procedure"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record teacher approval complete.",
+          "retry": "Correct the named prerequisite and retry record teacher approval."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--review-approved-execution-plan-node",
+        "type": "observation",
+        "title": "Review approved execution plan",
+        "description": "Verify teacher approval and separate sample identities before collecting data.",
+        "actionId": "review-approved-execution-plan",
+        "config": {},
+        "validation": [
+          {
+            "id": "review-approved-execution-plan-evidence",
+            "type": "actionEvidence",
+            "label": "Review approved execution plan was completed.",
+            "actionId": "review-approved-execution-plan"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Review approved execution plan complete.",
+          "retry": "Correct the named prerequisite and retry review approved execution plan."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-weigh-paper-node",
+        "type": "action",
+        "title": "Weigh Sample C filter paper",
+        "description": "Record a fresh dry filter-paper tare for Sample C.",
+        "actionId": "unknown-c-weigh-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-weigh-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh Sample C filter paper was completed.",
+            "actionId": "unknown-c-weigh-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh Sample C filter paper complete.",
+          "retry": "Correct the named prerequisite and retry weigh sample c filter paper."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-record-paper-node",
+        "type": "observation",
+        "title": "Record Sample C filter-paper tare",
+        "description": "Record the Sample C filter-paper tare independently.",
+        "actionId": "unknown-c-record-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-record-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample C filter-paper tare was completed.",
+            "actionId": "unknown-c-record-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample C filter-paper tare complete.",
+          "retry": "Correct the named prerequisite and retry record sample c filter-paper tare."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-measure-aliquot-node",
+        "type": "action",
+        "title": "Measure 20 mL Sample C aliquot",
+        "description": "Measure a fresh 20 mL aliquot of preconcentrated Sample C.",
+        "actionId": "unknown-c-measure-aliquot",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-measure-aliquot-evidence",
+            "type": "actionEvidence",
+            "label": "Measure 20 mL Sample C aliquot was completed.",
+            "actionId": "unknown-c-measure-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure 20 mL Sample C aliquot complete.",
+          "retry": "Correct the named prerequisite and retry measure 20 ml sample c aliquot."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-record-aliquot-node",
+        "type": "observation",
+        "title": "Record Sample C aliquot",
+        "description": "Record the measured Sample C aliquot volume.",
+        "actionId": "unknown-c-record-aliquot",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-record-aliquot-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample C aliquot was completed.",
+            "actionId": "unknown-c-record-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample C aliquot complete.",
+          "retry": "Correct the named prerequisite and retry record sample c aliquot."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-transfer-aliquot-node",
+        "type": "action",
+        "title": "Transfer Sample C aliquot",
+        "description": "Transfer the measured Sample C aliquot into its labeled beaker.",
+        "actionId": "unknown-c-transfer-aliquot",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-transfer-aliquot-evidence",
+            "type": "actionEvidence",
+            "label": "Transfer Sample C aliquot was completed.",
+            "actionId": "unknown-c-transfer-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer Sample C aliquot complete.",
+          "retry": "Correct the named prerequisite and retry transfer sample c aliquot."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-add-carbonate-node",
+        "type": "action",
+        "title": "Add carbonate reagent to Sample C",
+        "description": "Add the teacher-approved 12.0 mL portion of 0.50 M sodium carbonate to Sample C while stirring. This configured amount supplies a slight stoichiometric excess for both assigned samples.",
+        "actionId": "unknown-c-add-carbonate",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-add-carbonate-evidence",
+            "type": "actionEvidence",
+            "label": "Add carbonate reagent to Sample C was completed.",
+            "actionId": "unknown-c-add-carbonate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add carbonate reagent to Sample C complete.",
+          "retry": "Correct the named prerequisite and retry add carbonate reagent to sample c."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-precipitate-node",
+        "type": "action",
+        "title": "Form simulated Sample C CaCO3 state",
+        "description": "Represent complete CaCO3 precipitation for Sample C; the configured state mass supports the simulation but is not notebook measurement evidence.",
+        "actionId": "unknown-c-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Form simulated Sample C CaCO3 state was completed.",
+            "actionId": "unknown-c-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Form simulated Sample C CaCO3 state complete.",
+          "retry": "Correct the named prerequisite and retry form simulated sample c caco3 state."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-record-precipitation-node",
+        "type": "observation",
+        "title": "Record Sample C precipitation observations",
+        "description": "Record direct observations for Sample C.",
+        "actionId": "unknown-c-record-precipitation",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-record-precipitation-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample C precipitation observations was completed.",
+            "actionId": "unknown-c-record-precipitation"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample C precipitation observations complete.",
+          "retry": "Correct the named prerequisite and retry record sample c precipitation observations."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-place-buchner-node",
+        "type": "action",
+        "title": "Place Sample C Buchner funnel",
+        "description": "Place the labeled filtration setup for Sample C.",
+        "actionId": "unknown-c-place-buchner",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-place-buchner-evidence",
+            "type": "actionEvidence",
+            "label": "Place Sample C Buchner funnel was completed.",
+            "actionId": "unknown-c-place-buchner"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place Sample C Buchner funnel complete.",
+          "retry": "Correct the named prerequisite and retry place sample c buchner funnel."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-seat-paper-node",
+        "type": "action",
+        "title": "Seat Sample C filter paper",
+        "description": "Seat the preweighed Sample C paper before wetting.",
+        "actionId": "unknown-c-seat-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-seat-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Seat Sample C filter paper was completed.",
+            "actionId": "unknown-c-seat-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Seat Sample C filter paper complete.",
+          "retry": "Correct the named prerequisite and retry seat sample c filter paper."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-attach-flask-node",
+        "type": "action",
+        "title": "Attach Sample C receiver",
+        "description": "Align the Sample C side-arm receiver before filtration.",
+        "actionId": "unknown-c-attach-flask",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-attach-flask-evidence",
+            "type": "actionEvidence",
+            "label": "Attach Sample C receiver was completed.",
+            "actionId": "unknown-c-attach-flask"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Attach Sample C receiver complete.",
+          "retry": "Correct the named prerequisite and retry attach sample c receiver."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-place-vacuum-node",
+        "type": "action",
+        "title": "Place Sample C vacuum source",
+        "description": "Place the teacher-approved vacuum source for Sample C.",
+        "actionId": "unknown-c-place-vacuum",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-place-vacuum-evidence",
+            "type": "actionEvidence",
+            "label": "Place Sample C vacuum source was completed.",
+            "actionId": "unknown-c-place-vacuum"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place Sample C vacuum source complete.",
+          "retry": "Correct the named prerequisite and retry place sample c vacuum source."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-wet-paper-node",
+        "type": "action",
+        "title": "Wet Sample C filter paper",
+        "description": "Wet and seal the seated Sample C paper.",
+        "actionId": "unknown-c-wet-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-wet-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Wet Sample C filter paper was completed.",
+            "actionId": "unknown-c-wet-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wet Sample C filter paper complete.",
+          "retry": "Correct the named prerequisite and retry wet sample c filter paper."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-filter-node",
+        "type": "checkpoint",
+        "title": "Filter Sample C suspension",
+        "description": "Filter Sample C slowly without overflowing the paper or funnel.",
+        "actionId": "unknown-c-filter",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-filter-evidence",
+            "type": "actionEvidence",
+            "label": "Filter Sample C suspension was completed.",
+            "actionId": "unknown-c-filter"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Filter Sample C suspension complete.",
+          "retry": "Correct the named prerequisite and retry filter sample c suspension."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-rinse-beaker-node",
+        "type": "action",
+        "title": "Rinse Sample C beaker",
+        "description": "Use a small deionized-water rinse to recover Sample C precipitate from the beaker.",
+        "actionId": "unknown-c-rinse-beaker",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-rinse-beaker-evidence",
+            "type": "actionEvidence",
+            "label": "Rinse Sample C beaker was completed.",
+            "actionId": "unknown-c-rinse-beaker"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Rinse Sample C beaker complete.",
+          "retry": "Correct the named prerequisite and retry rinse sample c beaker."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-wash-precipitate-node",
+        "type": "action",
+        "title": "Wash Sample C precipitate",
+        "description": "Wash the retained Sample C CaCO3 with a little more deionized water.",
+        "actionId": "unknown-c-wash-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-wash-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Wash Sample C precipitate was completed.",
+            "actionId": "unknown-c-wash-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wash Sample C precipitate complete.",
+          "retry": "Correct the named prerequisite and retry wash sample c precipitate."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-label-watch-node",
+        "type": "observation",
+        "title": "Label Sample C watch glass",
+        "description": "Label the clean, dry watch glass with Sample C.",
+        "actionId": "unknown-c-label-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-label-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Label Sample C watch glass was completed.",
+            "actionId": "unknown-c-label-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Label Sample C watch glass complete.",
+          "retry": "Correct the named prerequisite and retry label sample c watch glass."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-weigh-watch-node",
+        "type": "action",
+        "title": "Weigh Sample C watch-glass tare",
+        "description": "Read the clean, dry Sample C watch-glass tare.",
+        "actionId": "unknown-c-weigh-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-weigh-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh Sample C watch-glass tare was completed.",
+            "actionId": "unknown-c-weigh-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh Sample C watch-glass tare complete.",
+          "retry": "Correct the named prerequisite and retry weigh sample c watch-glass tare."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-record-watch-node",
+        "type": "observation",
+        "title": "Record Sample C watch-glass tare",
+        "description": "Record the Sample C watch-glass tare.",
+        "actionId": "unknown-c-record-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-record-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample C watch-glass tare was completed.",
+            "actionId": "unknown-c-record-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample C watch-glass tare complete.",
+          "retry": "Correct the named prerequisite and retry record sample c watch-glass tare."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-transfer-paper-node",
+        "type": "action",
+        "title": "Transfer Sample C paper to watch glass",
+        "description": "Transfer the Sample C paper and precipitate without losing solid.",
+        "actionId": "unknown-c-transfer-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-transfer-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Transfer Sample C paper to watch glass was completed.",
+            "actionId": "unknown-c-transfer-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer Sample C paper to watch glass complete.",
+          "retry": "Correct the named prerequisite and retry transfer sample c paper to watch glass."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-first-dry-node",
+        "type": "checkpoint",
+        "title": "First dry Sample C for 12 minutes",
+        "description": "Dry the Sample C assembly at 115 C for the first 12-minute stage.",
+        "actionId": "unknown-c-first-dry",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-first-dry-evidence",
+            "type": "actionEvidence",
+            "label": "First dry Sample C for 12 minutes was completed.",
+            "actionId": "unknown-c-first-dry"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "First dry Sample C for 12 minutes complete.",
+          "retry": "Correct the named prerequisite and retry first dry sample c for 12 minutes."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-break-solid-node",
+        "type": "observation",
+        "title": "Break Sample C precipitate",
+        "description": "Remove the warm Sample C assembly safely and break the solid into small pieces.",
+        "actionId": "unknown-c-break-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-break-solid-evidence",
+            "type": "actionEvidence",
+            "label": "Break Sample C precipitate was completed.",
+            "actionId": "unknown-c-break-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Break Sample C precipitate complete.",
+          "retry": "Correct the named prerequisite and retry break sample c precipitate."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-second-dry-node",
+        "type": "checkpoint",
+        "title": "Second dry Sample C for 5 minutes",
+        "description": "Return Sample C to the 115 C oven for the separate five-minute stage.",
+        "actionId": "unknown-c-second-dry",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-second-dry-evidence",
+            "type": "actionEvidence",
+            "label": "Second dry Sample C for 5 minutes was completed.",
+            "actionId": "unknown-c-second-dry"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Second dry Sample C for 5 minutes complete.",
+          "retry": "Correct the named prerequisite and retry second dry sample c for 5 minutes."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-cool-node",
+        "type": "action",
+        "title": "Cool Sample C assembly",
+        "description": "Set the Sample C assembly aside until it is cool enough to weigh.",
+        "actionId": "unknown-c-cool",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-cool-evidence",
+            "type": "actionEvidence",
+            "label": "Cool Sample C assembly was completed.",
+            "actionId": "unknown-c-cool"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Cool Sample C assembly complete.",
+          "retry": "Correct the named prerequisite and retry cool sample c assembly."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-weigh-combined-node",
+        "type": "action",
+        "title": "Weigh cooled Sample C assembly",
+        "description": "Read the cooled combined mass for Sample C; this includes watch glass, paper, and precipitate.",
+        "actionId": "unknown-c-weigh-combined",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-weigh-combined-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh cooled Sample C assembly was completed.",
+            "actionId": "unknown-c-weigh-combined"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh cooled Sample C assembly complete.",
+          "retry": "Correct the named prerequisite and retry weigh cooled sample c assembly."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-record-combined-node",
+        "type": "observation",
+        "title": "Record Sample C combined mass",
+        "description": "Record the Sample C combined mass with its components identified.",
+        "actionId": "unknown-c-record-combined",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-record-combined-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample C combined mass was completed.",
+            "actionId": "unknown-c-record-combined"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample C combined mass complete.",
+          "retry": "Correct the named prerequisite and retry record sample c combined mass."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-calculate-precipitate-node",
+        "type": "calculation",
+        "title": "Calculate Sample C precipitate mass",
+        "description": "Subtract the Sample C watch-glass and filter-paper tares from its cooled combined mass.",
+        "actionId": "unknown-c-calculate-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-calculate-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Calculate Sample C precipitate mass was completed.",
+            "actionId": "unknown-c-calculate-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate Sample C precipitate mass complete.",
+          "retry": "Correct the named prerequisite and retry calculate sample c precipitate mass."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-calculate-hardness-node",
+        "type": "calculation",
+        "title": "Calculate source-water hardness for Sample C",
+        "description": "Calculate mg/L as CaCO3 for the original Sample C source by dividing the concentrated-aliquot result by the 200x preconcentration factor.",
+        "actionId": "unknown-c-calculate-hardness",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-calculate-hardness-evidence",
+            "type": "actionEvidence",
+            "label": "Calculate source-water hardness for Sample C was completed.",
+            "actionId": "unknown-c-calculate-hardness"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate source-water hardness for Sample C complete.",
+          "retry": "Correct the named prerequisite and retry calculate source-water hardness for sample c."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-c-record-uncertainty-node",
+        "type": "observation",
+        "title": "Record Sample C uncertainty",
+        "description": "Evaluate procedural uncertainty for Sample C.",
+        "actionId": "unknown-c-record-uncertainty",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-c-record-uncertainty-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample C uncertainty was completed.",
+            "actionId": "unknown-c-record-uncertainty"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample C uncertainty complete.",
+          "retry": "Correct the named prerequisite and retry record sample c uncertainty."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-weigh-paper-node",
+        "type": "action",
+        "title": "Weigh Sample D filter paper",
+        "description": "Record a fresh dry filter-paper tare for Sample D.",
+        "actionId": "unknown-d-weigh-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-weigh-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh Sample D filter paper was completed.",
+            "actionId": "unknown-d-weigh-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh Sample D filter paper complete.",
+          "retry": "Correct the named prerequisite and retry weigh sample d filter paper."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-record-paper-node",
+        "type": "observation",
+        "title": "Record Sample D filter-paper tare",
+        "description": "Record the Sample D filter-paper tare independently.",
+        "actionId": "unknown-d-record-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-record-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample D filter-paper tare was completed.",
+            "actionId": "unknown-d-record-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample D filter-paper tare complete.",
+          "retry": "Correct the named prerequisite and retry record sample d filter-paper tare."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-measure-aliquot-node",
+        "type": "action",
+        "title": "Measure 20 mL Sample D aliquot",
+        "description": "Measure a fresh 20 mL aliquot of preconcentrated Sample D.",
+        "actionId": "unknown-d-measure-aliquot",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-measure-aliquot-evidence",
+            "type": "actionEvidence",
+            "label": "Measure 20 mL Sample D aliquot was completed.",
+            "actionId": "unknown-d-measure-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Measure 20 mL Sample D aliquot complete.",
+          "retry": "Correct the named prerequisite and retry measure 20 ml sample d aliquot."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-record-aliquot-node",
+        "type": "observation",
+        "title": "Record Sample D aliquot",
+        "description": "Record the measured Sample D aliquot volume.",
+        "actionId": "unknown-d-record-aliquot",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-record-aliquot-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample D aliquot was completed.",
+            "actionId": "unknown-d-record-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample D aliquot complete.",
+          "retry": "Correct the named prerequisite and retry record sample d aliquot."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-transfer-aliquot-node",
+        "type": "action",
+        "title": "Transfer Sample D aliquot",
+        "description": "Transfer the measured Sample D aliquot into its labeled beaker.",
+        "actionId": "unknown-d-transfer-aliquot",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-transfer-aliquot-evidence",
+            "type": "actionEvidence",
+            "label": "Transfer Sample D aliquot was completed.",
+            "actionId": "unknown-d-transfer-aliquot"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer Sample D aliquot complete.",
+          "retry": "Correct the named prerequisite and retry transfer sample d aliquot."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-add-carbonate-node",
+        "type": "action",
+        "title": "Add carbonate reagent to Sample D",
+        "description": "Add the teacher-approved 12.0 mL portion of 0.50 M sodium carbonate to Sample D while stirring. This configured amount supplies a slight stoichiometric excess for both assigned samples.",
+        "actionId": "unknown-d-add-carbonate",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-add-carbonate-evidence",
+            "type": "actionEvidence",
+            "label": "Add carbonate reagent to Sample D was completed.",
+            "actionId": "unknown-d-add-carbonate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Add carbonate reagent to Sample D complete.",
+          "retry": "Correct the named prerequisite and retry add carbonate reagent to sample d."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-precipitate-node",
+        "type": "action",
+        "title": "Form simulated Sample D CaCO3 state",
+        "description": "Represent complete CaCO3 precipitation for Sample D; the configured state mass supports the simulation but is not notebook measurement evidence.",
+        "actionId": "unknown-d-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Form simulated Sample D CaCO3 state was completed.",
+            "actionId": "unknown-d-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Form simulated Sample D CaCO3 state complete.",
+          "retry": "Correct the named prerequisite and retry form simulated sample d caco3 state."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-record-precipitation-node",
+        "type": "observation",
+        "title": "Record Sample D precipitation observations",
+        "description": "Record direct observations for Sample D.",
+        "actionId": "unknown-d-record-precipitation",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-record-precipitation-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample D precipitation observations was completed.",
+            "actionId": "unknown-d-record-precipitation"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample D precipitation observations complete.",
+          "retry": "Correct the named prerequisite and retry record sample d precipitation observations."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-place-buchner-node",
+        "type": "action",
+        "title": "Place Sample D Buchner funnel",
+        "description": "Place the labeled filtration setup for Sample D.",
+        "actionId": "unknown-d-place-buchner",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-place-buchner-evidence",
+            "type": "actionEvidence",
+            "label": "Place Sample D Buchner funnel was completed.",
+            "actionId": "unknown-d-place-buchner"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place Sample D Buchner funnel complete.",
+          "retry": "Correct the named prerequisite and retry place sample d buchner funnel."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-seat-paper-node",
+        "type": "action",
+        "title": "Seat Sample D filter paper",
+        "description": "Seat the preweighed Sample D paper before wetting.",
+        "actionId": "unknown-d-seat-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-seat-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Seat Sample D filter paper was completed.",
+            "actionId": "unknown-d-seat-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Seat Sample D filter paper complete.",
+          "retry": "Correct the named prerequisite and retry seat sample d filter paper."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-attach-flask-node",
+        "type": "action",
+        "title": "Attach Sample D receiver",
+        "description": "Align the Sample D side-arm receiver before filtration.",
+        "actionId": "unknown-d-attach-flask",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-attach-flask-evidence",
+            "type": "actionEvidence",
+            "label": "Attach Sample D receiver was completed.",
+            "actionId": "unknown-d-attach-flask"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Attach Sample D receiver complete.",
+          "retry": "Correct the named prerequisite and retry attach sample d receiver."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-place-vacuum-node",
+        "type": "action",
+        "title": "Place Sample D vacuum source",
+        "description": "Place the teacher-approved vacuum source for Sample D.",
+        "actionId": "unknown-d-place-vacuum",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-place-vacuum-evidence",
+            "type": "actionEvidence",
+            "label": "Place Sample D vacuum source was completed.",
+            "actionId": "unknown-d-place-vacuum"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Place Sample D vacuum source complete.",
+          "retry": "Correct the named prerequisite and retry place sample d vacuum source."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-wet-paper-node",
+        "type": "action",
+        "title": "Wet Sample D filter paper",
+        "description": "Wet and seal the seated Sample D paper.",
+        "actionId": "unknown-d-wet-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-wet-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Wet Sample D filter paper was completed.",
+            "actionId": "unknown-d-wet-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wet Sample D filter paper complete.",
+          "retry": "Correct the named prerequisite and retry wet sample d filter paper."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-filter-node",
+        "type": "checkpoint",
+        "title": "Filter Sample D suspension",
+        "description": "Filter Sample D slowly without overflowing the paper or funnel.",
+        "actionId": "unknown-d-filter",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-filter-evidence",
+            "type": "actionEvidence",
+            "label": "Filter Sample D suspension was completed.",
+            "actionId": "unknown-d-filter"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Filter Sample D suspension complete.",
+          "retry": "Correct the named prerequisite and retry filter sample d suspension."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-rinse-beaker-node",
+        "type": "action",
+        "title": "Rinse Sample D beaker",
+        "description": "Use a small deionized-water rinse to recover Sample D precipitate from the beaker.",
+        "actionId": "unknown-d-rinse-beaker",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-rinse-beaker-evidence",
+            "type": "actionEvidence",
+            "label": "Rinse Sample D beaker was completed.",
+            "actionId": "unknown-d-rinse-beaker"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Rinse Sample D beaker complete.",
+          "retry": "Correct the named prerequisite and retry rinse sample d beaker."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-wash-precipitate-node",
+        "type": "action",
+        "title": "Wash Sample D precipitate",
+        "description": "Wash the retained Sample D CaCO3 with a little more deionized water.",
+        "actionId": "unknown-d-wash-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-wash-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Wash Sample D precipitate was completed.",
+            "actionId": "unknown-d-wash-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Wash Sample D precipitate complete.",
+          "retry": "Correct the named prerequisite and retry wash sample d precipitate."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-label-watch-node",
+        "type": "observation",
+        "title": "Label Sample D watch glass",
+        "description": "Label the clean, dry watch glass with Sample D.",
+        "actionId": "unknown-d-label-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-label-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Label Sample D watch glass was completed.",
+            "actionId": "unknown-d-label-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Label Sample D watch glass complete.",
+          "retry": "Correct the named prerequisite and retry label sample d watch glass."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-weigh-watch-node",
+        "type": "action",
+        "title": "Weigh Sample D watch-glass tare",
+        "description": "Read the clean, dry Sample D watch-glass tare.",
+        "actionId": "unknown-d-weigh-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-weigh-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh Sample D watch-glass tare was completed.",
+            "actionId": "unknown-d-weigh-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh Sample D watch-glass tare complete.",
+          "retry": "Correct the named prerequisite and retry weigh sample d watch-glass tare."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-record-watch-node",
+        "type": "observation",
+        "title": "Record Sample D watch-glass tare",
+        "description": "Record the Sample D watch-glass tare.",
+        "actionId": "unknown-d-record-watch",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-record-watch-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample D watch-glass tare was completed.",
+            "actionId": "unknown-d-record-watch"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample D watch-glass tare complete.",
+          "retry": "Correct the named prerequisite and retry record sample d watch-glass tare."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-transfer-paper-node",
+        "type": "action",
+        "title": "Transfer Sample D paper to watch glass",
+        "description": "Transfer the Sample D paper and precipitate without losing solid.",
+        "actionId": "unknown-d-transfer-paper",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-transfer-paper-evidence",
+            "type": "actionEvidence",
+            "label": "Transfer Sample D paper to watch glass was completed.",
+            "actionId": "unknown-d-transfer-paper"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Transfer Sample D paper to watch glass complete.",
+          "retry": "Correct the named prerequisite and retry transfer sample d paper to watch glass."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-first-dry-node",
+        "type": "checkpoint",
+        "title": "First dry Sample D for 12 minutes",
+        "description": "Dry the Sample D assembly at 115 C for the first 12-minute stage.",
+        "actionId": "unknown-d-first-dry",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-first-dry-evidence",
+            "type": "actionEvidence",
+            "label": "First dry Sample D for 12 minutes was completed.",
+            "actionId": "unknown-d-first-dry"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "First dry Sample D for 12 minutes complete.",
+          "retry": "Correct the named prerequisite and retry first dry sample d for 12 minutes."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-break-solid-node",
+        "type": "observation",
+        "title": "Break Sample D precipitate",
+        "description": "Remove the warm Sample D assembly safely and break the solid into small pieces.",
+        "actionId": "unknown-d-break-solid",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-break-solid-evidence",
+            "type": "actionEvidence",
+            "label": "Break Sample D precipitate was completed.",
+            "actionId": "unknown-d-break-solid"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Break Sample D precipitate complete.",
+          "retry": "Correct the named prerequisite and retry break sample d precipitate."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-second-dry-node",
+        "type": "checkpoint",
+        "title": "Second dry Sample D for 5 minutes",
+        "description": "Return Sample D to the 115 C oven for the separate five-minute stage.",
+        "actionId": "unknown-d-second-dry",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-second-dry-evidence",
+            "type": "actionEvidence",
+            "label": "Second dry Sample D for 5 minutes was completed.",
+            "actionId": "unknown-d-second-dry"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Second dry Sample D for 5 minutes complete.",
+          "retry": "Correct the named prerequisite and retry second dry sample d for 5 minutes."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-cool-node",
+        "type": "action",
+        "title": "Cool Sample D assembly",
+        "description": "Set the Sample D assembly aside until it is cool enough to weigh.",
+        "actionId": "unknown-d-cool",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-cool-evidence",
+            "type": "actionEvidence",
+            "label": "Cool Sample D assembly was completed.",
+            "actionId": "unknown-d-cool"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Cool Sample D assembly complete.",
+          "retry": "Correct the named prerequisite and retry cool sample d assembly."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-weigh-combined-node",
+        "type": "action",
+        "title": "Weigh cooled Sample D assembly",
+        "description": "Read the cooled combined mass for Sample D; this includes watch glass, paper, and precipitate.",
+        "actionId": "unknown-d-weigh-combined",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-weigh-combined-evidence",
+            "type": "actionEvidence",
+            "label": "Weigh cooled Sample D assembly was completed.",
+            "actionId": "unknown-d-weigh-combined"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Weigh cooled Sample D assembly complete.",
+          "retry": "Correct the named prerequisite and retry weigh cooled sample d assembly."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-record-combined-node",
+        "type": "observation",
+        "title": "Record Sample D combined mass",
+        "description": "Record the Sample D combined mass with its components identified.",
+        "actionId": "unknown-d-record-combined",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-record-combined-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample D combined mass was completed.",
+            "actionId": "unknown-d-record-combined"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample D combined mass complete.",
+          "retry": "Correct the named prerequisite and retry record sample d combined mass."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-calculate-precipitate-node",
+        "type": "calculation",
+        "title": "Calculate Sample D precipitate mass",
+        "description": "Subtract the Sample D watch-glass and filter-paper tares from its cooled combined mass.",
+        "actionId": "unknown-d-calculate-precipitate",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-calculate-precipitate-evidence",
+            "type": "actionEvidence",
+            "label": "Calculate Sample D precipitate mass was completed.",
+            "actionId": "unknown-d-calculate-precipitate"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate Sample D precipitate mass complete.",
+          "retry": "Correct the named prerequisite and retry calculate sample d precipitate mass."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-calculate-hardness-node",
+        "type": "calculation",
+        "title": "Calculate source-water hardness for Sample D",
+        "description": "Calculate mg/L as CaCO3 for the original Sample D source by dividing the concentrated-aliquot result by the 200x preconcentration factor.",
+        "actionId": "unknown-d-calculate-hardness",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-calculate-hardness-evidence",
+            "type": "actionEvidence",
+            "label": "Calculate source-water hardness for Sample D was completed.",
+            "actionId": "unknown-d-calculate-hardness"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Calculate source-water hardness for Sample D complete.",
+          "retry": "Correct the named prerequisite and retry calculate source-water hardness for sample d."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--unknown-d-record-uncertainty-node",
+        "type": "observation",
+        "title": "Record Sample D uncertainty",
+        "description": "Evaluate procedural uncertainty for Sample D.",
+        "actionId": "unknown-d-record-uncertainty",
+        "config": {},
+        "validation": [
+          {
+            "id": "unknown-d-record-uncertainty-evidence",
+            "type": "actionEvidence",
+            "label": "Record Sample D uncertainty was completed.",
+            "actionId": "unknown-d-record-uncertainty"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Record Sample D uncertainty complete.",
+          "retry": "Correct the named prerequisite and retry record sample d uncertainty."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--post-two-local-results-node",
+        "type": "observation",
+        "title": "Post both local hardness results",
+        "description": "Share both locally calculated results, not a single fixed sample.",
+        "actionId": "post-two-local-results",
+        "config": {},
+        "validation": [
+          {
+            "id": "post-two-local-results-evidence",
+            "type": "actionEvidence",
+            "label": "Post both local hardness results was completed.",
+            "actionId": "post-two-local-results"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Post both local hardness results complete.",
+          "retry": "Correct the named prerequisite and retry post both local hardness results."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--load-configured-peer-results-node",
+        "type": "observation",
+        "title": "Load teacher-configured peer results",
+        "description": "Add clearly labeled simulated peer-group results so the six-sample class ranking can be practiced.",
+        "actionId": "load-configured-peer-results",
+        "config": {},
+        "validation": [
+          {
+            "id": "load-configured-peer-results-evidence",
+            "type": "actionEvidence",
+            "label": "Load teacher-configured peer results was completed.",
+            "actionId": "load-configured-peer-results"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Load teacher-configured peer results complete.",
+          "retry": "Correct the named prerequisite and retry load teacher-configured peer results."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--rank-six-samples-node",
+        "type": "observation",
+        "title": "Rank all six samples",
+        "description": "Rank the complete six-sample class table by increasing mg/L as CaCO3.",
+        "actionId": "rank-six-samples",
+        "config": {},
+        "validation": [
+          {
+            "id": "rank-six-samples-evidence",
+            "type": "actionEvidence",
+            "label": "Rank all six samples was completed.",
+            "actionId": "rank-six-samples"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Rank all six samples complete.",
+          "retry": "Correct the named prerequisite and retry rank all six samples."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--defend-inquiry-technique-node",
+        "type": "observation",
+        "title": "Defend technique and calculations",
+        "description": "Write an evidence-based defense of the procedure and both hardness calculations.",
+        "actionId": "defend-inquiry-technique",
+        "config": {},
+        "validation": [
+          {
+            "id": "defend-inquiry-technique-evidence",
+            "type": "actionEvidence",
+            "label": "Defend technique and calculations was completed.",
+            "actionId": "defend-inquiry-technique"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Defend technique and calculations complete.",
+          "retry": "Correct the named prerequisite and retry defend technique and calculations."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--analyze-remaining-ions-node",
+        "type": "observation",
+        "title": "Analyze remaining ions and terminology",
+        "description": "Explain remaining ions and explicitly distinguish precipitation softening from ion exchange.",
+        "actionId": "analyze-remaining-ions",
+        "config": {},
+        "validation": [
+          {
+            "id": "analyze-remaining-ions-evidence",
+            "type": "actionEvidence",
+            "label": "Analyze remaining ions and terminology was completed.",
+            "actionId": "analyze-remaining-ions"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Analyze remaining ions and terminology complete.",
+          "retry": "Correct the named prerequisite and retry analyze remaining ions and terminology."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--draft-client-letter-node",
+        "type": "observation",
+        "title": "Draft the client letter",
+        "description": "Prepare the final evidence-based client recommendation.",
+        "actionId": "draft-client-letter",
+        "config": {},
+        "validation": [
+          {
+            "id": "draft-client-letter-evidence",
+            "type": "actionEvidence",
+            "label": "Draft the client letter was completed.",
+            "actionId": "draft-client-letter"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Draft the client letter complete.",
+          "retry": "Correct the named prerequisite and retry draft the client letter."
+        }
+      },
+      {
+        "id": "hard-water-two-sample-inquiry--complete-unknown-cleanup-node",
+        "type": "observation",
+        "title": "Complete inquiry cleanup",
+        "description": "Complete the teacher-configured liquid, solid, and marker-removal cleanup paths.",
+        "actionId": "complete-unknown-cleanup",
+        "config": {},
+        "validation": [
+          {
+            "id": "complete-unknown-cleanup-evidence",
+            "type": "actionEvidence",
+            "label": "Complete inquiry cleanup was completed.",
+            "actionId": "complete-unknown-cleanup"
+          }
+        ],
+        "hints": [],
+        "feedback": {
+          "success": "Complete inquiry cleanup complete.",
+          "retry": "Correct the named prerequisite and retry complete inquiry cleanup."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "hard-water-practice-preparation--review-practice-safety-node",
+        "to": "hard-water-practice-preparation--create-practice-data-table-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--create-practice-data-table-node",
+        "to": "hard-water-practice-preparation--add-sodium-carbonate-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--add-sodium-carbonate-solid-node",
+        "to": "hard-water-practice-preparation--weigh-sodium-carbonate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--weigh-sodium-carbonate-node",
+        "to": "hard-water-practice-preparation--record-sodium-carbonate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--record-sodium-carbonate-node",
+        "to": "hard-water-practice-preparation--add-calcium-chloride-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--add-calcium-chloride-solid-node",
+        "to": "hard-water-practice-preparation--weigh-calcium-chloride-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--weigh-calcium-chloride-node",
+        "to": "hard-water-practice-preparation--record-calcium-chloride-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--record-calcium-chloride-node",
+        "to": "hard-water-practice-preparation--measure-water-for-sodium-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--measure-water-for-sodium-node",
+        "to": "hard-water-practice-preparation--transfer-water-to-sodium-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--transfer-water-to-sodium-node",
+        "to": "hard-water-practice-preparation--dissolve-sodium-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--dissolve-sodium-solid-node",
+        "to": "hard-water-practice-preparation--observe-sodium-solution-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--observe-sodium-solution-node",
+        "to": "hard-water-practice-preparation--measure-water-for-calcium-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--measure-water-for-calcium-node",
+        "to": "hard-water-practice-preparation--transfer-water-to-calcium-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--transfer-water-to-calcium-node",
+        "to": "hard-water-practice-preparation--dissolve-calcium-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--dissolve-calcium-solid-node",
+        "to": "hard-water-practice-preparation--observe-calcium-solution-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--observe-calcium-solution-node",
+        "to": "hard-water-practice-preparation--add-carbonate-portion-1-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--add-carbonate-portion-1-node",
+        "to": "hard-water-practice-preparation--observe-carbonate-portion-1-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--observe-carbonate-portion-1-node",
+        "to": "hard-water-practice-preparation--add-carbonate-portion-2-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--add-carbonate-portion-2-node",
+        "to": "hard-water-practice-preparation--observe-carbonate-portion-2-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--observe-carbonate-portion-2-node",
+        "to": "hard-water-practice-preparation--add-carbonate-portion-3-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--add-carbonate-portion-3-node",
+        "to": "hard-water-practice-preparation--observe-carbonate-portion-3-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--observe-carbonate-portion-3-node",
+        "to": "hard-water-practice-preparation--add-carbonate-portion-4-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--add-carbonate-portion-4-node",
+        "to": "hard-water-practice-preparation--observe-carbonate-portion-4-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--observe-carbonate-portion-4-node",
+        "to": "hard-water-practice-preparation--establish-practice-precipitate-state-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--establish-practice-precipitate-state-node",
+        "to": "hard-water-practice-preparation--age-practice-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--weigh-practice-filter-paper-node",
+        "to": "gravimetric-vacuum-filtration--record-practice-filter-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--record-practice-filter-paper-node",
+        "to": "gravimetric-vacuum-filtration--select-filtration-configuration-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--select-filtration-configuration-node",
+        "to": "gravimetric-vacuum-filtration--place-practice-buchner-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--place-practice-buchner-node",
+        "to": "gravimetric-vacuum-filtration--seat-practice-filter-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--seat-practice-filter-paper-node",
+        "to": "gravimetric-vacuum-filtration--attach-practice-filter-flask-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--attach-practice-filter-flask-node",
+        "to": "gravimetric-vacuum-filtration--place-practice-vacuum-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--place-practice-vacuum-node",
+        "to": "gravimetric-vacuum-filtration--confirm-practice-vacuum-connection-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--confirm-practice-vacuum-connection-node",
+        "to": "gravimetric-vacuum-filtration--wet-practice-filter-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--wet-practice-filter-paper-node",
+        "to": "gravimetric-vacuum-filtration--filter-practice-mixture-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--filter-practice-mixture-node",
+        "to": "gravimetric-vacuum-filtration--rinse-practice-beaker-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--rinse-practice-beaker-node",
+        "to": "gravimetric-vacuum-filtration--wash-practice-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--wash-practice-precipitate-node",
+        "to": "gravimetric-vacuum-filtration--record-practice-filtration-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--label-practice-watch-glass-node",
+        "to": "two-stage-precipitate-drying--weigh-practice-watch-glass-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--weigh-practice-watch-glass-node",
+        "to": "two-stage-precipitate-drying--record-practice-watch-glass-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--record-practice-watch-glass-node",
+        "to": "two-stage-precipitate-drying--transfer-practice-paper-to-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--transfer-practice-paper-to-watch-node",
+        "to": "two-stage-precipitate-drying--dispose-practice-filtrate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--dispose-practice-filtrate-node",
+        "to": "two-stage-precipitate-drying--set-practice-oven-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--set-practice-oven-node",
+        "to": "two-stage-precipitate-drying--first-practice-drying-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--first-practice-drying-node",
+        "to": "two-stage-precipitate-drying--remove-warm-practice-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--remove-warm-practice-watch-node",
+        "to": "two-stage-precipitate-drying--break-practice-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--break-practice-precipitate-node",
+        "to": "two-stage-precipitate-drying--second-practice-drying-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--second-practice-drying-node",
+        "to": "two-stage-precipitate-drying--cool-practice-assembly-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--cool-practice-assembly-node",
+        "to": "two-stage-precipitate-drying--weigh-practice-combined-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--weigh-practice-combined-node",
+        "to": "two-stage-precipitate-drying--record-practice-combined-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--record-practice-combined-node",
+        "to": "two-stage-precipitate-drying--calculate-practice-theoretical-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--calculate-practice-theoretical-node",
+        "to": "two-stage-precipitate-drying--calculate-practice-collected-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--calculate-practice-collected-node",
+        "to": "two-stage-precipitate-drying--compare-practice-yield-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--compare-practice-yield-node",
+        "to": "two-stage-precipitate-drying--evaluate-extra-carbonate-branch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--evaluate-extra-carbonate-branch-node",
+        "to": "two-stage-precipitate-drying--explain-wet-unwashed-bias-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--explain-wet-unwashed-bias-node",
+        "to": "two-stage-precipitate-drying--complete-practice-cleanup-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inquiry-plan-approval--review-ksp-and-precipitation-model-node",
+        "to": "inquiry-plan-approval--select-two-assigned-samples-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inquiry-plan-approval--select-two-assigned-samples-node",
+        "to": "inquiry-plan-approval--define-carbonate-excess-plan-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inquiry-plan-approval--define-carbonate-excess-plan-node",
+        "to": "inquiry-plan-approval--select-inquiry-apparatus-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inquiry-plan-approval--select-inquiry-apparatus-node",
+        "to": "inquiry-plan-approval--define-inquiry-evidence-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inquiry-plan-approval--define-inquiry-evidence-node",
+        "to": "inquiry-plan-approval--define-inquiry-quality-choices-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inquiry-plan-approval--define-inquiry-quality-choices-node",
+        "to": "inquiry-plan-approval--submit-inquiry-procedure-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inquiry-plan-approval--submit-inquiry-procedure-node",
+        "to": "inquiry-plan-approval--approve-inquiry-procedure-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--review-approved-execution-plan-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-weigh-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-weigh-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-record-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-record-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-measure-aliquot-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-measure-aliquot-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-record-aliquot-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-record-aliquot-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-transfer-aliquot-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-transfer-aliquot-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-add-carbonate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-add-carbonate-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-precipitate-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-record-precipitation-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-record-precipitation-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-place-buchner-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-place-buchner-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-seat-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-seat-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-attach-flask-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-attach-flask-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-place-vacuum-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-place-vacuum-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-wet-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-wet-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-filter-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-filter-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-rinse-beaker-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-rinse-beaker-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-wash-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-wash-precipitate-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-label-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-label-watch-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-weigh-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-weigh-watch-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-record-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-record-watch-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-transfer-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-transfer-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-first-dry-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-first-dry-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-break-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-break-solid-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-second-dry-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-second-dry-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-cool-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-cool-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-weigh-combined-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-weigh-combined-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-record-combined-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-record-combined-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-calculate-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-calculate-precipitate-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-calculate-hardness-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-calculate-hardness-node",
+        "to": "hard-water-two-sample-inquiry--unknown-c-record-uncertainty-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-c-record-uncertainty-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-weigh-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-weigh-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-record-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-record-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-measure-aliquot-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-measure-aliquot-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-record-aliquot-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-record-aliquot-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-transfer-aliquot-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-transfer-aliquot-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-add-carbonate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-add-carbonate-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-precipitate-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-record-precipitation-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-record-precipitation-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-place-buchner-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-place-buchner-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-seat-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-seat-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-attach-flask-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-attach-flask-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-place-vacuum-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-place-vacuum-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-wet-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-wet-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-filter-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-filter-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-rinse-beaker-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-rinse-beaker-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-wash-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-wash-precipitate-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-label-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-label-watch-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-weigh-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-weigh-watch-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-record-watch-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-record-watch-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-transfer-paper-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-transfer-paper-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-first-dry-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-first-dry-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-break-solid-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-break-solid-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-second-dry-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-second-dry-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-cool-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-cool-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-weigh-combined-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-weigh-combined-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-record-combined-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-record-combined-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-calculate-precipitate-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-calculate-precipitate-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-calculate-hardness-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-calculate-hardness-node",
+        "to": "hard-water-two-sample-inquiry--unknown-d-record-uncertainty-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--unknown-d-record-uncertainty-node",
+        "to": "hard-water-two-sample-inquiry--post-two-local-results-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--post-two-local-results-node",
+        "to": "hard-water-two-sample-inquiry--load-configured-peer-results-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--load-configured-peer-results-node",
+        "to": "hard-water-two-sample-inquiry--rank-six-samples-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--rank-six-samples-node",
+        "to": "hard-water-two-sample-inquiry--defend-inquiry-technique-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--defend-inquiry-technique-node",
+        "to": "hard-water-two-sample-inquiry--analyze-remaining-ions-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--analyze-remaining-ions-node",
+        "to": "hard-water-two-sample-inquiry--draft-client-letter-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-two-sample-inquiry--draft-client-letter-node",
+        "to": "hard-water-two-sample-inquiry--complete-unknown-cleanup-node",
+        "label": "Next",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "hard-water-practice-preparation--age-practice-precipitate-node",
+        "to": "gravimetric-vacuum-filtration--weigh-practice-filter-paper-node",
+        "label": "Continue investigation",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "gravimetric-vacuum-filtration--record-practice-filtration-node",
+        "to": "two-stage-precipitate-drying--label-practice-watch-glass-node",
+        "label": "Continue investigation",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "two-stage-precipitate-drying--complete-practice-cleanup-node",
+        "to": "inquiry-plan-approval--review-ksp-and-precipitation-model-node",
+        "label": "Continue investigation",
+        "condition": {
+          "type": "validationPassed"
+        }
+      },
+      {
+        "from": "inquiry-plan-approval--approve-inquiry-procedure-node",
+        "to": "hard-water-two-sample-inquiry--review-approved-execution-plan-node",
+        "label": "Continue investigation",
+        "condition": {
+          "type": "validationPassed"
+        }
+      }
+    ]
+  },
+  "assessments": [
+    {
+      "id": "hard-water-practice-preparation-lab-assessment",
+      "type": "actionEvidence",
+      "label": "Hard-Water Practice Preparation final evidence is complete.",
+      "actionId": "age-practice-precipitate"
+    },
+    {
+      "id": "gravimetric-vacuum-filtration-lab-assessment",
+      "type": "actionEvidence",
+      "label": "Gravimetric Vacuum Filtration final evidence is complete.",
+      "actionId": "record-practice-filtration"
+    },
+    {
+      "id": "two-stage-precipitate-drying-lab-assessment",
+      "type": "actionEvidence",
+      "label": "Two-Stage Precipitate Drying final evidence is complete.",
+      "actionId": "complete-practice-cleanup"
+    },
+    {
+      "id": "inquiry-plan-approval-lab-assessment",
+      "type": "actionEvidence",
+      "label": "Inquiry Plan Approval final evidence is complete.",
+      "actionId": "approve-inquiry-procedure"
+    },
+    {
+      "id": "hard-water-two-sample-inquiry-lab-assessment",
+      "type": "actionEvidence",
+      "label": "Two-Sample Hard-Water Inquiry final evidence is complete.",
+      "actionId": "complete-unknown-cleanup"
+    }
+  ],
+  "metadata": {
+    "version": "1.1.0",
+    "author": "Lab Studio",
+    "updatedAt": "2026-08-04T00:00:00.000Z",
+    "tags": [
+      "lab",
+      "chemistry",
+      "hard-water",
+      "hard-water",
+      "gravimetry",
+      "inquiry",
+      "teacher-configured-simulation"
+    ]
+  }
+}
