@@ -54,6 +54,11 @@ const translations = {
                 description: "Author chemistry process maps and run the same structured definitions in a student-facing virtual lab simulator.",
                 tags: ["Lab Authoring", "Chemistry", "Simulation"]
             },
+            elisaassay: {
+                title: "ELISA Assay",
+                description: "Perform an enzyme-linked immunosorbent assay to detect and quantify antigen using serial dilution, antibody binding, color development, and patient analysis.",
+                tags: ["ELISA", "Immunology", "Biotechnology"]
+            },
             nuclearchemistry: {
                 title: "Nuclear Chemistry Game",
                 description: "Interactive simulation exploring nuclear reactions, radioactive decay, and nuclear chemistry principles through engaging gameplay.",
@@ -243,6 +248,11 @@ const translations = {
                 description: "Kimya proses xəritələri yaradın və eyni strukturlaşdırılmış tərifləri tələbə yönümlü virtual laboratoriya simulyatorunda işə salın.",
                 tags: ["Laboratoriya Müəllifliyi", "Kimya", "Simulyasiya"]
             },
+            elisaassay: {
+                title: "ELISA Assay",
+                description: "Ardıcıl durulaşdırma, anticisimlərin bağlanması, rəngin inkişafı və pasiyent analizindən istifadə edərək fermentlə əlaqəli immunosorbent analizi aparın.",
+                tags: ["ELISA", "İmmunologiya", "Biotexnologiya"]
+            },
             nuclearchemistry: {
                 title: "Nüvə Kimyası Oyunu",
                 description: "Maraqlı oyun vasitəsilə nüvə reaksiyalarını, radioaktiv parçalanmanı və nüvə kimyası prinsiplərini araşdıran interaktiv simulyasiya.",
@@ -427,6 +437,11 @@ const translations = {
                 description: "Kimya süreç haritaları oluşturun ve aynı yapılandırılmış tanımları öğrenciye yönelik sanal laboratuvar simülatöründe çalıştırın.",
                 tags: ["Laboratuvar Yazarlığı", "Kimya", "Simülasyon"]
             },
+            elisaassay: {
+                title: "ELISA Assay",
+                description: "Seri seyreltme, antikor bağlanması, renk gelişimi ve hasta analizi adımlarını kullanarak antijeni tespit edip miktarını belirleyin.",
+                tags: ["ELISA", "İmmünoloji", "Biyoteknoloji"]
+            },
             nuclearchemistry: {
                 title: "Nükleer Kimya Oyunu",
                 description: "İlgi çekici oyun içeriği ile nükleer reaksiyonları, radyoaktif bozunmayı ve nükleer kimya ilkelerini keşfeden interaktif simülasyon.",
@@ -610,6 +625,11 @@ const translations = {
                 title: "Lab Studio",
                 description: "Erstellen Sie Chemie-Prozesskarten und führen Sie dieselben strukturierten Definitionen in einem virtuellen Labor für Lernende aus.",
                 tags: ["Laborerstellung", "Chemie", "Simulation"]
+            },
+            elisaassay: {
+                title: "ELISA Assay",
+                description: "Führen Sie einen enzymgekoppelten Immunosorbent-Test durch, um Antigen mit serieller Verdünnung, Antikörperbindung, Farbreaktion und Patientenanalyse nachzuweisen und zu quantifizieren.",
+                tags: ["ELISA", "Immunologie", "Biotechnologie"]
             },
             nuclearchemistry: {
                 title: "Kernchemie-Spiel",

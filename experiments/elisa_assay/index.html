@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mystery Infection — Quantitative ELISA</title>
+  <meta name="description" content="A hands-on ELISA simulator: label the strips, build a serial dilution, load patient CSF samples, wash, develop with TMB, and quantify bacterial meningitis antigen against a standard curve.">
+
+  <link rel="stylesheet" href="css/tokens.css?v=2">
+  <link rel="stylesheet" href="style.css?v=4">
+  <!-- blocking, and first: puts [data-theme] on <html> before the first paint -->
+  <script src="js/theme.js?v=2"></script>
+</head>
+<body>
+
+  <!-- ===== Masthead =================================================== -->
+  <header class="masthead">
+    <div class="masthead__id">
+      <p class="eyebrow">Experiment #468 · Assay ELISA-CSF-468</p>
+      <h1 class="masthead__title">Mystery <em>Infection</em></h1>
+    </div>
+
+    <div class="masthead__tools">
+      <nav class="moduletabs" id="moduletabs" aria-label="Modules">
+        <button type="button" data-module="1" aria-current="false">
+          <span class="mt-n">Module 1</span><span class="mt-t">Perform the ELISA</span>
+        </button>
+        <button type="button" data-module="2" aria-current="false">
+          <span class="mt-n">Module 2</span><span class="mt-t">Analyse the results</span>
+        </button>
+      </nav>
+
+      <div class="themepick" role="radiogroup" aria-label="Bench appearance">
+        <span class="themepick__label" id="themepick-label">Bench</span>
+        <!-- buttons injected by ui.js from Lab.theme.THEMES -->
+        <div class="themepick__set" id="themepick" aria-labelledby="themepick-label"></div>
+      </div>
+
+      <!-- the camera: off until a student asks for it, and never a
+           requirement — every action it performs is also a click away -->
+      <div class="handpick">
+        <span class="themepick__label">Hands</span>
+        <button type="button" class="handtoggle" id="handtoggle" aria-pressed="false">
+          <span class="handtoggle__led" aria-hidden="true"></span>Hand control
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="lab">
+
+    <!-- ===== Briefing ================================================== -->
+    <section id="briefing" class="briefing" aria-labelledby="briefing-h">
+
+      <div class="briefing__top">
+      <div class="briefing__lede">
+        <p class="eyebrow">Case file</p>
+        <h2 id="briefing-h">Nine students, one bacterium.
+          <em>Who else is carrying it — and who passed it to whom?</em></h2>
+        <p class="briefing__text">
+          Sue collapsed during class on Monday morning. At the hospital a doctor drew a
+          little of the fluid from around her spinal cord, and the lab found
+          <i>Neisseria meningitidis</i> in it — the bacterium behind bacterial
+          meningitis. It travels easily between people who share a room, a meal or a
+          practice session, and it can turn dangerous within a day. So Sue and the eight
+          classmates she had spent the most time with were all sampled that same
+          afternoon. Those nine samples are what your class has to work through.
+        </p>
+        <p class="briefing__text">
+          An <b>ELISA</b> — an enzyme-linked immunosorbent assay — asks two questions of
+          every sample. Is the bacterium's antigen in there at all? That answer is the
+          diagnosis. And how much of it is in there? That one is worth more than it
+          looks, because antigen keeps building up from the moment a person is infected:
+          whoever is carrying the most has been carrying it the longest. Put the nine
+          results in order and you are looking at the route the infection took through
+          the class.
+        </p>
+      </div>
+
+        <figure class="fig-block fig-block--wide">
+          <div class="fig-host fig-host--split">
+            <div id="fig-key"></div>
+            <div id="fig-workflow"></div>
+          </div>
+          <figcaption>
+            <b>Figure 1 · The assay, one layer at a time.</b>
+            Antigen from the sample sticks to the plastic. The <b>primary antibody</b>
+            recognises the antigen. The <b>secondary antibody</b> recognises the primary and
+            carries an enzyme, <b>HRP</b>. HRP turns the colourless <b>TMB substrate</b> into a
+            coloured product. Every layer only stays if the layer beneath it is there — which
+            is why the washes matter, and why a well with no antigen ends up colourless.
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="briefing__figs">
+        <figure class="fig-block">
+          <div class="fig-host" id="fig-antibody"></div>
+          <figcaption>
+            <b>Figure 2 · Why antibodies can do this.</b>
+            Two heavy chains and two light chains make a Y. The tips of the short arms vary
+            from antibody to antibody, so each one recognises exactly one epitope — one small
+            patch of one antigen. That specificity is the entire basis of the test.
+          </figcaption>
+        </figure>
+
+        <figure class="fig-block">
+          <div class="fig-host" id="fig-ladder"></div>
+          <figcaption>
+            <b>Figure 3 · The standard curve.</b>
+            Strip 1 is a serial dilution: 50 µL carried from each well into 50 µL of buffer
+            in the next, so the concentration halves twelve times over. Reading a patient
+            well means finding the standard it matches.
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="briefing__cols">
+        <section class="briefing__col">
+          <h3 class="minihead">Your two samples</h3>
+          <p class="briefing__how">
+            Your instructor gives each group two of the nine samples. Choose the two you
+            were handed; the other seven reach you at the end, when the rest of the class
+            reports back.
+          </p>
+          <ul class="cohort" id="cohort"></ul>
+        </section>
+
+        <section class="briefing__col">
+          <h3 class="minihead">Module 1 · at the bench</h3>
+          <ol class="protocol">
+            <li><b>Label</b> both 12-well strips, 1–12 and 13–24.</li>
+            <li><b>Dilution buffer</b>, 50 µL into wells 2–12.</li>
+            <li><b>Antigen</b>, 100 µL into well 1.</li>
+            <li><b>Serial dilution</b> — 50 µL along the strip, mixing five times at each well.</li>
+            <li><b>Controls and patients</b>, 50 µL into three wells each.</li>
+            <li><b>Incubate</b>, then <b>wash twice</b>.</li>
+            <li><b>Primary antibody</b> → incubate → wash. <b>Secondary</b> → incubate → wash.</li>
+            <li><b>TMB substrate</b>, develop, then <b>stop solution</b>.</li>
+          </ol>
+          <p class="briefing__how">
+            <b>Drag a tool and rest its tip over a target</b> for a moment to act — the tip box
+            to fit a tip, a tube to draw a dose, a well to dispense. Clicking works too.
+            Three tools come out of the drawer: the micropipette, the transfer pipet for
+            wash buffer, and a fine-tipped marker.
+          </p>
+          <p class="briefing__how">
+            Or switch on <b>Hand control</b> in the masthead and use your own hand in front
+            of the webcam. With a <b>real micropipette</b>, choose <b>Calibrate grip</b>
+            and capture your resting grip, pressed plunger and pressed tip ejector.
+            Keep your thumb and knuckles visible. Then rest your grip over the
+            on-screen micropipette to pick it up and aim with the ring at its tip.
+            <b>Press and release the plunger to aspirate</b>, <b>press to dispense</b>,
+            and <b>press the tip ejector over waste</b> to remove the tip. Use
+            <b>Set down</b> in the camera panel to park the virtual pipette.
+            Choose <b>Free-hand gestures</b> to use an empty hand instead; close
+            your fingers to pick up a tool and open them to place it.
+          </p>
+          <p class="briefing__how">
+            The strips and the paper towels can be <b>slid up or down the bench</b> by
+            dragging their captions — or with the arrow keys, from the ⇕ handle at the
+            end of each one. Under the camera that is worth doing before you start:
+            put the wells at the height your own hand sits at comfortably, so your
+            arm never has to leave the picture to reach them. The camera panel
+            moves the same way — drag it by its own header if it is sitting on
+            something you are reading. With an empty hand, <b>pinch over a caption
+            and keep pinching to move it</b>; separate your fingers to place it.
+            A quick pinch elsewhere clicks. If tracking pauses, hold your hand
+            in view again — the tool stays still while the camera finds it.
+          </p>
+        </section>
+
+        <section class="briefing__col">
+          <h3 class="minihead">Module 2 · the read</h3>
+          <ol class="protocol">
+            <li><b>Check the controls</b> — wells 13–15 must be strongly coloured, 16–18 clear.</li>
+            <li><b>Diagnose</b> each patient positive or negative.</li>
+            <li><b>Quantify</b> — match each patient well against the standard strip.</li>
+            <li><b>Share</b> with the rest of the class and fill Table C.</li>
+            <li><b>Trace</b> the chain of infection from the antigen loads.</li>
+          </ol>
+          <p class="briefing__how">
+            Module 2 can be opened on its own. If you have not run the assay, a prepared
+            plate is put on the light box for you.
+          </p>
+          <p class="safety">
+            <span class="safety__mark" aria-hidden="true">⚠</span>
+            Gloves and goggles at all times. Never mouth-pipette a reagent.
+          </p>
+        </section>
+      </div>
+
+      <div class="briefing__actions">
+        <button id="start-m1" class="btn btn-primary">Start Module 1 — run the assay</button>
+        <button id="start-m2" class="btn btn-quiet">Start Module 2 — analyse a plate</button>
+      </div>
+      <p class="briefing__record" id="record"></p>
+    </section>
+
+    <!-- ===== Bench ===================================================== -->
+    <div class="bench" id="bench" hidden>
+
+      <aside class="sidebar">
+        <section class="pane pane--now">
+          <h2 class="minihead">Next step</h2>
+          <p id="instruction">Choose a module to begin.</p>
+        </section>
+
+        <section class="pane pane--status">
+          <h2 class="minihead">Status</h2>
+          <p class="hud-phase" id="hud-phase">Ready</p>
+          <div class="hud-row">
+            <span class="chip chip-tool" id="hud-tool">Micropipette</span>
+            <span class="chip chip-off" id="hud-tip">Tip: none</span>
+            <span class="chip chip-off" id="hud-reagent">empty</span>
+          </div>
+          <div class="gauge-wrap">
+            <div class="vol-gauge" title="Volume in the pipette tip"><div id="vol-fill"></div></div>
+            <p class="gauge-meta">In the tip<br><b id="vol-text">0 µL</b></p>
+          </div>
+          <div class="progress"><div id="prog-fill"></div></div>
+          <p id="prog-text">—</p>
+        </section>
+
+        <section class="pane pane--steps">
+          <h2 class="minihead">Procedure</h2>
+          <ul id="checklist"></ul>
+        </section>
+      </aside>
+
+      <div class="surfaces">
+        <div class="stripstack">
+          <section class="apparatus apparatus--movable" data-movable="strip-a">
+            <h3 class="apparatus__cap"><span class="dot"></span>Strip 1 · wells 1–12
+              <small>standard curve</small>
+              <button type="button" class="grip"
+                      title="Drag this caption, or use the arrow keys, to slide strip 1 up or down the bench"
+                      aria-label="Slide strip 1 up or down the bench">⇕</button></h3>
+            <div class="strip-host" id="strip-slot-A"></div>
+          </section>
+          <section class="apparatus apparatus--movable" data-movable="strip-b">
+            <h3 class="apparatus__cap"><span class="dot"></span>Strip 2 · wells 13–24
+              <small>controls &amp; patients</small>
+              <button type="button" class="grip"
+                      title="Drag this caption, or use the arrow keys, to slide strip 2 up or down the bench"
+                      aria-label="Slide strip 2 up or down the bench">⇕</button></h3>
+            <div class="strip-host" id="strip-slot-B"></div>
+          </section>
+        </div>
+
+        <!-- The towels stay directly under the strips and at the same width:
+             inverting a strip onto them is a short move straight down onto a
+             pad that can actually take it. -->
+        <section class="apparatus apparatus--inline apparatus--movable" data-movable="towels">
+          <h3 class="apparatus__cap"><span class="dot"></span>Paper towels
+            <small>invert &amp; tap</small>
+            <button type="button" class="grip"
+                    title="Drag this caption, or use the arrow keys, to slide the towels up or down the bench"
+                    aria-label="Slide the paper towels up or down the bench">⇕</button></h3>
+          <div id="towels-host"></div>
+        </section>
+      </div>
+
+      <div class="shelf">
+        <!-- The timer is apparatus, not a work surface: it is started once per
+             incubation and then read. It belongs in the equipment column with
+             everything else that is picked up or pressed, which also keeps the
+             working column down to the strips and the towelling they go onto. -->
+        <div class="shelf-block shelf-block--timer">
+          <h3 class="apparatus__cap">Bench timer <small>room temp.</small></h3>
+          <div id="timer-host"></div>
+        </div>
+        <div class="shelf-block shelf-block--tray">
+          <h3 class="apparatus__cap">Reagents &amp; tools</h3>
+          <div id="instrument-tray"></div>
+        </div>
+        <div class="shelf-block shelf-block--rack">
+          <h3 class="apparatus__cap">Controls &amp; patient samples</h3>
+          <div id="sample-rack"></div>
+        </div>
+      </div>
+
+      <div id="tool-layer"></div>
+    </div>
+
+    <!-- ===== Module 2 =================================================== -->
+    <section id="analysis" class="analysis" hidden aria-labelledby="analysis-h">
+      <header class="analysis__head">
+        <p class="eyebrow">Module 2</p>
+        <h2 id="analysis-h">Analysis of quantitative ELISA results</h2>
+        <p class="analysis__lede" id="provenance"></p>
+      </header>
+
+      <div class="readbench">
+        <div class="lightbox-wrap">
+          <div class="lightbox-frame">
+            <div id="lightbox-strips"></div>
+          </div>
+          <p class="readbench__hint">
+            Click any well to lift its colour onto the chip, then slide the chip along
+            strip 1 until it matches. The standard it sits on is that sample's concentration.
+          </p>
+          <div id="comparator"></div>
+        </div>
+      </div>
+
+      <section class="worksheet">
+        <h3 class="worksheet__h">Table A · Dilutions and concentrations</h3>
+        <p class="worksheet__lede">
+          Well 1 holds the antigen as supplied. Every well after it is half the one before.
+        </p>
+        <div class="table-scroll"><table id="table-a" class="sheet"></table></div>
+        <div class="worksheet__actions">
+          <button id="check-a" class="btn btn-primary btn-sm">Check Table A</button>
+        </div>
+        <p id="feedback-a" class="feedback" role="status"></p>
+      </section>
+
+      <section class="worksheet">
+        <h3 class="worksheet__h">Table B · Controls and patient samples</h3>
+        <p class="worksheet__lede">
+          Read the controls first — they tell you whether the assay worked at all.
+        </p>
+        <div class="table-scroll"><table id="table-b" class="sheet"></table></div>
+        <div class="worksheet__actions">
+          <button id="check-b" class="btn btn-primary btn-sm">Check Table B</button>
+          <button id="collect-btn" class="btn btn-quiet btn-sm" disabled>Collect the class data</button>
+        </div>
+        <p id="feedback-b" class="feedback" role="status"></p>
+      </section>
+
+      <section class="worksheet">
+        <h3 class="worksheet__h">Table C · The class board</h3>
+        <p class="worksheet__lede">
+          Every group tested two patients. Together that is all nine — and the antigen loads
+          are a record of the order the infection travelled.
+        </p>
+        <div class="table-scroll"><table id="table-c" class="sheet sheet--narrow"></table></div>
+
+        <div id="chain-wrap" hidden>
+          <h4 class="minihead">The chain of infection</h4>
+          <p class="worksheet__lede">
+            Click the infected students in the order the disease moved through them. The one
+            carrying the most antigen has been infected longest.
+          </p>
+          <div class="chain-pool" id="chain-pool"></div>
+          <ol class="chain" id="chain-list"></ol>
+          <div class="worksheet__actions">
+            <button id="check-c" class="btn btn-primary btn-sm">Check the chain</button>
+            <button id="clear-chain" class="btn btn-quiet btn-sm">Start over</button>
+          </div>
+        </div>
+        <p id="feedback-c" class="feedback" role="status"></p>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" role="status"></div>
+
+  <!-- ===== Scripts (order matters) =================================== -->
+  <script src="vendor/interact.min.js"></script>
+  <script src="vendor/gsap.min.js"></script>
+  <script src="js/config.js?v=2"></script>
+  <script src="js/progress.js?v=2"></script>
+  <script src="js/state.js?v=2"></script>
+  <script src="js/assets.js?v=2"></script>
+  <script src="js/figures.js?v=2"></script>
+  <script src="js/tools.js?v=3"></script>
+  <script src="js/ui.js?v=2"></script>
+  <script src="js/surfaces.js?v=2"></script>
+  <script src="js/stations.js?v=2"></script>
+  <script src="js/reposition.js?v=3"></script>
+  <script src="js/pipette.js?v=3"></script>
+  <script src="js/engine.js?v=3"></script>
+  <script src="js/analysis.js?v=2"></script>
+  <script src="js/repaint.js?v=2"></script>
+  <script src="js/hand-worker.js?v=4"></script>
+  <script src="js/pipette-control.js?v=1"></script>
+  <script src="js/handcontrol.js?v=6"></script>
+  <script src="js/main.js?v=2"></script>
+</body>
+</html>

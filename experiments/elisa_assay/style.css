@@ -1,0 +1,1260 @@
+/* =============================================================================
+ * Mystery Infection — Quantitative ELISA.  Components.
+ *
+ * Requires css/tokens.css (loaded first).  No colour literal should appear in
+ * this file; everything resolves through a token so the three themes and the
+ * light-box mode all work from one set of rules.
+ *
+ * THE ORGANISING RULE
+ *   Information is typographic.  Apparatus is physical.
+ * Instructions, status, checklist and the worksheet are NOT boxes — they are
+ * typographic sections separated by rules and space.  Only things that stand
+ * for real objects (the strips, the shelf, the light box, the printed record
+ * sheet) get material, edges and elevation.
+ * ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  color: var(--ink-1);
+  background-color: var(--bg-app);
+  background-image: var(--bench-pattern);
+  background-size: var(--bench-size, auto);
+  background-position: var(--bench-pos, 0 0);
+  background-repeat: var(--bench-repeat, repeat);
+  background-attachment: fixed;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--dur-3) var(--ease-out), color var(--dur-3) var(--ease-out);
+}
+
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; line-height: var(--lh-tight); margin: 0; }
+p { margin: 0; }
+em { font-style: italic; }
+
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* A section label, not a card header — no bar, no gradient, just a rule. */
+.minihead {
+  font-family: var(--font-ui);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0 0 var(--sp-2);
+  padding-bottom: var(--sp-1);
+  border-bottom: var(--hairline) solid var(--line);
+}
+
+/* ---- masthead ----------------------------------------------------------- */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-5);
+  padding: var(--sp-3) clamp(var(--sp-4), 3vw, var(--sp-6));
+  max-width: 1680px;
+  margin: 0 auto;
+}
+.masthead__title { font-size: var(--step-3); letter-spacing: -.02em; margin-top: 0; }
+.masthead__title em { color: var(--accent); font-style: italic; }
+.masthead__tools { display: flex; align-items: flex-end; gap: var(--sp-4); flex-wrap: wrap; }
+
+/* module tabs — the two halves of this experiment are separate work, and the
+   interface says so before anything else does */
+.moduletabs { display: flex; gap: 0; border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius); overflow: hidden; }
+.moduletabs button {
+  font: inherit; text-align: left; cursor: pointer;
+  padding: var(--sp-2) var(--sp-3);
+  border: 0; border-left: var(--hairline) solid var(--line);
+  background: var(--surface-1); color: var(--ink-2);
+  display: flex; flex-direction: column; gap: 1px;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.moduletabs button:first-child { border-left: 0; }
+.moduletabs button:hover { background: var(--surface-2); color: var(--ink-1); }
+.moduletabs button[aria-current="true"] { background: var(--accent); color: var(--ink-on-accent); }
+.moduletabs button[aria-current="true"] .mt-t { color: var(--ink-on-accent); opacity: .85; }
+.mt-n { font-size: var(--step--1); font-weight: 600; }
+.mt-t { font-size: var(--step--2); color: var(--ink-3); }
+
+.themepick { display: flex; align-items: center; gap: var(--sp-3); }
+.themepick__label {
+  font-size: var(--step--2); font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.themepick__set {
+  display: flex; border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius); overflow: hidden;
+}
+.themepick__btn {
+  font: inherit; font-size: var(--step--1);
+  padding: var(--sp-2) var(--sp-3);
+  border: 0; border-left: var(--hairline) solid var(--line);
+  background: var(--surface-1); color: var(--ink-2); cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.themepick__btn:first-child { border-left: 0; }
+.themepick__btn:hover { background: var(--surface-2); color: var(--ink-1); }
+.themepick__btn[aria-checked="true"] { background: var(--accent); color: var(--ink-on-accent); font-weight: 600; }
+
+/* ---- layout ------------------------------------------------------------- */
+.lab {
+  /* A strip tube is 708x156 in its own units.  Left to fill its container it
+     was being blown up to 1.5x natural size on the bench and past 1.7x on the
+     light box, which is what put the reagents below the fold and made the read
+     surface scroll.  It is capped here, once, for every surface that draws a
+     strip: two of them plus their captions and the shelf all have to land
+     inside one laptop screen, so the width is derived from the height that is
+     actually left over.  2.27 is half the strip's aspect ratio, because there
+     are always two stacked. */
+  --strip-w: max(360px, min(580px, calc((100vh - 340px) * 1.58)));
+  padding: 0 clamp(var(--sp-3), 2.4vw, var(--sp-6)) var(--sp-4);
+  max-width: 1680px;
+  margin: 0 auto;
+}
+
+/* The strips are 12 wells wide and only a few centimetres tall, so the bench
+   gives them the full width of the working column and puts the shelf beneath
+   them rather than beside them.  The sidebar spans both rows: what to do next
+   has to stay in view while you work.
+
+   The whole bench is sized to land inside ONE laptop screen (1536x864 at 125%
+   scaling is a 15" panel's real CSS viewport, so ~726px of usable height).
+   That is not a cosmetic target: every action here is a drag from a tube or a
+   rack onto a well, and a drag that crosses a scroll boundary is a drag the
+   student has to do twice. --strip-w is what keeps the promise — it spends
+   whatever height is left after the masthead, the captions and the shelf, and
+   nothing more. */
+.bench[hidden] { display: none; }
+.bench {
+  position: relative;
+  display: grid;
+  grid-template-columns: clamp(228px, 17vw, 280px) minmax(0, var(--strip-w)) minmax(330px, 1fr);
+  grid-template-areas: "side surfaces shelf";
+  gap: var(--sp-3) clamp(var(--sp-3), 1.2vw, var(--sp-4));
+  align-items: start;
+}
+.sidebar  { grid-area: side; display: flex; flex-direction: column;
+            gap: var(--sp-3); min-width: 0; min-height: 0; }
+/* the towels and the timer are small and the strips are wide-and-short, so the
+   two ride beside the strips instead of under them — which is also where they
+   are on a real bench, within arm's reach of the plate. */
+/* The working column is exactly one strip wide, and everything the strips are
+   used WITH is stacked under them in the order the protocol uses it: the two
+   strips, the towelling they are inverted onto, then the timer.  The towels
+   being the same width as a strip is the point — that is the movement the
+   protocol describes, and a pad narrower than the strip cannot take it. */
+.surfaces { grid-area: surfaces; display: flex; flex-direction: column;
+            gap: var(--sp-3); width: 100%; min-width: 0; }
+.stripstack { display: flex; flex-direction: column; gap: var(--sp-3); min-width: 0; }
+/* Reagents, tools and the sample rack stand to the RIGHT of the strips, where
+   a bench keeps them: within reach of the plate, and out of the path the strip
+   travels when it goes over to the towels. */
+.shelf    { grid-area: shelf; display: flex; flex-direction: column;
+            gap: var(--sp-3); min-width: 0; }
+
+/* =============================================================================
+ * Briefing
+ * ========================================================================== */
+.briefing {
+  max-width: 1280px;
+  margin: 0 auto var(--sp-3);
+  padding: var(--sp-3) clamp(var(--sp-4), 2.4vw, var(--sp-5)) var(--sp-4);
+  background: var(--surface-1);
+  border: var(--hairline) solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-2);
+}
+.briefing[hidden] { display: none; }
+.briefing.closing { animation: casefold var(--dur-3) var(--ease-in) forwards; }
+@keyframes casefold { to { opacity: 0; transform: translateY(-8px); } }
+
+/* The case text and the figure it describes, side by side.  Left on its own
+   the prose was set to a 78ch measure inside a 1214px card, so every sentence
+   broke two thirds of the way across and the right third of the screen stayed
+   empty — the wrap was doing no work for legibility, it was just what was left
+   over.  In a column the same measure fills the column. */
+.briefing__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  gap: var(--sp-3) clamp(var(--sp-4), 2.6vw, var(--sp-5));
+  align-items: start;
+}
+.briefing__lede { max-width: none; }
+.briefing__lede h2 {
+  font-size: var(--step-3);
+  margin: var(--sp-1) 0 var(--sp-2);
+  letter-spacing: -.015em;
+  text-wrap: balance;
+}
+.briefing__lede h2 em { color: var(--accent); }
+.briefing__text {
+  color: var(--ink-2); font-size: var(--step-0); line-height: 1.5;
+  max-width: 68ch; text-wrap: pretty; margin-bottom: var(--sp-2);
+}
+.briefing__text b { color: var(--ink-1); }
+
+/* ---- the figures -------------------------------------------------------- */
+.briefing__figs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3) var(--sp-5);
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3) 0;
+  border-top: var(--hairline) solid var(--line);
+  border-bottom: var(--hairline) solid var(--line);
+}
+.fig-block { margin: 0; min-width: 0; }
+/* only inside the figure grid — in .briefing__top it is one of two columns */
+.briefing__figs .fig-block--wide { grid-column: 1 / -1; }
+.fig-host { display: flex; justify-content: center; }
+.fig-host--split {
+  display: grid; grid-template-columns: minmax(160px, 230px) minmax(260px, 1fr);
+  gap: var(--sp-4); align-items: center;
+}
+/* stretch, not centre: a centred grid item shrinks to its content, and an SVG
+   sized at width:100% of a shrunk-to-fit box collapses to nothing */
+.fig-host--split > div { min-width: 0; width: 100%; }
+.fig { width: 100%; height: auto; display: block; }
+/* uncapped, the workflow stretches to the full width of the briefing and the
+   six little panels become the size of playing cards */
+.fig-workflow { max-width: 620px; margin: 0 auto; }
+.fig-key { max-width: 260px; margin: 0 auto; }
+.fig-antibody { max-width: 320px; }
+.fig-ladder { max-width: 440px; }
+.fig-block figcaption {
+  font-size: var(--step--1); color: var(--ink-2); line-height: 1.45;
+  margin-top: var(--sp-2); text-wrap: pretty;
+}
+.fig-block figcaption b { color: var(--ink-1); }
+
+/* figure palette — a figure's colours carry meaning, so the HUE is fixed and
+   only lightness moves with the theme.  These match the printed protocol. */
+.fig-surface   { fill: var(--ink-1); }
+.fig-antigen   { fill: oklch(72% .170 140); }
+.fig-ab1       { fill: oklch(72% .165 62); }
+.fig-ab2       { fill: oklch(52% .200 358); }
+.fig-hrp       { fill: oklch(52% .095 205); }
+.fig-substrate { fill: oklch(72% .008 250); }
+.fig-product   { fill: oklch(50% .095 62); }
+.fig-caplate   { fill: oklch(86% .065 62); }
+.fig-cap {
+  font-family: var(--font-ui); font-weight: 600; letter-spacing: .06em;
+  fill: oklch(28% .060 45);
+}
+.fig-leader { stroke: var(--line-strong); stroke-width: 1; }
+.fig-keytext { font-family: var(--font-ui); font-weight: 600; fill: var(--ink-2); }
+.k-antigen   { fill: oklch(48% .140 140); }
+.k-ab1       { fill: oklch(52% .150 62); }
+.k-ab2       { fill: oklch(48% .190 358); }
+.k-hrp       { fill: oklch(44% .090 205); }
+.k-substrate { fill: var(--ink-3); }
+.k-product   { fill: oklch(44% .090 62); }
+.k-site, .k-light, .k-heavy { fill: var(--ink-2); }
+
+.ab-heavy { fill: none; stroke: var(--accent); stroke-width: 11; stroke-linecap: round; stroke-linejoin: round; }
+.ab-light { fill: none; stroke: var(--accent-2); stroke-width: 9; stroke-linecap: round; }
+.ab-hinge { stroke: var(--surface-1); stroke-width: 4; }
+.ab-site  { fill: oklch(72% .170 140); stroke: var(--ink-1); stroke-width: 1.5; }
+
+.ladder-well { fill: var(--lad-paint, oklch(74% .150 85)); }
+.ladder-rim  { stroke: var(--line-strong); }
+.fig-tick    { font-family: var(--font-mono); fill: var(--ink-3); }
+.ladder-arrow{ stroke: var(--accent); stroke-width: 1.2; }
+.ladder-arrowhead { fill: var(--accent); }
+
+/* ---- the three briefing columns ----------------------------------------- */
+.briefing__cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: var(--sp-3) clamp(var(--sp-4), 2.6vw, var(--sp-5));
+}
+.briefing__col { min-width: 0; }
+.briefing__how { color: var(--ink-2); font-size: var(--step--1); margin-bottom: var(--sp-2); }
+.briefing__how b { color: var(--ink-1); }
+
+.protocol { margin: 0 0 var(--sp-2); padding-left: 1.15em; color: var(--ink-2); font-size: var(--step--1); }
+.protocol li { margin-bottom: var(--sp-1); }
+.protocol li::marker { color: var(--accent); font-variant-numeric: tabular-nums; }
+.protocol b { color: var(--ink-1); }
+
+.safety {
+  display: flex; gap: var(--sp-2); align-items: baseline;
+  font-size: var(--step--2); color: var(--ink-2);
+  border-left: 3px solid var(--state-warn);
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-3);
+  margin-top: var(--sp-3);
+}
+.safety__mark { color: var(--state-warn); font-size: var(--step-0); }
+
+/* ---- the cohort: nine people, each of them a choice ---------------------- */
+.cohort { list-style: none; margin: 0; padding: 0; }
+.cohort__item { border-bottom: var(--hairline) solid var(--line); }
+.cohort__item:last-child { border-bottom: 0; }
+.cohort__btn {
+  display: block; width: 100%; text-align: left;
+  font: inherit; background: none; border: 0; cursor: pointer;
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) 0;
+  border-left: 3px solid transparent;
+  transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+.cohort__btn:hover { background: var(--surface-2); }
+.cohort__btn:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.cohort__item.is-picked .cohort__btn {
+  border-left-color: var(--accent);
+  padding-left: var(--sp-2);
+  background: var(--accent-soft);
+}
+.cohort__name { font-weight: 600; font-size: var(--step-0); color: var(--ink-1); }
+.cohort__slot {
+  font-family: var(--font-mono); font-size: var(--step--2);
+  color: var(--accent); margin-left: var(--sp-2);
+}
+.cohort__note { display: block; color: var(--ink-3); font-size: var(--step--1); line-height: 1.35; }
+
+.briefing__actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-3); }
+.briefing__record { margin-top: var(--sp-2); font-size: var(--step--1); color: var(--ink-3); }
+.briefing__record:empty { display: none; }
+.briefing__record b { color: var(--ink-2); font-weight: 600; }
+
+.linkbtn {
+  font: inherit; background: none; border: 0; padding: 0;
+  color: var(--accent); text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+}
+.linkbtn:hover { color: var(--ink-1); }
+.linkbtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* =============================================================================
+ * Sidebar — typographic, not cards
+ * ========================================================================== */
+.pane { min-width: 0; }
+/* The instruction is the one thing a student reads on every single action, so
+   it sits in the display face — but at step-1 in a 290px rail a plain sentence
+   broke over four lines and reserved four lines of height whether it needed
+   them or not.  One step down, and the reserved block is two lines. */
+#instruction {
+  font-family: var(--font-display);
+  font-size: var(--step-0); line-height: 1.4;
+  color: var(--ink-1); min-height: 2.8em; text-wrap: pretty;
+}
+.hud-phase { font-size: var(--step--1); font-weight: 600; color: var(--accent); margin-bottom: var(--sp-2); }
+
+.hud-row { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.chip {
+  font-size: var(--step--2); font-weight: 500; font-family: var(--font-mono);
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-sm);
+  border: var(--hairline) solid var(--line);
+  background: var(--surface-2); color: var(--ink-3);
+}
+.chip-on   { border-color: var(--state-ok); color: var(--state-ok); background: transparent; }
+.chip-warn { border-color: var(--state-warn); color: var(--state-warn); background: transparent; }
+.chip-tool { border-color: var(--line-strong); color: var(--ink-2); background: transparent; }
+.chip-off  { color: var(--ink-3); }
+.chip-reagent {
+  color: var(--ink-1); background: transparent;
+  border-color: var(--chip, var(--line));
+  box-shadow: inset 3px 0 0 var(--chip, var(--line));
+}
+
+.gauge-wrap { display: flex; align-items: center; gap: var(--sp-3); margin: var(--sp-2) 0; }
+.vol-gauge {
+  width: 20px; height: 44px; flex: 0 0 auto;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  position: relative; overflow: hidden;
+}
+#vol-fill {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 0;
+  background: var(--ink-3);
+  transition: height var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease-out);
+}
+.vol-gauge::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 8px, var(--line) 8px 9px);
+  opacity: .7;
+}
+.gauge-meta { font-size: var(--step--2); color: var(--ink-3); }
+.gauge-meta b { color: var(--ink-1); font-family: var(--font-mono); font-size: var(--step--1); }
+
+.progress { height: 3px; background: var(--surface-3); overflow: hidden; margin-top: var(--sp-2); }
+#prog-fill { height: 100%; width: 0; background: var(--accent); transition: width var(--dur-2) var(--ease-out); }
+#prog-text { font-size: var(--step--2); color: var(--ink-3); margin-top: var(--sp-1); font-family: var(--font-mono); }
+
+/* Twenty steps will not fit beside a bench that is itself sized to the screen,
+   so the list scrolls inside the rail rather than making the whole page scroll.
+   ui.js keeps the current step in view. */
+.pane--steps { min-height: 0; }
+#checklist {
+  list-style: none; margin: 0; padding: 0;
+  max-height: calc(100vh - 470px); min-height: 110px;
+  overflow-y: auto; scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+#checklist li {
+  display: flex; align-items: baseline; gap: var(--sp-2);
+  padding: 1px 0; font-size: var(--step--1); line-height: 1.3; color: var(--ink-3);
+  transition: color var(--dur-2) var(--ease-out);
+}
+#checklist li.chk-group {
+  margin-top: var(--sp-2); padding-top: var(--sp-1);
+  border-top: var(--hairline) solid var(--line);
+  font-size: var(--step--2); font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+#checklist li.chk-group:first-child { margin-top: 0; border-top: 0; }
+#checklist li .chk-mark {
+  width: 9px; height: 9px; flex: 0 0 auto;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: 50%; position: relative; transform-origin: 50% 50%;
+}
+#checklist li.now { color: var(--accent); font-weight: 600; }
+#checklist li.now .chk-mark { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+#checklist li.done { color: var(--ink-1); }
+#checklist li.done .chk-mark { background: var(--state-ok); border-color: var(--state-ok); }
+
+/* =============================================================================
+ * Apparatus — the physical half
+ * ========================================================================== */
+.apparatus__cap {
+  font-family: var(--font-ui);
+  font-size: var(--step--2); font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+  display: flex; align-items: baseline; gap: var(--sp-2);
+  margin-bottom: var(--sp-1);
+  white-space: nowrap;
+}
+.apparatus__cap small {
+  font-weight: 400; letter-spacing: .04em; text-transform: none;
+  color: var(--ink-3); opacity: .8;
+}
+.apparatus__cap .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: 0 0 auto; }
+
+.strip-host { width: min(100%, var(--strip-w)); touch-action: none; }
+.strip-svg { width: 100%; height: auto; display: block; filter: var(--elev-svg); }
+.strip-host.lifting { cursor: grabbing; }
+.strip-host.inverting { z-index: 40; position: relative; }
+
+.apparatus--inline { flex: 0 0 auto; }
+
+/* ---- sliding a work surface up or down ---------------------------------
+   The strips and the towels are worked OVER, not reached for, so where they
+   sit vertically sets how high a student has to hold their hand.  Under the
+   camera an arm held near the top of the screen leaves the picture at the
+   wrist and the thumb stops being tracked, so each of these surfaces can be
+   slid to wherever that student's own hand is comfortable.
+
+   The offset is a transform and not a margin on purpose: it must move the
+   surface without reflowing the column, or dropping the towels would push
+   the strips off the bench instead of opening space above them. */
+.apparatus--movable { transform: translate(var(--slide-x, 0px), var(--slide-y, 0px)); }
+.apparatus--movable > .apparatus__cap {
+  cursor: grab; touch-action: none; user-select: none;
+  padding-right: 2px; border-radius: var(--radius-sm, 4px);
+}
+.apparatus--movable > .apparatus__cap:hover { background: var(--surface-2); }
+.apparatus--movable.is-moving { will-change: transform; }
+.apparatus--movable.is-moving > .apparatus__cap { cursor: grabbing; background: var(--surface-2); }
+.apparatus--movable.is-slid > .apparatus__cap .dot { box-shadow: 0 0 0 3px var(--accent-soft); }
+body.repositioning { cursor: grabbing; }
+
+/* The grip sits at the far end of the bar it belongs to, where there is
+   nothing to crowd: a real button, so the arrow keys move the thing too.
+   Shared by the work surfaces and the camera panel — they are the same
+   affordance and there is one implementation behind both. */
+.grip {
+  margin-left: auto; align-self: center; flex: 0 0 auto;
+  background: none; border: var(--hairline) solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--ink-3); font: inherit; font-size: var(--step--1);
+  line-height: 1; padding: 2px 6px; cursor: grab;
+}
+.grip:hover { color: var(--accent); border-color: var(--line); }
+.grip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* the pad matches the strip exactly, so a strip turned over lands on it */
+#towels-host svg { width: 100%; height: auto; display: block; filter: var(--elev-svg); }
+#timer-host { display: flex; justify-content: center; }
+#timer-host svg { width: 104px; height: auto; filter: var(--elev-svg); }
+
+/* The shelf is the reach zone: everything picked up during the assay lives
+   here, directly under the strips, and it has to stay on screen with them.
+   The reagent tray gets the width its nine tubes need and no more; the rack
+   takes the rest, so the eleven sample tubes stay on one row. */
+.shelf-block {
+  background: var(--surface-2);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-1);
+  padding: var(--sp-2) var(--sp-3) var(--sp-3);
+  min-width: 0;
+}
+.shelf-block--tray, .shelf-block--rack, .shelf-block--timer { flex: 0 0 auto; }
+.shelf-block .apparatus__cap { justify-content: center; margin-bottom: var(--sp-2); }
+#instrument-tray {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  align-items: flex-end; gap: var(--sp-2) 6px;
+}
+.tray-item {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; gap: 2px; width: 54px;
+}
+.tray-item svg { height: 74px; width: auto; filter: var(--elev-svg); }
+.tip-box { height: 44px !important; }
+.wash-bottle { height: 68px !important; }
+.waste-bin { height: 60px !important; }
+/* the apparatus carries a mark; the NAME is type */
+.tray-label {
+  font-size: var(--step--2); line-height: 1.2; color: var(--ink-2);
+  text-align: center; text-wrap: balance; hyphens: auto;
+}
+
+#sample-rack { display: flex; flex-direction: column; gap: var(--sp-2); }
+/* Nine patient tubes have to stay on ONE row: wrapped onto two they doubled the
+   rack's height and pushed the whole shelf off the bottom of the screen. */
+.rack-row { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-1) 6px; }
+.rack-row--ctrl { padding-bottom: var(--sp-1); border-bottom: var(--hairline) solid var(--line); }
+.rack-row .tray-item { width: 52px; }
+.rack-row .tray-item svg { height: 60px; }
+
+/* Below about 1450px the working column is no longer wide enough for both
+   shelf blocks at full size, and the nine patient tubes wrap onto a second row
+   — which costs more height than simply drawing the tubes a little smaller. */
+@media (max-width: 1450px) {
+  .tray-item { width: 48px; }
+  .tray-item svg { height: 66px; }
+  .tip-box { height: 40px !important; }
+  .wash-bottle { height: 62px !important; }
+  .waste-bin { height: 54px !important; }
+  .rack-row .tray-item { width: 46px; }
+  .rack-row .tray-item svg { height: 54px; }
+}
+.rack-row .tray-item .tray-label { color: var(--ink-1); font-weight: 500; }
+
+/* =============================================================================
+ * SVG material hooks
+ *
+ * assets.js emits structure + class only; every colour resolves here, which is
+ * what makes the artwork themeable in Firefox and Safari too — var() inside a
+ * presentation ATTRIBUTE is Chromium-only, so we never rely on it.
+ * ========================================================================== */
+
+/* gradient stops */
+.g-plastic-0 { stop-color: var(--mat-plastic-0); }
+.g-plastic-1 { stop-color: var(--mat-plastic-1); }
+.g-plastic-2 { stop-color: var(--mat-plastic-2); }
+.g-plastic-3 { stop-color: var(--mat-plastic-3); }
+.g-steel-0   { stop-color: var(--mat-steel-0); }
+.g-steel-1   { stop-color: var(--mat-steel-1); }
+.g-steel-2   { stop-color: var(--mat-steel-2); }
+.g-grip-0    { stop-color: var(--accent); }
+.g-grip-1    { stop-color: var(--accent-2); }
+.g-grip-2    { stop-color: var(--mat-tool-grip-2); }
+.g-glass-0   { stop-color: var(--mat-glass-sheen); stop-opacity: .30; }
+.g-glass-1   { stop-color: var(--mat-glass-sheen); stop-opacity: .70; }
+.g-glass-2   { stop-color: var(--mat-glass-tint); }
+.g-appliance-0 { stop-color: var(--mat-appliance-hi); }
+.g-appliance-1 { stop-color: var(--mat-appliance-lo); }
+.g-waste-0   { stop-color: var(--sci-hazard-lo); }
+.g-waste-1   { stop-color: var(--sci-hazard-hi); }
+.g-waste-2   { stop-color: var(--sci-hazard-lo); }
+.g-tipbox-0  { stop-color: var(--mat-consumable); }
+.g-tipbox-1  { stop-color: var(--mat-consumable); stop-opacity: .75; }
+
+/* solid materials */
+.m-plastic   { fill: var(--mat-plastic-0); }
+.m-plastic-hi{ fill: var(--mat-plastic-1); }
+.m-steel     { fill: var(--mat-steel-0); }
+.m-steel-dk  { fill: var(--mat-steel-2); }
+.m-lcd-bg    { fill: var(--mat-lcd-bg); }
+.m-cavity    { fill: var(--mat-cavity); }
+.m-bezel     { fill: var(--mat-bezel); }
+.m-label     { fill: var(--mat-label-paper); stroke: var(--mat-label-edge); }
+/* stroke ONLY — never set fill here.  A CSS rule beats a presentation
+   attribute, so `fill:none` would strip fill="url(#…)" off every
+   gradient-filled shape that also needs an outline. */
+.m-line      { stroke: var(--mat-line); }
+.m-consumable{ fill: var(--mat-consumable); }
+.m-tip-poly  { fill: var(--mat-tip-poly); stroke: var(--mat-line); }
+.m-sheen     { fill: var(--mat-glass-sheen); }
+.m-hazard    { fill: var(--sci-hazard); }
+.m-shadow    { fill: var(--mat-shadow-tint); }
+.m-towel     { fill: var(--mat-label-paper); stroke: var(--mat-label-edge); }
+.towel-damp  { fill: var(--mat-steel-0); opacity: .55; }
+.waste-mark  { stroke: var(--mat-plastic-1); }
+.waste-mark circle:last-child { fill: var(--mat-plastic-1); }
+
+/* reagent tubes and the wash bottle: science colours arrive as custom
+   properties on the <svg>, so a theme switch repaints them */
+.tube-liquid { fill: var(--tube-paint, var(--mat-cavity)); }
+.tube-cap    { fill: var(--tube-cap, var(--mat-steel-2)); }
+.tube-stripe { fill: var(--tube-cap, var(--mat-steel-2)); }
+.tube-abbr   { font-family: var(--font-ui); fill: var(--ink-1); }
+
+/* the sample tubes are deliberately colourless — at the bench you tell these
+   apart by reading the label, and so you should here */
+.sample-liquid { fill: var(--mat-glass-tint); }
+.sample-ink    { stroke: var(--ink-2); fill: none; }
+.sample-pick   { stroke: var(--line-strong); }
+.sample-tick   { stroke: var(--surface-1); opacity: 0; }
+.sample-tube.is-picked .sample-pick { fill: var(--accent); stroke: var(--accent); }
+.sample-tube.is-picked .sample-tick { opacity: 1; }
+
+/* tools */
+#pip-liquid { fill: var(--pip-paint, transparent); }
+.tp-liquid  { fill: var(--tp-paint, var(--mat-glass-tint)); }
+.mk-nib     { fill: var(--ink-1); }
+.marker-cap { font-family: var(--font-ui); font-weight: 600; fill: var(--ink-2); letter-spacing: .1em; }
+
+/* the timer */
+.timer-track { stroke: var(--mat-cavity); }
+.timer-arc   { stroke: var(--accent); transition: stroke-dashoffset .1s linear; }
+
+/* SVG typography */
+.svg-readout { font-family: var(--font-mono); fill: var(--mat-lcd-ink); }
+.station-caption { font-family: var(--font-ui); fill: var(--ink-3); }
+
+/* the number written on the strip in step 1 — marker ink on polystyrene */
+.strip-num {
+  font-family: var(--font-mono); font-weight: 500;
+  fill: var(--ink-1); opacity: 0;
+}
+.strip-svg.is-labeled .strip-num { opacity: 1; }
+
+/* =============================================================================
+ * Wells (dynamic paint)
+ *
+ * CRITICAL: the runtime paints these by setting a CUSTOM PROPERTY on the well
+ * group (--well-paint), never an inline style="fill:…".  An inline fill would
+ * outrank the light-box rules below and the Module 2 read would show nothing.
+ * ========================================================================== */
+.well { cursor: pointer; outline: none; }
+.well-body     { stroke: var(--mat-line); }
+.well-face     { fill: var(--mat-glass-sheen); fill-opacity: .12; stroke: var(--mat-line); }
+.well-liquid   { fill: var(--well-paint, var(--mat-cavity)); }
+.well-meniscus { fill: var(--well-paint, var(--mat-cavity)); }
+.well-sheen    { fill: var(--mat-glass-sheen); }
+/* the meniscus, drawn as a line: this is how you read a colourless liquid */
+.well-level    { stroke: var(--mat-line); stroke-width: 1.1; opacity: 0; }
+.well-ring     { stroke: var(--accent); }
+.well-spill    { fill: var(--well-paint, var(--state-warn)); }
+.well-liquid, .well-meniscus {
+  transition: fill var(--dur-2) var(--ease-out);
+}
+.well:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---- drag must not paint a text selection ------------------------------
+   interact.js only moves the element; the browser still begins a native
+   selection at the mousedown point and drags it across the page.  A selection
+   starts at its mousedown TARGET, so making the grabbable things unselectable
+   prevents it at the source; the body rule then stops an already-live
+   selection from extending while a drag is in flight. */
+.pipette, .tool-holder, .strip-svg, .station, .tray-item, .cmp-chip {
+  -webkit-user-select: none; user-select: none;
+}
+body.tool-active, body.dragging { -webkit-user-select: none; user-select: none; }
+
+/* stations */
+.station { cursor: pointer; transition: transform var(--dur-1) var(--ease-out); outline: none; }
+.station:hover { transform: translateY(-2px); }
+.station:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+/* ---- guidance: a drawn ring, not a neon blur ---------------------------- */
+.next-target .well-ring {
+  stroke: var(--accent); stroke-width: 3;
+  animation: ringdraw 1.6s var(--ease-out) infinite;
+}
+@keyframes ringdraw {
+  0%   { opacity: 0; transform: scale(.94); }
+  35%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+.well-ring { transform-box: fill-box; transform-origin: 50% 50%; }
+.next-target:not(.well) { animation: edgepulse 1.6s var(--ease-out) infinite; }
+@keyframes edgepulse {
+  0%,100% { filter: drop-shadow(0 0 0 transparent); }
+  50%     { filter: drop-shadow(0 0 3px var(--accent)); }
+}
+.hot-ok { filter: drop-shadow(0 0 3px var(--state-ok)); }
+.hot-no { filter: drop-shadow(0 0 3px var(--state-warn)); }
+.dwelling { animation: dwellcharge .4s var(--ease-out) forwards; }
+@keyframes dwellcharge {
+  from { filter: drop-shadow(0 0 1px var(--state-ok)); }
+  to   { filter: drop-shadow(0 0 7px var(--state-ok)); }
+}
+
+/* =============================================================================
+ * The tool layer
+ * ========================================================================== */
+#tool-layer { position: absolute; inset: 0; pointer-events: none; z-index: 50; overflow: visible; }
+.pipette {
+  position: absolute; top: 0; left: 0; width: 54px; height: 180px;
+  pointer-events: auto; cursor: grab;
+  filter: var(--elev-tool);
+  touch-action: none; will-change: transform;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+.pipette.grabbing, .tool-holder.grabbing { cursor: grabbing; }
+.tool-holder {
+  position: absolute; top: 0; left: 0;
+  pointer-events: auto; cursor: grab;
+  filter: var(--elev-tool); touch-action: none; will-change: transform;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+#transfer-holder .transfer-pipet { width: 34px; height: 170px; display: block; }
+#marker-holder .marker { width: 26px; height: 124px; display: block; }
+/* a tool that this step does not use is not on the bench */
+.tool-stowed { opacity: 0; pointer-events: none; }
+.droplet { z-index: 60; }
+
+/* =============================================================================
+ * Hand control — the camera switch, its panel, and the ring on the bench
+ *
+ * The panel is a piece of bench equipment like any other, so it is built from
+ * the same tokens and belongs to whichever bench the student has chosen.  It
+ * is FIXED rather than part of the sidebar because hand control is also on
+ * during the briefing and in Module 2, and the sidebar exists in neither.
+ * ========================================================================== */
+
+/* ---- the switch in the masthead ---------------------------------------- */
+.handpick { display: flex; align-items: center; gap: var(--sp-3); }
+.handtoggle {
+  font: inherit; font-size: var(--step--1);
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-1); color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.handtoggle:hover { background: var(--surface-2); color: var(--ink-1); }
+.handtoggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.handtoggle[aria-pressed="true"] {
+  background: var(--accent); border-color: var(--accent); color: var(--ink-on-accent);
+}
+.handtoggle__led {
+  width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%;
+  background: var(--mat-led-off);
+}
+.handtoggle[data-mode="live"] .handtoggle__led { background: var(--mat-led-ok); }
+.handtoggle[data-mode="error"] .handtoggle__led { background: var(--sci-hazard); }
+.handtoggle[data-mode="starting"] .handtoggle__led,
+.handtoggle[data-mode="loading"] .handtoggle__led {
+  background: var(--mat-led-warn); animation: ledwork 1s steps(2, jump-none) infinite;
+}
+
+/* ---- the panel ---------------------------------------------------------- */
+/* Bottom LEFT to begin with: the tools rest on the open bench at the bottom
+   RIGHT, and a panel sitting on top of the pipette would be a panel between
+   the student and the one thing they have to reach for.
+
+   To BEGIN with, because there is no corner of this page that is free.  The
+   foot of the sidebar is the end of the procedure list, which is exactly what
+   a student reads while they work; so the panel is draggable by its own
+   header and stays wherever it is put, including across being switched off
+   and on again.  js/reposition.js does the moving — the same module the
+   strips and the towels use, so there is one clamp and one set of arrow
+   keys behind both. */
+.handpanel {
+  --camera-width: 192px;
+  position: fixed; left: var(--sp-4); bottom: var(--sp-4); z-index: 190;
+  transform: translate(var(--slide-x, 0px), var(--slide-y, 0px));
+  width: 248px; padding: var(--sp-3);
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  background: var(--surface-1);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-2);
+}
+.handpanel__head {
+  display: flex; align-items: center; gap: var(--sp-2);
+  cursor: grab; touch-action: none; user-select: none;
+}
+.handpanel__head .minihead { flex: 1 1 auto; margin: 0; white-space: nowrap; }
+/* the two buttons are not a handle: ignoreFrom in js/handcontrol.js keeps a
+   drag off them, and the cursor has to say the same thing */
+.handpanel__head .handpanel__btn { cursor: pointer; }
+.handpanel__head .grip { margin-left: 0; }
+.handpanel.is-moving .handpanel__head { cursor: grabbing; }
+/* picked up: the one token set has no third elevation, so the lift is the
+   second one doubled rather than a new colour invented here */
+.handpanel.is-moving { box-shadow: var(--elev-2), var(--elev-2); }
+.handpanel__led {
+  width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%;
+  background: var(--mat-led-off);
+}
+.handpanel[data-mode="live"] .handpanel__led { background: var(--mat-led-ok); }
+.handpanel[data-tracking="lost"] .handpanel__led { background: var(--mat-led-warn); }
+.handpanel[data-mode="error"] .handpanel__led { background: var(--sci-hazard); }
+.handpanel[data-mode="starting"] .handpanel__led,
+.handpanel[data-mode="loading"] .handpanel__led {
+  background: var(--mat-led-warn); animation: ledwork 1s steps(2, jump-none) infinite;
+}
+@keyframes ledwork { from { opacity: 1; } to { opacity: .35; } }
+
+.handpanel__btn {
+  font: inherit; font-size: var(--step--1); line-height: 1;
+  min-width: 26px; min-height: 26px; padding: 3px 6px; cursor: pointer;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2); color: var(--ink-2);
+}
+.handpanel__btn:hover { background: var(--surface-3); color: var(--ink-1); }
+.handpanel__btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* The picture is mirrored: a student moving their hand right has to see it
+   move right, or aiming becomes a puzzle rather than a movement. */
+.handpanel__cam {
+  position: relative; align-self: center;
+  width: var(--camera-width); height: calc(var(--camera-width) / var(--camera-ratio, 1.333333)); overflow: hidden;
+  border-radius: var(--radius-sm); background: var(--surface-3);
+}
+.handpanel__cam video {
+  display: block; width: var(--camera-width); height: calc(var(--camera-width) / var(--camera-ratio, 1.333333));
+  object-fit: fill; transform: scaleX(-1);
+}
+.handpanel__cam canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+/* Folded away, the video keeps its size and is CLIPPED rather than removed:
+   a display:none video is one the browser may stop decoding, and a video that
+   has stopped decoding is a hand that has stopped being tracked.  The key
+   beneath it IS removed — it is text, and once the four gestures are learnt it
+   is only standing on the procedure list.  Folded, the panel is its title and
+   the one line that says what a press would do. */
+.handpanel--folded .handpanel__cam { height: 0; }
+.handpanel--folded .handkeys { display: none; }
+.handpanel--folded .pipette-cal { display: none; }
+.handpanel--real .handkeys { display: none; }
+.handpanel { max-height: calc(100dvh - 2 * var(--sp-4)); overflow-y: auto; }
+.handpanel__cam { flex-shrink: 0; }
+.pipette-cal { border-top: var(--hairline) solid var(--line); padding-top: var(--sp-2); }
+.pipette-cal__mode { display: grid; gap: 4px; font-size: var(--step--2); color: var(--ink-2); }
+.pipette-cal select {
+  width: 100%; padding: 5px; font: inherit; color: var(--ink-1);
+  background: var(--surface-2); border: var(--hairline) solid var(--line-strong); border-radius: var(--radius-sm);
+}
+.pipette-cal select:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.pipette-cal__title { margin: var(--sp-2) 0 4px; font-size: var(--step--1); font-weight: 600; }
+.pipette-cal__status { margin: 0; font-size: var(--step--2); line-height: 1.4; color: var(--ink-2); }
+.pipette-cal__help { margin: var(--sp-2) 0; font-size: var(--step--2); line-height: 1.35; color: var(--ink-3); }
+.pipette-cal__actions { display: flex; flex-wrap: wrap; gap: 5px; }
+.pipette-cal__actions button { padding: 5px 7px; min-height: 30px; font-size: var(--step--2); }
+.pipette-cal [hidden] { display: none; }
+.pipette--hand-buttons .is-button-selected > rect:first-child { stroke: var(--accent); stroke-width: 2; }
+
+.handpanel__say {
+  margin: 0; min-height: 2.6em;
+  font-size: var(--step--1); line-height: 1.3; color: var(--ink-1);
+  text-wrap: pretty;
+}
+.handkeys {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 1px;
+  font-size: var(--step--2); line-height: 1.3; color: var(--ink-3);
+}
+.handkeys li {
+  padding: 2px var(--sp-2); border-left: 2px solid transparent;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.handkeys b { font-weight: 600; color: var(--ink-2); }
+.handkeys li.is-live {
+  border-left-color: var(--state-ok); background: var(--surface-2); color: var(--ink-1);
+}
+.handkeys li.is-live b { color: var(--ink-1); }
+
+/* The checklist already spends whatever height is left; while the camera
+   panel is on the screen there is 250px less of it, and the list is told so
+   rather than being left to slide underneath. */
+body.hand-on #checklist { max-height: calc(100vh - 720px); min-height: 84px; }
+
+/* ---- the bench, worked by a real arm ------------------------------------
+   A mouse reaches the top of the screen for nothing.  An ARM reaches it by
+   going up, and the hand has to stay inside the camera's picture while it
+   does — so a reagent tube a hundred pixels below the masthead is a tube
+   bought with a raised elbow, and the rack under it is worse.
+
+   The equipment column has spare height at its foot and none at its head, so
+   the two cards are slid down into it: the tubes, the tip box and the waste
+   all land in the middle band of the screen, where a hand held comfortably in
+   front of the chest already is.  The column still ends well inside the bench,
+   so this costs the one-screen fit nothing.  It applies only while the camera
+   is on — with a mouse there is nothing to fix.
+
+   How far down is MEASURED, not guessed at, in exactly the way --strip-w is:
+   main.js reads the height actually left under each column and spends it, so
+   a short screen slides less rather than growing a scrollbar.
+
+   The working column gets the same treatment, and gains the most from it: the
+   strips are where a hand spends nearly all of its time — ninety-odd wells —
+   and while they sat directly under the masthead, reaching the top row meant
+   lifting the hand clean out of the camera's picture.  Moving the timer into
+   the equipment column is what freed the height to do it with. */
+body.hand-on .shelf { padding-top: var(--shelf-drop, 0px); }
+body.hand-on .surfaces { padding-top: var(--surfaces-drop, 0px); }
+
+/* ---- the hand itself ----------------------------------------------------
+   Drawn from the same 21 landmarks the gestures are read from, so what is on
+   the bench cannot disagree with what the engine believes.  Open enough to
+   see a well through: the palm is a wash, the bones carry the shape, and the
+   colour is the whole state — reaching, holding, pressing.
+
+   It is NOT a pointer with a hotspot to hunt for.  The palm is drawn centred
+   on the point the bench is aimed with, so "put your palm on the pipette" is
+   both the instruction and exactly what happens. */
+.handglove {
+  position: fixed; left: 0; top: 0; width: 100%; height: 100%;
+  z-index: 300; pointer-events: none; overflow: visible;
+  opacity: 0; transition: opacity var(--dur-1) var(--ease-out);
+  --glove: var(--accent);
+  --glove-ready: var(--state-ok);
+  --glove-fill: color-mix(in srgb, var(--surface-1) 93%, var(--accent));
+}
+:root[data-theme="instrument"] .handglove {
+  --glove-ready: color-mix(in srgb, var(--state-ok) 65%, var(--ink-1));
+  --glove-fill: color-mix(in srgb, var(--surface-2) 72%, var(--ink-1));
+}
+.handglove.is-on { opacity: 1; }
+.handglove.is-on.is-lost { opacity: .25; }
+.handglove.is-lost .handglove__aim { visibility: hidden; }
+
+/* A pale hand with an inked outline: the fill is the bench's own paper, so
+   the wells underneath stay readable through it, and the rim is what carries
+   the state.  The rim is grown by the filter in js/handcontrol.js — see the
+   note there for why it cannot simply be a stroke. */
+.handglove__palm, .handglove__wrist, .handglove__bone {
+  fill: none; stroke: var(--glove-fill);
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.handglove__palm { fill: var(--glove-fill); }
+.handglove__ink { flood-color: var(--glove); }
+
+/* Depth.  The cast shadow says the hand is ABOVE the bench rather than
+   printed on it; the shading and the highlight say which way up it is.  All
+   three are laid on the finished silhouette by the filter in
+   js/handcontrol.js, so none of them breaks where two fingers overlap.
+
+   Deliberately quiet: this is a hand held over a 34 px well, and a heavy
+   shadow would cost more in legibility than the depth is worth. */
+.handglove__cast  { flood-color: var(--ink-1); flood-opacity: 0.16; }
+.handglove__glow  { flood-color: var(--glove); flood-opacity: 0.10; }
+.handglove__shade { flood-color: var(--ink-2); flood-opacity: 0.10; }
+.handglove__lite  { flood-color: var(--surface-1); flood-opacity: var(--glove-lite, 0.32); }
+.handglove__details { opacity: .42; }
+.handglove.is-grip .handglove__details { opacity: .28; }
+.handglove__cuff {
+  fill: var(--surface-2); stroke: var(--glove); stroke-width: 1;
+  stroke-linejoin: round;
+}
+.handglove__crease, .handglove__knuckles {
+  fill: none; stroke: var(--glove); stroke-width: .8; stroke-linecap: round;
+}
+.handglove__hotspot { fill: var(--surface-1); stroke: var(--glove); stroke-width: 1; }
+.handglove.is-grip .handglove__hotspot { opacity: .45; }
+.handglove__dot { fill: var(--glove); stroke: none; }
+.handglove__progress {
+  fill: none; stroke: var(--glove); stroke-width: 2; stroke-linecap: round;
+  stroke-dasharray: 100; stroke-dashoffset: 100;
+}
+.handglove__aim { --glove: var(--accent); }
+.handglove__aim.is-ready { --glove: var(--glove-ready); }
+.handglove__aim.is-blocked { --glove: var(--state-warn); }
+.handglove__aim-halo { fill: none; stroke: var(--surface-1); stroke-width: 4; opacity: .9; }
+.handglove__aim-ring { fill: none; stroke: var(--glove); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.handglove__aim.is-ready .handglove__aim-ring { stroke-dasharray: none; }
+.handglove.is-press .handglove__aim-ring { stroke-width: 3; }
+.handglove.is-drag { --glove: var(--glove-ready); }
+
+/* close enough to take hold of something: the hand leans in */
+.handglove.is-reach { --glove: var(--glove-ready); }
+/* holding it — the tool is now the thing to watch, so the hand steps back */
+.handglove.is-grip { --glove: var(--glove-ready); }
+.handglove.is-eject { --glove: var(--state-warn); }
+
+/* The tool that closing your hand would pick up says so itself.  Answering
+   "which one?" on the object is worth more than any amount of precision in a
+   pointer: the student stops aiming and simply closes their hand. */
+.tool-reach { filter: var(--elev-tool) drop-shadow(0 0 5px var(--state-ok)); }
+
+@media (max-height: 820px) {
+  .handpanel { width: 240px; --camera-width: 164px; }
+}
+
+/* The working LED is decoration, not an affordance — the panel says in words
+   what it is doing — so unlike .next-target and .dwelling it is simply off. */
+@media (prefers-reduced-motion: reduce) {
+  .handpanel__led, .handtoggle__led { animation: none !important; }
+  .handglove { transition: none; }
+}
+
+/* =============================================================================
+ * Module 2 — the light box and the worksheet
+ * ========================================================================== */
+.analysis {
+  margin-top: var(--sp-3);
+  max-width: 1280px;
+  background: var(--surface-1);
+  color: var(--ink-1);
+  border: var(--hairline) solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: var(--sp-4) clamp(var(--sp-4), 3vw, var(--sp-5));
+  box-shadow: var(--elev-2);
+}
+.analysis[hidden] { display: none; }
+.analysis__head { max-width: none; margin-bottom: var(--sp-3); }
+.analysis__head h2 { font-size: var(--step-2); margin: var(--sp-1) 0 var(--sp-2); text-wrap: balance; }
+.analysis__lede { color: var(--ink-2); text-wrap: pretty; }
+
+/* the light box itself: a diffused white panel the strips lie on */
+.lightbox-wrap { position: relative; margin-bottom: var(--sp-4); }
+.lightbox-frame {
+  background:
+    linear-gradient(180deg, oklch(100% 0 0) 0%, oklch(99% .002 250) 58%, oklch(95% .004 250) 100%);
+  border: 1px solid oklch(84% .006 250);
+  border-radius: 8px;
+  padding: var(--sp-3);
+  box-shadow: inset 0 0 40px oklch(96% .004 250), var(--elev-2);
+  display: flex; flex-direction: column; gap: var(--sp-2);
+}
+#lightbox-strips { display: flex; flex-direction: column; gap: var(--sp-3); align-items: center; }
+/* the same cap as the bench: a strip blown up to the full width of the card is
+   no easier to read a colour off, it just costs a screenful of scrolling.
+   analysis.js appends the SVG straight into the column, with no .strip-host
+   around it, so the cap goes on the svg. */
+#lightbox-strips .strip-svg { width: min(100%, var(--strip-w)); }
+.readbench__hint {
+  font-size: var(--step--1); color: var(--ink-3);
+  margin-top: var(--sp-2); max-width: 74ch;
+}
+
+/* the colour chip you lift out of a well and slide along the standards */
+/* parked clear of the strips: the chip is meant to be dragged ONTO them, so
+   it must not start life covering well 1 */
+#comparator { position: absolute; right: var(--sp-3); bottom: calc(-1 * var(--sp-2)); }
+.cmp-chip {
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: 4px 8px 4px 4px;
+  background: var(--surface-1);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--elev-2);
+  cursor: grab; touch-action: none;
+  opacity: .55;
+}
+.cmp-chip.is-loaded { opacity: 1; }
+.cmp-chip:active { cursor: grabbing; }
+.cmp-swatch {
+  width: 30px; height: 44px; border-radius: 3px;
+  border: 1px solid oklch(72% .01 250);
+  background: var(--surface-3);
+}
+.cmp-label { font-family: var(--font-mono); font-size: var(--step--2); color: var(--ink-2); }
+
+/* ---- the worksheet ------------------------------------------------------ */
+.worksheet {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: var(--hairline) solid var(--line);
+}
+.worksheet__h { font-size: var(--step-1); margin-bottom: var(--sp-1); }
+.worksheet__lede { color: var(--ink-2); font-size: var(--step--1); margin-bottom: var(--sp-3); max-width: 80ch; }
+.worksheet__actions { margin-top: var(--sp-3); display: flex; gap: var(--sp-3); flex-wrap: wrap; align-items: center; }
+
+.table-scroll { overflow-x: auto; }
+.sheet { border-collapse: collapse; width: 100%; min-width: 660px; }
+.sheet--narrow { min-width: 420px; }
+.sheet th, .sheet td {
+  border: var(--hairline) solid var(--line);
+  padding: var(--sp-1); text-align: center;
+}
+.sheet thead th {
+  background: var(--surface-2);
+  font-family: var(--font-ui);
+  font-size: var(--step--2); font-weight: 600; letter-spacing: .04em;
+  color: var(--ink-1); vertical-align: middle;
+  padding: var(--sp-2) var(--sp-1);
+}
+.sheet thead th small {
+  display: block; font-weight: 400; letter-spacing: 0;
+  color: var(--ink-3); font-family: var(--font-mono);
+}
+.sheet .rowhead, .sheet tbody th {
+  text-align: left; background: var(--surface-2);
+  font-weight: 600; font-size: var(--step--1); white-space: nowrap;
+}
+.sheet .rowhead small { display: block; font-weight: 400; color: var(--ink-3); font-family: var(--font-mono); }
+.sheet .given { font-family: var(--font-mono); color: var(--ink-3); background: var(--surface-2); }
+.sheet .wellnum { font-family: var(--font-mono); text-align: center !important; }
+.sheet .samplename { text-align: left; font-size: var(--step--1); }
+.sheet .ditto { color: var(--ink-3); }
+.sheet tr.block-start td, .sheet tr.block-start th { border-top: 2px solid var(--line-strong); }
+.sheet tr.is-mine th { color: var(--accent); }
+.sheet .reporter { font-size: var(--step--2); color: var(--ink-3); }
+.sheet .pending { font-size: var(--step--2); color: var(--ink-3); font-style: italic; }
+.sheet .shared { font-family: var(--font-mono); color: var(--ink-2); }
+
+.cell {
+  width: 72px; height: 32px; text-align: center;
+  font-family: var(--font-mono); font-size: var(--step--1);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1); color: var(--ink-1);
+}
+.cell-select { width: 104px; font-family: var(--font-ui); }
+.cell:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.cell.right { border-color: var(--state-ok); box-shadow: inset 0 0 0 2px var(--state-ok); }
+.cell.wrong { border-color: var(--state-warn); box-shadow: inset 0 0 0 2px var(--state-warn); }
+
+/* ---- the chain of infection --------------------------------------------- */
+.chain-pool { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.chip-name {
+  font: inherit; font-size: var(--step--1);
+  padding: var(--sp-1) var(--sp-3);
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-1); color: var(--ink-1); cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out);
+}
+.chip-name:hover:not(:disabled) { background: var(--accent-soft); }
+.chip-name:disabled { opacity: .35; cursor: not-allowed; }
+.chain {
+  list-style: none; margin: 0 0 var(--sp-2); padding: var(--sp-3) 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2);
+  border-top: var(--hairline) solid var(--line);
+  border-bottom: var(--hairline) solid var(--line);
+  min-height: 62px;
+}
+.chain-empty { color: var(--ink-3); font-size: var(--step--1); }
+.chain-step {
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--accent-soft); color: var(--ink-1);
+  border-radius: var(--radius); font-size: var(--step--1); font-weight: 600;
+}
+.chain-n { font-family: var(--font-mono); color: var(--accent); font-weight: 500; }
+.chain-arrow { color: var(--ink-3); }
+
+/* =============================================================================
+ * Buttons, feedback, toast
+ * ========================================================================== */
+.btn {
+  font: inherit; font-size: var(--step-0); font-weight: 600;
+  border: var(--hairline) solid transparent;
+  border-radius: var(--radius);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.btn-sm { font-size: var(--step--1); padding: var(--sp-1) var(--sp-3); }
+.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.btn:disabled { opacity: .42; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--ink-on-accent); }
+.btn-primary:hover:not(:disabled) { background: color-mix(in oklab, var(--accent) 86%, var(--ink-1)); }
+.btn-quiet { background: transparent; color: var(--ink-2); border-color: var(--line-strong); }
+.btn-quiet:hover:not(:disabled) { background: var(--surface-2); color: var(--ink-1); }
+
+.feedback { margin-top: var(--sp-3); font-size: var(--step--1); max-width: 88ch; text-wrap: pretty; }
+.feedback:empty { display: none; }
+.feedback.good { color: var(--state-ok); }
+.feedback.bad  { color: var(--ink-1); }
+.feedback.note { color: var(--ink-2); }
+/* plain bold, not the warn colour: a diagnostic that says "green is down"
+   should not render that phrase in red */
+.feedback b { color: inherit; font-weight: 600; }
+
+#toast {
+  position: fixed; left: 50%; bottom: var(--sp-4); transform: translateX(-50%);
+  background: var(--ink-1); color: var(--surface-1);
+  padding: var(--sp-2) var(--sp-4); border-radius: var(--radius);
+  font-size: var(--step--1); box-shadow: var(--elev-2);
+  opacity: 0; pointer-events: none; z-index: 210; max-width: min(90vw, 62ch);
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+#toast.show { opacity: 1; }
+
+/* =============================================================================
+ * Light-box mode — the bench recedes, the strips are back-lit
+ * ========================================================================== */
+/* The bench is not dimmed in Module 2, it is put away.  A greyed-out bench a
+   thousand pixels tall is not context — it is scrolling between the student
+   and the strips they are trying to read.  Leaving Module 2 brings it back. */
+:root[data-mode="lightbox"] .bench { display: none; }
+:root[data-mode="lightbox"] .well-face { fill-opacity: .06; }
+:root[data-mode="lightbox"] .well-sheen { opacity: .3; }
+
+/* =============================================================================
+ * Responsive
+ * ========================================================================== */
+@media (max-width: 1040px) {
+  .bench {
+    grid-template-columns: 1fr;
+    grid-template-areas: "side" "surfaces" "shelf";
+  }
+  .fig-host--split { grid-template-columns: 1fr; }
+  .briefing__figs { grid-template-columns: 1fr; }
+  .fig-block--wide { grid-column: auto; }
+}
+@media (max-width: 560px) {
+  .lab { padding: 0 var(--sp-3) var(--sp-5); }
+  .masthead { padding: var(--sp-4) var(--sp-3) var(--sp-3); align-items: flex-start; }
+  .masthead__tools { gap: var(--sp-3); }
+  .themepick { flex-wrap: wrap; }
+  .briefing, .analysis { padding-left: var(--sp-3); padding-right: var(--sp-3); }
+}
+
+/* ---- short viewports: 15" laptops --------------------------------------
+   A 15" laptop at 125% scaling is about 683px of viewport once browser chrome
+   is gone.  The briefing is the whole first screen, so reaching the two Start
+   buttons must not require a long scroll.  Trim the CHROME — wrapper padding
+   and internal gaps — and leave the type sizes and the case histories alone,
+   because shrinking those is what makes a page feel crammed. */
+@media (max-height: 900px) {
+  .masthead { padding-top: var(--sp-3); padding-bottom: var(--sp-3); }
+  .masthead__title { font-size: var(--step-3); }
+  .lab { padding-bottom: var(--sp-3); }
+  .briefing { margin-bottom: var(--sp-2); }
+  .briefing__lede h2 { margin-top: 0; }
+  .briefing__figs { margin: var(--sp-3) 0; padding: var(--sp-3) 0; }
+  .briefing__actions { margin-top: var(--sp-3); }
+}
+@media (max-height: 700px) {
+  .briefing { padding: var(--sp-3) clamp(var(--sp-3), 2vw, var(--sp-4)); }
+  .briefing__lede h2 { font-size: var(--step-2); }
+  .briefing__figs { gap: var(--sp-3); }
+  .cohort__btn { padding-top: var(--sp-1); padding-bottom: var(--sp-1); }
+  .minihead { margin-bottom: var(--sp-1); padding-bottom: 2px; }
+}
+
+/* ---- reduced motion -----------------------------------------------------
+   The two AFFORDANCE animations are replaced, never removed: .next-target is
+   the only cue telling a student what to do next, and .dwelling is the sole
+   feedback that hover-to-act is charging.  Deleting them would break the
+   simulator for exactly the students who set this preference. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .next-target .well-ring { animation: none; opacity: 1; transform: none; stroke-width: 3; }
+  .next-target:not(.well) { animation: none; filter: drop-shadow(0 0 3px var(--accent)); }
+  .dwelling { animation: none; filter: drop-shadow(0 0 7px var(--state-ok)); }
+}

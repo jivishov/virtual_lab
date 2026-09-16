@@ -46,6 +46,13 @@ const labs = [
         link: "experiments/lab-studio/"
     },
     {
+        id: 14,
+        translationKey: "elisaassay",
+        type: "lab",
+        icon: "🧫",
+        link: "experiments/elisa_assay/"
+    },
+    {
         id: 4,
         translationKey: "nuclearchemistry",
         type: "simulation",
