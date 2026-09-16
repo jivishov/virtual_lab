@@ -23,6 +23,69 @@
   var currentOwner = null;     // camera and mouse cannot move the same tool
   var registry = {};           // id -> { el, tip }
 
+  /* The protocol draws wash buffer from an open vessel with a disposable
+     transfer pipet.  Keep the legacy washBottle() API and .wash-bottle class
+     because stations.js/main.js use them as stable hooks, but render the
+     physical source as a labelled 100 mL beaker instead of a squeeze bottle. */
+  function installWashBufferBeaker() {
+    if (!Lab.assets || typeof Lab.assets.washBottle !== 'function') return;
+    Lab.assets.washBottle = function () {
+      var cfg = Lab.config;
+      var paint = (Lab.theme && Lab.theme.sci) ? Lab.theme.sci('WASH', 'fill') : cfg.REAGENTS.WASH.fill;
+      var dark = (Lab.theme && Lab.theme.sci) ? Lab.theme.sci('WASH', 'dark') : cfg.REAGENTS.WASH.dark;
+      return '' +
+      '<svg class="station wash-bottle wash-beaker" data-station="wash" data-reagent="WASH" ' +
+          'style="--tube-paint:' + paint + ';--tube-cap:' + dark + '" viewBox="0 0 110 168" ' +
+          'role="button" tabindex="0" aria-label="100 mL beaker containing wash buffer" ' +
+          'xmlns="http://www.w3.org/2000/svg">' +
+        '<defs>' +
+          '<linearGradient id="wash-glass" x1="0" y1="0" x2="1" y2="0">' +
+            '<stop offset="0" stop-color="#dfeaf0" stop-opacity=".72"/>' +
+            '<stop offset=".24" stop-color="#ffffff" stop-opacity=".22"/>' +
+            '<stop offset=".72" stop-color="#ffffff" stop-opacity=".08"/>' +
+            '<stop offset="1" stop-color="#c9d8e0" stop-opacity=".62"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="wash-liquid" x1="0" y1="0" x2="0" y2="1">' +
+            '<stop offset="0" stop-color="var(--tube-paint)" stop-opacity=".72"/>' +
+            '<stop offset="1" stop-color="var(--tube-paint)" stop-opacity=".92"/>' +
+          '</linearGradient>' +
+          '<clipPath id="wash-beaker-clip">' +
+            '<path d="M24 34 L86 34 L82 143 Q81 150 73 151 L37 151 Q29 150 28 143 Z"/>' +
+          '</clipPath>' +
+        '</defs>' +
+        '<rect x="11" y="19" width="88" height="137" rx="4" fill="#fff" fill-opacity=".001"/>' +
+        '<path d="M23 35 L87 35 L83 143 Q82 151 73 152 L37 152 Q28 151 27 143 Z" ' +
+          'fill="url(#wash-glass)" class="m-line" stroke-width="1.4"/>' +
+        '<g clip-path="url(#wash-beaker-clip)">' +
+          '<rect x="27" y="74" width="56" height="78" fill="url(#wash-liquid)"/>' +
+          '<ellipse cx="55" cy="74" rx="28" ry="4.5" fill="var(--tube-paint)" fill-opacity=".86"/>' +
+          '<ellipse cx="55" cy="77" rx="23" ry="2.4" fill="#fff" fill-opacity=".16"/>' +
+        '</g>' +
+        '<path d="M21 34 Q55 27 89 34" fill="none" class="m-line" stroke-width="2"/>' +
+        '<path d="M24 36 Q55 42 86 36" fill="none" class="m-line" stroke-width=".8" opacity=".55"/>' +
+        '<path d="M86 35 L95 31 L87 43" fill="url(#wash-glass)" class="m-line" stroke-width="1"/>' +
+        '<g class="m-line" stroke-width=".75" opacity=".72">' +
+          '<line x1="69" y1="126" x2="82" y2="126"/>' +
+          '<line x1="73" y1="108" x2="82" y2="108"/>' +
+          '<line x1="69" y1="90" x2="82" y2="90"/>' +
+          '<line x1="73" y1="72" x2="82" y2="72"/>' +
+          '<line x1="69" y1="54" x2="82" y2="54"/>' +
+        '</g>' +
+        '<g class="station-caption" font-size="6.6" text-anchor="end">' +
+          '<text x="67" y="128">20</text><text x="71" y="110">40</text>' +
+          '<text x="67" y="92">60</text><text x="71" y="74">80</text>' +
+          '<text x="67" y="56">100</text>' +
+        '</g>' +
+        '<text x="40" y="49" class="station-caption" font-size="6.2" font-weight="700">100 mL</text>' +
+        '<rect x="31" y="116" width="32" height="22" rx="2.5" fill="#fff" fill-opacity=".82" ' +
+          'stroke="var(--tube-cap)" stroke-width=".7"/>' +
+        '<text x="47" y="124" text-anchor="middle" class="station-caption" font-size="5.9" font-weight="700">WASH</text>' +
+        '<text x="47" y="132" text-anchor="middle" class="station-caption" font-size="5.3">BUFFER</text>' +
+      '</svg>';
+    };
+  }
+  installWashBufferBeaker();
+
   function setLayer(el) { layer = el; }
   function active() { return current; }
   function elementOf(id) { return registry[id] && registry[id].el; }
@@ -35,7 +98,13 @@
   function place(el, x, y) {
     var p = posOf(el);
     p.x = x; p.y = y;
-    el.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+    /* Position with the individual CSS translate property instead of the
+       transform shorthand.  The transfer-pipet squeeze animation uses GSAP
+       scaleX on `transform`; when both position and squeeze owned the same
+       property, the animation could overwrite the drag translation and make
+       the pipet jump away from the pointer.  Independent translate + transform
+       properties compose, so dragging now remains 1:1 while the bulb squeezes. */
+    el.style.translate = x + 'px ' + y + 'px';
   }
 
   /** Put a tool's working point exactly on a screen point, with no animation. */
@@ -135,7 +204,7 @@
     }
     gsap.to(pos, {
       x: nx, y: ny, duration: 0.42, ease: 'power2.inOut',
-      onUpdate: function () { el.style.transform = 'translate(' + pos.x + 'px,' + pos.y + 'px)'; },
+      onUpdate: function () { el.style.translate = pos.x + 'px ' + pos.y + 'px'; },
       onComplete: function () { el.__pos = pos; if (cb) cb(); }
     });
   }
