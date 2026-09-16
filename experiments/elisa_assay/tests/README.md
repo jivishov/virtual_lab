@@ -16,9 +16,11 @@ Real-pipette calibration retains representative samples from each of three poses
 
 After the tool is acquired, uncertain curled-finger readings no longer repeatedly veto an otherwise usable calibrated thumb pose. Positively extended fingers still release grip permission. Missing or malformed thumb geometry never falls back to a projected 2D press. A sustained tracking interruption cancels a pending aspiration upstroke; visible release is required to resume. Free-hand presses use smoothing, hysteresis, and a resting baseline that does not absorb a slow press.
 
+A plausible intermediate position along a learned real-button stroke is distinguished from off-path ambiguity. Intermediate positions never fire a button edge, but have a bounded 1.6-second transition grace so a deliberate slow press/release can finish. Missing or malformed tracking still cancels the pending stroke; off-path ambiguity retains the short interruption grace.
+
 ## Validation completed
 
-Twenty synthetic-landmark tests pass. They cover rigid rotations, translation, scaling, mirrored geometry, degraded finger coordinates, malformed thumb coordinates, slow presses, duplicate-action prevention, release-to-aspirate, interruption recovery, and protocol-state changes. The tests load the production scripts into isolated VMs; test hooks are injected only in the test harness, not exposed by the app.
+Twenty-one synthetic-landmark tests pass. They cover rigid rotations, translation, scaling, mirrored geometry, degraded finger coordinates, malformed thumb coordinates, slow presses, duplicate-action prevention, release-to-aspirate, interruption recovery, and protocol-state changes. The continuous-stroke test articulates the thumb joints with fixed bone lengths, exercising down/up strokes lasting 200, 400, 600, 1000, and 1500 milliseconds each. The tests load the production scripts into isolated VMs; test hooks are injected only in the test harness, not exposed by the app.
 
 An offline Chromium DOM smoke check also passed for application boot, preservation of the wash-buffer beaker, switching real/free input, calibration capture/cancel controls, and panel cleanup. That smoke check did not exercise a webcam or run MediaPipe inference.
 

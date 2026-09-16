@@ -219,3 +219,23 @@ test('free-hand selection does not accidentally enable real calibrated actions',
   assert.equal(c.ready(),false);assert.equal(c.classify(c.measure(hand('press')),true).button,'unknown');
   assert.ok(c.measure(hand()).rise!==null); // free geometry remains available
 });
+
+test('continuous real down/up strokes pass through intermediate poses without cancellation',()=>{
+  for(const duration of [200,400,600,1000,1500]) {
+    const r=rig();calibrate(r);const c=r.Lab.pipetteControl;r.Lab._hand.setup(c.measure(hand()));
+    function moving(u) {
+      const p=hand(),side=-.12;
+      function next(from,len,angle){return {x:from.x+len*Math.sin(side),
+        y:from.y+len*Math.cos(side)*Math.cos(angle),z:from.z+len*Math.cos(side)*Math.sin(angle)};}
+      p[3]=next(p[2],.025,.95*u);p[4]=next(p[3],.02,1.9*u);return p;
+    }
+    function feed(u,t){r.now(t);r.Lab._hand.real(c.classify(c.measure(moving(u)),true),t);}
+    for(let t=0;t<=200;t+=20)feed(0,t);
+    for(let t=220;t<=220+duration;t+=20)feed((t-220)/duration,t);
+    for(let t=240+duration;t<=540+duration;t+=20)feed(1,t);
+    assert.equal(r.actions.length,0,'No aspiration on downstroke');
+    for(let t=560+duration;t<=560+2*duration;t+=20)feed(1-(t-560-duration)/duration,t);
+    for(let t=580+2*duration;t<=980+2*duration;t+=20)feed(0,t);
+    assert.deepEqual(r.actions,['aspirate'],'One upstroke at duration '+duration);
+  }
+});

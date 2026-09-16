@@ -112,8 +112,12 @@
       var target = nearest(m.thumb, profile[key]);
       var vector = subVector(target.value, rest.value);
       var displacement = subVector(m.thumb, rest.value);
-      return { key: key, d: target.d, travel: distance(target.value, rest.value),
-        depth: Math.max(0, Math.min(1.2, dot(displacement, vector) / Math.max(1e-8, dot(vector, vector)))) };
+      var travel = distance(target.value, rest.value);
+      var depth = dot(displacement, vector) / Math.max(1e-8, dot(vector, vector));
+      var residual = distance(displacement, vector.map(function (v) { return v * depth; }));
+      return { key: key, d: target.d, travel: travel,
+        depth: Math.max(0, Math.min(1.2, depth)),
+        transition: depth > 0 && depth < 1.1 && residual < Math.max(travel * 0.22, profile.noise * 2) };
     }).sort(function (a, b) { return a.d - b.d; });
     var best = options[0], other = options[1];
     var restRange = Math.max(Math.min(options[0].travel, options[1].travel) * 0.30, profile.noise * 2);
@@ -121,7 +125,11 @@
     if (holding && button !== 'rest' && best.depth > 0.58 &&
         best.d < Math.max(best.travel * 0.55, profile.noise * 3) &&
         best.d < rest.d * 0.80 && best.d + profile.noise < other.d * 0.85) button = best.key;
-    return { holding: holding, button: button, depth: best.depth, selection: best.key };
+    // A plausible position between rest and a learned button is not lost
+    // tracking. It must not fire an edge, but a slow physical stroke needs
+    // time to pass through it without being mistaken for an occlusion.
+    return { holding: holding, button: button, depth: best.depth, selection: best.key,
+      transition: holding && button === 'unknown' && options.some(function (o) { return o.transition; }) };
   }
   function subVector(a, b) { return a.map(function (v, i) { return v - b[i]; }); }
 

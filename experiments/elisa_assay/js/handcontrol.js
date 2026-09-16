@@ -1092,7 +1092,11 @@
     if (reading.button === 'unknown' || (realPress.on && reading.button !== 'rest' && reading.button !== realKind)) {
       realPress.since = null;
       if (realUnknownAt === null) realUnknownAt = stamp;
-      if (stamp - realUnknownAt >= GESTURE_GAP) {
+      // Valid intermediate thumb poses are expected during a slow stroke.
+      // Allow them to finish; missing/malformed tracking still cancels above.
+      // Off-path ambiguity keeps the short grace and never commits an edge.
+      var grace = reading.transition ? 1600 : GESTURE_GAP;
+      if (stamp - realUnknownAt >= grace) {
         realCycle = null; realNeedsRest = true; realRest.reset();
       }
       return;
