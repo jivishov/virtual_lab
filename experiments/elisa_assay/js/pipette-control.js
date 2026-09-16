@@ -62,11 +62,21 @@
       if (reach > 1.75 && alignment > 0.65) extended++;
     });
 
-    // Uncalibrated free-hand plunger: radial thumb travel relative to the
-    // wrist, not vertical distance in the camera image. The IP reduces tip
-    // jitter. Ejector direction is a separate, optional 3D palm reading:
-    // an unusable palm frame disables ejector selection, NOT the plunger.
-    var rise = (0.75 * thumb[3] + 0.25 * thumb[0]) - 1;
+    // Free-hand presses must measure thumb articulation, not just distance
+    // to the wrist. A moderate bend can follow an almost constant wrist
+    // radius, so the previous radial signal never crossed the press gate.
+    // Project the IP and tip from the thumb MCP onto the CMC->MCP axis and
+    // normalize by the two moving bones. No finger-knuckle frame is needed.
+    // The factor of two maps a moderate bend into the existing 0.16 gate;
+    // debounce, release hysteresis and interruption protection stay intact.
+    // Only `rise` changes: calibrated real-pipette features above, shape
+    // checks and button classification are deliberately unchanged.
+    var thumbAxis = unit(sub(p[2], p[1]));
+    var distalLength = bones[1] + bones[2];
+    var rise = 2 * (0.75 * dot(sub(p[4], p[2]), thumbAxis) +
+      0.25 * dot(sub(p[3], p[2]), thumbAxis)) / distalLength;
+    // Ejector direction remains an optional, separate palm reading. A
+    // missing across-knuckle frame cannot disable the plunger signal.
     var side = null;
     if (p[5] && p[9] && p[17]) {
       var palmSpan = length(sub(p[9], p[0]));
