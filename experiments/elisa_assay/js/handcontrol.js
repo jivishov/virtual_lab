@@ -106,9 +106,8 @@
     [0, 17]
   ];
 
-  /* Gesture distances are normalised to palm span or finger-bone length, so
-     moving toward the camera does not change what a gesture means. Palm span
-     is the median knuckle-to-wrist distance, independent of finger curl. */
+  /* Grip/pinch use palm or finger size; thumb travel uses the 3D thumb
+     chain in pipette-control.js, independent of the projected knuckle width. */
   var CURL_IN = 1.45;      // a finger counts as closed at this reach …
   var CURL_OUT = 1.75;     // … and opens again only well past it
   var GRIP_ON = 3;         // three closed fingers starts a grip
@@ -120,10 +119,8 @@
      first thing tried and is wrong: a thumb held up beside a fist is only
      half a palm span from that knuckle, so a hand at rest read as a hand
      pressing and the pipette dispensed on its own. */
-  var RISE_TRAVEL = 0.25;  // how far down the thumb travels to press
-  var RISE_MAX = 0.30;     // but never so little that a wobble counts as one
+  var RISE_TRAVEL = 0.16;  // how far down the thumb travels to press
   var RISE_BACK = 0.55;    // of that travel, to come off the button again
-  var RISE_FALL = 0.03;    // how fast a rest position learnt too high decays
 
   /* WHICH button that press was.  On a micropipette the plunger is on top of
      the barrel and the tip ejector is a second rod beside it, so the thumb
@@ -165,18 +162,13 @@
       if (!lm[i] || !isFinite(lm[i].x) || !isFinite(lm[i].y)) return null;
     }
 
+    var physical = Lab.pipetteControl ? Lab.pipetteControl.measure(world) : null;
     var wrist = pt(lm, WRIST, aspect);
     var span = median(MCPS.map(function (k) { return dist(wrist, pt(lm, k, aspect)); }));
     if (span < MIN_SPAN) return null;
 
-    /* The palm's own two axes, so a reading does not change when the student
-       tilts their wrist: UP runs along the palm toward the fingers, ACROSS
-       runs along the knuckles away from the thumb. */
-    var up = unit(sub(pt(lm, MIDDLE_MCP, aspect), wrist));
     var indexMcp = pt(lm, INDEX_MCP, aspect);
-    var across = unit(sub(pt(lm, PINKY_MCP, aspect), indexMcp));
     var thumb = pt(lm, THUMB_TIP, aspect);
-    var reach = sub(thumb, indexMcp);
 
     /* A finger is curled when its tip has come back toward its own knuckle.
        Measured against the first bone of that same finger rather than against
@@ -220,13 +212,13 @@
       span: span,
       curled: curled,
       extended: extended,
-      // where the thumb sits ALONG the palm: high while it rests above the
-      // knuckles on the plunger, low once it has pressed down past them
-      rise: dot(reach, up) / span,
-      // and where it sits ACROSS the palm: negative out on the thumb's own
-      // side, which is the side the tip ejector is on; positive once the
-      // thumb has crossed over the fingers
-      side: dot(reach, across) / span,
+      // World-space radial thumb travel: turning the fist must not masquerade
+      // as a plunger stroke. No 2D fallback when thumb geometry is invalid.
+      rise: physical ? physical.rise : null,
+      physical: physical,
+      thumbReady: !!physical,
+      // Optional world-space outward direction, used only for the ejector.
+      side: physical ? physical.side : null,
       // plain distance to the index knuckle — not used for either button,
       // kept because it is the number to look at when a hand will not read
       tuck: dist(thumb, indexMcp) / span,
@@ -314,7 +306,7 @@
     lit: null               // which row of the legend is lit
   };
 
-  var grip = new Gate(60, 220), press = new Gate(40, 60), pinch = new Gate(60, 120);
+  var grip = new Gate(60, 220), press = new Gate(60, 80), pinch = new Gate(60, 120);
   var neutral = new Gate(80);
   var ax = new Axis(), ay = new Axis();
   var restRise = 0;              // measured off this hand, once it holds a tool
@@ -322,7 +314,9 @@
   var pressKind = 'press';       // which button the thumb went down on
   var realPickup = new Gate(450), realPress = new Gate(55, 65), realRest = new Gate(90);
   var realReading = null, realKind = 'press', realNeedsRest = true;
-  var realCycle = null, realPickupLock = false;
+  var realCycle = null, realPickupLock = false, realUnknownAt = null;
+  var freeNeedsRest = false, freeRest = new Gate(90), ejectReady = new Gate(120);
+  var thumbSmooth = null, thumbStamp = 0, thumbTracked = false;
   var lastMove = 0;              // stamp of the previous carried frame
   var settleUntil = 0;
   var LOST_GRACE = 1800;
@@ -674,7 +668,6 @@
     var hand = lm ? readHand(lm, aspect, grip.on, result.worldLandmarks && result.worldLandmarks[0]) : null;
     if (!hand) { onHandLost(stamp); return; }
     if (Lab.pipetteControl) {
-      hand.physical = Lab.pipetteControl.measure(result.worldLandmarks && result.worldLandmarks[0]);
       Lab.pipetteControl.observe(hand.physical, stamp);
     }
     if (S.lostAt !== null) {
@@ -687,8 +680,9 @@
       if (!brief) {
         // Larger gaps rebase at the parked instrument. Single missed frames
         // keep their movement reference instead of swallowing the next move.
-        S.last = null; ax = new Axis(); ay = new Axis(); press.reset();
-        restRise = hand.rise; restSide = hand.side; settleUntil = stamp + 110;
+        S.last = null; ax = new Axis(); ay = new Axis(); press.since = null;
+        if (!S.held) { press.reset(); restRise = hand.rise; restSide = hand.side; }
+        settleUntil = stamp + 110;
       }
       S.lostAt = null;
     }
@@ -701,10 +695,12 @@
     // needs a fresh rest/press/release sequence after an actual tracking pause.
     grip.since = null; press.since = null; pinch.since = null;
     neutral.reset(); resetRealPress();
+    freeNeedsRest = true; freeRest.reset(); ejectReady.reset(); thumbSmooth = null;
     lastReach = { id: null, at: -1e9, point: null };
   }
 
   function onHandLost(stamp, interrupted) {
+    thumbTracked = false;
     if (S.lostAt === null) S.lostAt = stamp;
     // Resetting on every single miss starves both button gates: intermittent
     // detections can carry the tool, yet never finish a press or release.
@@ -746,7 +742,8 @@
     if (els.panel) attribute(els.panel, 'data-tracking', 'tracked');
     var control = Lab.pipetteControl;
     var realContext = control && control.enabled() && (S.held === 'pipette' || wantedTool() === 'pipette');
-    realReading = control ? control.classify(h.physical) : null;
+    realReading = control ? control.classify(h.physical, S.held === 'pipette') : null;
+    thumbTracked = h.thumbReady;
     if (control && control.calibrating()) {
       S.last = point; lastMove = stamp;
       say('Follow the three grip captures below.');
@@ -838,32 +835,7 @@
       updateRealButtons(realReading, stamp);
     } else if (S.held) {
       pinch.reset();
-      /* Where this thumb RESTS, tracked live: straight up to any new high,
-         and slowly back down, so a rest position learnt from one grip cannot
-         strand the next.  Both thresholds hang off it, and the one that
-         matters is that coming back to rest ALWAYS lets go of the button.
-
-         It did not, and that was the labelling bug: the trip had an absolute
-         ceiling under a floored rest, so a hand whose thumb sits low — which
-         is how anyone holds a marker, against a thin barrel rather than on
-         top of a fat one — pressed once and then sat latched down, because
-         its resting thumb was already below the height needed to release.
-         Every press after the first was swallowed, and the student was left
-         waving a marker at a strip that would not take it. */
-      if (stamp < settleUntil) {
-        restRise = h.rise; restSide = h.side; press.reset();
-      } else if (!press.on && press.since === null) {
-        restRise = h.rise > restRise ? Math.min(1.2, h.rise)
-                                     : restRise + (h.rise - restRise) * RISE_FALL;
-        restSide = restSide === null ? h.side : restSide + (h.side - restSide) * 0.08;
-      }
-      var trip = Math.min(RISE_MAX, restRise - RISE_TRAVEL);
-      var down = press.on ? h.rise < trip + RISE_TRAVEL * RISE_BACK : h.rise < trip;
-      if (stamp >= settleUntil && press.set(down, stamp) === 1) {
-        var out = Math.min(SIDE_OUT, (restSide === null ? 0 : restSide) - SIDE_TRAVEL);
-        pressKind = h.side < out ? 'eject' : 'press';
-        if (pressKind === 'eject') onEject(); else onPlunger();
-      }
+      updateFreeButtons(h, stamp);
     } else if (!grip.on && !realContext) {
       press.reset();
       restRise = h.rise; restSide = null;
@@ -886,6 +858,58 @@
     light(S.held ? (grip.since !== null ? 'open' : realContext && realPress.on ? realKind : press.on ? pressKind : 'grip') : (pinch.on ? 'click' : null));
     markReach(S.held ? null : near);
     drawGlove(lm, h, heldPalm() || point, near, stamp);
+  }
+
+  function updateFreeButtons(h, stamp) {
+    if (!h.thumbReady || !Number.isFinite(h.rise)) {
+      press.since = null; freeNeedsRest = true; freeRest.reset();
+      ejectReady.reset(); thumbSmooth = null;
+      return;
+    }
+    var dt = Math.max(1, Math.min(100, stamp - thumbStamp));
+    thumbSmooth = thumbSmooth === null ? h.rise
+      : thumbSmooth + (h.rise - thumbSmooth) * (1 - Math.exp(-dt / 35));
+    thumbStamp = stamp;
+    var rise = thumbSmooth;
+    if (!Number.isFinite(restRise)) {
+      // Pickup may precede the first usable thumb reading. Establish only a
+      // baseline here; no button edge can be emitted from that first pose.
+      restRise = rise; restSide = h.side; freeNeedsRest = false;
+      settleUntil = stamp + 180; press.reset(); freeRest.reset(); return;
+    }
+    if (freeNeedsRest) {
+      // Preserve the old release reference across occlusion. Re-learning a
+      // resting pose from a still-depressed thumb could generate a new press.
+      if (Number.isFinite(restRise) && freeRest.set(rise >= restRise - RISE_TRAVEL * 0.45, stamp) === 1) {
+        freeNeedsRest = false; freeRest.reset(); press.reset();
+        restRise = rise; restSide = h.side;
+      }
+      return;
+    }
+    if (stamp < settleUntil || !Number.isFinite(restRise)) {
+      restRise = rise; restSide = h.side; press.reset(); ejectReady.reset(); return;
+    }
+    if (!press.on && press.since === null) {
+      // Do not let the baseline follow a slow press down. Only small resting
+      // drift is adapted, with time-based smoothing independent of frame rate.
+      if (rise > restRise) restRise = rise;
+      else if (restRise - rise < 0.04) restRise += (rise - restRise) * (1 - Math.exp(-dt / 2000));
+    }
+    var out = h.side !== null && restSide !== null &&
+      h.side < Math.min(SIDE_OUT, restSide - SIDE_TRAVEL);
+    if (!press.on && rise > restRise - RISE_TRAVEL * 0.45) {
+      ejectReady.set(out, stamp);
+      if (!out && h.side !== null) restSide = restSide === null ? h.side : restSide + (h.side - restSide) * 0.03;
+    }
+    var trip = restRise - RISE_TRAVEL;
+    var down = press.on ? rise < trip + RISE_TRAVEL * RISE_BACK : rise < trip;
+    if (press.set(down, stamp) === 1) {
+      // An ejector needs a deliberate outward preparation, not one bad frame
+      // at the bottom of a normal plunger stroke.
+      pressKind = ejectReady.on && out && S.held === 'pipette' ? 'eject' : 'press';
+      ejectReady.reset();
+      if (pressKind === 'eject') onEject(); else onPlunger();
+    }
   }
 
   function endDrag() {
@@ -997,8 +1021,9 @@
     S.anchor = { x: r.width / 2, y: r.height * 0.42 };
     S.last = point; // pickup itself must not move the object
     restRise = h.rise; restSide = h.side;
-    settleUntil = stamp + 110;
-    press.reset();
+    settleUntil = stamp + 180;
+    press.reset(); freeNeedsRest = false; freeRest.reset(); ejectReady.reset();
+    thumbSmooth = null;
     resetRealPress();
     markReach(null);
     lastReach = { id: null, at: -1e9, point: null };
@@ -1024,7 +1049,7 @@
   /* --------------------------------------------------------------------- */
   function resetRealPress() {
     realPress.reset(); realRest.reset(); realPickup.reset();
-    realNeedsRest = true; realCycle = null;
+    realNeedsRest = true; realCycle = null; realUnknownAt = null;
     if (Lab.pipette && Lab.pipette.handButtons) Lab.pipette.handButtons(null);
   }
 
@@ -1065,8 +1090,14 @@
       depth: reading.button === 'rest' ? 0 : reading.depth
     });
     if (reading.button === 'unknown' || (realPress.on && reading.button !== 'rest' && reading.button !== realKind)) {
-      realPress.since = null; return;
+      realPress.since = null;
+      if (realUnknownAt === null) realUnknownAt = stamp;
+      if (stamp - realUnknownAt >= GESTURE_GAP) {
+        realCycle = null; realNeedsRest = true; realRest.reset();
+      }
+      return;
     }
+    realUnknownAt = null;
     var edge = realPress.set(reading.button !== 'rest', stamp);
     if (edge === 1) {
       realKind = reading.button;
@@ -1206,6 +1237,7 @@
         : near ? 'Close your hand to pick up the ' + toolName(near) + '.' : reachNote());
       return;
     }
+    if (!thumbTracked || freeNeedsRest) { say('Thumb tracking paused — show the thumb, then release it to resume.'); return; }
     if (grip.since !== null) { say('Opening your hand to place the ' + toolName(S.held) + '.'); return; }
     if (!t) { say('Carrying the ' + toolName(S.held) + '.'); return; }
     say(ev.ok ? 'Press your thumb: ' + actionWords(ev, t) : (ev.reason || 'Not here.'));
@@ -1755,6 +1787,6 @@
        count, the thumb's tuck and rise and the pinch for any 21 points, so a
        pose that will not register can be looked at rather than guessed at. */
     read: readHand,
-    stats: function () { return Object.assign({}, runtime, { pendingFrames: inFlight ? 1 : 0, trackingLost: S.lostAt !== null }); }
+    stats: function () { return Object.assign({}, runtime, { pendingFrames: inFlight ? 1 : 0, trackingLost: S.lostAt !== null, thumbTracked: thumbTracked, thumbGeometry: 'wrist-thumb-3d' }); }
   };
 })(window.Lab = window.Lab || {});
