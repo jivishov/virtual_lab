@@ -1,0 +1,36 @@
+name: Prepare isolated ELISA 3D dependencies
+on:
+  push:
+    branches: [elisa3d-build-20260917]
+    paths: [.github/workflows/elisa3d-dependencies.yml]
+permissions:
+  contents: read
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --prefix /tmp/elisa3d-deps --no-audit --no-fund three@0.180.0
+      - name: Package only the necessary runtime and shared controls
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from shutil import copy2
+          src=Path('/tmp/elisa3d-deps/node_modules/three')
+          dst=Path('/tmp/elisa-dependencies/three/vendor')
+          for name in ['build/three.module.js','build/three.core.js','examples/jsm/controls/OrbitControls.js','examples/jsm/geometries/RoundedBoxGeometry.js','LICENSE']:
+              relative=name.replace('build/','').replace('examples/jsm/','addons/')
+              target=dst/relative; target.parent.mkdir(parents=True,exist_ok=True);copy2(src/name,target)
+          for name in ['pipette-control.js','hand-worker.js']:
+              target=Path('/tmp/elisa-dependencies/js')/name; target.parent.mkdir(parents=True,exist_ok=True)
+              copy2(Path('experiments/elisa_assay/js')/name,target)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: elisa3d-dependencies
+          path: /tmp/elisa-dependencies
+          retention-days: 1
