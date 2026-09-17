@@ -1,0 +1,76 @@
+name: Build and verify isolated ELISA 3D
+on:
+  push:
+    branches: [elisa3d-build-20260917]
+    paths: [experiments/elisa_assay/three-build.b64]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Materialize new experiment files only
+        run: |
+          python3 - <<'PY'
+          import base64, io, pathlib, zipfile
+          payload=pathlib.Path('experiments/elisa_assay/three-build.b64')
+          with zipfile.ZipFile(io.BytesIO(base64.b64decode(payload.read_text()))) as z:
+              for entry in z.infolist():
+                  p=pathlib.PurePosixPath(entry.filename)
+                  assert '..' not in p.parts and not p.is_absolute()
+                  assert str(p)=='experiments/elisa_assay/index3d.html' or str(p).startswith('experiments/elisa_assay/three/')
+                  dest=pathlib.Path(str(p)); assert not dest.exists(), f'Refusing to replace {dest}'
+                  dest.parent.mkdir(parents=True,exist_ok=True); dest.write_bytes(z.read(entry))
+          PY
+      - name: Install pinned build and test dependencies
+        run: |
+          npm install --prefix /tmp/elisa3d-deps --no-audit --no-fund three@0.180.0 playwright@1.55.0
+          /tmp/elisa3d-deps/node_modules/.bin/playwright install --with-deps chromium
+      - name: Vendor the pinned 3D runtime for classroom use
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from shutil import copy2
+          src=Path('/tmp/elisa3d-deps/node_modules/three')
+          dst=Path('experiments/elisa_assay/three/vendor')
+          for name in ['build/three.module.js','build/three.core.js','examples/jsm/controls/OrbitControls.js','examples/jsm/geometries/RoundedBoxGeometry.js','LICENSE']:
+              relative=name.replace('build/','').replace('examples/jsm/','addons/')
+              target=dst/relative; target.parent.mkdir(parents=True,exist_ok=True);copy2(src/name,target)
+          PY
+      - name: Test protocol, mass balance, tips, washing and endpoint
+        run: node --test experiments/elisa_assay/three/tests/model.test.mjs experiments/elisa_assay/three/tests/gesture.test.mjs
+      - name: Verify the actual 3D page in Chromium
+        env:
+          NODE_PATH: /tmp/elisa3d-deps/node_modules
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 >/tmp/elisa-server.log 2>&1 &
+          node experiments/elisa_assay/three/tests/browser.test.cjs
+      - name: Assemble review artifact without font files
+        if: always()
+        run: |
+          mkdir -p /tmp/elisa-review
+          cp -r experiments/elisa_assay/three /tmp/elisa-review/three
+          cp experiments/elisa_assay/index3d.html /tmp/elisa-review/index3d.html
+          mkdir -p /tmp/elisa-review/js
+          cp experiments/elisa_assay/js/pipette-control.js experiments/elisa_assay/js/hand-worker.js /tmp/elisa-review/js/
+          cp -r experiments/elisa_assay/vendor /tmp/elisa-review/vendor
+          find /tmp/elisa-review -type f \( -iname '*.ttf' -o -iname '*.otf' -o -iname '*.woff' -o -iname '*.woff2' \) -delete
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: elisa3d-review
+          path: /tmp/elisa-review
+          retention-days: 7
+      - name: Commit verified new files on the isolated branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm experiments/elisa_assay/three-build.b64 .github/workflows/elisa3d-build.yml
+          git add experiments/elisa_assay/index3d.html experiments/elisa_assay/three
+          git commit -m 'Build isolated photorealistic ELISA 3D bench with verified kit protocol'
+          git push origin HEAD:elisa3d-build-20260917
