@@ -64,5 +64,54 @@
     <script src="header.js?v=2"></script>
     <script src="footer.js?v=2"></script>
     <script src="script.js?v=2"></script>
+    <script>
+      function addLatticeEnergyCard() {
+        const grid = document.getElementById('simulationsGrid');
+        if (!grid || grid.querySelector('[data-id="lattice-energy"]')) return;
+
+        const card = document.createElement('div');
+        card.className = 'lab-card';
+        card.setAttribute('data-id', 'lattice-energy');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', 'Launch Lattice Energy Lab');
+        card.innerHTML = `
+          <div class="lab-card-header simulation">
+            <div class="lab-icon">⚡</div>
+            <h3 class="lab-card-title">Lattice Energy Lab</h3>
+          </div>
+          <div class="lab-card-body">
+            <p class="lab-card-description">Compare ionic compounds by charge and ionic size, manipulate ion separation, and visualize why stronger electrostatic attraction produces a more exothermic lattice formation energy.</p>
+            <div class="lab-card-tags">
+              <span class="tag">Lattice Energy</span>
+              <span class="tag">Ionic Compounds</span>
+              <span class="tag">Electrostatics</span>
+              <span class="tag">Chemistry</span>
+            </div>
+          </div>
+          <div class="lab-card-footer">
+            <button class="launch-button simulation-btn" type="button">
+              <span>Launch Simulation</span>
+              <span>→</span>
+            </button>
+          </div>`;
+
+        const launch = () => { window.location.href = 'simulations/lattice_energy_lab/'; };
+        card.querySelector('button').addEventListener('click', launch);
+        card.addEventListener('click', event => {
+          if (!event.target.closest('button')) launch();
+        });
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            launch();
+          }
+        });
+        grid.appendChild(card);
+      }
+
+      document.addEventListener('DOMContentLoaded', addLatticeEnergyCard);
+      window.addEventListener('languageChanged', addLatticeEnergyCard);
+    </script>
 </body>
 </html>
