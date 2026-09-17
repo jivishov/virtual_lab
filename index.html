@@ -65,6 +65,34 @@
     <script src="footer.js?v=2"></script>
     <script src="script.js?v=2"></script>
     <script>
+      function addElisaVersionButtons() {
+        const card = document.querySelector('.lab-card[data-id="14"]');
+        if (!card) return;
+
+        const footer = card.querySelector('.lab-card-footer');
+        if (!footer || footer.dataset.elisaVersions === 'ready') return;
+
+        footer.dataset.elisaVersions = 'ready';
+        footer.innerHTML = `
+          <div class="launch-button-group">
+            <button class="launch-button" type="button" data-elisa-version="2d">
+              <span>2D version</span>
+              <span>→</span>
+            </button>
+            <button class="launch-button launch-button-secondary" type="button" data-elisa-version="3d">
+              <span>3D version</span>
+              <span>→</span>
+            </button>
+          </div>`;
+
+        footer.querySelector('[data-elisa-version="2d"]').addEventListener('click', () => {
+          window.location.href = 'experiments/elisa_assay/';
+        });
+        footer.querySelector('[data-elisa-version="3d"]').addEventListener('click', () => {
+          window.location.href = 'experiments/elisa_assay/elisa-3d.html';
+        });
+      }
+
       function addLatticeEnergyCard() {
         const grid = document.getElementById('simulationsGrid');
         if (!grid || grid.querySelector('[data-id="lattice-energy"]')) return;
@@ -110,8 +138,13 @@
         grid.appendChild(card);
       }
 
-      document.addEventListener('DOMContentLoaded', addLatticeEnergyCard);
-      window.addEventListener('languageChanged', addLatticeEnergyCard);
+      function enhanceIndexCards() {
+        addElisaVersionButtons();
+        addLatticeEnergyCard();
+      }
+
+      document.addEventListener('DOMContentLoaded', enhanceIndexCards);
+      window.addEventListener('languageChanged', enhanceIndexCards);
     </script>
 </body>
 </html>
