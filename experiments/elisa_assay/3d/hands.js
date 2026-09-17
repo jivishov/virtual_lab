@@ -25,9 +25,12 @@ function workerMain(){let detector=null;self.onmessage=async e=>{const m=e.data;
 function cameraMessage(e){const messages={NotAllowedError:'Camera permission was blocked. Open the deployed page in its own HTTPS tab and allow Camera in site permissions. Embedded previews may block camera access.',NotFoundError:'No camera was found. Connect or enable a webcam, then try again.',NotReadableError:'The camera could not be opened. Close other apps using it and check your operating-system camera permissions.',SecurityError:'This page is not allowed to use the camera. Open the deployed HTTPS page directly.',OverconstrainedError:'The camera could not satisfy the requested settings. Try another camera or browser.'};return messages[e?.name]||String(e?.message||e);}
 class HandInput{
  constructor(options){this.opt=options;this.video=options.video;this.canvas=options.overlay;this.gate=new GestureGate();this.profiles={};this.modeProfiles={free:this.profiles,real:{}};this.running=false;this.mode='free';this.captureState=null;this.lastSeen=0;this.lastMeasure=null;this.smooth=null;this.generation=0;this.detector=null;this.diagnostics=[];this.inFlight=false;document.addEventListener('visibilitychange',()=>{if(document.hidden)this.stop()});}
+ get calibrated(){return !!(this.profiles.rest&&this.profiles.press)}
+ get ready(){return this.running&&this.calibrated&&!this.captureState}
+ live(state,message){this.opt.tracking?.({state,message,ready:this.ready,calibrated:this.calibrated});}
  say(t){this.opt.status(t)}
- setMode(mode){if(!['free','real'].includes(mode))return;this.modeProfiles[this.mode]=this.profiles;this.mode=mode;this.profiles=this.modeProfiles[mode]||{};this.captureState=null;this.cancelStroke();this.opt.calibrated?.(Object.keys(this.profiles));this.say('Mode: '+(mode==='free'?'free hand':'real micropipette')+'. '+(this.profiles.press?'Calibration restored; relax the thumb before continuing.':'Capture Rest and Press for this mode.'));}
- async start(){if(this.running)return;const gen=++this.generation;this.running=true;this.opt.active?.(true);this.say('Requesting camera permission…');
+ setMode(mode){if(!['free','real'].includes(mode))return;this.modeProfiles[this.mode]=this.profiles;this.mode=mode;this.profiles=this.modeProfiles[mode]||{};this.captureState=null;this.cancelStroke();this.opt.calibrated?.(Object.keys(this.profiles));this.live(this.calibrated?'rest':'uncalibrated',this.calibrated?'Calibration restored. Relax the thumb.':'Capture Rest, then Press for this mode.');this.say('Mode: '+(mode==='free'?'free hand':'real micropipette')+'. '+(this.profiles.press?'Calibration restored; relax the thumb before continuing.':'Capture Rest and Press for this mode.'));}
+ async start(){if(this.running)return;const gen=++this.generation;this.running=true;this.opt.active?.(true);this.say('Requesting camera permission…');this.live('starting','Starting the camera…');
   try{
    if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)throw Error('Camera access requires a secure page. Open the deployed 3D page in a top-level HTTPS tab, not an embedded preview.');
    const stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:640},height:{ideal:480},facingMode:'user'},audio:false});
@@ -41,7 +44,8 @@ class HandInput{
    if(!this.worker){await this.loadMain(plans,gen)}
    if(gen!==this.generation)return;
    this.lastSeen=performance.now();this.lastFrameTime=-1;this.frameErrors=0;this.gate.reset();
-   this.say('Camera ready · '+this.backend+'. Capture Rest and Press; then grip a tool to pick it up.');
+   this.say('Camera ready · '+this.backend+'.');
+   this.live(this.calibrated?'rest':'uncalibrated',this.calibrated?'Calibration restored. Relax the thumb before pressing.':'Thumb control not calibrated: capture Rest, then Press.');
    this.loop=setInterval(()=>this.frame(),80);
   }catch(e){if(gen!==this.generation)return;this.stop();this.say(cameraMessage(e));}
  }
@@ -65,7 +69,7 @@ class HandInput{
  }
  frameError(message){this.cancelStroke();this.opt.lost?.();this.frameErrors=(this.frameErrors||0)+1;if(this.frameErrors>=4){this.stop();this.say('Hand tracking could not process camera frames. '+message)}else this.say('Tracking paused; no action committed. Hold the hand in view.');}
  async frame(){if(!this.running)return;
-  if(performance.now()-this.lastSeen>300){this.cancelStroke();this.opt.lost?.()}
+  if(performance.now()-this.lastSeen>300){this.cancelStroke();this.live('lost','Tracking paused. Keep wrist and thumb visible; no liquid transferred.');this.opt.lost?.()}
   if(this.inFlight||this.video.readyState<2||this.video.currentTime===this.lastFrameTime)return;
   this.lastFrameTime=this.video.currentTime;this.inFlight=true;const gen=this.generation,stamp=performance.now();
   try{if(this.worker){let bitmap=await createImageBitmap(this.video);if(gen!==this.generation||!this.worker){bitmap.close();return}this.worker.postMessage({type:'frame',bitmap,stamp},[bitmap]);}
@@ -73,19 +77,19 @@ class HandInput{
   }catch(e){this.inFlight=false;if(gen===this.generation)this.frameError(e.message)}
  }
  disposeWorker(){this.worker?.terminate();this.worker=null;if(this.workerURL)URL.revokeObjectURL(this.workerURL);this.workerURL=null;}
- stop(){this.generation++;this.running=false;this.loadCancel?.();this.loadCancel=null;clearInterval(this.loop);this.loop=null;this.disposeWorker();try{this.detector?.close()}catch(e){this.diagnostics.push('Close: '+e.message)}this.detector=null;this.stream?.getTracks().forEach(t=>t.stop());this.stream=null;this.video.pause?.();this.video.srcObject=null;this.captureState=null;this.inFlight=false;this.smooth=null;this.lastHand=null;this.cancelStroke();this.opt.active?.(false);this.opt.lost?.();}
+ stop(){this.generation++;this.running=false;this.loadCancel?.();this.loadCancel=null;clearInterval(this.loop);this.loop=null;this.disposeWorker();try{this.detector?.close()}catch(e){this.diagnostics.push('Close: '+e.message)}this.detector=null;this.stream?.getTracks().forEach(t=>t.stop());this.stream=null;this.video.pause?.();this.video.srcObject=null;this.captureState=null;this.inFlight=false;this.smooth=null;this.lastHand=null;this.cancelStroke();this.opt.active?.(false);this.live('off','Camera stopped. Mouse controls are available.');this.opt.lost?.();}
  cancelStroke(){this.gate.reset();this.opt.cancel?.()}
- capture(kind){if(!['rest','press','eject'].includes(kind))return;if(!this.running){this.say('Start the camera before calibrating.');return}this.captureState={kind,start:performance.now()+1300,end:performance.now()+3700,samples:[]};this.cancelStroke();this.say('Get ready: hold '+{rest:'your relaxed thumb in a pipette grip',press:'the thumb plunger press',eject:'the separate ejector press'}[kind]+'. Keep the thumb visible and gently vary your working angle.');}
- finishCapture(){let c=this.captureState;this.captureState=null;if(c.samples.length<8){this.say('Too few reliable thumb readings. Keep thumb and wrist visible and capture again.');return}
+ capture(kind){if(!['rest','press','eject'].includes(kind))return;if(!this.running){this.say('Start the camera before calibrating.');return}this.captureState={kind,start:performance.now()+1300,end:performance.now()+3700,samples:[]};this.cancelStroke();this.live('calibrating','Capturing '+kind+' — hold this thumb position.');this.say('Get ready: hold '+{rest:'your relaxed thumb in a pipette grip',press:'the thumb plunger press',eject:'the separate ejector press'}[kind]+'. Keep the thumb visible and gently vary your working angle.');}
+ finishCapture(){let c=this.captureState;this.captureState=null;this.live(this.calibrated?'rest':'uncalibrated',this.calibrated?'Calibration available. Relax the thumb.':'Calibration incomplete. Capture Rest, then Press.');if(c.samples.length<8){this.say('Too few reliable thumb readings. Keep thumb and wrist visible and capture again.');return}
   let profile={thumb:Array.from({length:6},(_,i)=>median(c.samples.map(s=>s.thumb[i]))),shape:Array.from({length:4},(_,i)=>median(c.samples.map(s=>s.shape[i]))),rise:median(c.samples.map(s=>s.rise))};profile.noise=median(c.samples.map(s=>distance(s.thumb,profile.thumb)));profile.riseNoise=median(c.samples.map(s=>Math.abs(s.rise-profile.rise)));
   if(profile.noise>.10){this.say('That pose varied too much. Hold a single thumb depth and try smaller wrist turns.');return}
   if(c.kind!=='rest'&&!this.profiles.rest){this.say('Capture the resting pose first.');return}
   if(c.kind!=='rest'&&distance(profile.thumb,this.profiles.rest.thumb)<Math.max(.02,profile.noise*3)&&Math.abs(profile.rise-this.profiles.rest.rise)<.06){this.say('The press is not distinct from rest. Make a clearer thumb movement and capture again.');return}
   if(c.kind==='eject'&&this.profiles.press&&distance(profile.thumb,this.profiles.press.thumb)<.035){this.say('The ejector pose overlaps the plunger pose. Capture the separate movement more clearly.');return}
-  if(c.kind==='rest')this.profiles={};this.profiles[c.kind]=profile;this.modeProfiles[this.mode]=this.profiles;this.cancelStroke();this.say('Captured '+c.kind+'. '+(this.profiles.press?'Relax the thumb; close your grip over a tool to pick it up.':'Now capture the pressed thumb.'));this.opt.calibrated?.(Object.keys(this.profiles));
+  if(c.kind==='rest')this.profiles={};this.profiles[c.kind]=profile;this.modeProfiles[this.mode]=this.profiles;this.cancelStroke();this.say('Captured '+c.kind+'. '+(this.profiles.press?'Relax the thumb; close your grip over a tool to pick it up.':'Now capture the pressed thumb.'));this.opt.calibrated?.(Object.keys(this.profiles));this.live(this.calibrated?'rest':'uncalibrated',this.calibrated?'Calibrated. Relax the thumb to arm the plunger.':'Rest captured. Capture Press next.');
  }
  result(data){let now=performance.now(),lm=data.landmarks?.[0],world=data.worldLandmarks?.[0],m=measure(world);let ctx=this.canvas.getContext('2d');ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-  if((Number.isFinite(data.stamp)&&now-data.stamp>350)||!lm||!m){if(now-this.lastSeen>220){this.cancelStroke();this.opt.lost?.()}return}
+  if((Number.isFinite(data.stamp)&&now-data.stamp>350)||!lm||!m){if(now-this.lastSeen>220){this.cancelStroke();this.live('lost','Tracking paused. Keep wrist and thumb visible; no liquid transferred.');this.opt.lost?.()}return}
   let handedness=data.handedness?.[0]?.[0]?.categoryName;if(this.lastHand&&handedness&&this.lastHand!==handedness){this.cancelStroke();this.smooth=null;}this.lastHand=handedness;
   if(now-this.lastSeen>220)this.cancelStroke();this.lastSeen=now;this.lastMeasure=m;
   ctx.strokeStyle='#70dbcd';ctx.lineWidth=2;for(let chain of[[0,1,2,3,4],[0,5,6,7,8],[5,9,10,11,12],[9,13,14,15,16],[13,17,18,19,20],[0,17]]){ctx.beginPath();chain.forEach((i,n)=>{let x=(1-lm[i].x)*this.canvas.width,y=lm[i].y*this.canvas.height;n?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke()}
@@ -94,23 +98,38 @@ class HandInput{
   const palmX=(lm[0].x+lm[1].x)/2,palmY=(lm[0].y+lm[1].y)/2;
   let raw=[Math.max(0,Math.min(1,(1-palmX-.16)/.68)),Math.max(0,Math.min(1,(palmY-.13)/.75))];
   this.smooth=this.smooth?this.smooth.map((v,i)=>v+(raw[i]-v)*.38):raw;
-  if(ready&&distance(m.shape,rest.shape)>.22){this.cancelStroke();return}
+  if(ready&&distance(m.shape,rest.shape)>.22){this.cancelStroke();this.live('lost','Hand shape is unstable. Relax the thumb and reacquire tracking.');return}
   let extended=0,folded=0;
   for(const [base,pip,tip] of [[5,6,8],[9,10,12],[13,14,16],[17,18,20]]){if(![0,base,pip,tip].every(i=>world[i]&&[world[i].x,world[i].y,world[i].z].every(Number.isFinite)))continue;let pt=i=>[world[i].x,world[i].y,world[i].z],dp=norm(sub(pt(pip),pt(0))),dt=norm(sub(pt(tip),pt(0)));if(dt>dp*1.27)extended++;if(dt<dp*1.12)folded++;}
   const scale=Math.max(.03,Math.hypot(lm[9].x-lm[0].x,lm[9].y-lm[0].y)),pinch=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)<scale*.38;
-  this.opt.pose?.({x:this.smooth[0],y:this.smooth[1],palmY,grip:ready&&(folded>=2||pinch),open:ready&&extended>=3&&!pinch,roll:Math.atan2(lm[1].y-lm[0].y,lm[1].x-lm[0].x),now});
-  this.opt.aim?.(this.smooth[0],this.smooth[1]);
-  if(!ready)return;
-  if(distance(m.shape,rest.shape)>.22){this.cancelStroke();return}
-  let vector=sub(press.thumb,rest.thumb),delta=sub(m.thumb,rest.thumb),depth=dot(delta,vector)/Math.max(1e-6,dot(vector,vector)),residual=distance(delta,vector.map(v=>v*depth)),travel=distance(press.thumb,rest.thumb);
-  let isEject=this.mode==='real'&&this.profiles.eject&&distance(m.thumb,this.profiles.eject.thumb)<Math.max(.025,travel*.45)&&distance(m.thumb,this.profiles.eject.thumb)<distance(m.thumb,press.thumb)*.65;
-  let valid=residual<Math.max(.05,travel*.6,(rest.noise||0)*3)||isEject;
-  // Free-hand bends are evaluated relative to the THUMB BASE, not the knuckle
-  // row or only tip-to-wrist distance. Translation/rotation do not define press.
-  if(this.mode==='free'&&Math.abs(press.rise-rest.rise)>.06){depth=(m.rise-rest.rise)/(press.rise-rest.rise);valid=Number.isFinite(depth)&&depth>-.8&&depth<2.3;}
-  if(!valid){this.cancelStroke();return}
-  this.opt.depth?.(Math.max(0,Math.min(1,depth)));
-  for(let e of this.gate.update(depth,isEject,now,valid))this.opt.edge(e);
+  // Compute thumb state BEFORE advancing the tool controller. The controller
+  // receives the first thumb-down sample to capture an opening before the
+  // 110 ms press debounce completes. Validated press/release edges still use
+  // the existing gate; a raw thumb depth never transfers liquid by itself.
+  let depth=0,isEject=false,valid=true,edges=[];
+  if(ready){
+   let vector=sub(press.thumb,rest.thumb),delta=sub(m.thumb,rest.thumb);
+   depth=dot(delta,vector)/Math.max(1e-6,dot(vector,vector));
+   let residual=distance(delta,vector.map(v=>v*depth)),travel=distance(press.thumb,rest.thumb);
+   isEject=!!(this.mode==='real'&&this.profiles.eject&&distance(m.thumb,this.profiles.eject.thumb)<Math.max(.025,travel*.45)&&distance(m.thumb,this.profiles.eject.thumb)<distance(m.thumb,press.thumb)*.65);
+   valid=residual<Math.max(.05,travel*.6,(rest.noise||0)*3)||isEject;
+   // Retain the thumb-base bending metric: no dependency on a visible knuckle row.
+   if(this.mode==='free'&&Math.abs(press.rise-rest.rise)>.06){depth=(m.rise-rest.rise)/(press.rise-rest.rise);valid=Number.isFinite(depth)&&depth>-.8&&depth<2.3;}
+   if(!valid){this.cancelStroke();this.live('lost','Thumb pose not reliable. Relax, keep the thumb visible and try again.');return}
+   edges=this.gate.update(depth,isEject,now,true);
+  }
+  const frame={x:this.smooth[0],y:this.smooth[1],palmY,palmX,ready,
+   thumbDepth:Math.max(0,Math.min(1,depth)),thumbDown:ready&&!isEject&&(depth>.62||this.gate.active),
+   grip:ready&&(folded>=2||pinch),open:ready&&extended>=3&&!pinch,
+   roll:Math.atan2(lm[1].y-lm[0].y,lm[1].x-lm[0].x),now};
+  this.opt.pose?.(frame);
+  this.opt.aim?.(frame.x,frame.y);
+  this.opt.depth?.(frame.thumbDepth);
+  if(!ready){this.live('uncalibrated','Thumb control not calibrated: capture Rest, then Press.');return}
+  const state=isEject?'eject':this.gate.active?'press':this.gate.armed?'rest':'arming';
+  this.live(state,{eject:'Ejector pose detected.',press:'Thumb PRESS detected.',rest:'Thumb REST detected · ready for the next press.',arming:'Relax the thumb briefly to arm the next press.'}[state]);
+  for(const edge of edges)this.opt.edge(edge);
+
  }
 }
 root.ELISAHands={measure,GestureGate,HandInput,VerticalSources:sources,cameraMessage};if(typeof module!=='undefined'&&module.exports)module.exports=root.ELISAHands;

@@ -1,0 +1,17 @@
+/* Final: always-visible setup, thumb and insertion feedback. */
+.label-readiness{margin-top:10px;padding:10px;border:1px solid #dbc598;background:#fff5df;border-radius:6px;color:#674f2c;font-size:11px}
+.label-readiness strong,.label-readiness span{display:block}.label-readiness span{margin:5px 0;overflow-wrap:anywhere}
+.label-readiness button{background:#ecdfc3;padding:7px;text-align:left;font-size:11px;width:100%}
+.hand-contact-hud{border-top:1px solid #bbd5cd;margin-top:9px;padding-top:8px;max-width:225px}
+.tip-hud .hand-contact-hud strong{font:600 11px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:0;margin:0 0 5px}
+.hand-contact-hud span{display:block;font-size:10px;line-height:1.45;color:#235d54;margin-top:5px}
+.contact-meter{background:#cddfd8;height:5px;border-radius:4px;overflow:hidden}.contact-meter div{height:100%;width:0;background:#247b62}
+.target-label.locked{background:#126547;border:1px solid #87d3af}
+.camera-panel{display:flex;flex-direction:column;overflow:hidden}
+.camera-panel-head,.hand-readiness,.camera-preview{flex-shrink:0}
+.camera-preview{max-height:165px}.camera-body{overflow-y:auto;min-height:0}
+.hand-readiness{padding:8px 12px;background:#e8f0e5;border-bottom:1px solid #c8dbc5;font-size:11px}
+.hand-readiness strong,.hand-readiness span{display:block}.hand-readiness span{font-size:10px;line-height:1.45;margin:4px 0 7px;color:#305f50}
+#handReadiness[data-state="uncalibrated"],#handReadiness[data-state="lost"]{color:#81551d}
+#handReadiness[data-state="press"]{color:#126546}
+@media(max-width:800px){.tip-hud{max-width:180px}.hand-contact-hud{max-width:155px}.camera-preview{max-height:130px}}
