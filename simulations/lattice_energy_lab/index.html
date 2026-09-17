@@ -20,7 +20,35 @@
       const bytes = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
       const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-      const html = await new Response(stream).text();
+      let html = await new Response(stream).text();
+
+      // Compact the comparison header on desktop so the interactive workbench
+      // starts higher on the page. Narrow screens retain normal wrapping.
+      html = html.replace(
+        'What makes an ionic solid<br>hold together more strongly?',
+        'What makes an ionic solid hold together more strongly?'
+      );
+      const compactHeaderCSS = `
+<style id="compact-comparison-header">
+@media (min-width:851px){
+  main{padding-top:16px!important}
+  .intro{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:20px!important;margin-bottom:14px!important;align-items:center!important}
+  .intro .eyebrow{margin-bottom:3px!important;font-size:10px!important;letter-spacing:1.5px!important}
+  .intro h1{font-size:clamp(25px,2.05vw,31px)!important;line-height:1.08!important;letter-spacing:-.8px!important;white-space:nowrap!important}
+  .intro p{margin-top:5px!important;max-width:none!important;font-size:13px!important;line-height:1.35!important}
+  .rule-box{min-width:330px!important;padding:9px 14px!important;border-radius:12px!important}
+  .rule-box .eyebrow{margin-bottom:1px!important}
+  .rule-box .equation{font-size:19px!important;line-height:1.25!important}
+  .rule-box .small-text{font-size:11px!important;line-height:1.25!important;white-space:nowrap!important}
+  .pair-tabs{gap:8px!important;margin-bottom:12px!important}
+  .pair-tab{min-height:50px!important;padding:8px 12px!important}
+  .tab-letter{height:27px!important;width:27px!important}
+  .question-line{margin-bottom:8px!important}
+}
+@media (min-width:1200px){.intro p{white-space:nowrap!important}}
+</style>`;
+      html = html.replace('</head>', compactHeaderCSS + '\n</head>');
+
       document.open();
       document.write(html);
       document.close();
