@@ -26,12 +26,12 @@ class Contact{
   if(this.depth<.18)this.rearmed=true;return this}
 }
 class Interaction{
- constructor(api){this.a=api;this.tool='navigate';this.target=null;this.contact=null;this.candidate=null;this.pending=null;this.pressed=false;this.pointerHeld=false;this.pen=null;this.gripSince=null;this.openSince=null;this.stripNormal=null;this.rotationBase=null;this.handRotation=[0,0,0];this.inverted=false;this.taps=0;this.tapDone=false;this.lastFrame=null;this.grabbed=false;this.stats={cancelled:0,rejected:0,transfers:0};}
+ constructor(api){this.a=api;this.tool='navigate';this.target=null;this.contact=null;this.candidate=null;this.pending=null;this.pressed=false;this.pointerHeld=false;this.pen=null;this.gripSince=null;this.openSince=null;this.stripNormal=null;this.rotationBase=null;this.handRotation=[0,0,0];this.inverted=false;this.taps=0;this.tapDone=false;this.lastFrame=null;this.grabbed=false;this.markerPalmBase=null;this.markerPalmDownSince=null;this.stats={cancelled:0,rejected:0,transfers:0};}
  get p(){return this.a.protocol()}
  resetMotion(reason=''){let had=!!this.pending;this.contact=null;this.candidate=null;this.pending=null;this.pressed=false;this.pointerHeld=false;this.pen=null;this.gripSince=null;this.openSince=null;this.rotationBase=null;this.lastFrame=null;if(had)this.stats.cancelled++;this.a.pose?.(this);if(reason)this.a.say?.(reason);this.a.update?.()}
- select(tool){this.resetMotion();this.a.park?.(this.tool);this.tool=tool;this.target=null;this.inverted=false;this.taps=0;this.tapDone=false;this.stripNormal=null;this.a.update?.();this.a.say?.(this.hint())}
+ select(tool){this.resetMotion();this.a.park?.(this.tool);this.tool=tool;this.target=null;this.inverted=false;this.taps=0;this.tapDone=false;this.stripNormal=null;this.markerPalmBase=null;this.markerPalmDownSince=null;this.a.update?.();this.a.say?.(this.hint())}
  hint(){if(this.pending?.kind==='draw')return this.contact?.depth>=.85?'Tip immersed. Release the plunger to aspirate.':'Keep the plunger pressed and lower into the liquid.';if(this.contact&&['micro','wash'].includes(this.tool))return this.contact.depth>=.85?'Opening locked · tip immersed. Lift above entry height or move sideways to leave.':'Opening locked. Lower to insert; lift slightly or move sideways to leave.';
- if(this.tool==='marker')return'Make a short writing stroke across each well’s label pad.';if(this.tool==='micro')return!this.p.tip?'Aim at the highlighted fresh tip, then lower to seat it.':this.p.tip.volume?'Aim at a well, lower the tip and press to dispense.':'Press, lower into the source, then release to aspirate 50 µL.';if(this.tool==='wash')return this.p.washVolume?'Lower over a well and squeeze to deliver wash buffer.':'Squeeze, lower into the beaker, then release to fill.';if(this.tool.startsWith('strip'))return this.p.phase==='mixstop'?'Keep upright. Lower and lift over towels four times.':'Invert the strip, then lower and lift over towels four times.';return'Pick up a tool from the bench or the dock. Mouse: right-drag rotates; wheel zooms.'}
+ if(this.tool==='marker')return'Make a short writing stroke across each well’s label pad. When finished, open the hand and turn the palm downward briefly to place the marker on the bench.';if(this.tool==='micro')return!this.p.tip?'Aim at the highlighted fresh tip, then lower to seat it.':this.p.tip.volume?'Aim at a well, lower the tip and press to dispense.':'Press, lower into the source, then release to aspirate 50 µL.';if(this.tool==='wash')return this.p.washVolume?'Lower over a well and squeeze to deliver wash buffer.':'Squeeze, lower into the beaker, then release to fill.';if(this.tool.startsWith('strip'))return this.p.phase==='mixstop'?'Keep upright. Lower and lift over towels four times.':'Invert the strip, then lower and lift over towels four times.';return'Pick up a tool from the bench or the dock. Mouse: right-drag rotates; wheel zooms.'}
  eligible(t){if(!t)return false;let tool=this.tool;if(tool==='navigate')return['tool','strip','timer'].includes(t.kind);if(t.id==='park')return true;if(tool==='marker')return t.kind==='label';if(tool.startsWith('strip'))return t.id==='towels'||t.id==='home'+tool.slice(-1);if(tool==='micro')return['reagent','well','waste','tips'].includes(t.kind);if(tool==='wash')return['wash','well'].includes(t.kind);return false}
  pick(f){return this.a.pick(f.x,f.y,t=>this.eligible(t))}
  canContact(t){return!!t&&(['micro','wash'].includes(this.tool)&&['reagent','well','wash','tips'].includes(t.kind)||this.tool.startsWith('strip')&&t.id==='towels')}
@@ -43,7 +43,30 @@ class Interaction{
  this.setTarget(t);
  if(f.source==='hand'&&f.ready){if(this.tool==='navigate'){if(!f.grip){this.gripSince=null;this.grabbed=false}if(f.grip&&t&&!this.grabbed){if(this.gripSince===null)this.gripSince=f.now;if(f.now-this.gripSince>260){this.activate(t,'hand');this.gripSince=null;this.grabbed=true}}else this.gripSince=null}else{if(!this.rotationBase&&f.rotation)this.rotationBase=[...f.rotation];if(f.rotation&&this.rotationBase)this.handRotation=f.rotation.map((v,i)=>Math.atan2(Math.sin(v-this.rotationBase[i]),Math.cos(v-this.rotationBase[i])));
  if(this.tool.startsWith('strip')&&f.normal){if(!this.stripNormal)this.stripNormal=[...f.normal];let turn=angle(f.normal,this.stripNormal);if(turn>1.92)this.inverted=true;else if(turn<1.05)this.inverted=false}
- if(f.open&&!this.pressed&&!this.pending&&!this.contact){if(this.openSince===null)this.openSince=f.now;if(f.now-this.openSince>850){this.select('navigate');return}}else this.openSince=null;
+ if(this.tool==='marker'&&f.normal&&!this.markerPalmBase)this.markerPalmBase=[...f.normal];
+ if(f.open&&!this.pressed&&!this.pending&&!this.contact){
+  if(this.tool==='marker'){
+   let n=f.normal,base=this.markerPalmBase,turn=n&&base?angle(n,base):0;
+   /* Normalize palm-normal sign by handedness when possible. MediaPipe's
+      cross-product normal reverses between left/right hands. The absolute-Y
+      fallback keeps the deliberate palm-down gesture usable if handedness
+      briefly flips while the hand is edge-on. */
+   let handedSign=f.handName==='Left'?-1:1,down=n?n[1]*handedSign:0;
+   let palmDown=!!(n&&turn>.72&&(down>.28||Math.abs(n[1])>.58));
+   if(palmDown){
+    if(this.markerPalmDownSince===null)this.markerPalmDownSince=f.now;
+    if(f.now-this.markerPalmDownSince>420){
+     this.a.say?.('Marker placed on the bench.');
+     this.select('navigate');
+     return;
+    }
+   }else this.markerPalmDownSince=null;
+   this.openSince=null;
+  }else{
+   if(this.openSince===null)this.openSince=f.now;
+   if(f.now-this.openSince>850){this.select('navigate');return}
+  }
+ }else{this.openSince=null;this.markerPalmDownSince=null;}
  if(t?.id==='park'&&f.grip&&!this.pending){if(this.gripSince===null)this.gripSince=f.now;if(f.now-this.gripSince>650){this.select('navigate');return}}else this.gripSince=null;
  if(this.tool==='marker'&&f.grip)this.write(t,f);else if(this.tool==='marker')this.pen=null;
  }}
