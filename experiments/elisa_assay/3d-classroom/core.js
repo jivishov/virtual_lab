@@ -78,7 +78,7 @@ class Interaction{
  this.a.pose?.(this,f);this.a.update?.();
  }
  write(t,f){if(t?.kind!=='label'){this.pen=null;return}let id=+t.id.slice(5);if(this.p.labels.includes(id))return;if(!this.pen||this.pen.id!==id)this.pen={id,x:f.x,y:f.y,d:0,path:[[f.x,f.y]]};let p=this.pen;p.d+=Math.hypot(f.x-p.x,f.y-p.y);p.x=f.x;p.y=f.y;p.path.push([f.x,f.y]);if(p.d>=7){if(this.tryCommit({type:'label',target:id},f.source))this.a.mark?.(id,p.path);this.pen=null}}
- activate(t,source){if(!t)return;if(t.kind==='tool')this.select({microtool:'micro',washtool:'wash',markertool:'marker'}[t.id]);else if(t.kind==='strip')this.select(t.id);else if(t.id==='park'||t.id==='home'+this.tool.slice(-1))this.select('navigate');else if(t.id==='timer')this.tryCommit({type:'incubate'},source)}
+ activate(t,source){if(!t)return;if(t.kind==='tool')this.select({microtool:'micro',washtool:'wash',markertool:'marker'}[t.id]);else if(t.kind==='strip')this.select(t.id);else if(t.id==='park'||t.id==='home'+this.tool.slice(-1))this.select('navigate');else if(t.id==='timer'){let next=this.p.recommend();if(next?.type==='wait'){this.a.say?.('Incubation timer is already running.');return}if(next?.type!=='incubate'){this.a.say?.('No incubation is required right now.');return}this.tryCommit({type:'incubate'},source)}}
  press(f){if(this.pressed)return;if(this.tool==='navigate'){this.activate(this.target,f.source);return}if(this.target?.id==='park'||this.target?.kind==='home'){this.activate(this.target,f.source);return}if(!['micro','wash'].includes(this.tool))return;this.pressed=true;
  let t=this.contact?.target||this.target;if(!t)return;
  if(this.tool==='micro'&&t.id==='waste'){this.pending={kind:'spent'};this.tryCommit({type:this.p.tip?.volume?'discard':'eject',target:'waste'},f.source);return}
