@@ -1,42 +1,196 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Interactive 3D quantitative ELISA teaching lab with mouse, keyboard and on-device webcam hand control: serial dilution, controls and patients, washes, antibodies and a blue TMB end point.">
+  <title>ELISA · 3D Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23197b7b'/%3E%3Cpath d='M7 12v8q2 3 4 0v-8m3 0v8q2 3 4 0v-8m3 0v8q2 3 4 0v-8M5 12h22' fill='none' stroke='%23f7faf7' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="3d-classroom/style.css?v=v3-1">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6QQR2741ZZ');
+  </script>
+</head>
+<body>
+  <header class="top">
+    <a class="identity" href="elisa-3d.html"><svg class="brandmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8h20M3 8v7q2 3 4 0V8m3 0v7q2 3 4 0V8m3 0v7q2 3 4 0V8"/></svg><strong>ELISA <span>/ 3D</span></strong></a>
+    <span class="badge">EDVOTEK · PLTW 468 · 24 WELLS</span>
+    <div class="run-controls" role="group" aria-label="Experiment clock and handling">
+      <button id="runBtn" title="Run: resume handling and the incubation clock"><span aria-hidden="true">▶</span><span class="label">Run</span></button>
+      <button id="pauseBtn" title="Pause: freeze the incubation clock and handling"><span aria-hidden="true">❚❚</span><span class="label">Pause</span></button>
+      <button id="stopBtn" title="Stop: also cancel unfinished strokes and the camera"><span aria-hidden="true">■</span><span class="label">Stop</span></button>
+    </div>
+    <span id="runStatus" class="run-status" role="status"></span>
+    <nav aria-label="Lab tools">
+      <button id="helpBtn">Controls &amp; model</button>
+      <button id="notebookBtn" class="notebook-btn" aria-controls="notebook" aria-expanded="false">Notebook</button>
+      <button id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-controls="labMenu" title="Settings and more">☰<span class="label"> Menu</span></button>
+    </nav>
+    <div id="labMenu" class="menu lab-menu" hidden role="menu">
+      <label>Incubation clock<select id="clockSpeed"><option value="1">1× real time</option><option value="30">30× teaching time</option><option value="60" selected>60× teaching time</option></select></label>
+      <label>Graphics quality<select id="graphicsQuality"><option value="high">High</option><option value="balanced" selected>Balanced</option><option value="low">Low (older devices)</option></select></label>
+      <label class="switch"><input id="hintsToggle" type="checkbox" checked><span>Show the next target on the bench</span></label>
+      <button id="resetLayoutBtn">Reset panel layout</button>
+      <button id="exportBtn">Export run JSON</button>
+      <button id="resetBtn" class="danger">Start a fresh experiment</button>
+      <hr><a href="index.html">2D activity</a>
+      <p class="tiny">Source: Edvotek / PLTW 468 quantitative ELISA, pp. 8–11, 15. Educational simulation · no diagnostic use.</p>
+    </div>
+  </header>
+  <main class="stage" aria-label="3D laboratory">
+    <canvas id="labCanvas" tabindex="0" aria-label="3D ELISA workbench. Pick up a tool, aim at a target, hold and move downward to insert, then release. Alternative target controls are in the Targets panel."></canvas>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="Interactive 3D ELISA experiment with mouse and webcam-hand control, stable insertion and explicit liquid-transfer checks." name="description"/><title>ELISA · 3D Lab</title>
-<link href="3d-classroom/style.css" rel="stylesheet"/>
-<!-- Google tag (gtag.js) -->
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-6QQR2741ZZ');
-</script>
+    <section id="stepCard" class="panel step-card" aria-label="Your procedure" data-panel="step">
+      <header class="panel-head" data-drag>
+        <span class="step-badge" id="stepNumber" aria-hidden="true">01</span>
+        <div class="step-titles"><span class="eyebrow" id="stepEyebrow">Step 1 of 19</span><strong id="stepTitle">Prepare your workcell</strong></div>
+        <button id="stepCollapse" class="icon" data-collapse aria-expanded="true" aria-controls="stepBody" title="Collapse or expand">–</button>
+      </header>
+      <div id="stepBody" class="step-body">
+        <ol id="stages" class="stage-strip" aria-label="Experiment pathway"></ol>
+        <p id="nextAction" class="next-action" aria-live="polite"></p>
+        <div class="step-meta"><span id="stageExtra"></span><button id="locateBtn" title="Highlight the next target and bring it into view">⌖ Show me</button></div>
+        <div id="lastMistake" class="correction" hidden role="status"><div><span class="eyebrow">Correction</span><p id="lastMistakeText"></p></div><button id="dismissMistake" class="icon" title="Dismiss">×</button></div>
+        <div id="stepActions" class="step-actions">
+          <button id="runInline" class="primary wide" hidden>▶ Run: continue the experiment</button>
+          <div id="timerBox" class="timer" hidden>
+            <div class="clock"><strong id="timerDigits">05:00</strong><span>simulated<br>time</span></div>
+            <button id="timerStart" class="primary wide">Start the 5-minute incubation</button>
+            <p class="tiny">Clock acceleration (Menu) is a teaching aid.</p>
+          </div>
+          <div id="readBox" hidden><button id="openNotebookBtn" class="primary wide">Open the notebook to interpret the strips</button></div>
+        </div>
+        <details class="why"><summary>About this step</summary><p id="stepDetail"></p><p id="stepSource" class="source"></p></details>
+      </div>
+    </section>
 
-<style id="cameraPanelEnhancements">
-.cameraPanel{position:fixed!important;left:276px;top:118px;width:320px;min-width:260px;min-height:330px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);z-index:40;overflow:auto;resize:none}.cameraHead{cursor:move;user-select:none;touch-action:none;position:sticky;top:-13px;z-index:3;background:#f8fcf9fa;padding:13px 0 7px;margin-top:-13px}.cameraHead button{cursor:pointer}.handTuning{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:9px 0 7px;margin:9px 0}.tuningRow{display:grid;grid-template-columns:76px 1fr 42px;gap:8px;align-items:center;margin:7px 0}.tuningRow label{font-size:11px;color:var(--muted)}.tuningRow output{font-size:10px;text-align:right;color:var(--teal);font-variant-numeric:tabular-nums}.tuningRow input[type=range]{width:100%;accent-color:var(--teal);padding:0}.tuningHint{font-size:10px!important;line-height:1.35!important;margin:5px 0 0!important}.cameraResize{position:absolute;right:2px;bottom:2px;width:22px;height:22px;cursor:nwse-resize;touch-action:none;z-index:5}.cameraResize:after{content:'';position:absolute;right:4px;bottom:4px;width:9px;height:9px;border-right:2px solid #6d8e8a;border-bottom:2px solid #6d8e8a;opacity:.85}.cameraPanel.dragging,.cameraPanel.resizing{user-select:none}.cameraPanel.dragging .cameraHead{cursor:grabbing}@media(max-width:760px){.cameraPanel{left:10px;top:64px;width:min(320px,calc(100vw - 20px));max-height:calc(100dvh - 74px)}}
-</style>
-</head><body>
-<header class="top"><button class="collapseSide" id="sidebarToggle">Procedure</button><strong>ELISA <span style="font-weight:400">/ 3D</span></strong><span class="badge">MOUSE + WEBCAM</span><small>EDVOTEK / PLTW 468</small><nav><button id="notebookBtn">Notebook</button><button id="helpBtn">Controls &amp; limits</button></nav></header>
-<main class="layout"><aside><section><div class="stepHead"><span class="eyebrow">Your procedure</span><span class="stepNum" id="stepNumber">01</span></div><h1 id="stepTitle">Prepare your workcell</h1><p id="stepDetail"></p><small id="stepSource"></small><div class="progress"><div id="progressFill"></div></div><div id="stageExtra"></div></section>
-<div class="patients" id="patientSetup"><label>Patient 1<select id="patient1"><option>Sue</option><option>Jill</option><option>Maria</option><option>Marco</option></select></label><label>Patient 2<select id="patient2"><option>Maggie</option><option>Anthony</option><option>Arnie</option><option>Wanda</option><option>Alvin</option></select></label></div>
-<button id="locateBtn">Locate next target</button><div class="timer" hidden="" id="timerBox"><span class="eyebrow">Incubation</span><strong id="timerDigits">05:00</strong><button id="timerStart">Start timer</button><select aria-label="Simulation clock speed" id="clockSpeed"><option value="1">1× real time</option><option value="30">30× teaching time</option><option selected="" value="60">60× teaching time</option></select><div class="tiny">Acceleration is a teaching aid.</div></div>
-<section class="instructions"><div class="miniTitle">Continuous handling</div><p id="mouseInstruction">Click a tool. Aim, hold the left button and move down to insert. Release to draw. Right-click a held strip to invert.</p></section>
-<details open=""><summary>Experiment pathway</summary><div class="stages" id="stages"><div>Standards &amp; serial dilution</div><div>Controls &amp; patients</div><div>Adsorb &amp; wash</div><div>Primary antibody &amp; wash</div><div>Secondary antibody &amp; wash</div><div>Develop &amp; interpret</div></div></details>
-<details><summary>Run information</summary><p id="runInfo"></p><button id="exportBtn">Export run JSON</button><p>Tracking interruptions are recorded separately, not graded as procedural mistakes.</p></details><button class="quiet" id="resetBtn">Start a fresh experiment</button><div class="asideFoot">Primary 3D ELISA experience for mouse and webcam-hand control.<br/>Educational simulation · no diagnostic use.</div></aside>
-<section class="stage"><canvas aria-label="Interactive ELISA workbench. Click tools to pick them up. Hold and move downward to insert, then release to aspirate. Right-drag orbits the observer camera, Shift plus right-drag gently tilts it, and the wheel zooms." id="labCanvas" tabindex="0"></canvas><div class="sceneHeader"><span class="eyebrow">WORKCELL / 24 WELLS</span><strong>Quantitative ELISA</strong></div><div class="views"><button class="active" data-view="bench">Bench</button><button data-view="strips">Strips</button><button data-view="reagents">Reagents</button><button data-view="top">Overhead</button><button id="freeViewBtn" title="Right-drag: orbit · Shift + right-drag: gentle tilt · wheel: zoom">Free view</button><button id="qualityBtn" title="Toggle rendering resolution">Quality: sharp</button></div>
-<section aria-label="Current tool and contact state" class="contact"><div class="eyebrow" id="toolName">No tool held</div><h2 id="contactName">Ready at the bench</h2><canvas aria-label="Schematic insertion-depth feedback" height="224" id="contactCanvas" width="320"></canvas><div class="meter"><div id="contactFill"></div></div><div class="datum"><span id="loadTitle">Micropipette dose</span><strong id="loadVolume">50 µL</strong></div><small id="tipInfo">Pick up a tool to begin.</small><small id="contactState" style="margin-top:6px">Schematic view · not physical depth</small></section>
-<div class="cursor" id="handCursor"></div><div class="target" hidden="" id="targetLabel"></div><div aria-live="polite" class="toast" id="toast" role="status"></div>
-<div class="cameraPanel" hidden="" id="cameraPanel"><div class="cameraHead" id="cameraDragHandle"><strong>Webcam hand control</strong><button aria-label="Stop camera" id="closeCamera">×</button></div><div class="videoBox"><video autoplay="" id="cameraVideo" muted="" playsinline=""></video><canvas height="480" id="cameraOverlay" width="640"></canvas></div><div class="line"><label class="tiny" for="workingHand">Working hand</label><select id="workingHand"><option>Auto</option><option>Right</option><option>Left</option></select></div><div class="handTuning" aria-label="Hand movement tuning"><div class="tuningRow"><label for="handSensitivity">Sensitivity</label><input id="handSensitivity" type="range" min="45" max="125" value="70" step="5"><output id="handSensitivityValue" for="handSensitivity">70%</output></div><div class="tuningRow"><label for="handReactivity">Reactivity</label><input id="handReactivity" type="range" min="20" max="100" value="50" step="5"><output id="handReactivityValue" for="handReactivity">50%</output></div><p class="tuningHint">Lower sensitivity reduces travel. Lower reactivity gives steadier, slower motion. Thumb calibration is unchanged.</p></div><div class="calButtons"><button id="restBtn">1 · Capture Rest</button><button disabled="" id="pressBtn">2 · Capture Press</button></div><div id="cameraStatus" role="status">Start the camera, then calibrate the thumb.</div><div class="meter"><div id="thumbFill"></div></div><p>Close a grip over a tool to pick it up. Hold over an opening, then lower your palm to insert. Press and release the thumb to pipette. Turn your palm over to invert a strip. After writing with the marker, open the hand and turn the palm downward briefly to place the marker on the bench. Other tools can still be returned with an open hand.</p><p>Only the selected hand controls the tool. Other visible hands are ignored.</p><div id="cameraStats"></div><button class="primary" id="cameraStart" style="width:100%;margin-top:9px">Start camera</button><p>Video stays on this device. HTTPS and camera permission are required. Mouse control remains available.</p><div class="cameraResize" id="cameraResize" aria-hidden="true" title="Drag to resize"></div></div>
-<div class="bottom"><div class="hint" id="interactionHint">Preparing the workcell…</div><div aria-label="Tool dock" class="dock"><button class="active" data-tool="navigate"><svg viewbox="0 0 24 24"><path d="M12 3v18M3 12h18M8 7l4-4 4 4M7 8l-4 4 4 4"></path></svg>View</button><button data-tool="marker"><svg viewbox="0 0 24 24"><path d="m4 20 2-6L17 3l4 4-11 11-6 2ZM6 14l4 4"></path></svg>Marker</button><button data-tool="micro"><svg viewbox="0 0 24 24"><path d="m4 21 3-7L17 3l4 4-10 11-7 3ZM13 8l4 4M16 2l6 5"></path></svg>Micropipette</button><button data-tool="wash"><svg viewbox="0 0 24 24"><path d="m3 21 11-11q-3-4 0-7t7 0q3 4-1 7t-6 0"></path></svg>Wash pipette</button><button data-tool="strip1"><svg viewbox="0 0 24 24"><path d="M2 7h20M3 7v9q2 3 4 0V7m2 0v9q2 3 4 0V7m2 0v9q2 3 4 0V7"></path></svg>Strip 1</button><button data-tool="strip2"><svg viewbox="0 0 24 24"><path d="M2 7h20M3 7v9q2 3 4 0V7m2 0v9q2 3 4 0V7m2 0v9q2 3 4 0V7"></path></svg>Strip 2</button><button id="returnBtn"><svg viewbox="0 0 24 24"><path d="M4 5v14h16V5M8 10l4 4 4-4M12 3v11"></path></svg>Return</button><span class="divider"></span><button id="handBtn"><svg viewbox="0 0 24 24"><rect height="14" rx="3" width="20" x="2" y="5"></rect><circle cx="12" cy="12" r="4"></circle></svg>Hand control</button></div></div>
-<div class="loader" id="loading"><span class="loadingDot"></span><h2>Preparing the classroom workcell</h2><p id="loadingText">Starting the embedded assay model and 3D renderer…</p><a hidden="" href="https://jivishov.github.io/virtual_lab/experiments/elisa_assay/" id="fallbackLink">Open the 2D experiment</a></div></section></main>
-<dialog id="helpDialog"><header><h2>Controls &amp; model limits</h2><button data-close="">Close</button></header><h3>Mouse: no keyboard required</h3><p>Click a tool on the bench or in the dock. The tool follows your pointer. To fit a tip, aim at the highlighted unused tip, hold the left button and move down about 28 pixels. Release to lift.</p><p>To aspirate, aim at the source, press and hold, move down until the contact panel shows immersion, then release. For delivery, press and lower into a receiving well; the fixed dose is dispensed once the tip is inside. Release does not aspirate back. To mix a standard, repeat actual draw-and-return cycles five times.</p><p>Use the marker to make a short stroke across each label pad. Numbers are generated labels; this is not handwriting recognition. The drawn stroke is retained on the pad.</p><p>Right-click over waste to eject an empty tip. Left-click over waste to discard the final dilution aliquot. For washing, use the transfer pipette and beaker. Pick up each strip, right-click to invert, then lower and lift over towels four times. Keep strips upright for final mixing. Return each strip to its home with the Return button or its home target.</p><p><strong>Observer camera:</strong> right-drag to orbit around the bench. Hold <strong>Shift</strong> while right-dragging for a mild horizon tilt (limited to ±7°), and use the mouse wheel to zoom. The Bench, Strips, Reagents, and Overhead buttons return to stable presets. Camera changes cancel pending liquid-transfer strokes. “Locate next target” only highlights the next target; it does not perform an action.</p><h3>Webcam gestures</h3><p><strong>Camera panel:</strong> drag its header to move it anywhere on the screen; drag the lower-right corner to resize it. Sensitivity controls how far virtual tools move for a given hand movement. Reactivity controls smoothing: lower values are steadier but respond more slowly.</p><p>Start the camera and capture your relaxed and pressed thumb positions while holding a comfortable pipette-like grip. Close your grip over a tool briefly to pick it up. Once held, the grip is latched independently of the thumb.</p><p>Hold over a vessel until its opening locks. Press the thumb, lower the palm until the tip is immersed, and release to aspirate. Lower into a receiving well and press to deliver. Lift above the entry position or move sideways to leave the locked opening. Tip fitting uses palm lowering, not a thumb press. Turn the palm over to invert a held strip. For the marker, open the hand and deliberately turn the palm downward for about half a second to place it on the bench; simply opening the hand is not enough. Other tools can still be returned by holding an open hand for about one second outside a locked opening.</p><p>Camera loss cancels pending actions and retains the held tool. It never counts as releasing the plunger. Relax the thumb after tracking resumes. The selected hand is kept stable; this is not simultaneous two-handed manipulation.</p><h3>What this version does and does not model</h3><p>The existing protocol engine retains its 50 µL micropipette dose, 220 µL wash fill and 1.32 mL model transfer-pipette capacity. Thumb travel animates the plunger but does not measure force or continuously meter volume. Partial doses, second-stop blowout, seal mechanics, fluid dynamics and calibrated optical absorbance are not simulated. These limitations are not hidden behind a physics engine.</p><p>Geometry and materials are reference-informed approximations, not measured CAD or photogrammetry. Palm movement maps to virtual insertion depth, not measured distance. Alignment assistance is used near openings. The blue kit-specific endpoint and dilution rules are preserved. Clear liquids receive a faint cool tint and stronger surface contrast only so students can distinguish liquid level from transparent plastic; this tint is a visual aid, not a claim about reagent color. This page uses the existing WebGL2 renderer; Babylon.js/Havok and hardware-specific interfaces are not included.</p><p>Real webcam robustness and user comfort still require testing on the school devices. The page uses local MediaPipe assets first, with pinned CDN fallbacks. Browser/GPU/network compatibility is not universal.</p><h3>Implementation plan used</h3><p>1. Use this page as the active 3D experience and reuse the assay rules. 2. Rebuild the contact and grip controller. 3. Add frame-driven, single-in-flight webcam processing and hand-local thumb calibration. 4. Improve equipment presentation and contact feedback. 5. Test the full mouse procedure plus synthetic gesture, cancellation and camera-lifecycle cases.</p></dialog>
-<dialog id="notebookDialog"><header><h2>ELISA notebook</h2><button data-close="">Close</button></header><p id="notebookNotice"></p><div id="wellPreview"></div><div class="twoCols"><section><h3>Standard concentrations</h3><table><thead><tr><th>Well</th><th>Dilution</th><th>µg/mL</th></tr></thead><tbody id="standardTable"></tbody></table></section><section><h3>Student observations</h3><label class="tiny" for="observations">Describe the positive and negative controls, then interpret the patient triplicates.</label><textarea id="observations" placeholder="Record your observations here."></textarea><div id="estimateFields"></div><p class="tiny" style="margin-top:12px">Estimates are student entries. The simulation is not a diagnostic or absorbance measurement.</p><details><summary>Teacher reference</summary><p id="teacherKey"></p><p>The displayed signal is illustrative, not a calibrated analytical response.</p></details></section></div><h3>Recent checked actions</h3><table><thead><tr><th>#</th><th>Action</th><th>Target</th><th>Input</th></tr></thead><tbody id="actionLog"></tbody></table><button class="primary" id="exportNotebook" style="margin-top:18px">Export run and observations</button></dialog>
-<script src="3d-classroom/protocol.js"></script>
-<script src="3d-classroom/timer-clock.js?v=1"></script>
-<script src="3d-classroom/renderer.js?v=2"></script>
-<script src="3d-classroom/core.js?v=5"></script>
-<script src="3d-classroom/scene.js?v=2"></script>
-<script src="3d-classroom/camera.js?v=3"></script>
-<script src="3d-classroom/hand-tuning.js?v=1"></script>
-<script src="3d-classroom/app.js?v=3"></script>
-<script src="3d-classroom/panel-ui.js?v=1"></script>
-</body></html>
+    <section class="contact panel" aria-label="Tool and contact state" data-panel="contact">
+      <header class="panel-head slim" data-drag><span class="eyebrow" id="toolName">NO TOOL HELD</span></header>
+      <strong id="contactName">Explore the workbench</strong>
+      <div class="load"><span id="loadTitle">In the tip</span><b id="loadVolume">0 / 50 µL</b></div>
+      <div class="target-liquid" id="targetLiquid" hidden><div class="load"><span id="targetLiquidName">At target</span><b id="targetVolume"></b></div><div class="meter"><div id="targetLiquidFill"></div></div></div>
+      <div class="meter"><div id="contactFill"></div></div><small id="contactState">Contact depth · schematic</small><small id="tipInfo">Pick up a tool to begin.</small>
+      <div id="tapMeter" hidden><span class="eyebrow">TAPS</span><div id="tapDots"></div></div>
+    </section>
+
+    <div id="targetLabel" class="target-label" hidden></div><div id="handCursor" class="hand-cursor"></div>
+    <div id="toast" role="status" aria-live="polite" class="toast"></div>
+
+    <div class="bottom">
+      <div id="interactionHint" class="hint">Preparing the workcell…</div>
+      <div class="dock" aria-label="Tools">
+        <button data-tool="navigate" class="active"><span aria-hidden="true">↔</span>View</button>
+        <button data-tool="marker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 2-6L17 3l4 4-11 11-6 2ZM6 14l4 4"/></svg>Marker</button>
+        <button data-tool="micro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 21 3-7L17 3l4 4-10 11-7 3ZM13 8l4 4M16 2l6 5"/></svg>Micropipette</button>
+        <button data-tool="wash"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22v-9M10 13h4l-.6-6a1.4 1.4 0 0 0-2.8 0Z"/><circle cx="12" cy="5" r="3"/></svg>Wash pipette</button>
+        <button data-tool="strip1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7h20M3 7v9q2 3 4 0V7m2 0v9q2 3 4 0V7m2 0v9q2 3 4 0V7"/></svg>Strip 1</button>
+        <button data-tool="strip2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7h20M3 7v9q2 3 4 0V7m2 0v9q2 3 4 0V7m2 0v9q2 3 4 0V7"/></svg>Strip 2</button>
+        <button id="returnTool"><span aria-hidden="true">↧</span>Return tool</button><span class="divider"></span>
+        <button id="targetsBtn" aria-controls="targetsPanel" aria-expanded="false" title="Click, keyboard and touch controls"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h2M11 10h2M15 10h2M7 14h10"/></svg>Targets</button>
+        <button id="handBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><circle cx="12" cy="12" r="4"/></svg>Hand control</button><span class="divider"></span>
+        <button id="cameraMenuBtn" aria-controls="cameraMenu" aria-expanded="false" title="Camera views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span id="cameraMode">Auto view</span></button>
+      </div>
+    </div>
+    <div id="cameraMenu" class="menu cam-menu" hidden role="menu" aria-label="Camera views">
+      <button data-view="auto" class="active" title="Frame the current step automatically">Auto · follow the step</button>
+      <button data-view="bench">Whole bench</button><button data-view="strips">Strips</button><button data-view="reagents">Tubes &amp; tips</button><button data-view="wash">Wash station</button><button data-view="top">Overhead</button>
+      <p class="tiny">Right-drag: sideways pans, up/down tilts. Shift + right-drag orbits. Wheel zooms to the cursor. A right-click without dragging inverts a held strip.</p>
+    </div>
+
+    <section id="targetsPanel" class="panel targets-panel" hidden aria-label="Click, keyboard and touch controls" data-panel="targets">
+      <header class="panel-head" data-drag><strong>Targets</strong><button id="closeTargets" class="icon" title="Close">×</button></header>
+      <p class="tiny">Choose any target and use it. The same checks apply as with the mouse or your hand.</p>
+      <label>Target<select id="targetSelect"></select></label>
+      <button id="targetAction" class="primary wide">Use target</button>
+      <button id="targetNext" class="wide">Select the next target</button>
+    </section>
+
+    <section id="setupDialog" class="panel setup" hidden role="dialog" aria-labelledby="setupTitle" data-panel="setup">
+      <header class="panel-head" data-drag><span class="eyebrow">Before you start</span></header>
+      <h2 id="setupTitle">Welcome to the ELISA bench</h2>
+      <p class="lead">You will run the quantitative ELISA: a 1:2 standard series, controls and two patients in triplicate, three washes and a blue TMB end point.</p>
+      <ol class="journey" aria-label="What you will do">
+        <li><b>1</b><span>Label 24 wells</span></li><li><b>2</b><span>Standards &amp; serial dilution</span></li><li><b>3</b><span>Controls &amp; patients</span></li><li><b>4</b><span>Antibodies &amp; washes</span></li><li><b>5</b><span>Develop &amp; read</span></li>
+      </ol>
+      <div class="patients"><label class="field">Patient 1<select id="patient1"><option>Sue</option><option>Jill</option><option>Maria</option><option>Marco</option></select></label><label class="field">Patient 2<select id="patient2"><option>Maggie</option><option>Anthony</option><option>Arnie</option><option>Wanda</option><option>Alvin</option></select></label></div>
+      <ul class="checklist"><li class="check-row"><span class="tick" id="ppeTick" aria-hidden="true"></span><label class="grow"><input id="ppe" type="checkbox"><span><b>Gloves, goggles and lab coat on</b><small>Click to confirm</small></span><span class="confirm" id="ppeConfirm" aria-hidden="true">I’m wearing them</span></label></li></ul>
+      <div class="setup-foot"><span class="tiny">A full run is several hundred pipetting strokes, roughly an hour. The 60× teaching clock shortens each 5-minute incubation to 5 seconds.</span><button id="prepareBtn" class="primary">Start the lab</button></div>
+    </section>
+
+    <section id="notebook" class="notebook" hidden aria-label="ELISA notebook">
+      <div id="notebookResize" class="edge-resize" aria-hidden="true" title="Drag to resize"></div>
+      <header><div><span class="eyebrow">Evidence / observations</span><h2>Your ELISA notebook</h2></div><button id="closeNotebook" class="icon" aria-label="Close notebook">×</button></header>
+      <p id="notebookNotice" class="notice"></p>
+      <h3>1 · The strips <span class="tiny">wells 1–12 standards · 13–15 + control · 16–18 − control · 19–24 patients</span></h3>
+      <div id="wellPreview"></div>
+      <h3>2 · Standard concentrations</h3>
+      <div class="table-scroll"><table><thead><tr><th>Well</th><th>Dilution</th><th>µg/mL</th></tr></thead><tbody id="standardTable"></tbody></table></div>
+      <h3>3 · Your observations</h3>
+      <label>Describe the positive and negative controls, then interpret the patient triplicates.<textarea id="observations" rows="4" placeholder="Record your observations here."></textarea></label>
+      <div id="estimateFields"></div>
+      <p class="tiny">Estimates are student entries. The simulation is not a diagnostic or absorbance measurement.</p>
+      <details><summary>Teacher reference</summary><p id="teacherKey"></p><p class="tiny">The displayed signal is illustrative, not a calibrated analytical response.</p></details>
+      <details><summary>Procedure record &amp; corrections</summary><p id="runInfo"></p><div class="table-scroll"><table><thead><tr><th>#</th><th>Action</th><th>Target</th><th>Input</th></tr></thead><tbody id="actionLog"></tbody></table></div><ul id="correctionLog" class="recent"></ul></details>
+      <div class="notebook-foot"><button id="exportNotebook" class="primary">Export run &amp; observations</button></div>
+    </section>
+
+    <section id="cameraPanel" class="panel camera-panel" hidden aria-label="Webcam hand control" data-panel="camera">
+      <header class="panel-head" id="cameraDragHandle" data-drag><strong>Hand control</strong><span id="cameraBadge" class="state-badge">Off</span><button id="closeCamera" class="icon" aria-label="Close hand control and stop the camera">×</button></header>
+      <div class="cam-body">
+        <div class="video-box"><video id="cameraVideo" muted playsinline autoplay></video><canvas id="cameraOverlay" width="640" height="480"></canvas></div>
+        <div id="camGuide" class="cam-guide" role="status" aria-live="polite"><span id="camGuideIcon" class="cam-guide-icon" aria-hidden="true">📷</span><span id="camGuideText">Start the camera to work with your hand.</span></div>
+        <ol class="cam-steps" aria-label="Set-up">
+          <li data-cs="start"><span class="n">1</span><button id="cameraStart" class="primary">Start camera</button></li>
+          <li data-cs="hand"><span class="n">2</span><label>Hand<select id="workingHand"><option>Auto</option><option>Right</option><option>Left</option></select></label></li>
+          <li data-cs="centre" data-mode="pinch"><span class="n">3</span><button id="centreBtn" disabled title="Your hand position now becomes the centre of the bench view">Set centre here</button></li>
+          <li data-cs="pinch" data-mode="pinch"><span class="n">4</span><span class="try" id="pinchTry">Try a pinch</span></li>
+          <li data-cs="rest" data-mode="thumb"><span class="n">3</span><button id="restBtn" disabled title="Hold a relaxed pipette grip with your thumb resting">Capture Rest</button></li>
+          <li data-cs="press" data-mode="thumb"><span class="n">4</span><button id="pressBtn" disabled title="Keep the grip and press your thumb fully down">Capture Press</button></li>
+        </ol>
+        <div class="thumb-meter"><span id="plungerLabel">Thumb</span><div class="meter"><div id="thumbFill"></div></div></div>
+        <ul class="gestures" aria-label="Gestures">
+          <li data-g="grab"><i aria-hidden="true" data-pinch="🤏" data-thumb="✊">✊</i><b>Pick up</b><span data-pinch="Pinch over a tool and hold" data-thumb="Close your grip over a tool and hold">Close your grip over a tool and hold</span></li>
+          <li data-g="lock"><i aria-hidden="true">🎯</i><b>Aim</b><span>Pause over the target until its ring turns gold</span></li>
+          <li data-g="insert"><i aria-hidden="true">⤓</i><b>Insert</b><span>Lower your hand</span></li>
+          <li data-g="draw"><i aria-hidden="true" data-pinch="🤏" data-thumb="👍">👍</i><b>Draw</b><span data-pinch="Pinch, lower in, then let go" data-thumb="Press the plunger, lower in, then release slowly">Press the plunger, lower in, then release slowly</span></li>
+          <li data-g="deliver"><i aria-hidden="true">💧</i><b>Deliver</b><span data-pinch="Lower in, then pinch" data-thumb="Lower into the well, then press the plunger">Lower into the well, then press the plunger</span></li>
+          <li data-g="leave"><i aria-hidden="true">⤒</i><b>Withdraw</b><span>Lift your hand or move sideways</span></li>
+          <li data-g="write"><i aria-hidden="true">✍</i><b>Label</b><span>Lock a label pad, lower to touch, stroke sideways</span></li>
+          <li data-g="invert"><i aria-hidden="true">🔄</i><b>Invert strip</b><span>Turn your palm over; lower and lift on the towels</span></li>
+          <li data-g="return"><i aria-hidden="true">🖐</i><b>Put away</b><span data-pinch="At the tool's stand, spread your fingers wide" data-thumb="At the tool's stand, show your open palm">At the tool's stand, show your open palm</span></li>
+        </ul>
+        <details class="tuning" id="handSettings"><summary>Hand settings</summary>
+          <label>Plunger gesture<select id="handMode"><option value="thumb">Thumb press, like a real pipette (recommended)</option><option value="pinch">Pinch thumb and index finger (no calibration)</option></select></label>
+          <div class="tuning-row"><label for="handSpeed">Cursor speed</label><input id="handSpeed" type="range" min="100" max="400" step="10" value="220"><output id="handSpeedValue">2.2×</output></div>
+          <div class="tuning-row"><label for="handSmoothing">Smoothing</label><input id="handSmoothing" type="range" min="0" max="100" step="5" value="50"><output id="handSmoothingValue">Balanced</output></div>
+          <label class="switch"><input id="handAssist" type="checkbox" checked><span>Aim assist: bigger targets and snapping to the next one</span></label>
+          <p class="tiny">Higher speed means smaller hand movements. More smoothing steadies the cursor but reacts later.</p>
+        </details>
+        <p id="cameraStatus" class="tiny" role="status">Camera off. Mouse controls are available.</p><p id="cameraStats" class="tiny"></p>
+        <p class="tiny privacy">Video is processed on this device and never stored. Camera access needs HTTPS or localhost.</p>
+      </div>
+    </section>
+
+    <div class="loader" id="loading"><div class="loading-dot"></div><h2>Preparing your workbench</h2><p id="loadingText">Loading the 3D laboratory…</p><a href="index.html" id="fallbackLink" hidden>Open the 2D experiment</a></div>
+  </main>
+  <dialog id="helpDialog"><header><h2>At the ELISA bench</h2><button data-close>Close</button></header>
+    <h3>Finding your way</h3><p>The step card (top left) always shows what to do next. “Show me” highlights the target and brings it into view, and a soft ring marks the next target on the bench (switch it off in the Menu). Every panel can be dragged by its header, resized from its corners and collapsed; “Reset panel layout” in the Menu puts them back.</p>
+    <h3>Mouse, keyboard or touch</h3><p>Pick up a tool from the bench or the dock. To fit a tip, aim at the marked unused tip, hold the left mouse button and move down about 28 pixels. To draw, hold and lower into the source until the contact panel shows immersion, then release. To deliver, hold and lower into the receiving well; the fixed 50 µL dose is dispensed once the tip is in. Mix a serial-dilution well with five draw-and-return cycles. Sweep the marker across each well’s label pad. Right-click over the waste to eject an empty tip; left-click there to discard the final aliquot. Right-click without dragging inverts a held strip; then lower and lift it over the towels four times. Click a tool’s stand (or use Return tool) to put it away.</p>
+    <p>The camera frames each step automatically between strokes. Right-drag sideways to pan the bench and up or down to tilt the view; Shift + right-drag (or middle-drag) orbits all the way around; the wheel zooms toward the cursor. Auto-framing then waits until the next step, or until you choose “Auto” in the camera menu on the dock. For keyboard or touch operation, open “Targets” on the dock, choose a target and use it.</p>
+    <h3>On-device hand control</h3><p>Open “Hand control” on the dock and start the camera; the instruction under the video always says what to do now. Hold your hand as if gripping a micropipette, with the thumb on the plunger, and capture Rest (thumb relaxed) and Press (thumb pushed down) once. Your thumb then works the plunger (or the bulb of the transfer pipette) as on the real tool: a firm press counts even if it is not as deep as the calibration. Hold your hand where it feels comfortable; that spot becomes the centre of the bench (“Set centre here” changes it), and “Cursor speed” sets how far small movements reach. The tool hovers straight above the cursor. Pause over a target until its ring turns gold and the cursor ring snaps onto it, then lower your hand to insert; wells you pass over on the way do not lock. Before inserting, slide sideways onto the next well or lift to leave a lock; nothing is cancelled.</p>
+    <p>To draw, press the plunger, lower the tip into the liquid, then release; to deliver, lower into the well, then press. Pressing with an empty tip already in the liquid would blow bubbles, so it is not accepted: keep it pressed, lift out, lower back in, then release. To mix a serial-dilution well, keep the tip in the well and press, then release. Close your grip over a tool to pick it up. Label a well as with a real marker: pause over its label pad until the ring turns gold, lower your hand until the nib touches, then make a short sideways stroke; pads you pass over are never written on. Turn your palm over to invert a held strip, pause over the towels and lower and lift four times. To put a tool away, bring it to its stand (the pipette stand, the transfer-pipette holder, the marker tray or the strip’s place on the sheet) and show your open palm there; the marker may also be laid down by turning the open palm downward. An open hand anywhere else only pauses handling. Aim assist enlarges targets and, in empty space near the next expected target, snaps to it; it never acts on its own. A thumb-to-index pinch plunger that needs no calibration is available under Hand settings. Tracking loss cancels an unfinished stroke and keeps the held tool and liquid.</p>
+    <h3>What this version does and does not model</h3><p>The protocol engine keeps its 50 µL micropipette dose, 220 µL wash fill and 1.32 mL model transfer-pipette capacity. Thumb travel animates the plunger but does not measure force or continuously meter volume. Partial doses, second-stop blowout, seal mechanics, fluid dynamics and calibrated optical absorbance are not simulated. Clear liquids receive a faint cool tint only so students can distinguish the liquid level from transparent plastic; the blue kit-specific end point and dilution rules are preserved. Geometry and materials are reference-informed approximations, not measured CAD. Palm movement maps to virtual insertion depth, not measured distance. Pause and Stop freeze the incubation clock; Stop also cancels pending strokes. Real webcam comfort and robustness need checking on the school devices.</p>
+    <p class="source">Apparatus, lighting, controls and hand tracking follow the <a href="../dnamicroarray_v2/microarray-3d.html">DNA microarray 3D lab</a>. Educational simulation · no diagnostic use.</p>
+  </dialog>
+  <script src="3d-classroom/protocol.js"></script><script src="3d-classroom/timer-clock.js?v=1"></script>
+  <script src="3d-classroom/hand-core.js?v=v3-1"></script><script src="3d-classroom/interaction.js?v=v3-1"></script>
+  <script src="3d-classroom/renderer.js?v=v3-1"></script><script src="3d-classroom/liquid.js?v=v3-1"></script><script src="3d-classroom/scene.js?v=v3-1"></script><script src="3d-classroom/framing.js?v=v3-1"></script>
+  <script src="3d-classroom/camera.js?v=v3-1"></script><script src="3d-classroom/hand-tuning.js?v=v3-1"></script><script src="3d-classroom/panels.js?v=v3-1"></script>
+  <script src="3d-classroom/app.js?v=v3-1"></script>
+</body>
+</html>
