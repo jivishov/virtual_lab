@@ -140,6 +140,7 @@ test('a file:// page loads the hand tracker from pinned HTTPS copies; a served p
   const {cam:file}=fixture(undefined,{location:{protocol:'file:'},document:{baseURI:'file:///C:/lab/microarray.html'}});
   const remote=file.sources();assert.equal(remote.length,2);
   for(const s of remote)for(const url of [s.bundle,s.wasm,s.model])assert.match(url,/^https:\/\//);
+  assert.match(remote[0].bundle,/^https:\/\/virtuallab\.az\/experiments\/dnamicroarray_v2\/vendor\/mediapipe\//,'the lab loads its own published copy first');
   assert.match(remote[1].bundle,/tasks-vision@0\.10\.17\//);
   const {cam:served}=fixture(undefined,{URL,location:{protocol:'http:'},document:{baseURI:'http://127.0.0.1:8766/microarray.html'}});
   const local=served.sources();assert.equal(local.length,1);

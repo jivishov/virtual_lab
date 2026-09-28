@@ -243,3 +243,12 @@ test('the micropipette is put down by bringing it to its stand and showing an op
   pick({id:'stand',kind:'stand'});for(let t=1260;t<=1560;t+=60)c.feed(open(t));assert.equal(c.tool,'pipette','a glance past the stand is not enough');
   for(let t=1620;t<=1800;t+=60)c.feed(open(t));assert.equal(c.tool,'view','held over the stand, the pipette is hung up');
 });
+test('a micropipette with liquid in its tip is not hung up; once the liquid is delivered it can be',()=>{
+  const p=prepared();act(p,'attach');act(p,'aspirate',{target:'EB'});
+  const {c,said}=handRig(p,{id:'stand',kind:'stand'});const open=now=>h2(now,.30,{open:true,grip:false});
+  let t=0;for(;t<=900;t+=60)c.feed(open(t));
+  assert.equal(c.tool,'pipette','refused while loaded');assert.ok(said.some(m=>m.e&&/Deliver the liquid first/.test(m.s)));
+  assert.equal(said.filter(m=>/Deliver the liquid first/.test(m.s)).length,1,'explained once, not on every frame');
+  act(p,'dispense',{target:'A1',surface:'card'});
+  for(t+=60;t<=1500;t+=60)c.feed(open(t));assert.equal(c.tool,'view','hung up once the tip is empty');
+});

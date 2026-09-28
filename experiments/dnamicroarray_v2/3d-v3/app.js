@@ -410,6 +410,7 @@
         else text=liquid?(pinch?'Pinch before the tip enters the liquid: lift out, pinch, lower back in, then let go.':'The plunger must be pressed before the tip enters the liquid: lift out, press, lower back in, then release.'):'Lift the tip away.';
       }
       else if(tip?.retired||nextTargetId()==='waste'){icon='🎯';text='Move to the tip waste and '+press+' to eject.';g='lock';}
+      else if(t?.kind==='stand'){icon='🖐';text=tip?.volume?'Deliver the liquid first, then hang the micropipette up here.':pinch?'Spread your fingers wide to hang the micropipette on its stand.':'Show your open palm to hang the micropipette on its stand.';g='return';}
       else if(['card','bench','incubator','uv','plate'].includes(nextTargetId())){icon='🖐';text='Hang the micropipette up first: move it to its stand and show your open palm.';g='return';}
       else if(!tip){icon='🎯';text='Pause over the glowing fresh tip until it locks, then lower your hand.';g='lock';}
       else{icon='🎯';text='Pause over '+nextLabel()+' until its ring turns gold. Spots you pass over do not lock.';g='lock';}

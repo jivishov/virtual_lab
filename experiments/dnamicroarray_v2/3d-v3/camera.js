@@ -62,7 +62,7 @@
        local copy is used. Video frames never leave the device either way. */
     sources(){
       if(root.location?.protocol==='file:'){
-        const site='https://virtuallab.az/experiments/elisa_assay/vendor/mediapipe/',cdn='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.17/';
+        const site='https://virtuallab.az/experiments/dnamicroarray_v2/vendor/mediapipe/',cdn='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.17/';
         return [{name:'Virtual Lab MediaPipe (file:// page)',bundle:site+'vision_bundle.mjs',wasm:site+'wasm',model:site+'models/hand_landmarker.task'},
           {name:'Pinned CDN MediaPipe (file:// page)',bundle:cdn+'vision_bundle.mjs',wasm:cdn+'wasm',model:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'}];
       }

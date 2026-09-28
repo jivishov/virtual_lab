@@ -344,7 +344,7 @@
       const size=['station','card'].includes(t.kind)?3.1:t.kind==='waste'?2.1:t.kind==='plate'?1.4:t.kind==='reagent'?1.1:1;this.beacon.scale=[size,1,size];
     }
     // A locked target gets a gold ring; a merely hovered one keeps the teal ring.
-    focusTarget(t,locked=false){this.focus.visible=!!t;if(t){this.r.root.update();this.focus.pos=this.position(t);this.focus.pos[1]+=.023;const size=['station','card'].includes(t.kind)?3.3:locked?1.2:1;this.focusRing.scale=[size,1,size];this.focusRing.mat.color=rgb(locked?'#f2b134':'#5fd0bd');}}
+    focusTarget(t,locked=false){this.focus.visible=!!t;if(t){this.r.root.update();this.focus.pos=this.position(t);this.focus.pos[1]+=.023;const size=['station','card'].includes(t.kind)?3.3:t.kind==='stand'?2.6:locked?1.2:1;this.focusRing.scale=[size,1,size];this.focusRing.mat.color=rgb(locked?'#f2b134':'#5fd0bd');}}
     park(tool){if(tool==='pipette'){this.pipette.pos=[...this.pipetteHome];this.pipette.rot=[0,0,0];this.plunger.pos[1]=2.34;this.pipetteGoal=null;}this.r.dirtyShadow=true;}
     pose(c,f,p){
       if(c.tool==='view')return;const xy=f||c.lastFrame;

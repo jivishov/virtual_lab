@@ -142,8 +142,13 @@
         }else if(f.open&&!this.contact&&!this.pending){
           // The micropipette is hung back on its stand: bring it there and show an open palm. Elsewhere an open hand only
           // pauses handling, as nobody lets go of a real pipette in mid-air.
-          if(this.openSince===null){this.openSince=f.now;this.openHinted=false;}
-          if(t?.kind==='stand'){this.standSince??=f.now;if(f.now-this.standSince>=HANG_MS){this.select('view','hand');this.a.say?.('Micropipette hung on its stand.');return;}}
+          if(this.openSince===null){this.openSince=f.now;this.openHinted=false;this.loadedHinted=false;}
+          if(t?.kind==='stand'&&this.p.tip?.volume){
+            // Never hang up a pipette with liquid in the tip: it can run back into the shaft.
+            this.standSince=null;
+            if(!this.loadedHinted){this.loadedHinted=true;this.a.say?.('Deliver the liquid first. A micropipette hung up with liquid in its tip lets it run back into the shaft.',true);}
+          }
+          else if(t?.kind==='stand'){this.standSince??=f.now;if(f.now-this.standSince>=HANG_MS){this.select('view','hand');this.a.say?.('Micropipette hung on its stand.');return;}}
           else{this.standSince=null;if(f.now-this.openSince>700&&!this.openHinted){this.openHinted=true;this.a.say?.('To put the micropipette down, take it back to its stand and show your open palm there.');}}
         }else this.openSince=this.standSince=null;
       }
