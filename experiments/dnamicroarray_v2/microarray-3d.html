@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Version 3 of the manual-based, 32-spot DNA/RNA microarray teaching lab: realistic 3D apparatus, individual pipetting steps, resumable runs, observation-first analysis with reasoning questions and a debrief, and optional on-device hand control.">
+  <title>DNA Microarray · 3D Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23197b7b'/%3E%3Cpath d='M8 8h16v16H8zM8 16h16M16 8v16' fill='none' stroke='%23f7faf7' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="3d-v3/style.css?v=hand-aim-2">
+</head>
+<body>
+  <header class="top">
+    <a class="identity" href="microarray-3d.html"><span class="brandmark" aria-hidden="true">▦</span><strong>DNA Microarray <span>/ 3D</span></strong></a>
+    <span class="badge">EDVOTEK 235 · 32 SPOTS</span>
+    <div class="run-controls" role="group" aria-label="Experiment clock and handling">
+      <button id="runBtn" title="Run: resume handling and the drying clock"><span aria-hidden="true">▶</span><span class="label">Run</span></button>
+      <button id="pauseBtn" title="Pause: freeze time and handling"><span aria-hidden="true">❚❚</span><span class="label">Pause</span></button>
+      <button id="stopBtn" title="Stop: also cancel unfinished strokes and the camera"><span aria-hidden="true">■</span><span class="label">Stop</span></button>
+    </div>
+    <span id="runStatus" class="run-status" role="status"></span>
+    <nav aria-label="Lab tools">
+      <span id="saveStatus" class="save-status" role="status" title="Your run is saved in this browser"></span>
+      <button id="helpBtn">Controls &amp; model</button>
+      <button id="notebookBtn" class="notebook-btn" aria-controls="notebook" aria-expanded="false">Notebook</button>
+      <button id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-controls="labMenu" title="Settings and more">☰<span class="label"> Menu</span></button>
+    </nav>
+    <div id="labMenu" class="menu lab-menu" hidden role="menu">
+      <label>Drying clock<select id="clockSpeed"><option value="1">1× real time</option><option value="30">30× teaching time</option><option value="60" selected>60× teaching time</option></select></label>
+      <label>Graphics quality<select id="graphicsQuality"><option value="high">High</option><option value="balanced" selected>Balanced</option><option value="low">Low (older devices)</option></select></label>
+      <label class="switch"><input id="hintsToggle" type="checkbox" checked><span>Show the next target on the bench</span></label>
+      <button id="resetLayoutBtn">Reset panel layout</button>
+      <button id="resetBtn" class="danger">Start a fresh experiment</button>
+      <hr><a href="index.html">2D activity</a>
+      <p class="tiny">Source: Edvotek #235 manual 235.180419, pp. 3, 5–8, 11–12.</p>
+    </div>
+  </header>
+  <main class="stage" aria-label="3D laboratory">
+    <canvas id="labCanvas" tabindex="0" aria-label="3D microarray workbench. Select the micropipette, aim at a target, hold and move downward to insert, then release. Alternative target controls are in the Targets panel."></canvas>
+
+    <section id="stepCard" class="panel step-card" aria-label="Your procedure" data-panel="step">
+      <header class="panel-head" data-drag>
+        <span class="step-badge" id="stepNumber" aria-hidden="true">01</span>
+        <div class="step-titles"><span class="eyebrow" id="stepEyebrow">Step 1 of 13</span><strong id="stepTitle">Orient &amp; label</strong></div>
+        <button id="stepCollapse" class="icon" data-collapse aria-expanded="true" aria-controls="stepBody" title="Collapse or expand">–</button>
+      </header>
+      <div id="stepBody" class="step-body">
+        <ol id="stages" class="stage-strip" aria-label="Experiment pathway"></ol>
+        <p id="nextAction" class="next-action" aria-live="polite"></p>
+        <div class="step-meta"><span id="stageExtra"></span><button id="locateBtn" title="Highlight the next target and bring it into view">⌖ Show me</button></div>
+        <div id="lastMistake" class="correction" hidden role="status"><div><span class="eyebrow">Correction</span><p id="lastMistakeText"></p><p id="lastMistakeHint"></p></div><button id="dismissMistake" class="icon" title="Dismiss">×</button></div>
+        <div id="stepActions" class="step-actions">
+          <button id="runInline" class="primary wide" hidden>▶ Run: continue the experiment</button>
+          <div id="timerBox" class="timer" hidden>
+            <label>Drying method<select id="dryMode"><option value="incubator">37 °C incubator · 5 min</option><option value="room">Room temperature · 10 min</option></select></label>
+            <div class="clock"><strong id="timerDigits">05:00</strong><span>simulated<br>time</span></div>
+            <div class="row"><button id="placeDryBtn">Move card to incubator</button><button id="timerStart" class="primary">Start drying</button></div>
+          </div>
+          <button id="returnCardBtn" class="primary wide" hidden>Return the dried card to the bench</button>
+          <div id="uvBox" class="uv-controls" hidden>
+            <label class="toggle"><input id="uvGoggles" type="checkbox"><span>UV goggles on</span></label>
+            <div class="row"><button id="placeUVBtn">Move card to UV area</button><button id="uvBtn" class="primary">Switch on UV lamp</button></div>
+          </div>
+          <div id="analyzeBox" hidden><button id="openNotebookBtn" class="primary wide">Open the notebook to record the card</button></div>
+          <div id="completeBox" hidden><p class="done-line">All controls and genes check out. Finish with the questions and your debrief.</p><div class="row"><button id="completeQuestions" class="primary">Reasoning questions</button><button id="completeDebrief">Debrief</button></div></div>
+        </div>
+        <details class="why"><summary>About this step</summary><p id="stepDetail"></p><p id="stepSource" class="source"></p></details>
+      </div>
+    </section>
+
+    <section class="contact panel" aria-label="Tool and contact state" data-panel="contact">
+      <header class="panel-head slim" data-drag><span class="eyebrow" id="toolName">NO TOOL HELD</span></header>
+      <strong id="contactName">Explore the workbench</strong>
+      <div class="load"><span>In the tip</span><b id="loadVolume">0 / 5 µL</b></div>
+      <div class="target-liquid" id="targetLiquid" hidden><div class="load"><span id="targetLiquidName">At target</span><b id="targetVolume"></b></div><div class="meter"><div id="targetLiquidFill"></div></div></div>
+      <div class="meter"><div id="contactFill"></div></div><small id="contactState">Contact depth · schematic</small><small id="tipInfo">Fit a fresh tip to begin.</small>
+      <div id="mixMeter" hidden><span class="eyebrow">MIXES</span><div id="mixDots"></div></div>
+    </section>
+
+    <div id="targetLabel" class="target-label" hidden></div><div id="handCursor" class="hand-cursor"></div>
+    <div id="toast" role="status" aria-live="polite" class="toast"></div>
+
+    <div class="bottom">
+      <div id="interactionHint" class="hint">Orient the paper card so Patient 1 is at the upper left.</div>
+      <div class="dock" aria-label="Tools">
+        <button data-tool="view" class="active"><span aria-hidden="true">↔</span>View</button>
+        <button data-tool="pipette"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 21 3-7L17 3l4 4-10 11-7 3ZM13 8l4 4M16 2l6 5"/></svg>Micropipette</button>
+        <button data-tool="card"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M7 9h10M7 12h10M7 15h10"/></svg>Paper card</button>
+        <button id="returnTool"><span aria-hidden="true">↧</span>Return tool</button><span class="divider"></span>
+        <button id="targetsBtn" aria-controls="targetsPanel" aria-expanded="false" title="Click, keyboard and touch controls"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h2M11 10h2M15 10h2M7 14h10"/></svg>Targets</button>
+        <button id="handBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"/><circle cx="12" cy="12" r="4"/></svg>Hand control</button><span class="divider"></span>
+        <button id="cameraMenuBtn" aria-controls="cameraMenu" aria-expanded="false" title="Camera views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span id="cameraMode">Auto view</span></button>
+      </div>
+    </div>
+    <div id="cameraMenu" class="menu cam-menu" hidden role="menu" aria-label="Camera views">
+      <button data-view="auto" class="active" title="Frame the current step automatically">Auto · follow the step</button>
+      <button data-view="bench">Whole bench</button><button data-view="plate">QuickStrip</button><button data-view="card">Card</button><button data-view="reagents">Tubes &amp; tips</button><button data-view="top">Overhead</button>
+      <p class="tiny">Right-drag: sideways pans, up/down tilts. Shift + right-drag orbits. Wheel zooms to the cursor.</p>
+    </div>
+
+    <section id="targetsPanel" class="panel targets-panel" hidden aria-label="Click, keyboard and touch controls" data-panel="targets">
+      <header class="panel-head" data-drag><strong>Targets</strong><button id="closeTargets" class="icon" title="Close">×</button></header>
+      <p class="tiny">Choose any target and use it. The same checks apply as with the mouse or your hand.</p>
+      <label>Target<select id="targetSelect"></select></label>
+      <button id="targetAction" class="primary wide">Use target</button>
+      <button id="targetNext" class="wide">Select the next target</button>
+    </section>
+
+    <section id="setupDialog" class="panel setup" hidden role="dialog" aria-labelledby="setupTitle" data-panel="setup">
+      <header class="panel-head" data-drag><span class="eyebrow">Before you start · <span id="setupPageNum">1</span> of 2</span></header>
+      <div class="setup-page" data-page="1">
+        <h2 id="setupTitle">Welcome to the microarray bench</h2>
+        <p class="lead">You will run the Edvotek #235 paper microarray: four patients, four genes, 32 spots.</p>
+        <ol class="journey" aria-label="What you will do">
+          <li><b>1</b><span>Buffer every spot</span></li><li><b>2</b><span>Mix &amp; spot 32 samples</span></li><li><b>3</b><span>Hybridization buffer</span></li><li><b>4</b><span>Dry three times</span></li><li><b>5</b><span>Read under UV</span></li>
+        </ol>
+        <label class="field">Your initials or group<input id="groupLabel" maxlength="24" placeholder="e.g. Group 04" autocomplete="off"><small id="labelError" class="field-error" hidden>Enter your initials or group so your card is labelled.</small></label>
+        <label class="field">Card set<select id="rowSet"><option value="AD">Rows A–D</option><option value="EH">Rows E–H (equivalent set)</option></select></label>
+        <div class="setup-foot"><span class="tiny">About 20–30 minutes with the teaching clock. Your progress is saved in this browser.</span><button id="setupNext" class="primary">Next: safety &amp; set-up →</button></div>
+      </div>
+      <div class="setup-page" data-page="2" hidden>
+        <h2>Safety &amp; set-up</h2>
+        <ul class="checklist">
+          <li class="check-row"><span class="tick" id="ppeTick" aria-hidden="true"></span><label class="grow"><input id="ppe" type="checkbox"><span><b>Gloves and lab goggles on</b><small>Manual p.7 · click to confirm</small></span><span class="confirm" id="ppeConfirm" aria-hidden="true">I’m wearing them</span></label></li>
+          <li class="check-row"><span class="tick" id="cardTick" aria-hidden="true"></span><span class="grow"><b>Card: Patient 1 at the upper left</b><small id="cardOrientation"></small></span><button id="rotateCard">Rotate 180°</button></li>
+          <li class="check-row"><span class="tick" id="plateTick" aria-hidden="true"></span><span class="grow"><b>QuickStrip: Patient 1 at the upper left</b><small id="plateOrientation"></small></span><button id="rotatePlate">Rotate 180°</button></li>
+          <li class="check-row"><span class="tick" id="tapTick" aria-hidden="true"></span><span class="grow"><b>Settle the samples</b><small id="settleStatus">Gently tap the QuickStrip on the bench (p.11).</small></span><button id="tapPlate">Tap</button></li>
+        </ul>
+        <div class="setup-foot"><button id="setupBack">← Back</button><button id="prepareBtn" class="primary">Start the lab</button></div>
+      </div>
+    </section>
+
+    <section id="notebook" class="notebook" hidden aria-label="Microarray notebook">
+      <div id="notebookResize" class="edge-resize" aria-hidden="true" title="Drag to resize"></div>
+      <header><div><span class="eyebrow">Evidence / observations</span><h2>Your microarray notebook</h2></div><button id="closeNotebook" class="icon" aria-label="Close notebook">×</button></header>
+      <p id="notebookNotice" class="notice"></p>
+      <div class="legend" aria-label="Colour key, manual p.12"><span><i class="yellow"></i>Yellow · N similar</span><span><i class="red"></i>Red (appears orange-red under UV) · ↑ increased</span><span><i class="green"></i>Green · ↓ decreased</span><span><i class="black"></i>Dark · – no expression</span></div>
+      <h3>1 · Controls <span class="tiny">columns 1–4 · Normal, Up, Down, Blank</span></h3>
+      <p class="tiny">Record the colour you see on each control spot. The run is valid only if every control shows its expected result.</p>
+      <div class="table-scroll"><table id="controlsTable" class="obs-table"></table></div>
+      <div class="notebook-actions"><button id="checkControls" class="primary">Check 16 controls</button><span id="controlsFeedback" role="status"></span></div>
+      <h3>2 · Genes <span class="tiny">columns 5–8 · genes 1–4</span></h3>
+      <p class="tiny">Unlocks after the controls are valid. Record the colour, then what it means for that patient compared with the control.</p>
+      <div class="table-scroll"><table id="genesTable" class="obs-table"></table></div>
+      <div class="notebook-actions"><button id="finishBtn" class="primary" disabled>Check 16 genes</button><span id="genesFeedback" role="status"></span></div>
+      <h3 id="questionsHeading">3 · Reasoning questions</h3>
+      <p id="questionsNotice" class="tiny"></p>
+      <div id="questions"></div>
+      <h3>4 · Written responses</h3>
+      <p class="tiny">Based on the manual's study questions (p.9). Your teacher reviews these; they are saved in this browser and included in the export.</p>
+      <div id="openQuestions"></div>
+      <label>Other notes<textarea id="notes" rows="3" placeholder="Anything else you noticed during the run."></textarea></label>
+      <details><summary>Procedure record &amp; reagent balance</summary><p id="runInfo"></p><div class="table-scroll"><table><thead><tr><th>#</th><th>Action</th><th>Target</th><th>Input</th></tr></thead><tbody id="actionLog"></tbody></table></div></details>
+      <div class="notebook-foot"><button id="debriefBtn">Open debrief</button><button id="exportBtn" class="primary">Export notebook &amp; run JSON</button></div>
+    </section>
+
+    <section id="cameraPanel" class="panel camera-panel" hidden aria-label="Webcam hand control" data-panel="camera">
+      <header class="panel-head" id="cameraDragHandle" data-drag><strong>Hand control</strong><span id="cameraBadge" class="state-badge">Off</span><button id="closeCamera" class="icon" aria-label="Close hand control and stop the camera">×</button></header>
+      <div class="cam-body">
+        <div class="video-box"><video id="cameraVideo" muted playsinline autoplay></video><canvas id="cameraOverlay" width="640" height="480"></canvas></div>
+        <div id="camGuide" class="cam-guide" role="status" aria-live="polite"><span id="camGuideIcon" class="cam-guide-icon" aria-hidden="true">📷</span><span id="camGuideText">Start the camera to pipette with your hand.</span></div>
+        <ol class="cam-steps" aria-label="Set-up">
+          <li data-cs="start"><span class="n">1</span><button id="cameraStart" class="primary">Start camera</button></li>
+          <li data-cs="hand"><span class="n">2</span><label>Hand<select id="workingHand"><option>Auto</option><option>Right</option><option>Left</option></select></label></li>
+          <li data-cs="centre" data-mode="pinch"><span class="n">3</span><button id="centreBtn" disabled title="Your hand position now becomes the centre of the bench view">Set centre here</button></li>
+          <li data-cs="pinch" data-mode="pinch"><span class="n">4</span><span class="try" id="pinchTry">Try a pinch</span></li>
+          <li data-cs="rest" data-mode="thumb"><span class="n">3</span><button id="restBtn" disabled title="Hold a relaxed pipette grip with your thumb resting">Capture Rest</button></li>
+          <li data-cs="press" data-mode="thumb"><span class="n">4</span><button id="pressBtn" disabled title="Keep the grip and press your thumb fully down">Capture Press</button></li>
+        </ol>
+        <div class="thumb-meter"><span id="plungerLabel">Thumb</span><div class="meter"><div id="thumbFill"></div></div></div>
+        <ul class="gestures" aria-label="Gestures">
+          <li data-g="grab"><i aria-hidden="true" data-pinch="🤏" data-thumb="✊">✊</i><b>Pick up</b><span data-pinch="Pinch over a tool and hold" data-thumb="Close your grip over a tool and hold">Close your grip over a tool and hold</span></li>
+          <li data-g="lock"><i aria-hidden="true">🎯</i><b>Aim</b><span>Pause over the target until its ring turns gold</span></li>
+          <li data-g="insert"><i aria-hidden="true">⤓</i><b>Insert</b><span>Lower your hand</span></li>
+          <li data-g="draw"><i aria-hidden="true" data-pinch="🤏" data-thumb="👍">👍</i><b>Draw</b><span data-pinch="Pinch, lower in, then let go" data-thumb="Press the plunger, lower in, then release slowly">Press the plunger, lower in, then release slowly</span></li>
+          <li data-g="deliver"><i aria-hidden="true">💧</i><b>Deliver</b><span data-pinch="Lower in, then pinch" data-thumb="Lower onto the target, then press the plunger">Lower onto the target, then press the plunger</span></li>
+          <li data-g="leave"><i aria-hidden="true">⤒</i><b>Withdraw</b><span>Lift your hand or move sideways</span></li>
+          <li data-g="return"><i aria-hidden="true">🖐</i><b>Hang up</b><span data-pinch="At the stand, spread your fingers wide" data-thumb="At the stand, show your open palm">At the stand, show your open palm</span></li>
+        </ul>
+        <details class="tuning" id="handSettings"><summary>Hand settings</summary>
+          <label>Plunger gesture<select id="handMode"><option value="thumb">Thumb press, like a real pipette (recommended)</option><option value="pinch">Pinch thumb and index finger (no calibration)</option></select></label>
+          <div class="tuning-row"><label for="handSpeed">Cursor speed</label><input id="handSpeed" type="range" min="100" max="400" step="10" value="220"><output id="handSpeedValue">2.2×</output></div>
+          <div class="tuning-row"><label for="handSmoothing">Smoothing</label><input id="handSmoothing" type="range" min="0" max="100" step="5" value="50"><output id="handSmoothingValue">Balanced</output></div>
+          <label class="switch"><input id="handAssist" type="checkbox" checked><span>Aim assist: bigger targets and snapping to the next one</span></label>
+          <p class="tiny">Higher speed means smaller hand movements. More smoothing steadies the cursor but reacts later.</p>
+        </details>
+        <p id="cameraStatus" class="tiny" role="status">Camera off. Mouse controls are available.</p><p id="cameraStats" class="tiny"></p>
+        <p class="tiny privacy">Video is processed on this device and never stored. Camera access needs HTTPS or localhost.</p>
+      </div>
+    </section>
+
+    <div class="loader" id="loading"><div class="loading-dot"></div><h2>Preparing your workbench</h2><p id="loadingText">Loading the 3D laboratory…</p><a href="index.html" id="fallbackLink" hidden>Open the 2D activity</a></div>
+  </main>
+  <dialog id="resumeDialog" class="small"><header><div><span class="eyebrow">Saved in this browser</span><h2>Resume your run?</h2></div></header>
+    <p id="resumeText"></p><p class="tiny">On a shared computer, check the group label before resuming. Runs resume paused; the drying clock did not advance while the page was closed.</p>
+    <div class="dialog-actions"><button id="resumeFresh">Start a fresh experiment</button><button id="resumeYes" class="primary">Resume run</button></div>
+  </dialog>
+  <dialog id="debriefDialog"><header><div><span class="eyebrow">Run debrief</span><h2 id="debriefTitle">Your run so far</h2></div><div class="dialog-actions"><button id="printDebrief">Print</button><button data-close>Close</button></div></header>
+    <div id="debriefBody"></div>
+  </dialog>
+  <dialog id="helpDialog"><header><h2>At the microarray bench</h2><button data-close>Close</button></header>
+    <h3>Finding your way</h3><p>The step card (top left) always shows what to do next. “Show me” highlights the target and brings it into view, and a soft ring marks the next target on the bench (switch it off in the Menu). Every panel can be dragged by its header, resized from its corners and collapsed; “Reset panel layout” in the Menu puts them back.</p>
+    <h3>Mouse, keyboard or touch</h3><p>Pick up the micropipette from the dock or its stand. Aim at a fresh tip, hold the left mouse button and move down about 28 pixels to fit it. To draw liquid, hold and lower into the source, then release. To deliver, hold and lower into the receiving well or to the card spot. Every stroke moves exactly 5 µL. Repeat a draw and a return three times to mix each sample.</p>
+    <p>The camera frames each step automatically between strokes. Right-drag sideways to pan the bench and up or down to tilt the view; Shift + right-drag (or middle-drag) orbits all the way around; the wheel zooms toward the cursor. Auto-framing then waits until the next step, or until you choose “Auto” in the camera menu on the dock. For keyboard or touch operation, open “Targets” on the dock, choose a target and use it.</p>
+    <h3>On-device hand control</h3><p>Open “Hand control” on the dock and start the camera; the instruction under the video always says what to do now. Hold your hand as if gripping a micropipette, with the thumb on the plunger, and capture Rest (thumb relaxed) and Press (thumb pushed down) once. Your thumb then works the plunger as on a real pipette: a firm press counts even if it is not as deep as the calibration. Hold your hand where it feels comfortable. That spot becomes the centre of the bench (use “Set centre here” to change it), and small movements then cover the whole bench; “Cursor speed” sets how far. The pipette hovers straight above the cursor. Pause over a target until its ring turns gold and the cursor ring snaps onto it, then lower your hand to insert; spots you pass over on the way do not lock. Before inserting, slide sideways onto the next spot or lift to leave a lock; nothing is cancelled. To draw, press the plunger, lower the tip into the liquid, then release; to deliver, lower onto the target, then press. Pressing the plunger with an empty tip already in the liquid would blow bubbles, so it is not accepted and is noted in the debrief: keep it pressed, lift out, lower back in, then release. To mix, keep the tip in the well and press, then release. Lift your hand back up or move sideways to leave. Close your grip over a tool to pick it up. To put the micropipette away, bring it to its stand and show your open palm there; it hangs back in place. An open hand anywhere else only pauses handling. Aim assist enlarges targets and, in empty space near the next expected target, snaps to it; the spot under the cursor always wins. It never acts on its own and can be turned off. A thumb-to-index pinch plunger that needs no calibration is available under Hand settings. Tracking loss cancels an unfinished stroke and keeps the held tool and liquid.</p>
+    <h3>Saving and resuming</h3><p>Your run, notebook, answers and corrections are saved in this browser after every checked action. Reopening the page offers to resume, paused. Nothing is uploaded, and camera calibration is not stored. “Start a fresh experiment” in the Menu deletes the saved run.</p>
+    <h3>Procedure and model</h3><p>This version follows the supplied Edvotek #235 manual, version 235.180419: four patients, four controls and four genes on a 4 × 8 card. The A–D and E–H sets represent the same samples. Each reagent is a 200 µL aliquot in a snap-top microcentrifuge tube (1.5 mL assumed), identified by its cap colour and label. The QuickStrip wells hold prepared sample of unspecified volume; a small visual layer shows it, and only the added 5 µL control aliquots are counted.</p>
+    <p>Liquids are shown near-clear, as buffers and cDNA appear in daylight. Red, green and yellow appear only as fluorescence under the long-wave UV lamp; the paper also glows blue, as in the manual's photograph (p.12). The Up control and red gene spots appear orange-red under UV.</p>
+    <p>Every drying stage is five minutes at 37 °C or ten minutes at room temperature. Clock acceleration (Menu) is a teaching aid. Pause and Stop freeze elapsed time; Stop also cancels pending strokes. Hiding the tab pauses the clock.</p>
+    <h3>What the model represents</h3><p>Results reproduce the example on manual page 12. Yellow means similar expression in patient and control, red means greater expression in the patient, green means less, and dark means no detectable expression. Controls in columns 1–4 (Normal, Up, Down, Blank) must show their expected colours before genes are interpreted. It does not establish a diagnosis or identify a named gene.</p>
+    <p>The scene uses approximate geometry and discrete laboratory actions. It does not simulate molecular kinetics, fluid dynamics, measured insertion distance, plunger force, partial dosing, photobleaching or calibrated fluorescence intensity. Real camera comfort and robustness need checking on classroom devices.</p>
+    <p class="source">Sources: supplied manual pp. 3, 5–8, 11–12; <a href="https://virtuallab.az/experiments/elisa_assay/elisa-3d.html" target="_blank" rel="noreferrer">ELISA 3D interaction reference</a>.</p>
+  </dialog>
+  <script src="3d-v3/protocol.js"></script><script src="3d-v3/analysis.js?v=hand-aim-5"></script><script src="3d-v3/session.js"></script><script src="3d-v3/hand-core.js?v=hand-aim-4"></script><script src="3d-v3/interaction.js?v=hand-aim-5"></script>
+  <script src="3d-v3/renderer.js"></script><script src="3d-v3/liquid.js"></script><script src="3d-v3/scene.js?v=hand-aim-5"></script><script src="3d-v3/framing.js"></script><script src="3d-v3/camera.js?v=hand-aim-3"></script>
+  <script src="3d-v3/hand-tuning.js?v=hand-aim-3"></script><script src="3d-v3/panels.js"></script><script src="3d-v3/notebook-ui.js"></script><script src="3d-v3/app.js?v=hand-aim-5"></script>
+</body>
+</html>

@@ -199,7 +199,34 @@ em { font-style: italic; }
 .protocol li { margin-bottom: var(--sp-1); }
 .protocol li::marker { color: var(--accent); font-variant-numeric: tabular-nums; }
 
-.casefile__actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-4); }
+.casefile__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); margin-top: var(--sp-4); }
+
+/* "Want to try it in 3D?" sits beside this run's buttons but is drawn as a card
+   after an "or", so it reads as another way in rather than a step of the run. */
+.casefile__or { font-size: var(--step--1); color: var(--ink-2); padding: 0 var(--sp-1); }
+.try3d {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: var(--sp-2);
+  align-items: baseline;
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--hairline) solid color-mix(in oklab, var(--accent) 55%, var(--line));
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--accent) 10%, var(--surface-1));
+  color: var(--ink-1);
+  text-decoration: none;
+  transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+.try3d:hover { background: color-mix(in oklab, var(--accent) 14%, var(--surface-1)); border-color: var(--accent); }
+.try3d:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.try3d__ask { grid-column: 1 / -1; font-size: var(--step--1); font-weight: 600; color: var(--ink-1); }
+.try3d__go { font-weight: 600; font-size: var(--step-0); color: var(--accent); }
+.try3d__note { font-size: var(--step--1); color: var(--ink-2); }
+@media (max-width: 640px) {
+  .casefile__or { display: none; }
+  .try3d { flex-basis: 100%; grid-template-columns: 1fr; }
+}
 
 /* bench record / progress-reset line under the actions */
 .casefile__record {

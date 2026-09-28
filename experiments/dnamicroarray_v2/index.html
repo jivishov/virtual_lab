@@ -7,7 +7,7 @@
   <meta name="description" content="A hands-on, drag-and-drop DNA microarray simulator: pipette reagents, spot patient samples, dry, hybridise and read gene-expression results under UV.">
 
   <link rel="stylesheet" href="css/tokens.css?v=5">
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
   <!-- blocking, and first: puts [data-theme] on <html> before the first paint -->
   <script src="js/theme.js?v=5"></script>
 </head>
@@ -86,6 +86,13 @@
         <!-- disabled until a full run has been completed once; ui.js unlocks it
              from Lab.progress -->
         <button id="demo-btn" class="btn btn-quiet" disabled>Skip to UV &amp; analysis</button>
+        <!-- the same experiment as a 3D bench; a separate option, not a step of this run -->
+        <span class="casefile__or" aria-hidden="true">or</span>
+        <a class="try3d" href="microarray-3d.html?v=3">
+          <span class="try3d__ask">Want to try it in 3D?</span>
+          <span class="try3d__go">Open the 3D lab <span aria-hidden="true">→</span></span>
+          <span class="try3d__note">Mouse or webcam hand control</span>
+        </a>
       </div>
       <!-- bench record: explains the lock, and offers the reset once earned -->
       <p class="casefile__record" id="record"></p>
