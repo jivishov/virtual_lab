@@ -15,9 +15,10 @@
 window.VL_CATALOG = [
     { key: 'spectrophotometry', sym: 'Sp', type: 'lab', family: 'chem', link: 'experiments/spectrophotometry/' },
     {
-        key: 'dnamicroarray', sym: 'Ma', type: 'lab', family: 'life',
+        key: 'dnamicroarray', sym: 'Ma', type: 'lab', family: 'life', badge: '3D',
         versions: [
-            { label: 'buttons.launchV2', link: 'experiments/dnamicroarray_v2/' },
+            { label: 'site.buttons.v2d', link: 'experiments/dnamicroarray_v2/' },
+            { label: 'site.buttons.v3d', link: 'experiments/dnamicroarray_v2/microarray-3d.html' },
             { label: 'buttons.launchV1', link: 'experiments/dnamicroarray/' }
         ]
     },
