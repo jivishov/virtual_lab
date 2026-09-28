@@ -3,117 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="About Virtual Laboratory - An open-source educational project by Dr. Emil Jivishov">
-    <title>About - Virtual Laboratory</title>
-    <link rel="stylesheet" href="styles.css?v=2">
-</head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <title>About · Virtual Laboratory</title>
+    <meta name="description" content="About Virtual Laboratory: an open-source educational project by Dr. Emil Jivishov that prepares students for real laboratory work.">
+    <meta name="theme-color" content="#F4F0E6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0D0F13" media="(prefers-color-scheme: dark)">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://virtuallab.az/about.html">
+    <meta property="og:title" content="About Virtual Laboratory">
+    <meta property="og:description" content="Virtual experiments as pre-lab practice, like flight simulators for the lab bench.">
+    <link rel="canonical" href="https://virtuallab.az/about.html">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315171C'/%3E%3Cpath d='M12.5 6.5h7M13.5 6.5v7L8 23.2A2.3 2.3 0 0 0 10 26.5h12a2.3 2.3 0 0 0 2-3.3l-5.5-9.7v-7' fill='none' stroke='%23F4F0E6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M10.6 20h10.8' stroke='%23D2461F' stroke-width='2.4'/%3E%3C/svg%3E">
 
-  gtag('config', 'G-6QQR2741ZZ');
-</script>
-<body>
-    <header class="header">
-        <!-- Header content loaded from header.js -->
+    <script>
+        (function () {
+            var root = document.documentElement;
+            try {
+                var theme = localStorage.getItem('virtuallab_theme');
+                if (theme === 'dark' || theme === 'light') root.setAttribute('data-theme', theme);
+            } catch (e) { /* storage unavailable */ }
+            root.classList.add('js');
+            setTimeout(function () { if (!root.classList.contains('vl-ready')) root.classList.remove('js'); }, 3000);
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400..600&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Schibsted+Grotesk:ital,wght@0,400..800;1,400..800&display=swap">
+    <link rel="stylesheet" href="site/site.css?v=1">
+
+    <!-- Google tag (gtag.js), only on the published site so local previews don't count as visits -->
+    <script>
+        if (/(^|\.)virtuallab\.az$|github\.io$/.test(location.hostname)) {
+            var gs = document.createElement('script');
+            gs.async = true;
+            gs.src = 'https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ';
+            document.head.appendChild(gs);
+        }
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6QQR2741ZZ');
+    </script>
+</head>
+<body class="page-about" data-title="site.meta.aboutTitle">
+    <a class="skip" href="#main" data-t="site.skip">Skip to content</a>
+
+    <header class="site-header">
+        <div class="wrap header-row">
+            <a class="brand" href="index.html" aria-label="Virtual Laboratory · virtuallab.az">
+                <span class="brand-tile" aria-hidden="true"><small>0</small>Vl</span>
+                <span class="brand-text">
+                    <span class="brand-name">Virtual Laboratory</span>
+                    <span class="brand-sub">virtuallab.az</span>
+                </span>
+            </a>
+            <nav class="nav" aria-label="Main">
+                <a class="nav-collection" href="index.html#collection" data-t="site.nav.collection">Collection</a>
+                <a href="about.html" aria-current="page" data-t="header.nav.about">About</a>
+                <a class="nav-gh" href="https://github.com/jivishov/virtual_lab" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                    <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    <span>GitHub</span>
+                </a>
+            </nav>
+            <div class="tools">
+                <label class="lang">
+                    <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M1.8 8h12.4M8 1.7c-3.2 3.6-3.2 9 0 12.6M8 1.7c3.2 3.6 3.2 9 0 12.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+                    <span id="langCode">EN</span>
+                    <svg class="chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <select id="langSelect" data-t-attr="aria-label:site.langLabel" aria-label="Language">
+                        <option value="en">English</option>
+                        <option value="az">Azərbaycan</option>
+                        <option value="tr">Türkçe</option>
+                        <option value="de">Deutsch</option>
+                    </select>
+                </label>
+                <button class="icon-btn" id="themeToggle" type="button" aria-pressed="false" data-t-attr="aria-label:site.theme;title:site.theme" aria-label="Dark mode">
+                    <svg class="ico i-moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.8A5.8 5.8 0 0 1 6.2 2.5a5.8 5.8 0 1 0 7.3 7.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                    <svg class="ico i-sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3 3l1.1 1.1M11.9 11.9 13 13M3 13l1.1-1.1M11.9 4.1 13 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                </button>
+            </div>
+        </div>
     </header>
 
-    <main class="main-content">
-        <div class="container">
-            <article class="about-page">
-                <h1 class="page-title" data-i18n="about.pageTitle">About Virtual Laboratory</h1>
+    <main id="main">
+        <!-- Hero -->
+        <section class="a-hero" aria-labelledby="aboutTitle">
+            <div class="wrap">
+                <div class="a-hero-grid">
+                    <div>
+                        <p class="eyebrow"><span class="num">00</span><span data-t="site.about.eyebrow">About</span></p>
+                        <h1 class="a-title" id="aboutTitle" data-t="about.pageTitle">About Virtual Laboratory</h1>
+                    </div>
+                    <div class="big-tile" aria-hidden="true">
+                        <span class="bt-top"><span>0</span><span>2025</span></span>
+                        <span class="bt-bar"></span>
+                        <span class="bt-sym">Vl</span>
+                        <span class="bt-name">Virtual Laboratory</span>
+                    </div>
+                </div>
 
-                <section class="about-section">
-                    <h2 data-i18n="about.sections.overview.title">Project Overview</h2>
-                    <p data-i18n="about.sections.overview.content">Virtual Laboratory is an open-source educational project that leverages modern AI capabilities to create interactive science simulations and virtual lab experiments. The project aims to make quality science education accessible to students worldwide, regardless of their access to physical laboratory facilities.</p>
-                </section>
+                <div class="a-lead-row">
+                    <p class="a-num" data-t="about.sections.overview.title">Project Overview</p>
+                    <div>
+                        <p class="a-lead" data-t="about.sections.overview.content">Virtual Laboratory is an open-source educational project that leverages modern AI capabilities to create interactive science simulations and virtual lab experiments. The project aims to make quality science education accessible to students worldwide, regardless of their access to physical laboratory facilities.</p>
+                        <p class="a-facts">
+                            <span><b data-stat-n>15</b> · <span data-t="site.band.labs">experiments &amp; simulations</span></span>
+                            <span><b data-stat-l>4</b> · <span data-t="site.band.langs">languages</span></span>
+                            <span><b>MIT</b> · <span data-t="site.band.license">open-source license</span></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <section class="about-section">
-                    <h2 data-i18n="about.sections.vision.title">The Vision</h2>
-                    <p data-i18n="about.sections.vision.content1">Virtual experiments serve as pre-lab activities, similar to how flight simulators prepare pilots before actual flights. Each simulation guides users through every procedural step required in real laboratory settings, building confidence and understanding before hands-on work.</p>
-                    <p data-i18n="about.sections.vision.content2">By providing virtual access to laboratory experiences, this project reaches communities where well-equipped lab facilities may not be available, ensuring all students can experience the complete experimental process.</p>
-                </section>
+        <!-- 01 Vision -->
+        <section class="a-sec" aria-labelledby="visionTitle">
+            <div class="wrap a-grid">
+                <p class="a-num">01</p>
+                <div class="vision">
+                    <div>
+                        <h2 class="a-h2" id="visionTitle" data-t="about.sections.vision.title">The Vision</h2>
+                        <div class="prose">
+                            <p data-t="about.sections.vision.content1">Virtual experiments serve as pre-lab activities, similar to how flight simulators prepare pilots before actual flights. Each simulation guides users through every procedural step required in real laboratory settings, building confidence and understanding before hands-on work.</p>
+                            <p data-t="about.sections.vision.content2">By providing virtual access to laboratory experiences, this project reaches communities where well-equipped lab facilities may not be available, ensuring all students can experience the complete experimental process.</p>
+                        </div>
+                    </div>
+                    <div class="checklist-card" data-reveal>
+                        <h3>
+                            <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2.5" width="10" height="12" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6 2.5V1.5h4v1M5.5 6.5h5M5.5 9h5M5.5 11.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                            <span data-t="site.about.checklistTitle">Pre-lab checklist</span>
+                        </h3>
+                        <ul class="checklist" id="checklist"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <section class="about-section">
-                    <h2 data-i18n="about.sections.development.title">Development Journey</h2>
-                    <p data-i18n="about.sections.development.content">The Virtual Laboratory project went live in 2025, following several years of development and refinement since the popularization of large language models in 2023. The journey involved numerous trials and iterations to harness AI coding capabilities effectively for educational purposes.</p>
-                </section>
+        <!-- 02 Development journey -->
+        <section class="a-sec" aria-labelledby="journeyTitle">
+            <div class="wrap a-grid">
+                <p class="a-num">02</p>
+                <div>
+                    <h2 class="a-h2" id="journeyTitle" data-t="about.sections.development.title">Development Journey</h2>
+                    <div class="prose">
+                        <p data-t="about.sections.development.content">The Virtual Laboratory project went live in 2025, following several years of development and refinement since the popularization of large language models in 2023. The journey involved numerous trials and iterations to harness AI coding capabilities effectively for educational purposes.</p>
+                    </div>
+                    <ol class="timeline">
+                        <li class="tl-item" data-reveal><span class="tl-dot"></span><span class="tl-year">2023</span><p class="tl-text" data-t="site.about.t1">Large language models go mainstream. The first trials begin.</p></li>
+                        <li class="tl-item" data-reveal style="--rd:90ms"><span class="tl-dot"></span><span class="tl-year">2023–25</span><p class="tl-text" data-t="site.about.t2">Many trials and iterations to harness AI coding for teaching.</p></li>
+                        <li class="tl-item" data-reveal style="--rd:180ms"><span class="tl-dot"></span><span class="tl-year">2025</span><p class="tl-text" data-t="site.about.t3">Virtual Laboratory goes live at virtuallab.az.</p></li>
+                        <li class="tl-item is-now" data-reveal style="--rd:270ms"><span class="tl-dot"></span><span class="tl-year" data-t="site.about.now">Today</span><p class="tl-text" data-t="site.about.t4">15 experiments and simulations in 4 languages.</p></li>
+                        <li class="tl-item is-next" data-reveal style="--rd:360ms"><span class="tl-dot"></span><span class="tl-year" data-t="site.about.next">Next</span><p class="tl-text" data-t="site.about.t5">More experiments, lesson plans and languages.</p></li>
+                    </ol>
+                </div>
+            </div>
+        </section>
 
-                <section class="about-section">
-                    <h2>Technical Approach</h2>
-                    <p>All experiments and simulations are built using HTML, CSS, and JavaScript exclusively. This deliberate choice ensures:</p>
-                    <ul class="feature-list">
-                        <li>Easy deployment by educators worldwide</li>
-                        <li>No complex dependencies or installation requirements</li>
-                        <li>Compatibility with any modern web browser</li>
-                        <li>Transparency through open-source code</li>
-                        <li>Straightforward customization and adaptation</li>
-                    </ul>
-                </section>
+        <!-- 03 Technical approach -->
+        <section class="a-sec" aria-labelledby="techTitle">
+            <div class="wrap a-grid">
+                <p class="a-num">03</p>
+                <div class="tech">
+                    <div>
+                        <p class="stack-label" data-t="site.about.stack">Built with</p>
+                        <p class="stack" aria-label="HTML, CSS, JavaScript"><span>HTML</span><span>CSS</span><span>JS</span></p>
+                    </div>
+                    <div>
+                        <h2 class="a-h2" id="techTitle" data-t="about.sections.technical.title">Technical Approach</h2>
+                        <div class="prose"><p data-t="about.sections.technical.content">All experiments and simulations are built using HTML, CSS, and JavaScript exclusively. This deliberate choice ensures:</p></div>
+                        <ul class="spec" id="specList">
+                            <li><span class="spec-no">01</span><span class="spec-txt">Easy deployment by educators worldwide</span></li>
+                            <li><span class="spec-no">02</span><span class="spec-txt">No complex dependencies or installation requirements</span></li>
+                            <li><span class="spec-no">03</span><span class="spec-txt">Compatibility with any modern web browser</span></li>
+                            <li><span class="spec-no">04</span><span class="spec-txt">Transparency through open-source code</span></li>
+                            <li><span class="spec-no">05</span><span class="spec-txt">Straightforward customization and adaptation</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <section class="about-section">
-                    <h2>Classroom Integration</h2>
-                    <p>These virtual experiments are actively used in real classroom environments with Dr. Jivishov's students. Effective lesson plans and teaching guides will be added to the project in the near future, providing educators with comprehensive resources for classroom implementation.</p>
-                </section>
+        <!-- 04 Classroom + 05 Languages -->
+        <section class="a-sec" aria-label="Classroom and languages">
+            <div class="wrap a-grid">
+                <p class="a-num">04 · 05</p>
+                <div class="duo">
+                    <article class="panel" data-reveal>
+                        <h2 class="a-h2" data-t="about.sections.classroom.title">Classroom Integration</h2>
+                        <div class="prose"><p data-t="about.sections.classroom.content">These virtual experiments are actively used in real classroom environments with Dr. Jivishov's students. Effective lesson plans and teaching guides will be added to the project in the near future, providing educators with comprehensive resources for classroom implementation.</p></div>
+                        <div class="chalk" aria-hidden="true">
+                            <p>PV = nRT</p>
+                            <p>pH = −log[H<sub>3</sub>O<sup>+</sup>]</p>
+                            <p>c<sub>1</sub>V<sub>1</sub> = c<sub>2</sub>V<sub>2</sub></p>
+                        </div>
+                    </article>
+                    <article class="panel" data-reveal style="--rd:90ms">
+                        <h2 class="a-h2" data-t="about.sections.multilingual.title">Multilingual Accessibility</h2>
+                        <div class="prose"><p data-t="about.sections.multilingual.content">To maximize the project's positive impact, interfaces and procedures are being translated into various languages. This commitment to multilingual support ensures that language barriers don't prevent students from accessing quality science education.</p></div>
+                        <ul class="lang-list" id="langRows"></ul>
+                        <p class="panel-note" data-t="site.about.langsNote">Pick a language to switch the whole site.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
 
-                <section class="about-section">
-                    <h2>Multilingual Accessibility</h2>
-                    <p>To maximize the project's positive impact, interfaces and procedures are being translated into various languages. This commitment to multilingual support ensures that language barriers don't prevent students from accessing quality science education.</p>
-                </section>
+        <!-- 06 Author -->
+        <section class="a-sec" aria-labelledby="authorTitle">
+            <div class="wrap a-grid">
+                <p class="a-num">06</p>
+                <div class="author">
+                    <div class="big-tile" aria-hidden="true">
+                        <span class="bt-top"><span>1</span><span>Dr.</span></span>
+                        <span class="bt-sym">Ej</span>
+                        <span class="bt-name">Emil Jivishov</span>
+                    </div>
+                    <div>
+                        <h2 class="a-h2" id="authorTitle" data-t="about.sections.author.title">About the Author</h2>
+                        <p class="author-role" data-t="site.about.role">Creator &amp; lead developer</p>
+                        <div class="prose">
+                            <p data-t="about.sections.author.content1">Dr. Emil Jivishov is the creator and lead developer of the Virtual Laboratory project. As an educator and researcher, Dr. Jivishov combines pedagogical expertise with modern technology to create effective learning tools that serve students across diverse educational contexts.</p>
+                            <p data-t="about.sections.author.content2">The project represents Dr. Jivishov's commitment to democratizing science education and ensuring that all students, regardless of location or resources, have access to meaningful laboratory experiences.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <section class="about-section">
-                    <h2>About the Author</h2>
-                    <p><strong>Dr. Emil Jivishov</strong> is the creator and lead developer of the Virtual Laboratory project. As an educator and researcher, Dr. Jivishov combines pedagogical expertise with modern technology to create effective learning tools that serve students across diverse educational contexts.</p>
-                    <p>The project represents Dr. Jivishov's commitment to democratizing science education and ensuring that all students, regardless of location or resources, have access to meaningful laboratory experiences.</p>
-                </section>
-
-                <section class="about-section">
-                    <h2>Open Source & Collaboration</h2>
-                    <p>Virtual Laboratory is an open-source project, welcoming contributions and feedback from educators, developers, and students worldwide. All code is freely available for educational use, modification, and distribution.</p>
-                    <p>The project is released under the <strong>MIT License</strong>, which means you are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software. The only requirement is that the original copyright notice and license notice be included in all copies or substantial portions of the software.</p>
-                    <p>View the source code and contribute on <a href="https://github.com/jivishov/virtual_lab" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); font-weight: 600;">GitHub</a>.</p>
-                </section>
-
-                <section class="about-section">
-                    <h2>Future Development</h2>
-                    <p>This is an ongoing project with continuous updates and new additions. Planned enhancements include:</p>
-                    <ul class="feature-list">
-                        <li>Additional virtual laboratory experiments</li>
-                        <li>Comprehensive lesson plans and teaching guides</li>
-                        <li>Expanded language support</li>
-                        <li>Assessment and progress tracking features</li>
-                        <li>Community-contributed experiments and simulations</li>
-                    </ul>
-                </section>
-
-                <section class="about-section contact-section">
-                    <h2>Get in Touch</h2>
-                    <p>Feedback, suggestions, and collaboration inquiries are welcome. Dr. Jivishov can be reached via LinkedIn:</p>
-                    <p class="contact-link">
-                        <a href="https://www.linkedin.com/in/jivishov/" target="_blank" rel="noopener noreferrer" class="cta-link">
-                            Connect on LinkedIn →
+        <!-- 07 Open source -->
+        <section class="oss" aria-labelledby="ossTitle">
+            <div class="wrap a-grid">
+                <p class="a-num">07</p>
+                <div>
+                    <h2 class="a-h2" id="ossTitle" data-t="about.sections.opensource.title">Open Source &amp; Collaboration</h2>
+                    <div class="prose">
+                        <p data-t="about.sections.opensource.content1">Virtual Laboratory is an open-source project, welcoming contributions and feedback from educators, developers, and students worldwide. All code is freely available for educational use, modification, and distribution.</p>
+                        <p data-t="about.sections.opensource.content2">The project is released under the MIT License, which means you are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software. The only requirement is that the original copyright notice and license notice be included in all copies or substantial portions of the software.</p>
+                    </div>
+                    <div class="run">
+                        <h3 data-t="site.about.runTitle">Run it yourself</h3>
+                        <div class="cmd">
+                            <span class="prompt" aria-hidden="true">$</span>
+                            <code id="cmd">git clone https://github.com/jivishov/virtual_lab.git</code>
+                            <button class="copy-btn" id="copyCmd" type="button">
+                                <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M11 5V3.8A1.8 1.8 0 0 0 9.2 2H3.8A1.8 1.8 0 0 0 2 3.8v5.4A1.8 1.8 0 0 0 3.8 11H5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+                                <span data-t="site.about.copy">Copy</span>
+                            </button>
+                        </div>
+                        <p class="run-note" data-t="site.about.runNote">Plain HTML, CSS and JavaScript — host the folder on any web server.</p>
+                    </div>
+                    <div class="oss-actions">
+                        <a class="btn btn-paper" href="https://github.com/jivishov/virtual_lab" target="_blank" rel="noopener noreferrer">
+                            <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                            <span data-t="site.about.github">View on GitHub</span>
                         </a>
-                    </p>
-                    <p class="disclaimer">All feedback and suggestions will be carefully considered within the available capacity and scope of the project.</p>
-                </section>
-            </article>
-        </div>
+                        <a class="btn btn-outline-paper" href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" data-t="footer.mitLicense">MIT License</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 08 Future: predicted elements -->
+        <section class="a-sec" aria-labelledby="futureTitle">
+            <div class="wrap a-grid">
+                <p class="a-num">08</p>
+                <div>
+                    <h2 class="a-h2" id="futureTitle" data-t="about.sections.future.title">Future Development</h2>
+                    <div class="prose"><p data-t="about.sections.future.content">This is an ongoing project with continuous updates and new additions. Planned enhancements include:</p></div>
+                    <ul class="eka-grid" id="ekaGrid"></ul>
+                    <p class="eka-note">⁂ <span data-t="site.about.ekaNote">Like Mendeleev's gaps: elements we know are coming.</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 09 Contact -->
+        <section class="contact" aria-labelledby="contactTitle">
+            <div class="wrap">
+                <p class="eyebrow"><span class="num">09</span></p>
+                <h2 class="contact-title" id="contactTitle" data-t="about.sections.contact.title">Get in Touch</h2>
+                <p data-t="about.sections.contact.content" data-t-sentences>Feedback, suggestions, and collaboration inquiries are welcome. Dr. Jivishov can be reached via LinkedIn:</p>
+                <div class="contact-actions">
+                    <a class="btn btn-ink" href="https://www.linkedin.com/in/jivishov/" target="_blank" rel="noopener noreferrer">
+                        <span data-t="buttons.connectLinkedIn">Connect on LinkedIn</span>
+                        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                    <a class="btn btn-ghost" href="index.html#collection">
+                        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true" style="transform:scaleX(-1)"><path d="M2.5 8h10.5M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span data-t="buttons.backToLabs">Back to Virtual Experiments</span>
+                    </a>
+                </div>
+                <p class="disclaimer" data-t="about.sections.contact.disclaimer">All feedback and suggestions will be carefully considered within the available capacity and scope of the project.</p>
+            </div>
+        </section>
     </main>
 
-    <footer class="footer">
-        <!-- Footer content loaded from footer.js -->
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="foot-top">
+                <a class="brand" href="index.html">
+                    <span class="brand-tile" aria-hidden="true"><small>0</small>Vl</span>
+                    <span>
+                        <span class="brand-name">Virtual Laboratory</span>
+                        <span class="brand-sub">virtuallab.az</span>
+                    </span>
+                </a>
+                <nav class="foot-nav" aria-label="Footer">
+                    <a href="index.html" data-t="footer.links.home">Home</a>
+                    <a href="about.html" data-t="footer.links.about">About</a>
+                    <a href="https://github.com/jivishov/virtual_lab" target="_blank" rel="noopener noreferrer" data-t="footer.links.github">GitHub</a>
+                    <a href="https://www.linkedin.com/in/jivishov/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                </nav>
+            </div>
+            <p class="foot-legal">
+                &copy; 2025 <a href="https://www.linkedin.com/in/jivishov/" target="_blank" rel="noopener noreferrer">Dr. Emil Jivishov</a> ·
+                <span data-t="footer.copyright">Virtual Laboratory · An ongoing educational project</span> ·
+                <span data-t="footer.license">Released under the</span>
+                <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" data-t="footer.mitLicense">MIT License</a>
+            </p>
+            <p class="foot-giant" aria-hidden="true">virtuallab<em>.az</em></p>
+        </div>
     </footer>
 
-    <!-- i18n files must load first -->
+    <!-- Shared translations and engine (unchanged files from the repository) -->
     <script src="i18n/translations.js?v=2"></script>
     <script src="i18n/i18n.js?v=2"></script>
-
-    <!-- Then component files -->
-    <script src="header.js?v=2"></script>
-    <script src="footer.js?v=2"></script>
-    <script src="about-i18n.js?v=2"></script>
+    <!-- Redesign -->
+    <script src="site/strings.js?v=1"></script>
+    <script src="site/catalog.js?v=1"></script>
+    <script src="site/site.js?v=1"></script>
+    <script src="site/about.js?v=1"></script>
 </body>
 </html>

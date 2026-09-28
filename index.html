@@ -3,148 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Interactive virtual laboratory simulations for chemistry and biology education">
-    <title>Virtual Laboratory - Interactive Science Experiments & Simulations</title>
-    <link rel="stylesheet" href="styles.css?v=2">
-</head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <title>Virtual Laboratory · Interactive science experiments &amp; simulations</title>
+    <meta name="description" content="Rehearse real laboratory experiments in your browser. Open-source chemistry and biology experiments and simulations in English, Azerbaijani, Turkish and German.">
+    <meta name="theme-color" content="#F4F0E6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0D0F13" media="(prefers-color-scheme: dark)">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://virtuallab.az/">
+    <meta property="og:title" content="Virtual Laboratory: the lab before the lab">
+    <meta property="og:description" content="Open-source virtual experiments and simulations for hands-on science learning.">
+    <link rel="canonical" href="https://virtuallab.az/">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315171C'/%3E%3Cpath d='M12.5 6.5h7M13.5 6.5v7L8 23.2A2.3 2.3 0 0 0 10 26.5h12a2.3 2.3 0 0 0 2-3.3l-5.5-9.7v-7' fill='none' stroke='%23F4F0E6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M10.6 20h10.8' stroke='%23D2461F' stroke-width='2.4'/%3E%3C/svg%3E">
 
-  gtag('config', 'G-6QQR2741ZZ');
-</script>
-<body>
-    <header class="header">
-        <!-- Header content loaded from header.js -->
+    <script>
+        // Apply a saved theme before first paint, and mark JS as available for entrance animations.
+        (function () {
+            var root = document.documentElement;
+            try {
+                var theme = localStorage.getItem('virtuallab_theme');
+                if (theme === 'dark' || theme === 'light') root.setAttribute('data-theme', theme);
+            } catch (e) { /* storage unavailable */ }
+            root.classList.add('js');
+            // If the page scripts never start, show everything rather than leaving it hidden.
+            setTimeout(function () { if (!root.classList.contains('vl-ready')) root.classList.remove('js'); }, 3000);
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400..600&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Schibsted+Grotesk:ital,wght@0,400..800;1,400..800&display=swap">
+    <link rel="stylesheet" href="site/site.css?v=1">
+
+    <!-- Google tag (gtag.js), only on the published site so local previews don't count as visits -->
+    <script>
+        if (/(^|\.)virtuallab\.az$|github\.io$/.test(location.hostname)) {
+            var gs = document.createElement('script');
+            gs.async = true;
+            gs.src = 'https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ';
+            document.head.appendChild(gs);
+        }
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6QQR2741ZZ');
+    </script>
+</head>
+<body class="page-home" data-title="site.meta.homeTitle">
+    <a class="skip" href="#main" data-t="site.skip">Skip to content</a>
+
+    <header class="site-header">
+        <div class="wrap header-row">
+            <a class="brand" href="index.html" aria-label="Virtual Laboratory · virtuallab.az">
+                <span class="brand-tile" aria-hidden="true"><small>0</small>Vl</span>
+                <span class="brand-text">
+                    <span class="brand-name">Virtual Laboratory</span>
+                    <span class="brand-sub">virtuallab.az</span>
+                </span>
+            </a>
+            <nav class="nav" aria-label="Main">
+                <a class="nav-collection" href="#collection" data-t="site.nav.collection">Collection</a>
+                <a href="about.html" data-t="header.nav.about">About</a>
+                <a class="nav-gh" href="https://github.com/jivishov/virtual_lab" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                    <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    <span>GitHub</span>
+                </a>
+            </nav>
+            <div class="tools">
+                <label class="lang">
+                    <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M1.8 8h12.4M8 1.7c-3.2 3.6-3.2 9 0 12.6M8 1.7c3.2 3.6 3.2 9 0 12.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+                    <span id="langCode">EN</span>
+                    <svg class="chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <select id="langSelect" data-t-attr="aria-label:site.langLabel" aria-label="Language">
+                        <option value="en">English</option>
+                        <option value="az">Azərbaycan</option>
+                        <option value="tr">Türkçe</option>
+                        <option value="de">Deutsch</option>
+                    </select>
+                </label>
+                <button class="icon-btn" id="themeToggle" type="button" aria-pressed="false" data-t-attr="aria-label:site.theme;title:site.theme" aria-label="Dark mode">
+                    <svg class="ico i-moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 9.8A5.8 5.8 0 0 1 6.2 2.5a5.8 5.8 0 1 0 7.3 7.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                    <svg class="ico i-sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3 3l1.1 1.1M11.9 11.9 13 13M3 13l1.1-1.1M11.9 4.1 13 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                </button>
+            </div>
+        </div>
     </header>
 
-    <main class="main-content">
-        <div class="container">
-            <!-- Hero Section with Image Slider -->
-            <section class="hero-section">
-                <div class="hero-slider">
-                    <div class="hero-slide active">
-                        <div class="hero-content">
-                            <h2 class="hero-title">Welcome to Your Learning Space</h2>
-                            <p class="hero-description">Explore scientific concepts through interactive simulations designed for educational excellence.</p>
-                        </div>
+    <main id="main">
+        <section class="hero" aria-labelledby="heroTitle">
+            <div class="wrap hero-grid">
+                <p class="eyebrow hero-eyebrow"><span class="num">01</span><span class="pulse" aria-hidden="true"></span><span data-t="site.hero.eyebrow">Open-source virtual science lab</span></p>
+                <h1 class="hero-title" id="heroTitle">
+                    <span class="line"><span><span data-t="site.hero.pre">The lab</span> <em data-t="site.hero.em">before</em></span></span>
+                    <span class="line"><span data-t="site.hero.post">the lab.</span></span>
+                </h1>
+                <div class="hero-side">
+                    <p class="hero-lead" data-t="site.hero.lead">Rehearse every step of a real experiment in your browser — like a flight simulator for the lab bench. Make your mistakes safely, then walk into the lab ready.</p>
+                    <div class="hero-ctas">
+                        <a class="btn btn-ink" href="#collection">
+                            <span data-t="site.hero.cta">Explore the collection</span>
+                            <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v10.5M4 9l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                        <a class="btn btn-ghost" href="about.html">
+                            <span data-t="site.hero.cta2">About the project</span>
+                            <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
                     </div>
                 </div>
-                <div class="slider-dots" id="sliderDots"></div>
-            </section>
+            </div>
 
-            <section class="category-section">
-                <h2 class="section-title labs-title" data-i18n="sections.virtualLabs">Virtual Experiments</h2>
-                <div class="labs-grid" id="labsGrid">
-                    <!-- Lab cards will be dynamically inserted here -->
-                </div>
-            </section>
+            <div class="wrap">
+                <figure class="ptable-fig">
+                    <nav class="ptable" id="ptable" aria-labelledby="ptableCaption">
+                        <noscript>
+                            <p style="grid-column:1/-1">
+                                <a href="experiments/spectrophotometry/">Spectrophotometry</a> ·
+                                <a href="experiments/dnamicroarray_v2/">DNA Microarray</a> ·
+                                <a href="experiments/copperinbrass/">Copper in Brass</a> ·
+                                <a href="experiments/lab-studio/">Lab Studio</a> ·
+                                <a href="experiments/elisa_assay/">ELISA Assay</a> ·
+                                <a href="simulations/nuclearchemistry/">Nuclear Chemistry</a> ·
+                                <a href="simulations/lab-safety-mi/">Lab Safety</a> ·
+                                <a href="simulations/gassimulation/">Gas Laws</a> ·
+                                <a href="simulations/mole_tycoon/index.html">MoleTycoon</a> ·
+                                <a href="simulations/thermodynamics/">Thermodynamics</a> ·
+                                <a href="simulations/solubility_curves/">Solubility Curves</a> ·
+                                <a href="simulations/pharmacogenomics/">Pharmacogenomics</a> ·
+                                <a href="simulations/virus_defense_lab/">Virus Defense Lab</a> ·
+                                <a href="simulations/acid_base_solutions/">Acid–Base Solutions</a> ·
+                                <a href="simulations/lattice_energy_lab/">Lattice Energy Lab</a>
+                            </p>
+                        </noscript>
+                    </nav>
+                    <figcaption class="ptable-cap">
+                        <span class="fig">Fig. 1</span>
+                        <span id="ptableCaption" data-t="site.table.title">Periodic Table of Experiments</span>
+                        <span class="cap-hint" id="tableHint">Hover an element to preview · click to launch</span>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
 
-            <section class="category-section">
-                <h2 class="section-title simulations-title" data-i18n="sections.simulations">Simulations</h2>
-                <div class="labs-grid" id="simulationsGrid">
-                    <!-- Simulation cards will be dynamically inserted here -->
+        <section class="section collection" id="collection" aria-labelledby="collectionTitle">
+            <div class="wrap">
+                <header class="sec-head">
+                    <p class="eyebrow"><span class="num">02</span><span data-t="site.catalog.eyebrow">The collection</span></p>
+                    <h2 class="sec-title" id="collectionTitle" data-t="site.catalog.title">Pick an experiment. Start rehearsing.</h2>
+                </header>
+
+                <div class="toolbar">
+                    <div class="seg" id="typeSeg" role="group" aria-label="Filters"></div>
+                    <div class="chips" id="famChips" role="group" aria-label="Fields"></div>
+                    <label class="search">
+                        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.6 10.6L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <input type="search" id="search" autocomplete="off" spellcheck="false"
+                            placeholder="Search by name or topic…" aria-label="Search by name or topic"
+                            data-t-attr="placeholder:site.catalog.search;aria-label:site.catalog.search">
+                        <kbd aria-hidden="true">/</kbd>
+                    </label>
                 </div>
-            </section>
-        </div>
+
+                <div id="catalog"></div>
+
+                <div class="empty" id="emptyState" hidden>
+                    <p data-t="site.catalog.empty">No matches. Try another word.</p>
+                    <button class="btn btn-ghost" type="button" id="clearFilters" data-t="site.catalog.clear">Clear filters</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="band" aria-labelledby="bandQuote">
+            <div class="wrap">
+                <p class="eyebrow"><span class="num">03</span><span data-t="about.sections.vision.title">The Vision</span></p>
+                <blockquote class="band-quote" id="bandQuote" data-t="site.band.quote" data-t-sentences data-reveal>Pilots train in simulators before they fly. Students should rehearse experiments before they touch the glassware.</blockquote>
+                <div class="stats">
+                    <div class="stat" data-reveal><span class="stat-num" data-stat="labs">15</span><span class="stat-label" data-t="site.band.labs">experiments &amp; simulations</span></div>
+                    <div class="stat" data-reveal style="--rd:80ms"><span class="stat-num" data-stat="langs">4</span><span class="stat-label" data-t="site.band.langs">languages</span></div>
+                    <div class="stat" data-reveal style="--rd:160ms"><span class="stat-num" data-stat="installs">0</span><span class="stat-label" data-t="site.band.installs">things to install</span></div>
+                    <div class="stat" data-reveal style="--rd:240ms"><span class="stat-num">MIT</span><span class="stat-label" data-t="site.band.license">open-source license</span></div>
+                </div>
+                <div class="band-cta">
+                    <a class="btn btn-paper" href="about.html">
+                        <span data-t="site.band.cta">Read the story</span>
+                        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <footer class="footer">
-        <!-- Footer content loaded from footer.js -->
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="foot-top">
+                <a class="brand" href="index.html">
+                    <span class="brand-tile" aria-hidden="true"><small>0</small>Vl</span>
+                    <span>
+                        <span class="brand-name">Virtual Laboratory</span>
+                        <span class="brand-sub">virtuallab.az</span>
+                    </span>
+                </a>
+                <nav class="foot-nav" aria-label="Footer">
+                    <a href="index.html" data-t="footer.links.home">Home</a>
+                    <a href="about.html" data-t="footer.links.about">About</a>
+                    <a href="https://github.com/jivishov/virtual_lab" target="_blank" rel="noopener noreferrer" data-t="footer.links.github">GitHub</a>
+                    <a href="https://www.linkedin.com/in/jivishov/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                </nav>
+            </div>
+            <p class="foot-legal">
+                &copy; 2025 <a href="https://www.linkedin.com/in/jivishov/" target="_blank" rel="noopener noreferrer">Dr. Emil Jivishov</a> ·
+                <span data-t="footer.copyright">Virtual Laboratory · An ongoing educational project</span> ·
+                <span data-t="footer.license">Released under the</span>
+                <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" data-t="footer.mitLicense">MIT License</a>
+            </p>
+            <p class="foot-giant" aria-hidden="true">virtuallab<em>.az</em></p>
+        </div>
     </footer>
 
-    <!-- i18n files must load first -->
+    <!-- Shared translations and engine (unchanged files from the repository) -->
     <script src="i18n/translations.js?v=2"></script>
     <script src="i18n/i18n.js?v=2"></script>
-
-    <!-- Then component files -->
-    <script src="header.js?v=2"></script>
-    <script src="footer.js?v=2"></script>
-    <script src="script.js?v=2"></script>
-    <script>
-      function addElisaVersionButtons() {
-        const card = document.querySelector('.lab-card[data-id="14"]');
-        if (!card) return;
-
-        const footer = card.querySelector('.lab-card-footer');
-        if (!footer || footer.dataset.elisaVersions === 'ready') return;
-
-        footer.dataset.elisaVersions = 'ready';
-        footer.innerHTML = `
-          <div class="launch-button-group">
-            <button class="launch-button" type="button" data-elisa-version="2d">
-              <span>2D version</span>
-              <span>→</span>
-            </button>
-            <button class="launch-button launch-button-secondary" type="button" data-elisa-version="3d">
-              <span>3D version</span>
-              <span>→</span>
-            </button>
-          </div>`;
-
-        footer.querySelector('[data-elisa-version="2d"]').addEventListener('click', () => {
-          window.location.href = 'experiments/elisa_assay/';
-        });
-        footer.querySelector('[data-elisa-version="3d"]').addEventListener('click', () => {
-          window.location.href = 'experiments/elisa_assay/elisa-3d.html';
-        });
-      }
-
-      function addLatticeEnergyCard() {
-        const grid = document.getElementById('simulationsGrid');
-        if (!grid || grid.querySelector('[data-id="lattice-energy"]')) return;
-
-        const card = document.createElement('div');
-        card.className = 'lab-card';
-        card.setAttribute('data-id', 'lattice-energy');
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('role', 'button');
-        card.setAttribute('aria-label', 'Launch Lattice Energy Lab');
-        card.innerHTML = `
-          <div class="lab-card-header simulation">
-            <div class="lab-icon">⚡</div>
-            <h3 class="lab-card-title">Lattice Energy Lab</h3>
-          </div>
-          <div class="lab-card-body">
-            <p class="lab-card-description">Compare ionic compounds by charge and ionic size, manipulate ion separation, and visualize why stronger electrostatic attraction produces a more exothermic lattice formation energy.</p>
-            <div class="lab-card-tags">
-              <span class="tag">Lattice Energy</span>
-              <span class="tag">Ionic Compounds</span>
-              <span class="tag">Electrostatics</span>
-              <span class="tag">Chemistry</span>
-            </div>
-          </div>
-          <div class="lab-card-footer">
-            <button class="launch-button simulation-btn" type="button">
-              <span>Launch Simulation</span>
-              <span>→</span>
-            </button>
-          </div>`;
-
-        const launch = () => { window.location.href = 'simulations/lattice_energy_lab/'; };
-        card.querySelector('button').addEventListener('click', launch);
-        card.addEventListener('click', event => {
-          if (!event.target.closest('button')) launch();
-        });
-        card.addEventListener('keydown', event => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            launch();
-          }
-        });
-        grid.appendChild(card);
-      }
-
-      function enhanceIndexCards() {
-        addElisaVersionButtons();
-        addLatticeEnergyCard();
-      }
-
-      document.addEventListener('DOMContentLoaded', enhanceIndexCards);
-      window.addEventListener('languageChanged', enhanceIndexCards);
-    </script>
+    <!-- Redesign -->
+    <script src="site/strings.js?v=1"></script>
+    <script src="site/catalog.js?v=1"></script>
+    <script src="site/site.js?v=1"></script>
+    <script src="site/home.js?v=1"></script>
 </body>
 </html>

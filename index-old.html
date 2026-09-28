@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive virtual laboratory simulations for chemistry and biology education">
+    <title>Virtual Laboratory - Interactive Science Experiments & Simulations</title>
+    <link rel="stylesheet" href="styles.css?v=2">
+</head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-6QQR2741ZZ');
+</script>
+<body>
+    <header class="header">
+        <!-- Header content loaded from header.js -->
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Hero Section with Image Slider -->
+            <section class="hero-section">
+                <div class="hero-slider">
+                    <div class="hero-slide active">
+                        <div class="hero-content">
+                            <h2 class="hero-title">Welcome to Your Learning Space</h2>
+                            <p class="hero-description">Explore scientific concepts through interactive simulations designed for educational excellence.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slider-dots" id="sliderDots"></div>
+            </section>
+
+            <section class="category-section">
+                <h2 class="section-title labs-title" data-i18n="sections.virtualLabs">Virtual Experiments</h2>
+                <div class="labs-grid" id="labsGrid">
+                    <!-- Lab cards will be dynamically inserted here -->
+                </div>
+            </section>
+
+            <section class="category-section">
+                <h2 class="section-title simulations-title" data-i18n="sections.simulations">Simulations</h2>
+                <div class="labs-grid" id="simulationsGrid">
+                    <!-- Simulation cards will be dynamically inserted here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <!-- Footer content loaded from footer.js -->
+    </footer>
+
+    <!-- i18n files must load first -->
+    <script src="i18n/translations.js?v=2"></script>
+    <script src="i18n/i18n.js?v=2"></script>
+
+    <!-- Then component files -->
+    <script src="header.js?v=2"></script>
+    <script src="footer.js?v=2"></script>
+    <script src="script.js?v=2"></script>
+    <script>
+      function addElisaVersionButtons() {
+        const card = document.querySelector('.lab-card[data-id="14"]');
+        if (!card) return;
+
+        const footer = card.querySelector('.lab-card-footer');
+        if (!footer || footer.dataset.elisaVersions === 'ready') return;
+
+        footer.dataset.elisaVersions = 'ready';
+        footer.innerHTML = `
+          <div class="launch-button-group">
+            <button class="launch-button" type="button" data-elisa-version="2d">
+              <span>2D version</span>
+              <span>→</span>
+            </button>
+            <button class="launch-button launch-button-secondary" type="button" data-elisa-version="3d">
+              <span>3D version</span>
+              <span>→</span>
+            </button>
+          </div>`;
+
+        footer.querySelector('[data-elisa-version="2d"]').addEventListener('click', () => {
+          window.location.href = 'experiments/elisa_assay/';
+        });
+        footer.querySelector('[data-elisa-version="3d"]').addEventListener('click', () => {
+          window.location.href = 'experiments/elisa_assay/elisa-3d.html';
+        });
+      }
+
+      function addLatticeEnergyCard() {
+        const grid = document.getElementById('simulationsGrid');
+        if (!grid || grid.querySelector('[data-id="lattice-energy"]')) return;
+
+        const card = document.createElement('div');
+        card.className = 'lab-card';
+        card.setAttribute('data-id', 'lattice-energy');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', 'Launch Lattice Energy Lab');
+        card.innerHTML = `
+          <div class="lab-card-header simulation">
+            <div class="lab-icon">⚡</div>
+            <h3 class="lab-card-title">Lattice Energy Lab</h3>
+          </div>
+          <div class="lab-card-body">
+            <p class="lab-card-description">Compare ionic compounds by charge and ionic size, manipulate ion separation, and visualize why stronger electrostatic attraction produces a more exothermic lattice formation energy.</p>
+            <div class="lab-card-tags">
+              <span class="tag">Lattice Energy</span>
+              <span class="tag">Ionic Compounds</span>
+              <span class="tag">Electrostatics</span>
+              <span class="tag">Chemistry</span>
+            </div>
+          </div>
+          <div class="lab-card-footer">
+            <button class="launch-button simulation-btn" type="button">
+              <span>Launch Simulation</span>
+              <span>→</span>
+            </button>
+          </div>`;
+
+        const launch = () => { window.location.href = 'simulations/lattice_energy_lab/'; };
+        card.querySelector('button').addEventListener('click', launch);
+        card.addEventListener('click', event => {
+          if (!event.target.closest('button')) launch();
+        });
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            launch();
+          }
+        });
+        grid.appendChild(card);
+      }
+
+      function enhanceIndexCards() {
+        addElisaVersionButtons();
+        addLatticeEnergyCard();
+      }
+
+      document.addEventListener('DOMContentLoaded', enhanceIndexCards);
+      window.addEventListener('languageChanged', enhanceIndexCards);
+    </script>
+</body>
+</html>
