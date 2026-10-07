@@ -1,0 +1,111 @@
+{
+  "schema": "lab-studio-3d/equipment-meta@1",
+  "definitionId": "analytical-balance",
+  "model": "analytical-balance.glb",
+  "thumbnail": "thumbs/analytical-balance.png",
+  "registry": {
+    "footprintMm": {
+      "shape": "rect",
+      "width": 220.0,
+      "depth": 330.0
+    },
+    "grip": {
+      "heightMm": 50.0
+    },
+    "graduations": null,
+    "anchors": {
+      "analytical-balance-pan": {
+        "positionMm": [
+          0.0,
+          40.0,
+          90.0
+        ]
+      }
+    },
+    "displays": [
+      {
+        "id": "main",
+        "policy": "balance-status-and-entry",
+        "centreMm": [
+          -35.0,
+          -167.35,
+          42.0
+        ],
+        "sizeMm": [
+          86.0,
+          22.0
+        ],
+        "normalMm": [
+          0.0,
+          -1.0,
+          0.0
+        ]
+      }
+    ],
+    "controls": [
+      {
+        "id": "tare",
+        "operation": "zero",
+        "label": "TARE",
+        "objects": [
+          "Balance_key_tare",
+          "Balance_key_tare_legend"
+        ],
+        "centreMm": [
+          81.0,
+          -168.1,
+          42.0
+        ],
+        "sizeMm": [
+          20.0,
+          9.0
+        ],
+        "normalMm": [
+          0.0,
+          -1.0,
+          0.0
+        ]
+      }
+    ],
+    "states": {
+      "draftShieldRightDoor": "open"
+    }
+  },
+  "build": {
+    "boundsMm": {
+      "min": [
+        -110.0,
+        -168.15,
+        0.0
+      ],
+      "max": [
+        110.0,
+        290.0,
+        297.0
+      ]
+    },
+    "triangles": 5615,
+    "materials": [
+      "Black rubber",
+      "Borosilicate glass",
+      "Brushed stainless",
+      "Display glass",
+      "Instrument housing dark grey",
+      "Instrument housing light grey",
+      "Keypad membrane",
+      "White enamel print"
+    ],
+    "scenery": false
+  },
+  "provenance": {
+    "blender": "5.2.2",
+    "generator": "tools/blender/equipment/analytical_balance.py",
+    "library": "tools/blender/labeq",
+    "sourceHash": "a686ed27ccf58d56cf54ee07b70e0474a257cd6174e354ab5bce00372ee05156",
+    "markingFont": {
+      "family": "Inter",
+      "file": "datafiles/fonts/Inter.woff2 (shipped with Blender)",
+      "licence": "SIL Open Font License 1.1 (Blender license/license.md, Fonts)"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "lab-studio-3d/equipment-meta@1",
+  "definitionId": "clay-triangle",
+  "model": "clay-triangle.glb",
+  "thumbnail": "thumbs/clay-triangle.png",
+  "registry": {
+    "footprintMm": {
+      "shape": "circle",
+      "radius": 60.0
+    },
+    "grip": {
+      "heightMm": 3.0
+    },
+    "graduations": null,
+    "anchors": {},
+    "displays": [],
+    "states": {}
+  },
+  "build": {
+    "boundsMm": {
+      "min": [
+        -52.42,
+        -60.28,
+        -0.0
+      ],
+      "max": [
+        52.42,
+        30.94,
+        6.5
+      ]
+    },
+    "triangles": 3996,
+    "materials": [
+      "Nichrome wire",
+      "Pipe clay"
+    ],
+    "scenery": false
+  },
+  "provenance": {
+    "blender": "5.2.2",
+    "generator": "tools/blender/equipment/clay_triangle.py",
+    "library": "tools/blender/labeq",
+    "sourceHash": "b01829ad1685dbfb846da570295046068452344d0b226e55fc42b15e784815c0",
+    "markingFont": {
+      "family": "Inter",
+      "file": "datafiles/fonts/Inter.woff2 (shipped with Blender)",
+      "licence": "SIL Open Font License 1.1 (Blender license/license.md, Fonts)"
+    }
+  }
+}

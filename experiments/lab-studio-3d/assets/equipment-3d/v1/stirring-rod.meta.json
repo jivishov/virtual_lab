@@ -1,0 +1,58 @@
+{
+  "schema": "lab-studio-3d/equipment-meta@1",
+  "definitionId": "stirring-rod",
+  "model": "stirring-rod.glb",
+  "thumbnail": "thumbs/stirring-rod.png",
+  "registry": {
+    "footprintMm": {
+      "shape": "rect",
+      "width": 6.0,
+      "depth": 200.0
+    },
+    "grip": {
+      "heightMm": 140.0
+    },
+    "graduations": null,
+    "benchRest": {
+      "rollDeg": -90.0,
+      "liftMm": 3.0,
+      "shiftMm": [
+        0.0,
+        -100.0
+      ]
+    },
+    "anchors": {},
+    "displays": [],
+    "states": {}
+  },
+  "build": {
+    "boundsMm": {
+      "min": [
+        -3.0,
+        -3.0,
+        0.0
+      ],
+      "max": [
+        3.0,
+        3.0,
+        200.0
+      ]
+    },
+    "triangles": 1152,
+    "materials": [
+      "Borosilicate glass thick"
+    ],
+    "scenery": false
+  },
+  "provenance": {
+    "blender": "5.2.2",
+    "generator": "tools/blender/equipment/stirring_rod.py",
+    "library": "tools/blender/labeq",
+    "sourceHash": "68fe9f5b441fe350259f3b17d53dd1dc2911e7f8b67e47012577ba2928a6c4c5",
+    "markingFont": {
+      "family": "Inter",
+      "file": "datafiles/fonts/Inter.woff2 (shipped with Blender)",
+      "licence": "SIL Open Font License 1.1 (Blender license/license.md, Fonts)"
+    }
+  }
+}
