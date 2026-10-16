@@ -40,7 +40,8 @@ window.VL_CATALOG = [
     { key: 'pharmacogenomics', sym: 'Pg', type: 'simulation', family: 'life', link: 'simulations/pharmacogenomics/' },
     { key: 'virusdefenselab', sym: 'Vd', type: 'simulation', family: 'life', link: 'simulations/virus_defense_lab/' },
     { key: 'acidbasesolutions', sym: 'pH', type: 'simulation', family: 'chem', badge: '3D', link: 'simulations/acid_base_solutions/' },
-    { key: 'latticeenergy', sym: 'Le', type: 'simulation', family: 'phys', link: 'simulations/lattice_energy_lab/' }
+    { key: 'latticeenergy', sym: 'Le', type: 'simulation', family: 'phys', link: 'simulations/lattice_energy_lab/' },
+    { key: 'chiralitynobel', sym: 'Ch', type: 'simulation', family: 'chem', badge: 'Nobel', link: 'simulations/chirality_nobel_2026/' }
 ];
 
 // ===== LINE ART =====
@@ -359,6 +360,33 @@ window.VL_CATALOG = [
                 <path class="art-ln" d="${gridF}"/>${front}
                 <path class="art-ac draw" pathLength="1" d="M40 40V150"/>${head(40, 162, 90, 8)}
                 <text class="art-tx" x="40" y="184" text-anchor="middle">ΔH &lt; 0</text>`;
+        },
+
+        chiralitynobel() {
+            // A chiral carbon and its mirror image, drawn wedge–dash, with the S rotation arrow.
+            const mol = (m) => {
+                const X = x => (m ? 320 - x : x);
+                const cx = X(96), cy = 100;
+                let hash = '';
+                for (let k = 1; k <= 5; k++) {
+                    const t = k / 6, x = cx + (X(132) - cx) * t, y = cy + (78 - cy) * t, w = 1.5 + t * 6;
+                    hash += `M${r1(x - w * 0.36)} ${r1(y - w * 0.93)}L${r1(x + w * 0.36)} ${r1(y + w * 0.93)}`;
+                }
+                return `<path class="art-ln" d="M${cx} ${cy}V58M${cx} ${cy}L${X(60)} 126"/>
+                    <path d="M${cx} ${cy}L${X(124)} ${r1(141)}L${X(132)} ${r1(132)}Z" fill="currentColor"/>
+                    <path class="art-ln" stroke-width="1.3" d="${hash}"/>
+                    <circle class="art-pt" cx="${cx}" cy="48" r="10"/>
+                    <circle class="art-pt" cx="${X(54)}" cy="132" r="10"/>
+                    <circle class="art-fc" cx="${X(134)}" cy="146" r="10"/>
+                    <circle class="art-ring" cx="${X(140)}" cy="74" r="7"/>
+                    <circle cx="${cx}" cy="${cy}" r="4" fill="currentColor"/>`;
+            };
+            return `<path class="art-ln art-dash art-soft" d="M160 26V178"/>
+                <text class="art-tx" x="160" y="18" text-anchor="middle">mirror</text>
+                ${mol(false)}${mol(true)}
+                <path class="art-ac draw" pathLength="1" d="M59.3 156.4A64 64 0 0 0 123 162"/>${head(127, 160, -28, 7)}
+                <text class="art-tx" x="96" y="190" text-anchor="middle">S</text>
+                <text class="art-tx" x="224" y="190" text-anchor="middle">R</text>`;
         }
     };
 

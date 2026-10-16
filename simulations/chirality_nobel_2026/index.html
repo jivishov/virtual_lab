@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Handedness Prize · Nobel Chemistry 2026</title>
+<meta name="description" content="A 3½-minute interactive AP Chemistry lesson on the 2026 Nobel Prize in Chemistry (Kagan &amp; Soai): chirality in 3D, R/S, enantiomeric excess, non-linear effects and asymmetric autocatalysis.">
+<!-- Google tag (gtag.js), only on the published site so local previews don't count as visits -->
+<script>
+    if (/(^|\.)virtuallab\.az$|github\.io$/.test(location.hostname)) {
+        var gs = document.createElement('script');
+        gs.async = true;
+        gs.src = 'https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ';
+        document.head.appendChild(gs);
+    }
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-6QQR2741ZZ');
+</script>
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: wide tabbed lab notebook. A compact header, a full-width tab bar, then one chapter at a time:
+   explanation column (left) + interactive bench (right), filling a laptop screen; stacks to one column on tablets/phones.
+   Dashed mirror line is the recurring motif. Blue = the S hand, orange = the R hand, everywhere on the page. */
+:root{
+  --paper:#EFF2F7;
+  --panel:#FFFFFF;
+  --ink:#141C28;
+  --muted:#556174;
+  --rule:#C9D2DE;
+  --hand-s:#2B55C6;
+  --hand-r:#BF500E;
+  --hand-s-soft:#DCE4F8;
+  --hand-r-soft:#F8E1D2;
+  --mixed:#A3ACB9;
+  --good:#1D7448;
+  --bad:#B0281F;
+  --good-soft:#DDF0E5;
+  --bad-soft:#F8E0DE;
+  --bond:#8D97A6;
+  --g-core:#2B323D;
+  --g-n:#6A4FCB;
+  --g-o:#C93445;
+  --g-c:#3B4350;
+  --g-h:#F4F5F7;
+  --g-h-ink:#1B2230;
+  --sphere-edge:rgba(20,28,40,.28);
+  --floor:#F1F4F9;
+  --shadow:rgba(20,28,40,.14);
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",Verdana,"Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D121A; --panel:#151C27; --ink:#E6EBF3; --muted:#9AA6B9; --rule:#2B3546;
+    --hand-s:#86A6FF; --hand-r:#FF9858; --hand-s-soft:#1C2847; --hand-r-soft:#3A2416;
+    --mixed:#5D6779; --good:#5CCB8E; --bad:#FF8279; --good-soft:#15301F; --bad-soft:#3A1A18;
+    --bond:#6E7A8C; --g-core:#C9D1DD; --g-n:#8C74E6; --g-o:#E05264; --g-c:#5E6878; --g-h:#EEF1F5; --g-h-ink:#1B2230;
+    --sphere-edge:rgba(0,0,0,.45); --floor:#1B2330; --shadow:rgba(0,0,0,.45);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D121A; --panel:#151C27; --ink:#E6EBF3; --muted:#9AA6B9; --rule:#2B3546;
+  --hand-s:#86A6FF; --hand-r:#FF9858; --hand-s-soft:#1C2847; --hand-r-soft:#3A2416;
+  --mixed:#5D6779; --good:#5CCB8E; --bad:#FF8279; --good-soft:#15301F; --bad-soft:#3A1A18;
+  --bond:#6E7A8C; --g-core:#C9D1DD; --g-n:#8C74E6; --g-o:#E05264; --g-c:#5E6878; --g-h:#EEF1F5; --g-h-ink:#1B2230;
+  --sphere-edge:rgba(0,0,0,.45); --floor:#1B2330; --shadow:rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.band{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.inner{max-width:1560px;margin:0 auto}
+p{margin:0}
+b,strong{font-weight:700}
+a{color:var(--hand-s)}
+:focus-visible{outline:3px solid var(--hand-s);outline-offset:2px;border-radius:6px}
+h1,h2,h3{font-family:var(--f-display);margin:0;letter-spacing:-.005em}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.s{color:var(--hand-s)} .r{color:var(--hand-r)}
+.sub{font-size:15.5px}
+
+/* header */
+.hero{padding-block:16px 12px}
+.hero-grid{display:grid;gap:8px 40px}
+.hero-main,.hero-side{display:grid;gap:7px;align-content:start;min-width:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.04;font-weight:800;font-variation-settings:"opsz" 72}
+.mirror{display:inline-flex;align-items:stretch;white-space:nowrap}
+.mirror .w{color:var(--hand-s)}
+.mirror .line{width:0;border-left:2px dashed var(--muted);margin:0 .06em;opacity:.7}
+.mirror .m{display:inline-block;transform:scaleX(-1);color:var(--hand-r);opacity:.6}
+.deck{font-size:1.02rem}
+.citation{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 0;font-size:13.5px}
+.timeline li{white-space:nowrap;display:flex;align-items:baseline;gap:6px;padding-right:12px;margin-right:12px;border-right:1px dashed var(--rule)}
+.timeline li:last-child{border-right:0}
+.timeline b{font-family:var(--f-mono);font-weight:600}
+@media (min-width:1040px){
+  .hero-grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:center}
+  .hero-side{border-left:2px dashed var(--rule);padding-left:20px}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 16px}
+  .timeline li{border-right:0;padding-right:0;margin-right:0}
+}
+
+/* tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--paper);border-bottom:1px solid var(--rule);border-top:1px solid var(--rule)}
+.tablist{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tablist::-webkit-scrollbar{display:none}
+.tablist button{flex:none;font:inherit;font-size:14.5px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);padding:9px 12px 7px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.tablist button b{display:inline-grid;place-items:center;width:1.45rem;height:1.45rem;border-radius:50%;border:1.5px solid var(--rule);font-family:var(--f-mono);font-size:12px;font-weight:600}
+.tablist button small{font-family:var(--f-mono);font-size:11px;color:var(--muted);font-weight:500}
+.tablist button.seen b{border-color:var(--hand-s);color:var(--hand-s)}
+.tablist button[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--hand-s)}
+.tablist button[aria-selected="true"] b{background:var(--hand-s);border-color:var(--hand-s);color:var(--panel)}
+.tablist button:hover{color:var(--ink)}
+@media (min-width:980px){.tablist button{flex:1 1 0}}
+
+/* chapters (tab panels) */
+.chapter{padding-block:14px 16px}
+.chapter > .inner{display:grid;gap:11px}
+.ch-head{display:flex;align-items:center;gap:10px}
+h2{font-size:clamp(1.15rem,2.2vw,1.35rem);font-weight:750;line-height:1.15;flex:1 1 auto;min-width:0}
+.ch-time{flex:none;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.ch-grid{display:grid;gap:12px 28px;grid-template-columns:minmax(0,1fr);grid-template-areas:"intro" "lab" "after"}
+.ch-grid > .intro{grid-area:intro} .ch-grid > .lab{grid-area:lab} .ch-grid > .after{grid-area:after}
+.ch-grid > *{display:grid;gap:10px;align-content:start;min-width:0}
+@media (min-width:1040px){
+  .ch-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-areas:"intro lab" "after lab";grid-template-rows:auto 1fr}
+  #twins .ch-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px dashed var(--rule);padding-top:10px}
+.pager .pg{font-size:12px;color:var(--muted)}
+.ap{font-size:14px;color:var(--muted);border-left:3px solid var(--rule);padding-left:10px}
+.ap b{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink);margin-right:6px}
+.model{font-size:13px;color:var(--muted);font-style:italic}
+.real{font-size:14px}
+.real b{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--hand-s);margin-right:6px}
+
+/* bench (interactive panel) */
+.bench{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px 14px;display:grid;gap:9px;min-width:0}
+.controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{font:inherit;font-size:13.5px;font-weight:700;border-radius:8px;padding:6px 10px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);line-height:1.2}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn.ghost[aria-pressed="true"]{border-color:var(--ink);background:var(--paper)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:not(:disabled):hover{transform:translateY(-1px)}
+.seg{display:inline-flex;border:1.5px solid var(--rule);border-radius:9px;padding:2px;gap:2px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13.5px;border:0;background:transparent;color:var(--ink);padding:4px 9px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);font-weight:700}
+.readout{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:14px}
+.big{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:clamp(1rem,1.6vw,1.15rem);font-weight:600;line-height:1.3}
+label.sl{display:grid;gap:3px;font-size:14.5px}
+input[type=range]{width:100%;accent-color:var(--hand-s);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:50%;display:inline-block;flex:none}
+.sep{flex:1 1 auto}
+
+/* chapter 1 */
+#mol{width:100%;aspect-ratio:2.15/1;height:auto;max-height:380px;min-height:230px;display:block;touch-action:none;cursor:grab;border-radius:10px;max-width:100%}
+#mol:active{cursor:grabbing}
+.mol-labels{display:grid;grid-template-columns:1fr 1fr;text-align:center;font-size:14px;font-weight:700;gap:8px;margin-top:-4px}
+.mol-labels small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+#mol-note{font-size:14px}
+.facts{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14.5px}
+.facts li{border-left:3px solid var(--hand-s-soft);padding-left:10px}
+.facts b{font-family:var(--f-display)}
+.hook{font-family:var(--f-display);font-weight:700;font-size:1.1rem}
+
+/* chapter 2 */
+.ee-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 18px;align-items:center}
+@media (max-width:640px){.ee-row{grid-template-columns:1fr}}
+.formula{font-family:var(--f-mono);font-size:15px;background:var(--paper);border-radius:7px;padding:6px 10px;justify-self:start;max-width:100%;overflow-x:auto}
+#ee-grid{display:grid;grid-template-columns:repeat(20,1fr);gap:3px}
+#ee-grid i{aspect-ratio:1;border-radius:50%;max-width:100%;transition:background-color .25s}
+#ee-grid i.s{background:var(--hand-s)} #ee-grid i.r{background:var(--hand-r)}
+.tag{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid var(--rule);color:var(--muted);vertical-align:middle;font-weight:500}
+
+/* chapter 3 */
+.kg-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:14px;align-items:start}
+@media (max-width:640px){.kg-layout{grid-template-columns:1fr}.kg-layout svg{max-width:300px}}
+#kg-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:5px}
+@media (max-width:460px){#kg-grid{grid-template-columns:repeat(8,minmax(0,1fr))}}
+.cap{display:flex;align-items:center;justify-content:center;padding:3px 2px;border-radius:999px;background:var(--paper);border:1.5px solid transparent;transition:opacity .25s}
+.cap i{width:11px;height:11px;border-radius:50%;display:block}
+.cap::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--muted);order:1;margin:0 1px}
+.cap i:first-child{order:0} .cap i:last-child{order:2}
+.cap i.s{background:var(--hand-s)} .cap i.r{background:var(--hand-r)}
+#kg-grid[data-mode="slow"] .cap.mix{opacity:.28;border-style:dashed;border-color:var(--mixed)}
+#kg-grid[data-mode="fast"] .cap.mix{border-color:var(--ink)}
+.counts{font-size:13px;color:var(--muted)}
+svg.plot{width:100%;height:auto;display:block;max-width:100%}
+.plot .axis{stroke:var(--rule);stroke-width:1}
+.plot .grid{stroke:var(--rule);stroke-width:1;stroke-dasharray:2 4}
+.plot .diag{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 5;fill:none}
+.plot .curve{stroke:var(--hand-s);stroke-width:2.5;fill:none}
+.plot .pt{fill:var(--hand-s)}
+.plot .ring{fill:var(--panel);stroke:var(--hand-s);stroke-width:2}
+.plot text{fill:var(--muted);font-family:var(--f-mono);font-size:10.5px}
+.plot text.lab{fill:var(--ink)}
+
+/* chapter 4 */
+.frank{border-collapse:collapse;font-size:14.5px;min-width:380px;width:100%}
+.frank th,.frank td{padding:5px 9px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.frank th{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.frank td.y,.frank td.n{font-family:var(--f-mono);font-weight:600;text-align:center;width:6.5em}
+.frank td.y{color:var(--good)} .frank td.n{color:var(--bad)}
+.scroll{overflow-x:auto;max-width:100%}
+.scheme{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:14.5px}
+.scheme .chip{border:1.5px solid var(--rule);border-radius:9px;padding:5px 9px;background:var(--paper);line-height:1.2}
+.scheme .chip small{display:block;color:var(--muted);font-size:12px}
+.scheme .arrow{font-family:var(--f-mono);font-size:18px;color:var(--muted)}
+.scheme .chip.prod{border-color:var(--hand-s)}
+.loopnote{font-size:14px;color:var(--hand-s);font-weight:700}
+.chart{display:grid;gap:4px}
+.bars{position:relative;display:grid;gap:8px;height:150px;padding-left:36px;align-items:end}
+.bars .gl{position:absolute;left:36px;right:0;border-top:1px dashed var(--rule);font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.bars .gl span{position:absolute;left:-36px;top:-7px;width:30px;text-align:right}
+.bcol{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;min-width:0}
+.bar{border-radius:5px 5px 0 0;background:var(--hand-s);transition:height .45s cubic-bezier(.2,.8,.2,1);min-height:3px}
+.bar.copy{background:var(--mixed)}
+.bar.ghost{background:transparent;border:1.5px dashed var(--rule);border-bottom:0;height:calc(100% - 18px)}
+.bval{font-family:var(--f-mono);font-size:12.5px;font-weight:600;text-align:center;margin-bottom:3px;font-variant-numeric:tabular-nums}
+.bxl{display:grid;gap:8px;padding-left:36px;font-size:12px;color:var(--muted);text-align:center}
+.record{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;border:1.5px dashed var(--hand-s);border-radius:10px;padding:8px 12px}
+.record .big{color:var(--hand-s)}
+.record .k{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+
+/* chapter 5 */
+#fl-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px}
+.slot{height:34px;border-radius:7px;border:1.5px dashed var(--rule);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:12px;font-weight:600;line-height:1.05}
+.slot small{font-size:10px;font-weight:500;opacity:.85}
+.slot.s{background:var(--hand-s-soft);border:1.5px solid var(--hand-s);color:var(--hand-s)}
+.slot.r{background:var(--hand-r-soft);border:1.5px solid var(--hand-r);color:var(--hand-r)}
+.slot.pop{animation:pop .3s ease-out}
+@keyframes pop{from{transform:scale(.6);opacity:.2}to{transform:none;opacity:1}}
+.tally{display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--paper);border:1px solid var(--rule)}
+.tally i{display:block;height:100%;transition:width .3s}
+.tally .ts{background:var(--hand-s)} .tally .tr{background:var(--hand-r)}
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.compare div{display:grid;gap:1px;padding:7px 10px;border-radius:8px;background:var(--paper)}
+.compare .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:560px){.compare{grid-template-columns:1fr}}
+
+/* quiz */
+.quiz{display:grid;gap:7px;background:var(--panel);border:1px dashed var(--rule);border-radius:12px;padding:10px 14px}
+.q-label{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--hand-s);font-weight:600}
+.q-text{font-weight:700;font-size:1rem}
+.q-opts{display:flex;flex-wrap:wrap;gap:6px}
+.q-opts button{font:inherit;font-size:14.5px;text-align:left;border:1.5px solid var(--rule);background:var(--panel);color:var(--ink);padding:6px 11px;border-radius:9px;cursor:pointer;max-width:100%}
+.q-opts button:hover:not(:disabled){border-color:var(--ink)}
+.q-opts button.right{border-color:var(--good);background:var(--good-soft)}
+.q-opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.q-opts button:disabled{cursor:default}
+.quiz.stack .q-opts{flex-direction:column;align-items:stretch}
+.q-fb{font-size:14.5px}
+.q-fb:empty{display:none}
+.q-fb.ok{color:var(--good)} .q-fb.no{color:var(--bad)}
+
+/* why */
+.why{display:grid;grid-template-columns:minmax(0,1fr);gap:12px 28px;align-items:start}
+.why > div{display:grid;gap:4px;align-content:start;min-width:0}
+.why h3{font-size:1.05rem}
+.why p{font-size:15px}
+@media (min-width:760px){.why{grid-template-columns:repeat(2,minmax(0,1fr))}.why > .quiz{grid-column:1 / -1}}
+@media (min-width:1040px){.why{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.35fr)}.why > .quiz{grid-column:auto}}
+.laureates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;font-size:13.5px;color:var(--muted)}
+.laureates div{border-top:2px solid var(--rule);padding-top:6px}
+.laureates b{font-family:var(--f-display);font-size:1rem;display:block;color:var(--ink)}
+@media (max-width:560px){.laureates{grid-template-columns:1fr;gap:8px}}
+
+/* teacher notes */
+details.teacher{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:2px 14px}
+details.teacher summary{cursor:pointer;font-family:var(--f-display);font-weight:700;font-size:1rem;padding:9px 0}
+.tn{display:grid;gap:12px 28px;padding-bottom:14px;font-size:14.5px}
+@media (min-width:1040px){.tn{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tn h4{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.tn ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+footer.band{padding-block:10px 24px;font-size:13px;color:var(--muted);border-top:1px solid var(--rule)}
+footer ol{margin:4px 0 0;padding-left:1.3em;display:grid;gap:2px 28px}
+@media (min-width:1040px){footer ol{grid-template-columns:repeat(3,minmax(0,1fr))}}
+footer a{color:var(--muted)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="band hero" id="top">
+  <div class="inner hero-grid">
+    <div class="hero-main">
+      <p class="eyebrow">Nobel Prize in Chemistry 2026 · Henri B. Kagan &amp; Kenso Soai</p>
+      <h1>How one <span class="mirror"><span class="w">hand</span><span class="line" aria-hidden="true"></span><span class="m" aria-hidden="true">hand</span></span> wins</h1>
+      <p class="deck">Many molecules come in two mirror-image forms, and life builds its proteins from only one. Kagan showed that a catalyst can make a product more one-handed than itself. Soai built a reaction that turns a tiny excess of one form into an almost pure sample. Six steps, about 3½ minutes.</p>
+    </div>
+    <div class="hero-side">
+      <p class="citation">Prize citation: “for the discovery of non-linear effects and autocatalysis in asymmetric organic synthesis”</p>
+      <ol class="timeline" aria-label="Timeline">
+        <li><b>1953</b>Frank’s prediction</li>
+        <li><b>1986</b>Kagan’s effect</li>
+        <li><b>1995</b>Soai’s amplifying reaction</li>
+        <li><b>2003</b>No-bias result</li>
+        <li><b>2026</b>Nobel Prize</li>
+      </ol>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs band" aria-label="Lesson steps">
+  <div class="inner">
+    <div class="tablist" role="tablist">
+      <button type="button" role="tab" id="tab-twins" aria-controls="twins" aria-selected="true" data-short="Mirror twins"><b>1</b>Mirror twins<small>45 s</small></button>
+      <button type="button" role="tab" id="tab-ee" aria-controls="ee" aria-selected="false" tabindex="-1" data-short="Score the imbalance"><b>2</b>Score it<small>20 s</small></button>
+      <button type="button" role="tab" id="tab-kagan" aria-controls="kagan" aria-selected="false" tabindex="-1" data-short="Kagan, 1986"><b>3</b>Kagan<small>40 s</small></button>
+      <button type="button" role="tab" id="tab-soai" aria-controls="soai" aria-selected="false" tabindex="-1" data-short="Soai, 1995"><b>4</b>Soai<small>40 s</small></button>
+      <button type="button" role="tab" id="tab-nopush" aria-controls="nopush" aria-selected="false" tabindex="-1" data-short="No bias, 2003"><b>5</b>No bias<small>30 s</small></button>
+      <button type="button" role="tab" id="tab-why" aria-controls="why" aria-selected="false" tabindex="-1" data-short="Why a Nobel?"><b>6</b>Why it matters<small>20 s</small></button>
+    </div>
+  </div>
+</nav>
+
+<main>
+<!-- 1 -->
+<section class="band chapter" id="twins" role="tabpanel" aria-labelledby="tab-twins">
+  <div class="inner">
+    <header class="ch-head"><h2>Mirror twins</h2><span class="ch-time">~45 s</span></header>
+    <div class="ch-grid">
+      <div class="intro">
+        <p class="sub">This is <b>alanine</b>, an amino acid. Its central carbon holds four different groups at the corners of a tetrahedron, about 109.5° apart. <b>Drag either molecule</b> and try to turn the left one until it matches its mirror image.</p>
+        <p class="sub">Closer atoms look bigger and brighter, and their shadows on the floor show where each group sits. Tap <b>Spin pair</b> to feel the depth, or switch to <b>Wedge–dash</b> to see how chemists draw 3D shape on paper.</p>
+      </div>
+      <div class="lab">
+        <div class="bench">
+          <canvas id="mol" tabindex="0" aria-label="Two 3D molecules on a floor with shadows. Drag either one to rotate it. Arrow keys rotate the left one."></canvas>
+          <div class="mol-labels">
+            <div class="s"><span id="mol-l">L-alanine</span><small>in your proteins</small></div>
+            <div class="r"><span id="mol-r">D-alanine</span><small>its mirror image</small></div>
+          </div>
+          <div class="controls">
+            <button class="btn" id="mol-try" type="button">Try all 12 alignments</button>
+            <button class="btn" id="mol-rs" type="button">Look down C–H: R or S?</button>
+            <button class="btn ghost" id="mol-spin" type="button" aria-pressed="false">Spin pair</button>
+            <span class="sep"></span>
+            <div class="seg" id="mol-view" role="group" aria-label="Drawing style">
+              <button type="button" data-v="3d" aria-pressed="true">3D model</button>
+              <button type="button" data-v="2d" aria-pressed="false">Wedge–dash</button>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="btn ghost" id="mol-gly" type="button" aria-pressed="false">Switch to glycine</button>
+            <button class="btn ghost" id="mol-reset" type="button">Reset</button>
+            <p class="big" id="mol-out" aria-live="polite" style="margin-left:6px">Groups lined up: 0 of 4</p>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="sw" style="background:var(--g-n)"></i>NH₂ amino</span>
+            <span><i class="sw" style="background:var(--g-o)"></i>COOH acid</span>
+            <span><i class="sw" style="background:var(--g-c)"></i>CH₃ methyl</span>
+            <span><i class="sw" style="background:var(--g-h);border:1px solid var(--bond)"></i>H</span>
+          </div>
+          <p id="mol-note" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="after">
+        <p class="sub">You can’t match them. The best any rotation achieves is 2 of 4 groups. A molecule that can’t be stacked onto its mirror image is <b>chiral</b>, like your hands. The two forms are <b>enantiomers</b>.</p>
+        <p class="sub">To name each hand, tap <b>Look down C–H</b>. Rank the groups (NH₂ &gt; COOH &gt; CH₃ &gt; H), point the lowest one, H, away from you, and trace 1 → 2 → 3. Counterclockwise is <b>S</b>; clockwise is <b>R</b>.</p>
+        <ul class="facts">
+          <li><b>Twins in most ways.</b> Same boiling point, melting point and solubility in non-chiral surroundings. They rotate polarized light by equal amounts in opposite directions.</li>
+          <li><b>Told apart by chiral things.</b> Your nose has chiral receptors: (R)-carvone smells like spearmint, (S)-carvone like caraway.</li>
+          <li><b>Life is one-handed.</b> Your proteins use only L-amino acids. Ordinary lab reactions with no chiral influence give a 50:50 (racemic) mix.</li>
+        </ul>
+        <p class="hook">So how could one hand ever take over?</p>
+        <p class="ap"><b>AP link</b>Unit 2: four electron domains make carbon tetrahedral. Four <i>different</i> groups on it make a chiral center.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="band chapter" id="ee" role="tabpanel" aria-labelledby="tab-ee" hidden>
+  <div class="inner">
+    <header class="ch-head"><h2>Score the imbalance: ee</h2><span class="ch-time">~20 s</span></header>
+    <div class="ch-grid">
+      <div class="intro">
+        <p class="sub"><b>Enantiomeric excess</b> (ee) measures how lopsided a mixture is. Blue is the S form, orange is the R form. Slide to change the mix.</p>
+      </div>
+      <div class="lab">
+        <div class="bench">
+          <div class="ee-row">
+            <div style="display:grid;gap:8px;min-width:0">
+              <p class="formula">ee = |S − R| ÷ (S + R) × 100%</p>
+              <label class="sl" for="ee-s"><span>Share of blue (S) molecules: <span class="mono" id="ee-pct">75%</span></span>
+                <input id="ee-s" type="range" min="0" max="100" step="5" value="75">
+              </label>
+              <p class="big" id="ee-out" aria-live="polite">ee = |75 − 25| = 50%</p>
+            </div>
+            <div id="ee-grid" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+      <div class="after">
+        <div class="quiz" data-answer="2">
+          <p class="q-label">Quick check</p>
+          <p class="q-text">A sample is 90% S and 10% R. What is its ee?</p>
+          <div class="q-opts">
+            <button type="button" data-fb="That’s the share of R. ee is the difference between the two forms.">10%</button>
+            <button type="button" data-fb="ee isn’t half of anything here. Subtract: 90 − 10.">45%</button>
+            <button type="button" data-fb="Right. 90 − 10 = 80%. Picture it as 80% pure S plus 20% that is a 50:50 mix (10 S + 10 R).">80%</button>
+            <button type="button" data-fb="That’s the share of S. ee asks how much S is left over after each R is paired with an S.">90%</button>
+          </div>
+          <p class="q-fb" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="band chapter" id="kagan" role="tabpanel" aria-labelledby="tab-kagan" hidden>
+  <div class="inner">
+    <header class="ch-head"><h2>Kagan, 1986: catalysts built from pairs</h2><span class="ch-time">~40 s</span></header>
+    <div class="ch-grid">
+      <div class="intro">
+        <p class="sub">In Kagan’s model, a catalyst is a metal atom holding <b>two</b> chiral pieces called ligands. Chemists assumed product ee was <i>proportional</i> to ligand ee: halve the ligand’s ee, halve the product’s. Kagan showed this can fail.</p>
+        <p class="sub">Each dot pair on the right is one catalyst. A <b>mixed pair</b> (one of each hand) is not chiral overall, so it makes a 50:50 product.</p>
+        <p class="ap"><b>AP link</b>Unit 5: each catalyst species adds product in proportion to its rate constant and its amount, so a fast species can dominate even when it is a minority.</p>
+      </div>
+      <div class="lab">
+        <div class="bench">
+          <div class="controls" style="gap:8px 14px">
+            <label class="sl" for="kg-s" style="flex:1 1 220px"><span>Ligand ee: <span class="mono" id="kg-pct">50%</span></span>
+              <input id="kg-s" type="range" min="0" max="100" step="5" value="50">
+            </label>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+              <span style="font-size:14px">Mixed pairs are</span>
+              <div class="seg" id="kg-mode" role="group" aria-label="Speed of mixed pairs">
+                <button type="button" data-g="0" aria-pressed="true">Slow</button>
+                <button type="button" data-g="1" aria-pressed="false">Same speed</button>
+                <button type="button" data-g="3" aria-pressed="false">Fast</button>
+              </div>
+              <button class="btn ghost" id="kg-shuffle" type="button">Shuffle</button>
+            </div>
+          </div>
+          <div class="kg-layout">
+            <div style="display:grid;gap:7px;min-width:0">
+              <div id="kg-grid" data-mode="slow" aria-hidden="true"></div>
+              <p class="counts mono" id="kg-counts"></p>
+              <p class="big" id="kg-out" aria-live="polite"></p>
+              <p id="kg-cap" style="font-size:14.5px"></p>
+            </div>
+            <svg class="plot" id="kg-plot" viewBox="0 0 280 230" role="img" aria-label="Product ee versus ligand ee"></svg>
+          </div>
+          <p class="model">Model: pairs form at random, and each matched pair makes only its own hand, so the old proportional rule is the dashed line. Dot = this batch of 40 catalysts. Curve = average over many batches.</p>
+          <p class="real"><b>Real data</b>In a zinc reaction studied by Noyori (1989), a ligand at just 15% ee gave product at 98% ee.</p>
+        </div>
+      </div>
+      <div class="after">
+        <div class="quiz" data-answer="2">
+          <p class="q-label">Quick check</p>
+          <p class="q-text">If the mixed pairs were the <i>fastest</i> catalysts, the product’s ee would be…</p>
+          <div class="q-opts">
+            <button type="button" data-fb="That happens when mixed pairs are slow. Here they’re fast.">higher than the old rule predicts</button>
+            <button type="button" data-fb="Only if every pair works at the same speed.">exactly what the old rule predicts</button>
+            <button type="button" data-fb="Right. Fast mixed pairs pour out 50:50 product and dilute the excess. That’s a negative non-linear effect. Kagan reported negative effects in two of his three 1986 test reactions and a positive one in the third.">lower than the old rule predicts</button>
+          </div>
+          <p class="q-fb" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="band chapter" id="soai" role="tabpanel" aria-labelledby="tab-soai" hidden>
+  <div class="inner">
+    <header class="ch-head"><h2>Soai, 1995: a molecule that copies and amplifies itself</h2><span class="ch-time">~40 s</span></header>
+    <div class="ch-grid">
+      <div class="intro">
+        <p class="sub">In 1953 the physicist Charles Frank showed mathematically that one hand could take over if a molecule did three things. Soai’s 1995 reaction was the first to do all three.</p>
+        <div class="scroll">
+          <table class="frank">
+            <thead><tr><th>Frank’s condition</th><th>Soai 1990</th><th>Soai 1995</th></tr></thead>
+            <tbody>
+              <tr><td>1. It catalyzes its own formation (autocatalysis)</td><td class="y">✓</td><td class="y">✓</td></tr>
+              <tr><td>2. It makes more of its own hand</td><td class="y">✓</td><td class="y">✓</td></tr>
+              <tr><td>3. It suppresses its mirror twin</td><td class="n">✗</td><td class="y">✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="ap"><b>AP link</b>Unit 5: the catalyst is the product, so the reaction speeds up as product builds, until the aldehyde runs low.</p>
+      </div>
+      <div class="lab">
+        <div class="bench">
+          <div class="scheme" aria-label="Reaction scheme">
+            <span class="chip">pyrimidine aldehyde<small>flat C=O, not chiral</small></span>
+            <span class="arrow">+</span>
+            <span class="chip">diisopropylzinc<small>i‑Pr₂Zn</small></span>
+            <span class="arrow">→</span>
+            <span class="chip prod">pyrimidyl alcohol<small>new carbon with 4 different groups</small></span>
+          </div>
+          <p class="loopnote">↺ The product, still bonded to zinc, catalyzes this same reaction.</p>
+          <p style="font-size:14.5px">The isopropyl group adds to one face of the flat C=O or the other, making an S or an R molecule. Run the reaction in rounds, using each round’s product as the next catalyst.</p>
+          <div class="controls">
+            <div class="seg" id="sr-mode" role="group" aria-label="Which reaction">
+              <button type="button" data-m="copy" aria-pressed="true">Plain copying (hypothetical)</button>
+              <button type="button" data-m="soai" aria-pressed="false">Soai reaction (real data)</button>
+            </div>
+            <button class="btn" id="sr-run" type="button">Run next round</button>
+            <button class="btn ghost" id="sr-reset" type="button">Reset</button>
+          </div>
+          <div class="chart" aria-hidden="true">
+            <div class="bars" id="sr-bars"></div>
+            <div class="bxl" id="sr-x"></div>
+          </div>
+          <p id="sr-cap" aria-live="polite" style="font-size:14.5px"></p>
+          <div class="record">
+            <span class="k">2003 record</span>
+            <span class="big">0.00005% → &gt;99.5% ee</span>
+            <span style="font-size:14px">in three rounds, with an alkynyl-substituted version</span>
+          </div>
+        </div>
+      </div>
+      <div class="after">
+        <div class="quiz" data-answer="0">
+          <p class="q-label">Quick check</p>
+          <p class="q-text">The 2003 run started at 0.00005% ee. In 4,000,000 molecules, how many more molecules of the major hand than of the minor hand is that?</p>
+          <div class="q-opts">
+            <button type="button" data-fb="Right. 0.00005% = 0.0000005, and 0.0000005 × 4,000,000 = 2. That’s 2,000,001 vs 1,999,999. Three rounds later the product was over 99.75% one hand.">2</button>
+            <button type="button" data-fb="Convert the percent to a decimal first: 0.00005% = 0.0000005.">200</button>
+            <button type="button" data-fb="Too many. Turn 0.00005% into a decimal (0.0000005), then multiply by 4,000,000.">20,000</button>
+            <button type="button" data-fb="That’s half the sample. ee counts only the difference between the hands.">2,000,000</button>
+          </div>
+          <p class="q-fb" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="band chapter" id="nopush" role="tabpanel" aria-labelledby="tab-nopush" hidden>
+  <div class="inner">
+    <header class="ch-head"><h2>2003: one hand from no bias</h2><span class="ch-time">~30 s</span></header>
+    <div class="ch-grid">
+      <div class="intro">
+        <p class="sub">Now start with <b>no</b> chiral catalyst. The first product molecules form at random, like coin flips, so the count is almost never exactly 50:50. Can the reaction amplify that noise? Run some flasks.</p>
+      </div>
+      <div class="lab">
+        <div class="bench">
+          <div class="controls">
+            <button class="btn" id="fl-one" type="button">Run 1 flask</button>
+            <button class="btn ghost" id="fl-all" type="button">Run all 37</button>
+            <button class="btn ghost" id="fl-clear" type="button">Clear</button>
+          </div>
+          <div id="fl-slots" aria-hidden="true"></div>
+          <div class="tally" aria-hidden="true"><i class="ts" id="fl-ts" style="width:0"></i><i class="tr" id="fl-tr" style="width:0"></i></div>
+          <div class="compare">
+            <div><span class="k">Your simulated flasks</span><span class="readout" id="fl-out" aria-live="polite">No flasks yet</span></div>
+            <div><span class="k">Soai’s 37 real flasks (2003)</span><span class="readout"><span class="s">19 S</span> · <span class="r">18 R</span> · ee 15–91%</span></div>
+          </div>
+          <p class="model">Toy model: 1,000 random first molecules, then each hand catalyzes its own formation at a rate second-order in its own amount (mixed pairs inactive), 98% selective. It mimics the behavior. The real mechanism is still debated.</p>
+        </div>
+      </div>
+      <div class="after">
+        <p class="sub">Each flask picks a hand at random, and most end up strongly enriched in it. Chemists call this <b>absolute asymmetric synthesis</b>: a one-handed product with no chiral input. Add a tiny chiral nudge, such as a quartz crystal or circularly polarized light, and the nudge decides which hand wins.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="band chapter" id="why" role="tabpanel" aria-labelledby="tab-why" hidden>
+  <div class="inner">
+    <header class="ch-head"><h2>Why a Nobel?</h2><span class="ch-time">~20 s</span></header>
+    <div class="why">
+      <div>
+        <h3>For medicine makers</h3>
+        <p>Many drugs are made as a single hand, because the mirror form can be inactive or harmful. Chemists now use non-linear effects to work out how catalysts work and to get purer products from impure ingredients. At Merck, a reagent made from α‑pinene that was only 70% optically pure gave a product with 95% ee.</p>
+      </div>
+      <div>
+        <h3>For the origin of life</h3>
+        <p>Frank ended his 1953 paper: “A laboratory demonstration may not be impossible.” Soai delivered it. The Nobel committee calls it an important proof of concept, but not relevant to how life’s water-based chemistry became one-handed (its zinc reagent is destroyed by water). How life chose its hand is still an open question.</p>
+      </div>
+      <div class="quiz stack" data-answer="1">
+        <p class="q-label">Exit ticket</p>
+        <p class="q-text">Which claim does the evidence support?</p>
+        <div class="q-opts">
+          <button type="button" data-fb="Not supported. The committee calls the Soai reaction a proof of concept that isn’t relevant to water-based life chemistry. Its zinc reagent is destroyed by water.">The Soai reaction is how life on Earth became one-handed.</button>
+          <button type="button" data-fb="Right. That was Frank’s 1953 prediction. Kagan’s non-linear effect describes the suppression step, and Soai’s reaction showed all three conditions working together.">A reaction that copies itself and suppresses its mirror twin can turn a tiny imbalance into a nearly pure product.</button>
+          <button type="button" data-fb="Enantiomers have identical boiling points. Only a chiral environment tells them apart.">Enantiomers have different boiling points, so they’re easy to separate.</button>
+          <button type="button" data-fb="Not even the old assumption said that. Chemists assumed product ee was proportional to catalyst ee, and Kagan showed that can fail too.">A catalyst’s product always has the same ee as the catalyst.</button>
+        </div>
+        <p class="q-fb" aria-live="polite"></p>
+      </div>
+    </div>
+    <div class="laureates">
+      <div><b>Henri B. Kagan</b>Born 1930, Boulogne-Billancourt, France. Professor emeritus, Université Paris-Sud (now Paris-Saclay).</div>
+      <div><b>Kenso Soai</b>Born 1950, Hiroshima, Japan. Professor emeritus, Tokyo University of Science.</div>
+    </div>
+
+    <details class="teacher">
+      <summary>For teachers: AP links, misconceptions, data notes</summary>
+      <div class="tn">
+        <div>
+          <h4>Pacing</h4>
+          <ul>
+            <li>About 3½ minutes at a brisk pace (tab targets sum to about 3¼ min). The four questions double as formative checks. Each tab ends with Previous/Next buttons; arrow keys also move between tabs.</li>
+            <li>Chirality, R/S, wedge–dash drawings and ee go beyond the AP Chemistry CED. Treat them as enrichment and lean on the on-exam hooks.</li>
+          </ul>
+          <h4 style="margin-top:10px">AP Chemistry connections</h4>
+          <ul>
+            <li><b>Unit 2</b> (VSEPR, hybridization): tetrahedral sp³ carbon vs. trigonal planar sp² C=O. A chiral center forms when a group adds to one face of a planar carbonyl.</li>
+            <li><b>Unit 3</b> (IMFs, properties): enantiomers have identical IMFs, so identical boiling points and solubilities in non-chiral settings.</li>
+            <li><b>Unit 5</b> (kinetics): catalysts open a lower-E<sub>a</sub> path and are regenerated; parallel catalyst species each contribute rate = k[species]; autocatalysis, where rate rises as product (the catalyst) accumulates.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Misconceptions to watch</h4>
+          <ul>
+            <li><b>“L means left-handed.”</b> D/L is a naming convention, not a literal direction, and it doesn’t predict which way light rotates. L-alanine is (S); L-cysteine is (R).</li>
+            <li><b>“All amino acids are chiral.”</b> Glycine (two H’s) is not. The glycine toggle in tab 1 shows this.</li>
+            <li><b>“Enantiomers have identical properties, period.”</b> Only in non-chiral settings. They rotate plane-polarized light oppositely and behave differently toward chiral receptors, catalysts and solvents.</li>
+            <li><b>“Catalysts are never made in a reaction.”</b> A catalyst isn’t consumed. In autocatalysis the amount grows because the product is the catalyst.</li>
+            <li><b>“Soai solved the origin of life.”</b> The committee calls it a proof of concept that is not relevant to homochirality in water-based systems; Frank’s model is one of several proposed explanations.</li>
+            <li><b>“ee = % of the major form.”</b> 90:10 is 80% ee, not 90%.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Tab 1 viewer</h4>
+          <ul>
+            <li>Depth cues: perspective (near atoms larger), atmospheric fade (far atoms paler), tapered bonds, and floor shadows seen from slightly above. Spin pair adds motion parallax; the two molecules turn like reflections.</li>
+            <li>R/S (CIP rules): COOH outranks CH₃ because the tie at carbon is broken by the next atoms (O, O, O vs. H, H, H). The view looks almost straight down the C–H bond, tilted slightly so H peeks out behind the carbon.</li>
+            <li>Wedge–dash view: bonds pointing toward the viewer are solid wedges, bonds pointing away are hashed, the rest are plain lines. Rotate in this view to see the drawing change.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Data and model notes</h4>
+          <ul>
+            <li>Kagan’s 1986 paper reported negative non-linear effects for a sulfide oxidation and the proline-catalyzed Hajos–Parrish reaction, and a positive one for the Sharpless epoxidation of geraniol. Later work (Hoang, Bahmanyar, Houk &amp; List, 2003) found the Hajos–Parrish reaction to be linear.</li>
+            <li>Tab 3 uses Kagan’s ML₂ picture with random pairing and a perfectly selective matched catalyst. Real systems often favor the mixed complex thermodynamically, which strengthens the effect (Noyori’s 15% → 98% example).</li>
+            <li>Soai 1990: catalyst at 86% ee gave product at only 35% ee (pyridine version). Soai 1995: the Nature abstract describes a run starting at 2% ee; the committee’s scientific background tabulates 5% → 55% → 87% → 90% plateau, which this page uses. “Plain copying” is the committee’s own hypothetical.</li>
+            <li>Tab 5’s toy model is second-order homochiral autocatalysis (equivalent to inactive mixed pairs). Daniel Singleton independently showed absolute asymmetric synthesis in the Soai reaction (2002). Several mechanisms have been proposed (Blackmond; Gridnev &amp; Brown; Denmark 2020; Trapp 2020) and are still debated.</li>
+            <li>Merck example: the α-pinene was used to make the reducing agent (chlorodiisopinocampheylborane), used in stoichiometric amounts.</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+</main>
+
+<footer class="band">
+  <div class="inner">
+    Sources
+    <ol>
+      <li><a href="https://www.nobelprize.org/prizes/chemistry/2026/press-release/">Nobel Prize press release, 7 Oct 2026</a></li>
+      <li><a href="https://www.kva.se/app/uploads/2026/10/nobel-chemistry-2026-scientific-background_98nb7jaql4.pdf">Scientific background, Nobel Committee for Chemistry (PDF)</a></li>
+      <li><a href="https://www.nobelprize.org/prizes/chemistry/2026/popular-information/">Popular information: They solved chemistry’s asymmetric mystery</a></li>
+      <li><a href="https://www.nature.com/articles/378767a0">Soai, Shibata, Morioka &amp; Choji, Nature 378, 767 (1995)</a></li>
+      <li><a href="https://www.chemistryworld.com/news/explainer-what-are-autocatalysis-and-non-linear-effects-and-why-have-they-won-the-2026-nobel-prize-in-chemistry/4024328.article">Chemistry World explainer</a></li>
+    </ol>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const tok=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const RM=matchMedia('(prefers-reduced-motion: reduce)');
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function perm(n,rnd){const a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const themeHooks=[];
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>themeHooks.forEach(f=>f()));}catch(e){}
+new MutationObserver(()=>themeHooks.forEach(f=>f())).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ---------- Tabs ---------- */
+(function(){
+  const tabs=$$('[role="tab"]'),panels=tabs.map(t=>document.getElementById(t.getAttribute('aria-controls')));
+  panels.forEach((p,i)=>{const pg=document.createElement('div');pg.className='pager';
+    const prev=i>0?`<button class="btn ghost" type="button" data-i="${i-1}">← ${tabs[i-1].dataset.short}</button>`:'<span></span>';
+    const next=i<panels.length-1?`<button class="btn" type="button" data-i="${i+1}">Next: ${tabs[i+1].dataset.short} →</button>`:'<span></span>';
+    pg.innerHTML=prev+`<span class="pg mono">${i+1} of ${panels.length}</span>`+next;p.querySelector('.inner').appendChild(pg);
+    pg.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b)select(+b.dataset.i,true);});});
+  function select(i,focus){
+    tabs.forEach((t,j)=>{const on=j===i;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;panels[j].hidden=!on;if(on)t.classList.add('seen');});
+    if(focus){try{tabs[i].focus({preventScroll:true})}catch(_){}}
+    const top=$('#top').getBoundingClientRect().bottom+window.scrollY;if(window.scrollY>top)window.scrollTo(0,top);
+    const c=tabs[i].parentElement,l=tabs[i].offsetLeft-c.offsetLeft;if(l<c.scrollLeft||l+tabs[i].offsetWidth>c.scrollLeft+c.clientWidth)c.scrollLeft=Math.max(0,l-12);
+    document.dispatchEvent(new CustomEvent('tabchange',{detail:panels[i].id}));}
+  tabs.forEach((t,i)=>{t.addEventListener('click',()=>select(i,false));
+    t.addEventListener('keydown',e=>{let j=null;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;
+      if(j!==null){e.preventDefault();select(j,true);}});});
+  const h=(location.hash||'').slice(1);select(Math.max(0,panels.findIndex(p=>p.id===h)),false);
+})();
+
+/* ---------- Tab 1: 3D mirror molecules ---------- */
+(function(){
+  const cv=$('#mol'),ctx=cv.getContext('2d'),out=$('#mol-out'),note=$('#mol-note');
+  const bTry=$('#mol-try'),bRS=$('#mol-rs'),bSpin=$('#mol-spin'),bGly=$('#mol-gly'),bReset=$('#mol-reset');
+  const k=1/Math.sqrt(3);
+  const V=[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(v=>v.map(x=>x*k));
+  // L-alanine (S): H at v0, NH2 v1, CH3 v2, COOH v3 (verified: NH2→COOH→CH3 counterclockwise with H away)
+  const SETS={ala:['H','NH2','CH3','COOH'],gly:['H','NH2','H','COOH']};
+  const LABEL={H:'H',NH2:'NH₂',CH3:'CH₃',COOH:'COOH'};
+  const COL={H:'--g-h',NH2:'--g-n',CH3:'--g-c',COOH:'--g-o'};
+  const RAD={H:.27,NH2:.37,CH3:.37,COOH:.41};
+  const PRI={NH2:1,COOH:2,CH3:3,H:4};
+  let mode='ala',view='3d';
+  const mm=(A,B)=>A.map(r=>[0,1,2].map(j=>r[0]*B[0][j]+r[1]*B[1][j]+r[2]*B[2][j]));
+  const mv=(M,v)=>M.map(r=>r[0]*v[0]+r[1]*v[1]+r[2]*v[2]);
+  const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const nrm=a=>{const n=Math.hypot(a[0],a[1],a[2]);return a.map(x=>x/n)};
+  const rx=a=>[[1,0,0],[0,Math.cos(a),-Math.sin(a)],[0,Math.sin(a),Math.cos(a)]];
+  const ry=a=>[[Math.cos(a),0,Math.sin(a)],[0,1,0],[-Math.sin(a),0,Math.cos(a)]];
+  const P=[[-1,0,0],[0,1,0],[0,0,1]];
+  const EL=0.30,CAM=rx(EL),DIST=3.4,FLOOR=-1.5,FR=1.3;
+  const R0=mm(ry(0.42),rx(-0.30));
+  const qmul=(a,b)=>[a[0]*b[0]-a[1]*b[1]-a[2]*b[2]-a[3]*b[3],a[0]*b[1]+a[1]*b[0]+a[2]*b[3]-a[3]*b[2],a[0]*b[2]-a[1]*b[3]+a[2]*b[0]+a[3]*b[1],a[0]*b[3]+a[1]*b[2]-a[2]*b[1]+a[3]*b[0]];
+  const qnorm=q=>{const n=Math.hypot(q[0],q[1],q[2],q[3]);return q.map(x=>x/n)};
+  const qaxis=(ax,an)=>{const n=Math.hypot(ax[0],ax[1],ax[2])||1,s=Math.sin(an/2);return[Math.cos(an/2),ax[0]/n*s,ax[1]/n*s,ax[2]/n*s]};
+  const qmat=q=>{const[w,x,y,z]=q;return[[1-2*(y*y+z*z),2*(x*y-w*z),2*(x*z+w*y)],[2*(x*y+w*z),1-2*(x*x+z*z),2*(y*z-w*x)],[2*(x*z-w*y),2*(y*z+w*x),1-2*(x*x+y*y)]]};
+  const matq=m=>{const t=m[0][0]+m[1][1]+m[2][2];let w,x,y,z,s;
+    if(t>0){s=Math.sqrt(t+1)*2;w=s/4;x=(m[2][1]-m[1][2])/s;y=(m[0][2]-m[2][0])/s;z=(m[1][0]-m[0][1])/s;}
+    else if(m[0][0]>m[1][1]&&m[0][0]>m[2][2]){s=Math.sqrt(1+m[0][0]-m[1][1]-m[2][2])*2;w=(m[2][1]-m[1][2])/s;x=s/4;y=(m[0][1]+m[1][0])/s;z=(m[0][2]+m[2][0])/s;}
+    else if(m[1][1]>m[2][2]){s=Math.sqrt(1+m[1][1]-m[0][0]-m[2][2])*2;w=(m[0][2]-m[2][0])/s;x=(m[0][1]+m[1][0])/s;y=s/4;z=(m[1][2]+m[2][1])/s;}
+    else{s=Math.sqrt(1+m[2][2]-m[0][0]-m[1][1])*2;w=(m[1][0]-m[0][1])/s;x=(m[0][2]+m[2][0])/s;y=(m[1][2]+m[2][1])/s;z=s/4;}
+    return qnorm([w,x,y,z]);};
+  const slerp=(a,b,t)=>{let d=a[0]*b[0]+a[1]*b[1]+a[2]*b[2]+a[3]*b[3];if(d<0){b=b.map(x=>-x);d=-d;}
+    if(d>0.9995)return qnorm(a.map((x,i)=>x+(b[i]-x)*t));const th=Math.acos(d),s=Math.sin(th);
+    return a.map((x,i)=>(x*Math.sin((1-t)*th)+b[i]*Math.sin(t*th))/s);};
+  // rotations carrying one tetrahedron of bond directions onto its mirror image
+  const cyc=[[[1,0,0],[0,1,0],[0,0,1]],[[0,0,1],[1,0,0],[0,1,0]],[[0,1,0],[0,0,1],[1,0,0]]];
+  const sg=[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(d=>[[d[0],0,0],[0,d[1],0],[0,0,d[2]]]);
+  const T=[];for(const c of cyc)for(const s of sg)T.push(mm(s,c));
+  const Rz90=[[0,-1,0],[1,0,0],[0,0,1]];
+  // "look down C–H" target: H (v0) points away from the viewer, NH2 (v1) points up
+  const QA=(()=>{const h=V[0];const u=nrm(V[1].map((x,i)=>x-h[i]*dot(V[1],h)));const t=cross(h,u);return matq([t,u,h.map(x=>-x)]);})();
+
+  let qL=matq(R0),qR=matq(R0),busy=false,spinning=false,overlay=false,rsL=null,rsR=null;
+  const posL=()=>{const M=qmat(qL);return V.map(v=>mv(M,v));};
+  const posR=()=>{const M=qmat(qR);return V.map(v=>mv(P,mv(M,v)));};
+  function flags(){const g=SETS[mode],L=posL(),R=posR(),used=[0,0,0,0],c=Math.cos(24*Math.PI/180);
+    return g.map((key,i)=>{for(let j=0;j<4;j++){if(used[j]||g[j]!==key)continue;if(dot(L[i],R[j])>c){used[j]=1;return true;}}return false;});}
+  const count=()=>flags().filter(Boolean).length;
+
+  const camv=p=>mv(CAM,p);
+  const proj=(cx,cy,sc,p)=>{const c=camv(p),f=DIST/(DIST-c[2]);return{x:cx+c[0]*sc*f,y:cy-c[1]*sc*f,f,z:c[2]}};
+  const fogA=z=>0.6*(1-Math.max(0,Math.min(1,(z+1.05)/2.1)));
+
+  function sphere(x,y,r,col,z){
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+    let g=ctx.createRadialGradient(x-r*.38,y-r*.42,r*.06,x-r*.2,y-r*.2,r*1.05);
+    g.addColorStop(0,'rgba(255,255,255,.62)');g.addColorStop(.45,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.fill();
+    g=ctx.createRadialGradient(x,y,r*.55,x,y,r);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.3)');ctx.fillStyle=g;ctx.fill();
+    const a=fogA(z);if(a>0.01){ctx.globalAlpha=a;ctx.fillStyle=tok('--panel');ctx.fill();ctx.globalAlpha=1;}
+    ctx.lineWidth=1;ctx.strokeStyle=tok('--sphere-edge');ctx.stroke();}
+  function badge(x,y,n,r){const rr=Math.max(8,r);ctx.beginPath();ctx.arc(x,y,rr,0,Math.PI*2);ctx.fillStyle=tok('--ink');ctx.fill();
+    ctx.lineWidth=2;ctx.strokeStyle=tok('--panel');ctx.stroke();ctx.fillStyle=tok('--panel');
+    ctx.font=`700 ${Math.round(rr*1.15)}px "IBM Plex Mono",monospace`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(n),x,y+1);}
+
+  function draw3D(cx,cy,sc,pos,fl){
+    const g=SETS[mode];
+    // floor disc, fixed in the world and seen from slightly above
+    ctx.beginPath();for(let i=0;i<=56;i++){const a=i/56*2*Math.PI,s=proj(cx,cy,sc,[FR*Math.cos(a),FLOOR,FR*Math.sin(a)]);i?ctx.lineTo(s.x,s.y):ctx.moveTo(s.x,s.y);}
+    ctx.closePath();{const fc=proj(cx,cy,sc,[0,FLOOR,0]),fg=ctx.createRadialGradient(fc.x,fc.y,0,fc.x,fc.y,FR*sc*1.25);fg.addColorStop(0,tok('--floor'));fg.addColorStop(.75,tok('--floor'));fg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=fg;ctx.fill();}
+    // shadows: each atom and bond dropped straight down onto the floor
+    const shc=tok('--shadow'),sh=p=>proj(cx,cy,sc,[p[0],FLOOR,p[2]]),c0=sh([0,0,0]);
+    ctx.save();try{ctx.filter='blur(2.5px)'}catch(_){}ctx.strokeStyle=shc;ctx.lineCap='round';
+    pos.forEach(p=>{const s=sh(p);ctx.lineWidth=Math.max(1.5,.045*sc*s.f);ctx.beginPath();ctx.moveTo(c0.x,c0.y);ctx.lineTo(s.x,s.y);ctx.stroke();});
+    const blob=(s,r)=>{ctx.beginPath();ctx.ellipse(s.x,s.y,r,r*Math.sin(EL)*1.1,0,0,Math.PI*2);ctx.fillStyle=shc;ctx.fill();};
+    blob(c0,.2*sc*c0.f);pos.forEach((p,i)=>{const s=sh(p);blob(s,RAD[g[i]]*sc*s.f*.95);});ctx.restore();
+    // painter's algorithm: atoms and bonds sorted back to front
+    const items=[];
+    pos.forEach((p,i)=>{const s=proj(cx,cy,sc,p);items.push({t:'a',i,s,z:s.z});items.push({t:'b',s,z:s.z/2});});
+    items.push({t:'c',z:0});items.sort((a,b)=>a.z-b.z);
+    const bondCol=tok('--bond'),panel=tok('--panel'),good=tok('--good');
+    for(const it of items){
+      if(it.t==='b'){const s=it.s,dx=s.x-cx,dy=s.y-cy,L=Math.hypot(dx,dy);if(L<1)continue;const nx=-dy/L,ny=dx/L,w0=.075*sc,w1=.075*sc*s.f*s.f;
+        ctx.beginPath();ctx.moveTo(cx+nx*w0,cy+ny*w0);ctx.lineTo(s.x+nx*w1,s.y+ny*w1);ctx.lineTo(s.x-nx*w1,s.y-ny*w1);ctx.lineTo(cx-nx*w0,cy-ny*w0);ctx.closePath();
+        ctx.fillStyle=bondCol;ctx.fill();const a=fogA(it.z);if(a>0.01){ctx.globalAlpha=a;ctx.fillStyle=panel;ctx.fill();ctx.globalAlpha=1;}
+        ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=Math.max(1,w1*.45);ctx.beginPath();ctx.moveTo(cx+nx*w0*.35,cy+ny*w0*.35);ctx.lineTo(s.x+nx*w1*.35,s.y+ny*w1*.35);ctx.stroke();}
+      else if(it.t==='c'){const r=.2*sc;sphere(cx,cy,r,tok('--g-core'),0);ctx.fillStyle=tok('--panel');ctx.font=`700 ${Math.max(9,Math.round(r*.8))}px "Atkinson Hyperlegible",Verdana,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('C',cx,cy+1);}
+      else{const s=it.s,key=g[it.i],r=RAD[key]*sc*s.f;sphere(s.x,s.y,r,tok(COL[key]),s.z);
+        if(fl&&fl[it.i]){ctx.beginPath();ctx.arc(s.x,s.y,r+4,0,Math.PI*2);ctx.lineWidth=3;ctx.strokeStyle=good;ctx.stroke();}
+        const fs=Math.max(9,Math.round(r*(key==='COOH'?0.56:0.72)));ctx.font=`700 ${fs}px "Atkinson Hyperlegible",Verdana,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.globalAlpha=1-fogA(s.z)*.6;ctx.fillStyle=key==='H'?tok('--g-h-ink'):'#FFFFFF';ctx.fillText(LABEL[key],s.x,s.y+1);ctx.globalAlpha=1;
+        if(overlay&&mode==='ala')badge(s.x+r*.78,s.y-r*.78,PRI[key],r*.34);}
+    }
+    return pos.map(p=>proj(cx,cy,sc,p));
+  }
+
+  function draw2D(cx,cy,sc,pos,fl){
+    const g=SETS[mode],ink=tok('--ink'),good=tok('--good');const S=sc*1.12;
+    const fs=Math.max(12,Math.round(sc*.24)),minL=.45*sc;
+    const pts=pos.map((p,i)=>{const c=camv(p);let x=c[0]*S,y=-c[1]*S;const L=Math.hypot(x,y);if(L>.5&&L<minL){x*=minL/L;y*=minL/L;}return{x:cx+x,y:cy+y,z:c[2],key:g[i],i};});
+    ctx.lineCap='butt';
+    for(const pt of pts){const dx=pt.x-cx,dy=pt.y-cy,L=Math.hypot(dx,dy);if(L<6)continue;const ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+      const st=fs*.62,en=Math.max(st+5,L-fs*.95),sx=cx+ux*st,sy=cy+uy*st,ex=cx+ux*en,ey=cy+uy*en,W=.16*sc;
+      if(pt.z>0.3){ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex+nx*W/2,ey+ny*W/2);ctx.lineTo(ex-nx*W/2,ey-ny*W/2);ctx.closePath();ctx.fillStyle=ink;ctx.fill();}
+      else if(pt.z<-0.3){ctx.strokeStyle=ink;ctx.lineWidth=1.8;const n=7;for(let j=1;j<=n;j++){const t=j/n,px=sx+(ex-sx)*t,py=sy+(ey-sy)*t,w=W*t/2;ctx.beginPath();ctx.moveTo(px+nx*w,py+ny*w);ctx.lineTo(px-nx*w,py-ny*w);ctx.stroke();}}
+      else{ctx.strokeStyle=ink;ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();}}
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font=`700 ${fs}px "Atkinson Hyperlegible",Verdana,sans-serif`;ctx.fillStyle=ink;ctx.fillText('C',cx,cy+1);
+    for(const pt of pts){const key=pt.key,txt=LABEL[key];ctx.font=`700 ${fs}px "Atkinson Hyperlegible",Verdana,sans-serif`;
+      const w=ctx.measureText(txt).width+10,h=fs+8;
+      ctx.fillStyle=tok('--panel');ctx.fillRect(pt.x-w/2+2,pt.y-h/2+2,w-4,h-4);
+      if(fl&&fl[pt.i]){ctx.strokeStyle=good;ctx.lineWidth=2.5;ctx.strokeRect(pt.x-w/2,pt.y-h/2,w,h);}
+      ctx.fillStyle=key==='H'?ink:tok(COL[key]);ctx.fillText(txt,pt.x,pt.y+1);
+      if(overlay&&mode==='ala')badge(pt.x+w/2+2,pt.y-h/2,PRI[key],fs*.42);}
+    return pts;
+  }
+
+  function drawRS(cx,cy,pts,col,pad){
+    const g=SETS[mode],idx=[1,2,3].map(n=>g.findIndex(k=>PRI[k]===n)),pp=idx.map(i=>({x:pts[i].x-cx,y:-(pts[i].y-cy)}));
+    const cr=(pp[1].x-pp[0].x)*(pp[2].y-pp[0].y)-(pp[1].y-pp[0].y)*(pp[2].x-pp[0].x),ccw=cr>0,sgn=ccw?1:-1;
+    const th=pp.map(p=>Math.atan2(p.y,p.x)),R=pp.reduce((a,p)=>a+Math.hypot(p.x,p.y),0)/3+pad;
+    const span=((th[2]-th[0])*sgn+4*Math.PI)%(2*Math.PI),a0=th[0]+sgn*.2,a1=th[0]+sgn*(span-.2);
+    const pt=a=>[cx+R*Math.cos(a),cy-R*Math.sin(a)],N=40;
+    const path=()=>{ctx.beginPath();for(let i=0;i<=N;i++){const a=a0+(a1-a0)*i/N,[x,y]=pt(a);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}};
+    ctx.lineCap='round';path();ctx.strokeStyle=tok('--panel');ctx.lineWidth=8;ctx.stroke();path();ctx.strokeStyle=col;ctx.lineWidth=3.5;ctx.stroke();
+    const [ex,ey]=pt(a1),[bx,by]=pt(a1-sgn*.12),dx=ex-bx,dy=ey-by,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,hs=11;
+    ctx.beginPath();ctx.moveTo(ex+ux*4,ey+uy*4);ctx.lineTo(ex-ux*hs-uy*hs*.6,ey-uy*hs+ux*hs*.6);ctx.lineTo(ex-ux*hs+uy*hs*.6,ey-uy*hs-ux*hs*.6);ctx.closePath();ctx.fillStyle=col;ctx.fill();
+    return ccw;
+  }
+
+  function draw(){
+    const W=cv.clientWidth,H=cv.clientHeight;if(!W)return;ctx.clearRect(0,0,W,H);
+    ctx.save();ctx.strokeStyle=tok('--muted');ctx.globalAlpha=.55;ctx.setLineDash([6,7]);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W/2,20);ctx.lineTo(W/2,H-6);ctx.stroke();ctx.restore();
+    ctx.fillStyle=tok('--muted');ctx.font='600 10.5px "IBM Plex Mono",monospace';ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('MIRROR',W/2,13);
+    const sc=Math.min(W*.13,H*.235),cy=H*(view==='3d'?.43:.5),xl=W*.25,xr=W*.75;
+    const fl=flags(),fn=view==='3d'?draw3D:draw2D;
+    const pl=fn(xl,cy,sc,posL(),spinning||overlay?null:fl),pr=fn(xr,cy,sc,posR(),null);
+    if(overlay&&mode==='ala'){
+      const pad=view==='3d'?.5*sc+6:Math.max(12,Math.round(sc*.24))*2.2;
+      const lc=drawRS(xl,cy,pl,tok('--hand-s'),pad),rc=drawRS(xr,cy,pr,tok('--hand-r'),pad);rsL=lc?'S':'R';rsR=rc?'S':'R';
+      ctx.font='700 13px "IBM Plex Mono",monospace';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+      [[xl,lc,'--hand-s'],[xr,rc,'--hand-r']].forEach(([x,c,t])=>{ctx.fillStyle=tok(t);ctx.fillText(c?'1→2→3 counterclockwise = S':'1→2→3 clockwise = R',x,H-8);});
+    }
+  }
+  function size(){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=Math.max(1,Math.round(r.width*d));cv.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0);draw();}
+
+  const NOTE3D='Closer atoms look bigger and brighter; farther ones fade. Shadows on the floor show where each group sits. Green rings mark groups that line up with the mirror image.';
+  const NOTE2D='Solid wedge = bond pointing toward you. Hashed wedge = bond pointing away. Plain line = bond in the plane of the screen. Rotate to watch the drawing change.';
+  const NOTEGLY=' Glycine has two H’s, so a rotation can match its mirror image. It is the only one of the 20 standard amino acids that isn’t chiral.';
+  function setNote(){
+    if(overlay&&mode==='ala'){note.innerHTML='CIP rule: rank by atomic number (N beats C, C beats H; COOH beats CH₃ because O beats H at the next atom). With H pointing away, the left molecule runs <b class="s">counterclockwise: S</b> and its mirror image runs <b class="r">clockwise: R</b>. L-alanine is (S).';return;}
+    note.textContent=(view==='3d'?NOTE3D:NOTE2D)+(mode==='gly'?NOTEGLY:'');}
+  function report(){if(busy)return;
+    if(spinning){out.textContent='Spinning as a mirror pair';}
+    else if(overlay&&mode==='ala'){out.innerHTML=`<span class="s">Left: ${rsL}</span> · <span class="r">Right: ${rsR}</span>`;}
+    else{const n=count();out.textContent=n===4?'Groups lined up: 4 of 4. A perfect match!':`Groups lined up: ${n} of 4`;}
+    setNote();}
+  function tween(tL,tR,ms){return new Promise(res=>{if(ms<=0){qL=tL;qR=tR;draw();return res();}
+    const a=qL.slice(),b=qR.slice(),t0=performance.now();
+    const step=now=>{let t=Math.min(1,(now-t0)/ms);t=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;qL=qnorm(slerp(a,tL,t));qR=qnorm(slerp(b,tR,t));draw();if(t<1)requestAnimationFrame(step);else res();};
+    requestAnimationFrame(step);});}
+  let lastT=0;
+  function spinLoop(t){if(!spinning)return;const dt=lastT?Math.min(.05,(t-lastT)/1000):0;lastT=t;const dq=qaxis([0,1,0],dt*.8);qL=qnorm(qmul(dq,qL));qR=qnorm(qmul(dq,qR));draw();requestAnimationFrame(spinLoop);}
+  function setSpin(on){spinning=on;bSpin.setAttribute('aria-pressed',String(on));bSpin.textContent=on?'Stop spin':'Spin pair';lastT=0;if(on){overlay=false;requestAnimationFrame(spinLoop);}draw();report();}
+  const lock=on=>{busy=on;[bTry,bRS,bSpin,bGly,bReset].forEach(b=>b.disabled=on);};
+
+  let drag=null;
+  cv.addEventListener('pointerdown',e=>{if(busy)return;const r=cv.getBoundingClientRect();drag={x:e.clientX,y:e.clientY,side:(e.clientX-r.left)<r.width/2?'L':'R'};
+    if(spinning)setSpin(false);if(overlay){overlay=false;draw();report();}try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+  cv.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+    const d=Math.hypot(dx,dy);if(!d)return;const dq=qaxis([dy,dx,0],d*.012);
+    if(drag.side==='L')qL=qnorm(qmul(dq,qL));else qR=qnorm(qmul([dq[0],dq[1],-dq[2],-dq[3]],qR));draw();report();});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>cv.addEventListener(ev,()=>{drag=null}));
+  cv.addEventListener('keydown',e=>{if(busy)return;const m={ArrowLeft:[0,-1,0],ArrowRight:[0,1,0],ArrowUp:[-1,0,0],ArrowDown:[1,0,0]}[e.key];
+    if(!m)return;e.preventDefault();if(spinning)setSpin(false);overlay=false;qL=qnorm(qmul(qaxis(m,.17),qL));draw();report();});
+
+  bTry.addEventListener('click',async()=>{if(busy)return;if(spinning)setSpin(false);overlay=false;lock(true);
+    const C=mm(mm(P,qmat(qR)),P),cands=T.map(t=>matq(mm(C,mm(Rz90,t))));let best=-1,bestQ=qL;const fast=RM.matches;
+    for(let i=0;i<12;i++){await tween(cands[i],qR,fast?0:300);const n=count();if(n>best){best=n;bestQ=cands[i];}
+      out.textContent=`Alignment ${i+1} of 12: ${n} of 4 groups line up`;await wait(fast?80:240);if(n===4)break;}
+    if(best===4){out.textContent='Match found. Glycine is not chiral.';}
+    else{await tween(bestQ,qR,fast?0:300);out.textContent=`All 12 checked. Best: ${best} of 4. Alanine is chiral.`;}
+    lock(false);setNote();});
+  bRS.addEventListener('click',async()=>{if(busy)return;if(spinning)setSpin(false);
+    if(mode==='gly'){overlay=false;draw();out.textContent='No R or S for glycine';note.textContent='Glycine’s carbon carries two identical groups (H and H), so it has no chiral center and no R/S label.';return;}
+    lock(true);overlay=false;await tween(QA,QA,RM.matches?0:700);overlay=true;lock(false);draw();report();});
+  bSpin.addEventListener('click',()=>{if(busy)return;setSpin(!spinning);});
+  $$('#mol-view button').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.v;$$('#mol-view button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();report();}));
+  bGly.addEventListener('click',()=>{if(busy)return;if(spinning)setSpin(false);mode=mode==='ala'?'gly':'ala';const g=mode==='gly';overlay=false;
+    bGly.setAttribute('aria-pressed',String(g));bGly.textContent=g?'Back to alanine':'Switch to glycine';
+    $('#mol-l').textContent=g?'glycine':'L-alanine';$('#mol-r').textContent=g?'glycine, mirrored':'D-alanine';
+    qL=matq(R0);qR=matq(R0);draw();report();});
+  bReset.addEventListener('click',()=>{if(busy)return;if(spinning)setSpin(false);overlay=false;qL=matq(R0);qR=matq(R0);draw();report();});
+  document.addEventListener('tabchange',e=>{if(e.detail!=='twins'&&spinning)setSpin(false);});
+  new ResizeObserver(size).observe(cv);themeHooks.push(draw);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+  size();report();
+})();
+
+/* ---------- Tab 2: ee grid ---------- */
+(function(){
+  const s=$('#ee-s'),grid=$('#ee-grid'),out=$('#ee-out'),pct=$('#ee-pct');
+  const rk=perm(100,mulberry32(11));grid.innerHTML=rk.map(()=>'<i></i>').join('');const dots=[...grid.children];
+  function upd(){const S=+s.value,R=100-S,ee=Math.abs(S-R);pct.textContent=S+'%';
+    dots.forEach((d,i)=>{d.className=rk[i]<S?'s':'r'});
+    const tag=ee===0?'racemic':ee===100?'enantiopure':(S>R?'enriched in S':'enriched in R');
+    out.innerHTML=`ee = |<span class="s">${S}</span> − <span class="r">${R}</span>| = ${ee}% <span class="tag">${tag}</span>`;}
+  s.addEventListener('input',upd);upd();
+})();
+
+/* ---------- Tab 3: Kagan pairs ---------- */
+(function(){
+  const s=$('#kg-s'),grid=$('#kg-grid'),pct=$('#kg-pct'),out=$('#kg-out'),counts=$('#kg-counts'),cap=$('#kg-cap'),svg=$('#kg-plot');
+  const N=80;let rk=perm(N,mulberry32(5)),g=0;
+  grid.innerHTML=Array.from({length:N/2},()=>'<span class="cap"><i></i><i></i></span>').join('');const caps=[...grid.children];
+  const X0=40,X1=268,Y0=192,Y1=14;const sx=v=>X0+(X1-X0)*v/100,sy=v=>Y0-(Y0-Y1)*v/100;
+  const theory=(e,g)=>{const b=(1-e*e)/(1+e*e);return e*(1+b)/(1+g*b)};
+  const CAP={0:'Slow mixed pairs mostly sit out. Each one takes one of each hand out of action, which removes a bigger share of the minority hand. The working catalysts are purer than the ligand, so product ee beats the old rule: a <b>positive non-linear effect</b>.',
+    1:'Every pair works at the same speed, so product ee follows the old proportional rule (the dashed line).',
+    3:'Fast mixed pairs pour out 50:50 product, so product ee falls below the old rule: a <b>negative non-linear effect</b>.'};
+  function plot(e,batch){let h='';
+    [0,50,100].forEach(v=>{h+=`<line class="grid" x1="${X0}" y1="${sy(v)}" x2="${X1}" y2="${sy(v)}"/><text x="${X0-6}" y="${sy(v)+3.5}" text-anchor="end">${v}</text><text x="${sx(v)}" y="${Y0+15}" text-anchor="middle">${v}</text>`;});
+    h+=`<line class="axis" x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}"/><line class="axis" x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}"/>`;
+    h+=`<line class="diag" x1="${sx(0)}" y1="${sy(0)}" x2="${sx(100)}" y2="${sy(100)}"/>`;
+    let d='';for(let i=0;i<=100;i++){const y=theory(i/100,g)*100;d+=(i?'L':'M')+sx(i).toFixed(1)+' '+sy(y).toFixed(1);}
+    h+=`<path class="curve" d="${d}"/>`;
+    h+=`<circle class="ring" cx="${sx(e*100)}" cy="${sy(theory(e,g)*100)}" r="6"/><circle class="pt" cx="${sx(e*100)}" cy="${sy(Math.max(0,Math.min(100,batch)))}" r="4.5"/>`;
+    h+=`<text class="lab" x="${(X0+X1)/2}" y="${Y0+32}" text-anchor="middle">Ligand ee (%)</text><text class="lab" transform="translate(11 ${(Y0+Y1)/2}) rotate(-90)" text-anchor="middle">Product ee (%)</text>`;
+    svg.innerHTML=h;}
+  function upd(){const e=+s.value/100,nS=Math.round(N*(1+e)/2);pct.textContent=Math.round(e*100)+'%';
+    let ss=0,rr=0,mx=0;
+    caps.forEach((c,i)=>{const a=rk[2*i]<nS?'s':'r',b=rk[2*i+1]<nS?'s':'r';c.children[0].className=a;c.children[1].className=b;
+      const m=a!==b;c.classList.toggle('mix',m);if(m)mx++;else if(a==='s')ss++;else rr++;});
+    const den=ss+rr+g*mx,ee=den?(ss-rr)/den*100:0;
+    counts.innerHTML=`40 catalysts: <span class="s">${ss} blue-blue</span> · <span class="r">${rr} orange-orange</span> · ${mx} mixed`;
+    const shown=Math.round(Math.abs(ee));
+    out.innerHTML=`Ligand ee ${Math.round(e*100)}% → product ee <span class="${ee<0?'r':'s'}">${shown}%</span>${ee<0?' <span class="tag">orange excess</span>':''}`;
+    cap.innerHTML=CAP[g];plot(e,ee);}
+  s.addEventListener('input',upd);
+  $$('#kg-mode button').forEach(b=>b.addEventListener('click',()=>{g=+b.dataset.g;$$('#kg-mode button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    grid.dataset.mode=g===0?'slow':g===1?'same':'fast';upd();}));
+  $('#kg-shuffle').addEventListener('click',()=>{rk=perm(N,Math.random);upd();});
+  upd();
+})();
+
+/* ---------- Tab 4: rounds of self-copying ---------- */
+(function(){
+  const bars=$('#sr-bars'),xl=$('#sr-x'),cap=$('#sr-cap'),run=$('#sr-run');
+  const DATA={
+    copy:{labels:['Start','Run 1','Run 2','Run 3','Run 4','Run 5'],vals:[100,90,81,72.9,65.6,59.0],
+      cap:i=>i<2?'Hypothetical: a perfectly pure catalyst that is 90% selective. Each round’s product becomes the next catalyst. Press “Run next round”.':
+        `Purity drops every round (${DATA.copy.vals.slice(0,i).map(v=>Math.round(v)).join(' → ')}%), like photocopying a photocopy. Conditions 1 and 2 alone can’t make one hand win.`},
+    soai:{labels:['Start','Run 1','Run 2','Runs 3–5'],vals:[5,55,87,90],
+      cap:i=>i<2?'Real data (Soai, 1995): the starting catalyst is only 5% ee. Press “Run next round”.':
+        i<4?`Purity grows: ${DATA.soai.vals.slice(0,i).join('% → ')}%. The reaction’s strong positive non-linear effect supplies condition 3.`:
+        'Real data: 5% → 55% → 87%, then a plateau at 90% by run 5. A barely lopsided catalyst gave a strongly one-handed product.'}};
+  let mode='copy',shown=1;
+  function render(){const d=DATA[mode],n=d.labels.length;
+    bars.style.gridTemplateColumns=xl.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`;
+    let h='<div class="gl" style="top:18px"><span>100%</span></div><div class="gl" style="top:calc(50% + 9px)"><span>50%</span></div><div class="gl" style="bottom:0;top:auto"><span>0</span></div>';
+    d.vals.forEach((v,i)=>{h+=i<shown?`<div class="bcol"><div class="bval">${Math.round(v)}%</div><div class="bar ${mode==='copy'?'copy':''}" style="height:0%" data-h="${v}"></div></div>`
+      :`<div class="bcol"><div class="bval" style="color:var(--muted)">?</div><div class="bar ghost"></div></div>`;});
+    bars.innerHTML=h;xl.innerHTML=d.labels.map(l=>`<span>${l}</span>`).join('');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>$$('.bar[data-h]',bars).forEach(b=>{b.style.height='calc((100% - 18px) * '+(b.dataset.h/100)+')'})));
+    cap.innerHTML=d.cap(shown);run.disabled=shown>=n;run.textContent=shown>=n?'All rounds run':'Run next round';}
+  run.addEventListener('click',()=>{shown=Math.min(DATA[mode].labels.length,shown+1);render();});
+  $('#sr-reset').addEventListener('click',()=>{shown=1;render();});
+  $$('#sr-mode button').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.m;shown=1;$$('#sr-mode button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));render();}));
+  render();
+})();
+
+/* ---------- Tab 5: symmetry-breaking flasks ---------- */
+(function(){
+  const slots=$('#fl-slots'),out=$('#fl-out'),ts=$('#fl-ts'),tr=$('#fl-tr'),one=$('#fl-one'),all=$('#fl-all'),clr=$('#fl-clear');
+  const MAX=37;let runs=[],busy=false;
+  slots.innerHTML=Array.from({length:MAX},()=>'<div class="slot"></div>').join('');const els=[...slots.children];
+  function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+  function flask(){const n0=1000,T=100000,p=.98,q=1-p;let d=0;while(d===0)d=Math.round(gauss()*Math.sqrt(n0));
+    let S=(n0+d)/2,R=(n0-d)/2,A=T-n0;
+    while(A>0){const rS=p*S*S+q*R*R,rR=p*R*R+q*S*S,t=rS+rR,dx=Math.min(A,.003*(S+R));S+=dx*rS/t;R+=dx*rR/t;A-=dx;}
+    return (S-R)/(S+R)*100;}
+  function paint(){els.forEach((el,i)=>{const r=runs[i];if(r===undefined){el.className='slot';el.innerHTML='';return;}
+      const h=r>0?'s':'r';el.className='slot '+h;el.innerHTML=`${h.toUpperCase()}<small>${Math.round(Math.abs(r))}%</small>`;});
+    const nS=runs.filter(r=>r>0).length,nR=runs.filter(r=>r<0).length,n=runs.length;
+    ts.style.width=n?(nS/n*100)+'%':'0';tr.style.width=n?(nR/n*100)+'%':'0';
+    if(!n){out.textContent='No flasks yet';}else{const a=runs.map(r=>Math.abs(r));
+      out.innerHTML=`<span class="s">${nS} S</span> · <span class="r">${nR} R</span> · ee ${Math.round(Math.min(...a))}–${Math.round(Math.max(...a))}%`;}
+    one.disabled=all.disabled=busy||n>=MAX;}
+  function add(){if(runs.length>=MAX)return;runs.push(flask());paint();const el=els[runs.length-1];el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');}
+  one.addEventListener('click',add);
+  all.addEventListener('click',async()=>{busy=true;paint();while(runs.length<MAX){add();await wait(RM.matches?0:55);}busy=false;paint();});
+  clr.addEventListener('click',()=>{if(busy)return;runs=[];paint();});
+  paint();
+})();
+
+/* ---------- Quick checks ---------- */
+$$('.quiz').forEach(qz=>{const ans=+qz.dataset.answer,btns=$$('.q-opts button',qz),fb=$('.q-fb',qz);
+  btns.forEach((b,i)=>b.addEventListener('click',()=>{
+    if(i===ans){b.classList.add('right');btns.forEach(x=>x.disabled=true);fb.className='q-fb ok';fb.textContent=b.dataset.fb;}
+    else{b.classList.add('wrong');b.disabled=true;fb.className='q-fb no';fb.textContent=b.dataset.fb+' Try again.';}
+  }));});
+})();
+</script>
+</body>
+</html>

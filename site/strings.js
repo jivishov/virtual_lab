@@ -82,7 +82,8 @@
                     pharmacogenomics: "Pharmacogenomics",
                     virusdefenselab: "Virus Defense",
                     acidbasesolutions: "Acid–Base 3D",
-                    latticeenergy: "Lattice Energy"
+                    latticeenergy: "Lattice Energy",
+                    chiralitynobel: "Chirality Nobel"
                 },
                 about: {
                     eyebrow: "About",
@@ -116,6 +117,11 @@
                     title: "Lattice Energy Lab",
                     description: "Compare ionic compounds by charge and ionic size, manipulate ion separation, and visualize why stronger electrostatic attraction produces a more exothermic lattice formation energy.",
                     tags: ["Lattice Energy", "Ionic Compounds", "Electrostatics", "Chemistry"]
+                },
+                chiralitynobel: {
+                    title: "The Handedness Prize: Nobel Chemistry 2026",
+                    description: "A 3½-minute tabbed lesson on the 2026 Chemistry Nobel (Kagan & Soai): rotate mirror-image molecules in 3D, assign R/S, calculate enantiomeric excess, and watch non-linear effects and asymmetric autocatalysis turn a tiny excess of one hand into an almost pure sample.",
+                    tags: ["Chirality", "Catalysis", "Nobel 2026", "Chemistry"]
                 }
             }
         },
@@ -194,7 +200,8 @@
                     pharmacogenomics: "Farmakogenomika",
                     virusdefenselab: "Virus və müdafiə",
                     acidbasesolutions: "Turşu–qələvi 3D",
-                    latticeenergy: "Qəfəs enerjisi"
+                    latticeenergy: "Qəfəs enerjisi",
+                    chiralitynobel: "Xirallıq Nobeli"
                 },
                 about: {
                     eyebrow: "Haqqında",
@@ -228,6 +235,11 @@
                     title: "Qəfəs Enerjisi Laboratoriyası",
                     description: "İon birləşmələrini yük və ion ölçüsünə görə müqayisə edin, ionlar arasındakı məsafəni dəyişin və daha güclü elektrostatik cazibənin niyə daha ekzotermik qəfəs əmələgəlmə enerjisi yaratdığını əyani görün.",
                     tags: ["Qəfəs enerjisi", "İon birləşmələri", "Elektrostatika", "Kimya"]
+                },
+                chiralitynobel: {
+                    title: "Xirallıq mükafatı: Kimya üzrə Nobel 2026",
+                    description: "Kimya üzrə 2026 Nobel mükafatına (Kagan və Soai) həsr olunmuş 3½ dəqiqəlik interaktiv dərs: güzgü əksi olan molekulları 3D-də fırladın, R/S konfiqurasiyasını təyin edin, enantiomer artıqlığını hesablayın və qeyri-xətti effektlərin və asimmetrik avtokatalizin kiçik bir artıqlığı necə demək olar ki, təmiz bir formaya çevirdiyini izləyin.",
+                    tags: ["Xirallıq", "Kataliz", "Nobel 2026", "Kimya"]
                 }
             }
         },
@@ -306,7 +318,8 @@
                     pharmacogenomics: "Farmakogenomik",
                     virusdefenselab: "Virüs savunması",
                     acidbasesolutions: "Asit–baz 3B",
-                    latticeenergy: "Örgü enerjisi"
+                    latticeenergy: "Örgü enerjisi",
+                    chiralitynobel: "Kiralite Nobeli"
                 },
                 about: {
                     eyebrow: "Hakkında",
@@ -340,6 +353,11 @@
                     title: "Örgü Enerjisi Laboratuvarı",
                     description: "İyonik bileşikleri yük ve iyon boyutuna göre karşılaştırın, iyonlar arası mesafeyi değiştirin ve daha güçlü elektrostatik çekimin neden daha ekzotermik örgü oluşum enerjisi ürettiğini görselleştirin.",
                     tags: ["Örgü Enerjisi", "İyonik Bileşikler", "Elektrostatik", "Kimya"]
+                },
+                chiralitynobel: {
+                    title: "Kiralite Ödülü: 2026 Nobel Kimya Ödülü",
+                    description: "2026 Nobel Kimya Ödülü (Kagan ve Soai) üzerine 3½ dakikalık sekmeli, etkileşimli bir ders: ayna görüntüsü molekülleri 3B olarak döndürün, R/S belirleyin, enantiyomerik fazlalığı hesaplayın ve doğrusal olmayan etkilerin ve asimetrik otokatalizin küçük bir fazlalığı nasıl neredeyse saf tek bir forma dönüştürdüğünü izleyin.",
+                    tags: ["Kiralite", "Kataliz", "Nobel 2026", "Kimya"]
                 }
             }
         },
@@ -418,7 +436,8 @@
                     pharmacogenomics: "Pharmakogenomik",
                     virusdefenselab: "Virusabwehr",
                     acidbasesolutions: "Säure–Base 3D",
-                    latticeenergy: "Gitterenergie"
+                    latticeenergy: "Gitterenergie",
+                    chiralitynobel: "Chiralitäts-Nobel"
                 },
                 about: {
                     eyebrow: "Über",
@@ -452,6 +471,11 @@
                     title: "Gitterenergie-Labor",
                     description: "Vergleichen Sie Ionenverbindungen nach Ladung und Ionengröße, verändern Sie den Ionenabstand und veranschaulichen Sie, warum eine stärkere elektrostatische Anziehung eine exothermere Gitterbildungsenergie ergibt.",
                     tags: ["Gitterenergie", "Ionenverbindungen", "Elektrostatik", "Chemie"]
+                },
+                chiralitynobel: {
+                    title: "Der Händigkeitspreis: Chemie-Nobelpreis 2026",
+                    description: "Eine 3½-minütige interaktive Lektion in Registerkarten zum Chemie-Nobelpreis 2026 (Kagan & Soai): Spiegelbildmoleküle in 3D drehen, R/S bestimmen, den Enantiomerenüberschuss berechnen und zusehen, wie nichtlineare Effekte und asymmetrische Autokatalyse einen winzigen Überschuss in eine fast reine Probe verwandeln.",
+                    tags: ["Chiralität", "Katalyse", "Nobel 2026", "Chemie"]
                 }
             }
         }
