@@ -500,28 +500,47 @@ p { margin: 0; }
     transition: color .25s;
 }
 
-a.tile:focus-visible,
-a.tile.is-active {
+.tile[data-i]:is(:focus-visible, :focus-within, .is-active) {
     background: var(--c);
     border-color: var(--c);
     transform: translateY(-4px);
     box-shadow: 0 20px 34px -18px color-mix(in oklab, var(--c) 75%, transparent);
 }
 @media (hover: hover) {
-    a.tile:hover {
+    .tile[data-i]:hover {
         background: var(--c);
         border-color: var(--c);
         transform: translateY(-4px);
         box-shadow: 0 20px 34px -18px color-mix(in oklab, var(--c) 75%, transparent);
     }
-    a.tile:hover :is(.tile-no, .tile-sym, .tile-name, .tile-type) { color: var(--on); }
-    a.tile:hover .tile-type b { background: color-mix(in oklab, var(--on) 22%, transparent); }
-    a.tile:hover .tile-sym { transform: scale(1.06); }
+    .tile[data-i]:hover :is(.tile-no, .tile-sym, .tile-name, .tile-type) { color: var(--on); }
+    .tile[data-i]:hover .tile-type b { background: color-mix(in oklab, var(--on) 22%, transparent); }
+    .tile[data-i]:hover .tile-sym { transform: scale(1.06); }
 }
-a.tile:is(:focus-visible, .is-active) :is(.tile-no, .tile-sym, .tile-name, .tile-type) { color: var(--on); }
-a.tile:is(:focus-visible, .is-active) .tile-type b { background: color-mix(in oklab, var(--on) 22%, transparent); }
-a.tile:is(:focus-visible, .is-active) .tile-sym { transform: scale(1.06); }
+.tile[data-i]:is(:focus-visible, :focus-within, .is-active) :is(.tile-no, .tile-sym, .tile-name, .tile-type) { color: var(--on); }
+.tile[data-i]:is(:focus-visible, :focus-within, .is-active) .tile-type b { background: color-mix(in oklab, var(--on) 22%, transparent); }
+.tile[data-i]:is(:focus-visible, :focus-within, .is-active) .tile-sym { transform: scale(1.06); }
 a.tile:focus-visible { outline-offset: 3px; }
+
+/* Separate anchors keep both lab versions visible on touch and keyboard. */
+.tile--versions .tile-sym { font-size: clamp(18px, 22cqi, 34px); }
+.tile--versions .tile-name { margin-top: 3px; }
+.tile-versions { display: flex; gap: 4px; margin-top: 4px; }
+.tile-versions a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 26px;
+    border: 1px solid color-mix(in oklab, var(--c) 40%, transparent);
+    border-radius: 5px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 600 11px/1 var(--mono);
+    text-decoration: none;
+}
+.tile-versions a:hover { background: var(--ink); color: var(--paper); }
+.tile-versions a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 .tile.is-eka {
     background: transparent;
@@ -531,12 +550,12 @@ a.tile:focus-visible { outline-offset: 3px; }
 .tile.is-eka .tile-no, .tile.is-eka .tile-name { color: var(--ink-3); }
 .tile.is-eka.is-active { border-color: var(--ink-2); }
 
-.ptable[data-focus] a.tile:not(.is-fam),
+.ptable[data-focus] .tile[data-i]:not(.is-fam),
 .ptable[data-focus] .tile.is-eka {
     opacity: .22;
     filter: saturate(.2);
 }
-.ptable[data-focus] a.tile.is-fam { box-shadow: 0 0 0 2px var(--c); }
+.ptable[data-focus] .tile[data-i].is-fam { box-shadow: 0 0 0 2px var(--c); }
 
 .ptable.is-entering > .tile {
     animation: tileIn .8s var(--ease) both;

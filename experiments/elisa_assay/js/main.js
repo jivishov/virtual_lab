@@ -170,7 +170,7 @@
       Lab.engine.enterAnalysis(!ranIt);
     });
 
-    // the module tabs in the masthead, once a run is under way
+    // The module switcher in the active workspace, once a run is under way.
     var tabs = $('moduletabs');
     if (tabs) tabs.addEventListener('click', function (e) {
       var b = e.target.closest('[data-module]');

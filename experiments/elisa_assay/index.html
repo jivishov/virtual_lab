@@ -16,7 +16,7 @@
   </script>
 
   <link rel="stylesheet" href="css/tokens.css?v=2">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
   <!-- blocking, and first: puts [data-theme] on <html> before the first paint -->
   <script src="js/theme.js?v=2"></script>
 </head>
@@ -30,14 +30,10 @@
     </div>
 
     <div class="masthead__tools">
-      <nav class="moduletabs" id="moduletabs" aria-label="Modules">
-        <button type="button" data-module="1" aria-current="false">
-          <span class="mt-n">Module 1</span><span class="mt-t">Perform the ELISA</span>
-        </button>
-        <button type="button" data-module="2" aria-current="false">
-          <span class="mt-n">Module 2</span><span class="mt-t">Analyse the results</span>
-        </button>
-      </nav>
+      <a class="btn btn-3d" href="elisa-3d.html">
+        <svg class="version-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9M8 5.25l8 4.5"/></svg>
+        Open 3D lab <span aria-hidden="true">↗</span>
+      </a>
 
       <div class="themepick" role="radiogroup" aria-label="Bench appearance">
         <span class="themepick__label" id="themepick-label">Bench</span>
@@ -205,11 +201,23 @@
       <div class="briefing__actions">
         <button id="start-m1" class="btn btn-primary">Start Module 1 — run the assay</button>
         <button id="start-m2" class="btn btn-quiet">Start Module 2 — analyse a plate</button>
+        <a class="btn btn-3d" href="elisa-3d.html">
+          <svg class="version-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9M8 5.25l8 4.5"/></svg>
+          Open 3D lab <span aria-hidden="true">↗</span>
+        </a>
       </div>
       <p class="briefing__record" id="record"></p>
     </section>
 
     <!-- ===== Bench ===================================================== -->
+    <nav class="moduletabs" id="moduletabs" aria-label="2D lab modules" hidden>
+      <button type="button" data-module="1" aria-current="false">
+        <span class="mt-n">Module 1</span><span class="mt-t">Perform the ELISA</span>
+      </button>
+      <button type="button" data-module="2" aria-current="false">
+        <span class="mt-n">Module 2</span><span class="mt-t">Analyse the results</span>
+      </button>
+    </nav>
     <div class="bench" id="bench" hidden>
 
       <aside class="sidebar">
@@ -378,7 +386,7 @@
   <script src="js/assets.js?v=2"></script>
   <script src="js/figures.js?v=2"></script>
   <script src="js/tools.js?v=3"></script>
-  <script src="js/ui.js?v=2"></script>
+  <script src="js/ui.js?v=3"></script>
   <script src="js/surfaces.js?v=2"></script>
   <script src="js/stations.js?v=2"></script>
   <script src="js/reposition.js?v=3"></script>

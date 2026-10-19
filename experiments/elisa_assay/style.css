@@ -75,10 +75,10 @@ em { font-style: italic; }
 .masthead__title em { color: var(--accent); font-style: italic; }
 .masthead__tools { display: flex; align-items: flex-end; gap: var(--sp-4); flex-wrap: wrap; }
 
-/* module tabs — the two halves of this experiment are separate work, and the
-   interface says so before anything else does */
+/* Module switching belongs to the active workspace, below the landing page. */
 .moduletabs { display: flex; gap: 0; border: var(--hairline) solid var(--line-strong);
-  border-radius: var(--radius); overflow: hidden; }
+  border-radius: var(--radius); overflow: hidden; width: fit-content; margin-bottom: var(--sp-2); }
+.moduletabs[hidden] { display: none; }
 .moduletabs button {
   font: inherit; text-align: left; cursor: pointer;
   padding: var(--sp-2) var(--sp-3);
@@ -1170,6 +1170,13 @@ body.hand-on .surfaces { padding-top: var(--surfaces-drop, 0px); }
 .btn-primary:hover:not(:disabled) { background: color-mix(in oklab, var(--accent) 86%, var(--ink-1)); }
 .btn-quiet { background: transparent; color: var(--ink-2); border-color: var(--line-strong); }
 .btn-quiet:hover:not(:disabled) { background: var(--surface-2); color: var(--ink-1); }
+.btn-3d {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 44px; text-decoration: none;
+  background: var(--accent-2); color: var(--ink-on-accent);
+}
+.btn-3d:hover { background: color-mix(in oklab, var(--accent-2) 86%, var(--ink-1)); }
+.version-icon { width: 21px; height: 21px; flex: 0 0 auto; }
 
 .feedback { margin-top: var(--sp-3); font-size: var(--step--1); max-width: 88ch; text-wrap: pretty; }
 .feedback:empty { display: none; }

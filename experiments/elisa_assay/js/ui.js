@@ -134,6 +134,7 @@
   function syncModuleTabs() {
     var host = document.getElementById('moduletabs');
     if (!host) return;
+    host.hidden = S.phase === 'intro';
     host.querySelectorAll('[data-module]').forEach(function (b) {
       var m = parseInt(b.getAttribute('data-module'), 10);
       b.setAttribute('aria-current', (S.module === m && S.phase !== 'intro') ? 'true' : 'false');

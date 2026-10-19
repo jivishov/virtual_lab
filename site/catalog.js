@@ -11,6 +11,7 @@
 //   type     'lab' | 'simulation'       family  'chem' | 'phys' | 'life' | 'safety'
 //   link     launch URL                 versions [{ label: <translation key>, link }]
 //   badge    optional corner label (e.g. '3D')
+//   tableVersions  show separate version links on the periodic-table tile
 
 window.VL_CATALOG = [
     { key: 'spectrophotometry', sym: 'Sp', type: 'lab', family: 'chem', link: 'experiments/spectrophotometry/' },
@@ -25,7 +26,7 @@ window.VL_CATALOG = [
     { key: 'copperinbrass', sym: 'Cu', type: 'lab', family: 'chem', link: 'experiments/copperinbrass/' },
     { key: 'labstudio', sym: 'Ls', type: 'lab', family: 'chem', link: 'experiments/lab-studio/' },
     {
-        key: 'elisaassay', sym: 'El', type: 'lab', family: 'life', badge: '3D',
+        key: 'elisaassay', sym: 'El', type: 'lab', family: 'life', badge: '3D', tableVersions: true,
         versions: [
             { label: 'site.buttons.v2d', link: 'experiments/elisa_assay/' },
             { label: 'site.buttons.v3d', link: 'experiments/elisa_assay/elisa-3d.html' }

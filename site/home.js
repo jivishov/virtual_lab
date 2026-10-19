@@ -51,13 +51,16 @@
     // ----- Periodic table -----
     function tileHTML(item, i, tx) {
         const label = `${i + 1}. ${tx.title} (${typeName(item.type)}, ${familyName(item.family)})`;
-        return `<a class="tile" href="${esc(primaryLink(item))}" data-i="${i}" data-family="${item.family}"
+        const versions = item.tableVersions && item.versions;
+        const tag = versions ? 'div' : 'a';
+        return `<${tag} class="tile${versions ? ' tile--versions' : ''}" ${versions ? 'role="group"' : `href="${esc(primaryLink(item))}"`} data-i="${i}" data-family="${item.family}"
                 style="--c:var(--${item.family});--on:var(--on-${item.family});--i:${i}" aria-label="${esc(label)}">
                 <span class="tile-no">${i + 1}</span>
                 <span class="tile-type">${item.badge ? `<b>${esc(item.badge)}</b>` : ''}${VL.icon[item.type]}</span>
                 <span class="tile-sym">${esc(item.sym)}</span>
                 <span class="tile-name">${esc(tx.short)}</span>
-            </a>`;
+                ${versions ? `<span class="tile-versions">${versions.map(v => `<a href="${esc(v.link)}" aria-label="${esc(tx.title + ' — ' + VL.tx(v.label))}">${esc(v.label === 'site.buttons.v2d' ? '2D' : '3D')}</a>`).join('')}</span>` : ''}
+            </${tag}>`;
     }
 
     function keyHTML(c) {
@@ -127,7 +130,7 @@
         if (!table) return;
         const active = tableFocus;
         table.toggleAttribute('data-focus', !!active);
-        table.querySelectorAll('a.tile').forEach(t => t.classList.toggle('is-fam', !!active && t.dataset.family === active));
+        table.querySelectorAll('.tile[data-i]').forEach(t => t.classList.toggle('is-fam', !!active && t.dataset.family === active));
         table.querySelectorAll('.fam-chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.family === tableFocus)));
     }
 
@@ -145,7 +148,7 @@
             <h3 class="insp-title">${esc(tx.title)}</h3>
             <p class="insp-desc">${esc(tx.desc)}</p>
             <div class="insp-sym">${esc(item.sym)}</div>
-            <p class="insp-go">${esc(VL.tx('site.table.go'))} ${VL.icon.arrow}</p>`;
+            <p class="insp-go">${item.tableVersions ? launches(item).map(a => esc(a.label)).join(' · ') : `${esc(VL.tx('site.table.go'))} ${VL.icon.arrow}`}</p>`;
     }
 
     function initTableInteractions() {
@@ -161,6 +164,7 @@
             current = tile;
             const panel = k.querySelector('.key-inspect');
             panel.style.setProperty('--c', tile.hasAttribute('data-eka') ? 'var(--ink-3)' : `var(--${tile.dataset.family})`);
+            panel.style.cursor = tile.href ? 'pointer' : 'default';
             panel.innerHTML = inspectHTML(tile);
             k.setAttribute('data-state', 'inspect');
             table.querySelectorAll('.tile.is-active').forEach(t => t.classList.remove('is-active'));
@@ -185,7 +189,7 @@
             timer = window.setTimeout(reset, 260);
         });
         table.addEventListener('focusin', e => {
-            const tile = e.target.closest('a.tile');
+            const tile = e.target.closest('.tile[data-i]');
             if (tile) show(tile);
         });
         table.addEventListener('focusout', e => {
@@ -209,7 +213,7 @@
             const chip = e.target.closest('.fam-chip');
             if (!chip || e.pointerType === 'touch') return;
             table.setAttribute('data-focus', '');
-            table.querySelectorAll('a.tile').forEach(t => t.classList.toggle('is-fam', t.dataset.family === chip.dataset.family));
+            table.querySelectorAll('.tile[data-i]').forEach(t => t.classList.toggle('is-fam', t.dataset.family === chip.dataset.family));
         });
         table.addEventListener('pointerout', e => {
             const chip = e.target.closest('.fam-chip');
@@ -220,9 +224,9 @@
         table.addEventListener('keydown', e => {
             const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
             if (!keys.includes(e.key)) return;
-            const tile = e.target.closest('a.tile');
+            const tile = e.target.closest('.tile[data-i]');
             if (!tile) return;
-            const tiles = Array.from(table.querySelectorAll('a.tile'));
+            const tiles = Array.from(table.querySelectorAll('.tile[data-i]'));
             let target = null;
             if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                 target = tiles[tiles.indexOf(tile) + (e.key === 'ArrowRight' ? 1 : -1)];
@@ -244,7 +248,7 @@
             }
             if (target) {
                 e.preventDefault();
-                target.focus();
+                (target.matches('a') ? target : target.querySelector('a')).focus();
             }
         });
     }
