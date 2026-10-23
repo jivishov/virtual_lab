@@ -34,6 +34,8 @@
     }
 
     const primaryLink = item => (item.versions ? item.versions[0].link : item.link);
+    // Short labels for version links on periodic-table tiles.
+    const TILE_LABEL = { 'site.buttons.v2d': '2D', 'site.buttons.v3d': '3D', 'buttons.launchV2': 'v2', 'buttons.launchV1': 'v1' };
     const familyName = f => VL.tx('site.family.' + f, f);
     const typeName = t => VL.tx('site.type.' + t, t);
     const counts = () => {
@@ -59,7 +61,7 @@
                 <span class="tile-type">${item.badge ? `<b>${esc(item.badge)}</b>` : ''}${VL.icon[item.type]}</span>
                 <span class="tile-sym">${esc(item.sym)}</span>
                 <span class="tile-name">${esc(tx.short)}</span>
-                ${versions ? `<span class="tile-versions">${versions.map(v => `<a href="${esc(v.link)}" aria-label="${esc(tx.title + ' — ' + VL.tx(v.label))}">${esc(v.label === 'site.buttons.v2d' ? '2D' : '3D')}</a>`).join('')}</span>` : ''}
+                ${versions ? `<span class="tile-versions">${versions.map(v => `<a href="${esc(v.link)}"${v.label === 'buttons.launchV2' ? ' class="is-new"' : ''} aria-label="${esc(tx.title + ' — ' + VL.tx(v.label))}">${esc(TILE_LABEL[v.label] || '3D')}</a>`).join('')}</span>` : ''}
             </${tag}>`;
     }
 

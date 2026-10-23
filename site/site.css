@@ -540,6 +540,9 @@ a.tile:focus-visible { outline-offset: 3px; }
     text-decoration: none;
 }
 .tile-versions a:hover { background: var(--ink); color: var(--paper); }
+/* The newer version is the one to pick: drawn filled. */
+.tile-versions a.is-new { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.tile-versions a.is-new:hover { background: color-mix(in oklab, var(--ink) 80%, var(--c)); }
 .tile-versions a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 .tile.is-eka {

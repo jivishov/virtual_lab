@@ -12,6 +12,7 @@
 //   link     launch URL                 versions [{ label: <translation key>, link }]
 //   badge    optional corner label (e.g. '3D')
 //   tableVersions  show separate version links on the periodic-table tile
+//                  (2D/3D, or v2/v1; a buttons.launchV2 link is drawn filled, as the one to pick)
 
 window.VL_CATALOG = [
     { key: 'spectrophotometry', sym: 'Sp', type: 'lab', family: 'chem', link: 'experiments/spectrophotometry/' },
@@ -34,7 +35,13 @@ window.VL_CATALOG = [
     },
     { key: 'nuclearchemistry', sym: 'Nu', type: 'simulation', family: 'phys', link: 'simulations/nuclearchemistry/' },
     { key: 'labsafety', sym: 'Sf', type: 'simulation', family: 'safety', link: 'simulations/lab-safety-mi/' },
-    { key: 'gaslaws', sym: 'Gl', type: 'simulation', family: 'phys', link: 'simulations/gassimulation/' },
+    {
+        key: 'gaslaws', sym: 'Gl', type: 'simulation', family: 'phys', tableVersions: true,
+        versions: [
+            { label: 'buttons.launchV2', link: 'simulations/gassimulation_v2/' },
+            { label: 'buttons.launchV1', link: 'simulations/gassimulation/' }
+        ]
+    },
     { key: 'moletycoon', sym: 'Mo', type: 'simulation', family: 'chem', link: 'simulations/mole_tycoon/index.html' },
     { key: 'thermodynamics', sym: 'Th', type: 'simulation', family: 'phys', link: 'simulations/thermodynamics/' },
     { key: 'solubilitycurves', sym: 'So', type: 'simulation', family: 'phys', link: 'simulations/solubility_curves/' },
