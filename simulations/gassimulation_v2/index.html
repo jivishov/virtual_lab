@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gas Laws Lab</title>
+  <meta name="description" content="Seven real systems, one equation: interactive 3D gas law simulations for high school chemistry.">
+  <!-- Google tag (gtag.js), carried over from the previous version of this page -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6QQR2741ZZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6QQR2741ZZ');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header class="bar">
+    <h1 class="title">Gas laws</h1>
+    <nav class="sitelinks" aria-label="Virtual Lab">
+      <a href="../../">All labs</a>
+      <a href="../gassimulation/">Classic version (v1)</a>
+    </nav>
+    <nav class="switcher" id="switcher" aria-label="Choose a gas law"></nav>
+  </header>
+
+  <main class="lab">
+    <section class="stage" id="stage" aria-label="3D view of the system. Drag to look around, scroll to zoom.">
+      <div class="viewport" id="viewport"></div>
+      <div class="note" id="note" role="status" aria-live="polite" hidden></div>
+      <div class="inset" id="inset" hidden></div>
+      <div class="stage-foot">
+        <p class="legend" id="legend"></p>
+        <div class="transport" role="group" aria-label="Playback">
+          <button type="button" class="btn" id="play">Pause</button>
+          <div class="seg" role="group" aria-label="Simulation speed">
+            <button type="button" data-speed="1" aria-pressed="true">1×</button>
+            <button type="button" data-speed="4" aria-pressed="false">4×</button>
+          </div>
+          <div class="seg" role="group" aria-label="Molecule motion">
+            <button type="button" data-slow="1" aria-pressed="true">Molecules normal</button>
+            <button type="button" data-slow="0.35" aria-pressed="false">Slow</button>
+          </div>
+          <button type="button" class="btn" id="reset">Reset</button>
+        </div>
+      </div>
+      <p class="loading" id="loading">Setting up the bench</p>
+    </section>
+
+    <aside class="panel" id="panel">
+      <section class="law" aria-labelledby="law-name">
+        <h2 id="law-name"></h2>
+        <p class="relation" id="law-relation"></p>
+        <p class="statement" id="law-statement"></p>
+        <div class="systems" id="systems" role="group" aria-label="Real system" hidden></div>
+        <p class="subtitle" id="subtitle"></p>
+      </section>
+
+      <section class="controls" aria-label="Controls">
+        <label class="preset" id="preset-wrap" hidden>
+          <span>Setup</span>
+          <select id="preset"></select>
+        </label>
+        <div id="controls"></div>
+        <div class="actions" id="actions" hidden></div>
+      </section>
+
+      <section class="state" aria-label="Gas state">
+        <h3>Inside the container</h3>
+        <dl id="state"></dl>
+      </section>
+
+      <section class="checker" aria-labelledby="check-title">
+        <div class="check-head">
+          <h3 id="check-title">Check the law</h3>
+          <button type="button" class="btn" id="record">Record as state 1</button>
+        </div>
+        <div id="check" aria-live="off"></div>
+        <figure class="graph">
+          <canvas id="graph" role="img" aria-label="Graph of the law's relationship"></canvas>
+          <figcaption>
+            <span><i class="k-trail"></i>Path of the gas</span>
+            <span><i class="k-law"></i>Law through state 1</span>
+            <label class="zero" id="zero-wrap"><input type="checkbox" id="zero"> Start axes at zero</label>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="readouts" aria-label="More readouts">
+        <h3>More readouts</h3>
+        <dl id="derived"></dl>
+      </section>
+
+      <section class="about">
+        <details>
+          <summary>About this model</summary>
+          <ul id="notes"></ul>
+          <p class="time" id="time-note"></p>
+        </details>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
