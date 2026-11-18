@@ -1,0 +1,111 @@
+.lewis-toolbar, .lewis-tools-scroll, .lewis-control-group, .lewis-inspector,
+.lewis-pair-tools, .lewis-check-actions, .lewis-footer, .lewis-ion-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.lewis-toolbar {
+  justify-content: space-between;
+  gap: 8px 14px;
+  padding: 8px 12px;
+  background: #eff4ef;
+  border-bottom: 1px solid var(--line);
+}
+.lewis-tools-scroll { flex: 1; gap: 8px 14px; min-width: 0; }
+.lewis-control-group { gap: 3px; }
+.lewis-control-group > span, .lewis-pair-tools > span, .lewis-inspector label, .lewis-ion-controls label { font-size: .82rem; }
+.lewis-control-group > span, .lewis-pair-tools > span { margin-right: 3px; }
+.lewis-inspector { gap: 6px 10px; }
+.lewis-selected { font-size: .86rem; }
+.lewis-icon { display: inline-grid; place-items: center; }
+.lewis-icon svg { width: 16px; height: 16px; }
+.lewis-pair-tools { gap: 2px; }
+#editor .lewis-pair-tools button, #editor .lewis-icon, #editor [data-order], #editor .lewis-element {
+  min-width: 34px;
+  min-height: 36px;
+  padding: 4px 6px;
+  font-weight: 600;
+}
+.lewis-workarea { display: grid; grid-template-columns: minmax(0, 1fr) minmax(235px, 28%); }
+.lewis-drawing-pane, .lewis-assessment { min-width: 0; padding: 12px 14px; }
+.lewis-assessment { background: #f6f8f5; border-left: 1px solid var(--line); }
+.lewis-assessment h2, .geometry-answers h2 { font-size: 1.25rem; margin: 0 0 10px; }
+.lewis-instructions, .lewis-help p { font-size: .9rem; line-height: 1.45; }
+.lewis-instructions { margin-bottom: 8px; }
+.lewis-board-wrap {
+  overflow: hidden;
+  background: #fcfdfa;
+  border: 1px solid #b2c5be;
+  border-radius: 4px;
+}
+.lewis-board { display: block; width: 100%; height: clamp(260px, 32vh, 370px); touch-action: none; user-select: none; }
+.lewis-board [data-atom] { cursor: grab; }
+.lewis-board[data-tool="bond"] [data-atom] { cursor: crosshair; }
+.lewis-board [data-bond] { cursor: pointer; }
+.lewis-atom-halo { fill: #fcfdfa; stroke: transparent; stroke-width: 2; }
+.lewis-board [data-selected="true"] .lewis-atom-halo { fill: #d9eee7; stroke: var(--accent); }
+.lewis-board [data-atom]:focus-visible .lewis-atom-halo { stroke: #b46927; stroke-width: 3; }
+.lewis-atom-text { font: 600 21px system-ui, sans-serif; fill: #193838; pointer-events: none; }
+.lewis-charge-text { font: 600 13px system-ui, sans-serif; fill: #193838; pointer-events: none; }
+.lewis-bracket { fill: none; stroke: #193838; stroke-width: 2; }
+.lewis-pair-dot { fill: #193838; pointer-events: none; }
+.lewis-bond-target { fill: transparent; pointer-events: all; }
+.lewis-bond-line { stroke: #193838; stroke-width: 2.4; pointer-events: none; }
+.lewis-board [data-selected="true"] .lewis-bond-line { stroke: var(--accent); stroke-width: 3.5; }
+.lewis-board [data-bond]:focus-visible .lewis-bond-target { fill: #f2e8d0; }
+.lewis-empty { font: 15px system-ui, sans-serif; fill: var(--muted); }
+.lewis-footer { justify-content: space-between; gap: 8px 16px; margin-top: 8px; }
+.lewis-ion-controls { gap: 6px 14px; }
+.lewis-ion-controls label, .lewis-inspector label { display: inline-flex; align-items: center; gap: 5px; }
+.lewis-ion-controls input { width: 17px; height: 17px; accent-color: var(--accent); }
+.lewis-electrons { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.lewis-help, .lewis-atom-audit { margin-top: 8px; font-size: .88rem; }
+.lewis-help summary, .lewis-atom-audit summary { color: var(--accent); }
+.lewis-help p, .lewis-revise p { margin-top: 5px; }
+.lewis-check-list { margin: 0; padding: 0; list-style: none; }
+.lewis-check-list li { padding: 5px 0; border-top: 1px solid var(--line); font-size: .88rem; }
+.lewis-outcome { font-size: .91rem; margin-bottom: 8px; }
+.lewis-pass span { color: var(--accent); font-weight: 700; }
+.lewis-revise summary { font-weight: 560; color: #714c20; }
+.lewis-atom-audit table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: .78rem; }
+.lewis-atom-audit th, .lewis-atom-audit td { text-align: left; padding: 4px; border-bottom: 1px solid var(--line); }
+.lewis-status, .geometry-status {
+  padding: 5px 14px;
+  font-size: .84rem;
+  color: var(--muted);
+}
+.lewis-status:empty, .geometry-status:empty { display: none; }
+@media (max-width: 850px) {
+  .lewis-workarea { grid-template-columns: 1fr; }
+  .lewis-assessment { border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (max-width: 650px) {
+  .lewis-toolbar { align-items: flex-start; }
+  .lewis-tools-scroll { flex-basis: 100%; }
+  .lewis-drawing-pane, .lewis-assessment { padding: 10px; }
+  .lewis-check-actions { align-self: flex-end; }
+}
+@media print {
+  .lewis-toolbar, .lewis-help, .lewis-status { display: none; }
+}
+
+/* Pass 2B: laptop workbench layout; shared presentation files stay unchanged. */
+.lewis-workarea { grid-template-columns:minmax(0,1fr) 360px; gap:14px; align-items:start; }
+.lewis-drawing-pane { padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--panel); }
+.lewis-board { height:calc(100vh - 288px); min-height:440px; }
+.lewis-tools-scroll { display:flex; gap:6px; padding-bottom:8px; }
+.lewis-inspector { display:grid; grid-template-columns:1fr auto; gap:4px; flex:1 1 100%; }
+.lewis-inspector .lewis-selected { grid-column:1; grid-row:1; }
+.lewis-inspector .lewis-icon { grid-column:2; grid-row:1; }
+.lewis-inspector .lewis-pair-tools { grid-column:1/-1; grid-row:2; }
+.lewis-inspector>label { grid-column:1/-1; grid-row:3; }
+.lewis-pair-tools { gap:0; }
+.lewis-pair-tools>span { width:100%; }
+.lewis-inspector label, .lewis-ion-controls label { display:block; width:100%; }
+.lewis-ion-controls { display:grid; gap:6px; margin-bottom:12px; }
+.lewis-ion-controls label:has(input) { display:flex; align-items:center; }
+.lewis-assessment h2 { padding-top:10px; border-top:1px solid var(--line); margin-bottom:6px; }
+#editor .lewis-pair-tools button { flex:1; min-width:0; }
+.lewis-footer { min-height:28px; margin-top:4px; }
+@media(max-width:850px) { .lewis-workarea { grid-template-columns:1fr; } .lewis-board { height:52vh; min-height:300px; } }

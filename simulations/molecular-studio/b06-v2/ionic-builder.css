@@ -1,0 +1,70 @@
+/* The ionic workbench shares the particle viewer, history and file tools. */
+main[data-mode=builder][data-chemistry=ionic] :is(
+  .site-editor, .lone-pair-control, .model-views, .insight-strip,
+  #show-pairs, [data-hud=pairs], #show-geometry, #pair-piece, .bond-choices,
+  .covalent-step
+) { display:none !important; }
+main[data-mode=builder][data-chemistry=ionic] .lab-ticket > span:nth-child(n+4) { display:none !important; }
+
+.ionic-balance { margin-top:12px; border-top:1px solid var(--b06-line); padding-top:12px; }
+#workbench-options > label { display:block; margin-bottom:4px; font-size:12px; color:var(--b06-muted); font-weight:600; }
+main .assignment #change-workbench {
+  min-height:32px; padding:2px 8px; margin:0 0 4px; border:1px solid var(--b06-line);
+  border-radius:5px; color:var(--b06-ink); background:#f5f7f6; font:600 12px/1.25 var(--font,system-ui);
+}
+.ionic-balance h3 { margin:0 0 6px; font-size:16px; color:var(--b06-ink); }
+.assignment .ionic-balance p { margin:3px 0; }
+#ionic-inventory, #ionic-total { color:var(--b06-ink); font-variant-numeric:tabular-nums; }
+#ionic-inventory { font-size:15px; font-weight:600; }
+#ionic-result { padding-top:4px; }
+.ionic-balance[data-balanced=true] #ionic-total { color:#216049; font-weight:700; }
+#element-palette h4 {
+  grid-column:1/-1; margin:7px 0 2px; color:var(--b06-ink);
+  font:650 12px/1.25 var(--font,system-ui);
+}
+main[data-chemistry=ionic] #builder-tray button small { text-transform:capitalize; }
+main[data-chemistry=ionic] #builder-tray .element-orb { font-variant-numeric:tabular-nums; }
+
+/* In hand mode, keep targets large enough to grasp at every camera width. */
+main.lab-workspace[data-lab=b06].hands-on[data-mode=builder][data-chemistry=ionic] #builder-tray {
+  width:min(520px,90%); grid-template-columns:repeat(5,minmax(0,1fr)) minmax(43px,1fr);
+  grid-template-rows:auto auto; gap:4px; padding:5px;
+}
+main.lab-workspace.hands-on[data-mode=builder][data-chemistry=ionic] #builder-tray .hand-part-pages {
+  display:grid; grid-column:1/6; grid-row:1; grid-template-columns:repeat(5,minmax(0,1fr)); gap:3px;
+}
+main.lab-workspace.hands-on[data-mode=builder][data-chemistry=ionic] #builder-tray #return-tray {
+  grid-column:6; grid-row:1 / 3; height:auto; min-height:34px;
+}
+main.lab-workspace.hands-on[data-mode=builder][data-chemistry=ionic] #builder-tray #element-palette {
+  display:grid; grid-column:1/6; grid-row:2; grid-template-columns:repeat(5,minmax(0,1fr)); gap:3px;
+}
+main.lab-workspace.hands-on[data-mode=builder][data-chemistry=ionic] #element-palette :is(h4,.hand-page-away) { display:none !important; }
+
+@media (max-width:580px) and (min-height:501px) {
+  main.lab-workspace[data-lab=b06][data-mode=builder][data-chemistry=ionic]:not(.hands-on,.immersive) {
+    --b06-rail:114px;
+    --ion-camera-row:44px;
+
+    & .lab-panel { left:8px; right:8px; width:auto; }
+    & #builder-tray { padding-bottom:6px; }
+    & #builder-tray .builder-parts { padding:6px 6px 0; }
+    & #builder-tray .kit-return { margin-inline:6px; }
+    & #builder-tray .element-palette { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+    & #builder-tray [data-element] { touch-action:pan-y; }
+    & #builder-tray .build-step { flex-wrap:wrap; gap:2px 4px; }
+    & #element-name { margin-left:0; }
+
+    & #builder-stage.lab-scene { top:calc(var(--b06-ribbon) + var(--ion-camera-row)) !important; }
+    & #builder-stage .stage-caption { display:none; }
+    & .lab-camera {
+      top:calc(46px + var(--b06-ribbon)); left:var(--b06-rail); right:0;
+      height:var(--ion-camera-row); box-sizing:border-box; align-items:center; justify-content:space-evenly;
+      gap:0; padding:2px; border-radius:0; box-shadow:none;
+    }
+    & .lab-camera [data-camera] { padding-inline:4px; flex:1 1 0; justify-content:center; }
+    & .lab-camera [data-camera] > span + span { display:none; }
+    & .lab-ticket { padding:0 6px; gap:0 6px; }
+    & .lab-ticket > span:not([hidden]) ~ span { padding-left:6px; }
+  }
+}

@@ -1,0 +1,19 @@
+.direct-token, .geometry-site { touch-action: none; user-select: none; cursor: grab; }
+.direct-dragging { cursor: grabbing; user-select: none; }
+.direct-drag-ghost {
+  position: fixed;
+  z-index: 5;
+  inset: 0 auto auto 0;
+  max-width: 18rem;
+  padding: 6px 12px;
+  border: 2px solid white;
+  border-radius: 5px;
+  background: #164944;
+  color: white;
+  pointer-events: none;
+  font: 600 .9rem/1.4 system-ui, sans-serif;
+}
+.lewis-board.direct-drop-active { box-shadow: inset 0 0 0 3px var(--accent); }
+.geometry-site.direct-drop-active circle, .geometry-site.direct-drop-active ellipse {
+  fill: #d9eee7; stroke: var(--accent); stroke-width: 4;
+}

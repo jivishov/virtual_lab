@@ -1,0 +1,112 @@
+.geometry-toolbar, .geometry-history, .geometry-palette, .geometry-view-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.geometry-toolbar {
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  background: #eff4ef;
+}
+.geometry-toolbar strong { font-size: .98rem; }
+.geometry-workarea { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(248px, 1fr); }
+.geometry-build, .geometry-answers { min-width: 0; padding: 12px 14px; }
+.geometry-answers { background: #f6f8f5; border-left: 1px solid var(--line); }
+.geometry-editor label { display: grid; gap: 4px; align-content: start; font-size: .86rem; }
+.geometry-editor select { width: 100%; }
+.geometry-reference, .geometry-assignments { padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; }
+.geometry-editor summary { color: var(--accent); font-weight: 550; font-size: .9rem; }
+.geometry-reference, .geometry-assignments, .geometry-note, .geometry-build p { font-size: .86rem; }
+.geometry-reference svg { display: block; width: 100%; height: 230px; }
+.geometry-reference p { padding: 4px 0; }
+.geometry-template-controls, [data-assignments], .geometry-classifications {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 9px 0;
+}
+.geometry-note { color: var(--muted); margin: 6px 0; line-height: 1.45; }
+.geometry-palette, .geometry-view-controls { margin: 8px 0; }
+.geometry-board {
+  width: 100%;
+  height: clamp(261px, 34vh, 350px);
+  display: block;
+  background: #fcfdfa;
+  border: 1px solid #b2c5be;
+  border-radius: 4px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.geometry-guide { fill: none; stroke: #8a9e96; stroke-width: 1.7; stroke-dasharray: 4 4; }
+.geometry-guide.lone-pair { stroke: #946e39; }
+.geometry-bond { fill: none; stroke: #287268; stroke-width: 2.6; }
+.geometry-bond.behind { stroke-dasharray: 5 4; }
+.geometry-wedge { fill: #287268; }
+.geometry-site circle, .geometry-site ellipse { fill: white; stroke: #36766d; stroke-width: 1.8; }
+.geometry-site.empty circle { fill: #f5f8f3; stroke-dasharray: 4 3; }
+.geometry-site.lone-pair ellipse { fill: #f7e9ce; stroke: #936a34; }
+.geometry-site[aria-pressed="true"] circle, .geometry-site[aria-pressed="true"] ellipse { stroke-width: 3; }
+.geometry-site:focus-visible circle, .geometry-site:focus-visible ellipse { stroke: #b46927; stroke-width: 3.5; }
+.geometry-site text { font: 600 16px system-ui, sans-serif; fill: #183d37; pointer-events: none; }
+.geometry-site .geometry-site-caption { font-size: 11px; paint-order: stroke; stroke: #fcfdfa; stroke-width: 3px; }
+.geometry-center { fill: #264e48; }
+.geometry-center-label { font: 600 17px system-ui, sans-serif; fill: white; }
+.geometry-empty { font: 13px system-ui, sans-serif; fill: var(--muted); }
+.geometry-assignments { margin-top: 8px; }
+.geometry-classifications { grid-template-columns: 1fr; }
+.geometry-answers .check-button { margin: 3px 0 7px; }
+.geometry-outcome { margin: 5px 0 8px; font-size: .92rem; }
+.geometry-criteria { padding: 0; margin: 0; list-style: none; }
+.geometry-criteria li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px 8px;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+  font-size: .86rem;
+}
+.geometry-criteria strong { font-weight: 600; }
+.geometry-criteria span { color: var(--muted); }
+.geometry-criteria [data-state="met"] span { color: var(--accent); }
+.geometry-criteria [data-state="revise"] span { color: #714c20; }
+.geometry-criteria p { grid-column: 1 / -1; }
+@media (max-width: 800px) {
+  .geometry-workarea { grid-template-columns: 1fr; }
+  .geometry-answers { border-left: 0; border-top: 1px solid var(--line); }
+  .geometry-classifications { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 550px) {
+  .geometry-template-controls, .geometry-classifications { grid-template-columns: 1fr; }
+  .geometry-build, .geometry-answers { padding: 10px; }
+}
+@media print {
+  .geometry-history, .geometry-palette, .geometry-view-controls, .geometry-assignments, .geometry-status { display: none; }
+}
+
+/* Pass 2B: laptop workbench layout; shared presentation files stay unchanged. */
+.geometry-toolbar { width:calc(100% - 374px); height:40px; border:1px solid var(--line); border-bottom:0; border-radius:6px 6px 0 0; padding:2px 12px; }
+.geometry-workarea { grid-template-columns:minmax(0,1fr) 360px; gap:14px; align-items:start; }
+.geometry-build { padding:12px; border:1px solid var(--line); border-radius:0 0 6px 6px; background:var(--panel); }
+#editor .geometry-answers { margin-top:-40px; }
+.geometry-board { height:calc(100vh - 326px); min-height:440px; margin-top:8px; }
+.geometry-template-controls, .geometry-classifications { grid-template-columns:1fr; gap:8px; }
+.geometry-template-controls { margin:0; }
+.geometry-template-controls .ui-choice-options, .geometry-classifications .ui-choice-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
+#editor .geometry-answers .ui-choices[data-variant=chips] button.ui-choice { padding:4px 5px; font-size:13px; }
+.geometry-answers h2 { margin:12px 0 8px; padding-top:10px; border-top:1px solid var(--line); }
+.geometry-note { margin:6px 0; font-size:12px; }
+.geometry-assignments { margin:8px 0; }
+.geometry-palette { gap:5px; margin:8px 0; }
+.geometry-history { gap:4px; }
+#editor .geometry-history button { padding-inline:6px; font-size:12px; }
+.geometry-view-controls { min-height:40px; margin:4px 0; }
+.geometry-reference { border:0; padding:0; }
+@media(max-width:850px) {
+  .geometry-toolbar { width:100%; }
+  .geometry-workarea { grid-template-columns:1fr; }
+  #editor .geometry-answers { margin-top:0; }
+  .geometry-board { height:52vh; min-height:300px; }
+}

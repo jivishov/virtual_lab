@@ -1,0 +1,6 @@
+The hand-building feature uses Google's MediaPipe Tasks Vision JavaScript and WebAssembly distribution (@mediapipe/tasks-vision 1.0.1) and MediaPipe Hand Landmarker (float16, version 1). The original runtime and model are bundled for local inference.
+
+MediaPipe source and license: https://github.com/google-ai-edge/mediapipe
+JavaScript distribution: https://www.npmjs.com/package/@mediapipe/tasks-vision
+Hand Landmarker model: https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task
+License: Apache License, Version 2.0; see LICENSE.txt.

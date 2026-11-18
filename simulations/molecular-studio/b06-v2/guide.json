@@ -1,0 +1,127 @@
+{
+  "title": "VSEPR model kit: shape, bonds and lone pairs",
+  "background": "Fit glossy atom-and-bond pieces to a central hub, like a classroom model kit. The collection includes 15 atom types, single/double/triple connectors, terminal electron-pair dots and central lone-pair inserts. Each hub has exactly two to six electron-domain sockets, with no extra holes. A socket represents one bond direction or one lone-pair region, not one valence electron. Each bond occupies one domain regardless of its order, while single, double and triple bonds contribute one, two and three shared pairs. The kit enforces each molecule’s piece inventory and electron budget; in these molecules carbon completes four total bond-order units, or an octet. Explore ideal electron geometries from two through six domains, distinguish molecular shape from electron geometry, and compare bond dipoles. Five-domain lone pairs belong equatorial; two lone pairs in a six-domain model belong opposite each other. Connector lengths are nucleus-to-nucleus distances on one scale: the Bond workshop links each experimental or representative value, or explicitly labels its radius-based estimate. PCl5, SF4 and SeF4 include longer axial and shorter equatorial links. BrF5 has a shorter axial link and four longer equatorial links. Real bond angles can differ from the ideal sockets. In ethane, turn an attached CH3 group while its bond lengths and local angles stay fixed. Double bonds retain their group orientation, and triple-bond ends are linear. Energy barriers, collisions, vibration, reactions and resonance are not calculated. SO2 uses an expanded-octet Lewis representation with explicitly delocalized π bonding; ammonium and hydronium explicitly account for their +1 charge.",
+  "objective": "Build a Lewis/VSEPR model, identify its local molecular shape and electron geometry, compare bond lengths and rotation behavior, and use two views to distinguish a 3D bond angle from its projection.",
+  "steps": [
+    "1. Open Molecules to try and choose Foundations, Bond comparison, Five & six domains, or Further comparisons. Sketch the Lewis structure and account for any ionic charge. Each model supplies matching pieces; Kit contents shows all 15 atom types.",
+    "2. Drag a piece to a lit socket, or use Place with buttons. Seat one bond piece for every neighbor and one amber insert for every central lone pair. The paired dots on terminal atoms are already included. Ethane, ethene and ethyne have preassembled CH3, CH2 and CH ends; those attached hydrogens do not add domains at the hub.",
+    "3. Open Bond workshop and choose a fitted bond to read its length in pm, source, sigma/pi components and lone-pair count. Compare the C-C, C=C and C≡C links. Turn ethane’s CH3 group, use Along this bond to compare conformations, and contrast the locked double bond and linear triple bond. Each carbon is labelled C1 or C2. In an end-on view they overlap; return to Oblique view to inspect the two carbons separately. In ethane, each carbon has three C–H bonds and one C–C bond.",
+    "4. Continue to prediction. Count each occupied domain once, choose the molecular shape from the atoms only, and predict the bond-arrow sum. For charged models, the bond-arrow sum does not describe the net electric charge or an origin-independent molecular dipole.",
+    "5. In Observe, choose two bonded atoms in the angle gauge, enter and record the model angle, turn the view at least 12 degrees, and record the same pair again. Explain the projections and check the attempt. Compare against the reference, revise the model and try another case. Reset and Undo preserve the recoverable socket arrangement and bond rotation."
+  ],
+  "cases": [
+    "Methane (CH₄)",
+    "Ammonia (NH₃)",
+    "Water (H₂O)",
+    "Carbon dioxide (CO₂)",
+    "Boron trifluoride (BF₃)",
+    "Beryllium chloride · gas molecule (BeCl₂)",
+    "Methanal (formaldehyde) (CH₂O)",
+    "Hydrogen cyanide (HCN)",
+    "Sulfur dioxide (SO₂)",
+    "Ammonium ion (NH₄⁺)",
+    "Hydronium ion (H₃O⁺)",
+    "Ethane · rotate a single bond (C₂H₆)",
+    "Ethene · locked double bond (C₂H₄)",
+    "Ethyne · linear triple bond (C₂H₂)",
+    "Phosphorus pentachloride · gas molecule (PCl₅)",
+    "Sulfur tetrafluoride (SF₄)",
+    "Chlorine trifluoride (ClF₃)",
+    "Xenon difluoride (XeF₂)",
+    "Sulfur hexafluoride (SF₆)",
+    "Bromine pentafluoride (BrF₅)",
+    "Xenon tetrafluoride (XeF₄)",
+    "Iodine pentafluoride (IF₅)",
+    "Selenium tetrafluoride (SeF₄)",
+    "Chloromethane (CH₃Cl)",
+    "Carbon disulfide (CS₂)",
+    "Silicon tetrafluoride (SiF₄)",
+    "Phosphorus trichloride (PCl₃)",
+    "Sulfur dichloride (SCl₂)",
+    "Hydrogen sulfide (H₂S)",
+    "Boron tribromide (BBr₃)",
+    "Carbonyl sulfide (OCS)"
+  ],
+  "sources": [
+    {
+      "label": "R. J. Gillespie and E. A. Robinson · Electron domains and the VSEPR model",
+      "url": "https://doi.org/10.1002/anie.199604951"
+    },
+    {
+      "label": "NIST CCCBDB · Molecular symmetry by point group",
+      "url": "https://cccbdb.nist.gov/pglistx.asp"
+    },
+    {
+      "label": "NIST CCCBDB · Experimental molecular dipole moments",
+      "url": "https://cccbdb.nist.gov/diplistx.asp"
+    },
+    {
+      "label": "Royal Society of Chemistry · Carbon electronegativity",
+      "url": "https://periodic-table.rsc.org/element/6/Carbon"
+    },
+    {
+      "label": "Royal Society of Chemistry · Sulfur electronegativity",
+      "url": "https://periodic-table.rsc.org/element/16/sulfur/"
+    },
+    {
+      "label": "Breidung and Thiel (2019) · PCl₃ equilibrium geometry",
+      "url": "https://doi.org/10.1021/acs.jpca.9b04406"
+    },
+    {
+      "label": "Bizzocchi et al. (2000) · Millimeter-wave spectroscopy of SCl₂",
+      "url": "https://doi.org/10.1006/jmsp.2000.8223"
+    },
+    {
+      "label": "Cook, De Lucia and Helminger (1975) · H₂S structure from microwave spectroscopy",
+      "url": "https://doi.org/10.1016/0022-2860(75)80094-9"
+    },
+    {
+      "label": "Royal Society of Chemistry · Periodic table, Pauling electronegativity of each element",
+      "url": "https://periodic-table.rsc.org/"
+    },
+    {
+      "label": "OpenStax · Representative bond lengths and sigma bonds",
+      "url": "https://openstax.org/books/chemistry-2e/pages/8-1-valence-bond-theory"
+    },
+    {
+      "label": "OpenStax · Multiple bonds and fixed alkene geometry",
+      "url": "https://openstax.org/books/chemistry-2e/pages/8-3-multiple-bonds"
+    },
+    {
+      "label": "OpenStax · Ethane conformations and torsional barriers",
+      "url": "https://openstax.org/books/organic-chemistry/pages/3-6-conformations-of-ethane"
+    },
+    {
+      "label": "OpenStax · Two through six electron domains",
+      "url": "https://openstax.org/books/chemistry-2e/pages/7-6-molecular-structure-and-polarity"
+    },
+    {
+      "label": "Cordero et al. · Covalent radii used for labelled estimates",
+      "url": "https://doi.org/10.1039/B801115J"
+    },
+    {
+      "label": "NIST CCCBDB · PCl5 axial and equatorial distances",
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=10026138&charge=0"
+    },
+    {
+      "label": "NIST CCCBDB · SF4 axial and equatorial distances",
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7783600&charge=0"
+    },
+    {
+      "label": "OpenStax · Valence electrons and Lewis structures",
+      "url": "https://openstax.org/books/chemistry-2e/pages/7-3-lewis-symbols-and-structures"
+    },
+    {
+      "label": "OpenStax · Formal charge and resonance",
+      "url": "https://openstax.org/books/chemistry-2e/pages/7-4-formal-charges-and-resonance"
+    },
+    {
+      "label": "NIST CCCBDB · BrF5 axial and equatorial distances",
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7789302&charge=0"
+    },
+    {
+      "label": "NIST CCCBDB · SeF4 axial and equatorial distances",
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=13465662&charge=0"
+    }
+  ]
+}

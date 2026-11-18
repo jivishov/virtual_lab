@@ -1,0 +1,720 @@
+/* Molecular studio shell (B06 redesign, phase 1, 2026-11-16).
+   Applies plan/2026-11-15_b06-uiux-mock/b06-proposed.html: one top bar for all modes;
+   for Shapes a kit on the left, the model in the middle, one docked task rail on the right,
+   a coach line (since user round B6 a card in the kit column) and a slim footer. Sizes are in rem
+   so Projector mode scales them.
+   Selectors start with main.b06-studio and use !important only where ui.css, workspace.css,
+   shell.css or reaction-lab.css already force a value. */
+
+html.ms-root { font-size:16px; }
+html.ms-root.projector { font-size:19px; }
+
+main.lab-workspace.b06-studio {
+  --ms-ink:#16302f; --ms-ink-2:#47605e; --ms-ink-3:#6b807e; --ms-bar:#173f43;
+  --ms-teal:#1d6a66; --ms-teal-d:#155350; --ms-teal-l:#dcefe9; --ms-teal-ll:#eef7f4;
+  --ms-paper:#f4f6f3; --ms-card:#fff; --ms-line:#cfd9d5; --ms-line-2:#e3e9e6;
+  --ms-amber:#b97a12; --ms-amber-l:#fdf1d8; --ms-ok:#1c6b3c; --ms-ok-l:#e2f3e7; --ms-no:#a23a2c; --ms-no-l:#fbe7e3;
+  --ms-aim:#f0b23c; --ms-r:10px;
+  --ms-top:3.5rem; --ms-foot:3.4rem; --ms-rail:24rem; --ms-kit:9.5rem;
+  --ms-font:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+main.b06-studio :is(.ms-rail,.ms-foot,.ms-drawer,.ms-stagehead,.ms-viewbar,.ms-coach,.ms-overlay,.lab-top) { font-family:var(--ms-font); }
+main.b06-studio :is(.ms-rail,.ms-foot,.ms-drawer,.ms-stagehead,.ms-viewbar,.ms-coach,.ms-overlay,#tray,.lab-top) :focus-visible { outline:3px solid var(--ms-aim) !important; outline-offset:2px !important; }
+main.b06-studio :is(.ms-rail,.ms-foot,.ms-drawer,.ms-stagehead,.ms-viewbar,.ms-coach) :is(h2,h3,p) { margin:0; }
+
+/* ---------- Top bar (all modes) ---------- */
+main.lab-workspace[data-lab=b06][data-mode].b06-studio .lab-top,
+main.lab-workspace[data-lab=b06].b06-studio .lab-top {
+  height:var(--ms-top) !important; min-height:var(--ms-top) !important; box-sizing:border-box;
+  display:flex !important; flex-wrap:nowrap !important; align-items:center; gap:.7rem !important;
+  padding:0 .9rem !important; background:var(--ms-bar) !important; border-bottom:0; overflow:visible !important; z-index:60;
+}
+main.b06-studio .lab-top > a { flex:none; color:#cfe5e1; font-size:.9rem; padding:.6rem .2rem; text-decoration:none; }
+main.b06-studio .lab-top > a:hover { text-decoration:underline; }
+main.lab-workspace.b06-studio .lab-top h1 { flex:none; margin:0; color:#fff; font:650 1.12rem/1.2 var(--ms-font) !important; letter-spacing:0 !important; }
+main.b06-studio .lab-top .lab-step { display:none !important; }
+main.b06-studio .lab-top .ms-handsub { display:none; color:#cfe5e1; font-size:.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+main.b06-studio .lab-top .ms-spacer { flex:1; min-width:0; }
+
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch { flex:none; display:flex; gap:2px; padding:3px; margin:0; border:0; border-radius:9px; background:#0f2f32; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch button {
+  display:block; height:auto !important; min-height:44px !important; padding:.4rem .8rem; border:0; border-radius:7px;
+  background:none; color:#cfe5e1; text-align:left; font:500 1rem/1.15 var(--ms-font); white-space:nowrap;
+}
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch button > span { display:block; font-size:1rem; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch button > small { display:block; font-size:.72rem; font-weight:400; opacity:.8; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch button:hover:not([aria-selected=true]) { background:#1b4448; color:#fff; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch button[aria-selected=true] { background:#fff; color:var(--ms-ink); font-weight:650; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch button:focus-visible { outline:3px solid var(--ms-aim); outline-offset:2px; }
+
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-ghost {
+  flex:none; display:inline-flex; align-items:center; gap:.4rem; width:auto; height:auto !important; min-height:44px !important; margin:0;
+  padding:.4rem .8rem; border:1px solid #4b7175; border-radius:8px; background:none; color:#fff; font:500 1rem/1.2 var(--ms-font); white-space:nowrap; box-shadow:none;
+}
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-ghost:hover:not(:disabled):not([aria-pressed=true]) { background:#1b4448; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-ghost[aria-pressed=true] { background:#fff; color:var(--ms-ink); border-color:#fff; }
+/* Hand building, Immerse and Full screen: square icon buttons kept together; the name is the tooltip. */
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-ghost.ms-icon { justify-content:center; width:var(--ms-icon,44px); min-width:var(--ms-icon,44px); padding:0 !important; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-icon + .ms-icon { margin-left:-.3rem; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-icon svg { width:1.3rem; height:1.3rem; flex:none; }
+main.b06-studio .lab-top .ms-more-wrap { position:relative; flex:none; }
+main.b06-studio .lab-top .ms-menu {
+  position:absolute; right:0; top:calc(100% + 6px); z-index:90; min-width:14rem; display:grid; gap:2px; padding:.35rem;
+  background:#fff; border:1px solid var(--ms-line); border-radius:10px; box-shadow:0 14px 34px #0f2f3240;
+}
+main.b06-studio .lab-top .ms-menu[hidden] { display:none; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-menu button {
+  display:flex; align-items:center; justify-content:flex-start; gap:.6rem; width:100%; height:auto !important; min-height:44px !important; margin:0;
+  padding:.45rem .75rem; border:0; border-radius:7px; background:none; color:var(--ms-ink); font:500 1rem/1.2 var(--ms-font); text-align:left; box-shadow:none;
+}
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-menu button svg { width:1.15rem; height:1.15rem; flex:none; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-menu button span { display:inline; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-menu button:hover:not(:disabled) { background:var(--ms-teal-ll); }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-menu button[aria-pressed=true] { background:var(--ms-teal-l); color:var(--ms-teal-d); }
+main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-menu button[aria-pressed=true]::after { content:"On"; margin-left:auto; font-size:.8rem; font-weight:650; }
+main.lab-workspace[data-lab=b06].b06-studio:not([data-mode=builder]) .lab-top .ms-focus { display:none !important; }
+@media (max-width:1180px) {
+  main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch button > small { display:none; }
+  main.lab-workspace[data-lab=b06].b06-studio .lab-top { gap:.45rem !important; padding:0 .5rem !important; }
+}
+@media (max-width:900px) {
+  main.lab-workspace.b06-studio .lab-top h1 { display:none; }
+}
+
+/* Other modes keep their inner layouts under the taller bar. */
+main.lab-workspace[data-lab=b06].b06-studio:not(.immersive) .lab-surface { top:var(--ms-top) !important; }
+main.lab-workspace[data-lab=b06].b06-studio .lab-panel { top:calc(var(--ms-top) + 58px); max-height:calc(100% - var(--ms-top) - 122px); }
+main.lab-workspace[data-lab=b06].b06-studio:not(.immersive):not(.hands-on) .lab-camera { top:calc(var(--ms-top) + 8px); }
+main.lab-workspace[data-lab=b06].b06-studio:not(.immersive) .lab-toast { top:calc(var(--ms-top) + 10px); }
+main.b06-studio:not(.rx-immersive) #reaction-mode { top:var(--ms-top); }
+
+/* ---------- Shapes: workspace chrome the rail replaces ---------- */
+main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio :is(.lab-panel, #lab-dock, .lab-status) { display:none !important; }
+/* Immerse keeps the readout strip it had before the redesign (user, 2026-11-18). */
+main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive) .lab-ticket { display:none !important; }
+main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive):not(.hands-on) :is(.lab-camera, .immerse-hud) { display:none !important; }
+main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive) .lab-surface {
+  inset:var(--ms-top) 0 var(--ms-foot) 0 !important; background:var(--ms-paper);
+}
+
+/* Scene: kit column (pieces, then the coach card), then stage head, model and view tools stacked in the centre. */
+main.lab-workspace[data-lab=b06].b06-studio:not(.immersive) #visual.lab-scene {
+  inset:0 var(--ms-rail) 0 0 !important; width:auto !important; height:auto !important; min-height:0 !important; max-height:none !important;
+  grid-template-columns:var(--ms-kit) minmax(0,1fr) !important; grid-template-rows:auto minmax(0,1fr) auto !important;
+  grid-template-areas:"tray head" "tray model" "tray viewbar" !important;
+  background:linear-gradient(90deg,#e9eeeb var(--ms-kit),transparent var(--ms-kit)),radial-gradient(ellipse at 58% 45%,#fbfcfb 0,#e7ece9 100%) !important;
+}
+main.b06-studio #visual > :is(.ms-stagehead,.ms-overlay,.ms-viewbar,.ms-coach) { position:relative; z-index:2; min-width:0; }
+main.b06-studio #visual .ms-stagehead { grid-area:head; padding:.45rem .7rem .3rem; border-bottom:1px solid var(--ms-line-2); background:#f7f9f7cc; }
+main.b06-studio #visual .ms-stagehead:empty { display:none; }
+main.b06-studio .ms-pills { display:flex; flex-wrap:wrap; gap:.3rem; margin-bottom:.35rem; }
+main.b06-studio .ms-pills:empty, main.b06-studio .ms-mols:empty { display:none; }
+main.lab-workspace.b06-studio .ms-pills button { width:auto; height:auto !important; min-height:36px !important; margin:0; padding:.2rem .8rem; border:2px solid #8fa3a0; border-radius:999px; background:#fff; color:var(--ms-ink); font:500 .88rem/1.2 var(--ms-font); box-shadow:none; }
+main.lab-workspace.b06-studio .ms-pills button:hover:not([aria-selected=true]) { background:var(--ms-teal-ll); border-color:var(--ms-teal); }
+main.lab-workspace.b06-studio .ms-pills button[aria-selected=true] { background:var(--ms-ink); border-color:var(--ms-ink); color:#fff; font-weight:650; }
+main.b06-studio .ms-mols { display:flex; flex-wrap:wrap; gap:.3rem; }
+main.lab-workspace.b06-studio .ms-mols button { position:relative; width:auto; height:auto !important; min-width:3.2rem; min-height:44px !important; margin:0; padding:.2rem .5rem; border:2px solid var(--ms-line); border-radius:9px; background:#fff; color:var(--ms-ink); font:650 .98rem/1.1 var(--ms-font); box-shadow:none; }
+main.lab-workspace.b06-studio .ms-mols button:hover:not([aria-pressed=true]) { border-color:var(--ms-teal); }
+main.lab-workspace.b06-studio .ms-mols button[aria-pressed=true] { border-color:var(--ms-teal); background:var(--ms-teal-l); }
+main.b06-studio .ms-mols button.done::after { content:"✓"; position:absolute; top:-.45rem; right:-.35rem; display:grid; place-items:center; width:1.15rem; height:1.15rem; border-radius:50%; background:var(--ms-ok); color:#fff; font-size:.72rem; }
+main.b06-studio #visual #viewport { grid-area:model; }
+main.b06-studio #visual .ms-overlay { grid-area:model; pointer-events:none; }
+main.b06-studio #visual .ms-stagetitle { position:absolute; left:.8rem; top:.5rem; max-width:55%; }
+main.b06-studio #visual .ms-stagetitle h2 { font:650 1.1rem/1.25 var(--ms-font) !important; color:var(--ms-ink); }
+main.b06-studio #visual .ms-stagetitle small { display:block; font-size:.88rem; color:var(--ms-ink-2); }
+main.b06-studio #visual .ms-stagetitle small:empty { display:none; }
+main.b06-studio #visual .ms-anglepill { position:absolute; right:.8rem; top:.5rem; padding:.3rem .7rem; background:#fff; border:2px solid var(--ms-teal); border-radius:10px; font-weight:650; text-align:right; line-height:1.25; color:var(--ms-ink); }
+main.b06-studio #visual .ms-anglepill small { display:block; font-weight:400; font-size:.8rem; color:var(--ms-ink-2); }
+main.b06-studio #visual .ms-anglepill span { display:block; font-weight:400; font-size:.88rem; color:var(--ms-ink-2); }
+main.b06-studio #visual .ms-anglepill b { font-variant-numeric:tabular-nums; }
+main.b06-studio #visual .ms-overlay .triad { position:absolute; left:.8rem; bottom:.5rem; width:52px; height:40px; }
+main.b06-studio #visual .ms-overlap { position:absolute; left:50%; bottom:.6rem; transform:translateX(-50%); width:max-content; max-width:min(34rem,calc(100% - 9rem)); }
+main.b06-studio #visual .ms-overlap #vsepr-overlap-note { margin:0; font-size:.9rem; line-height:1.35; color:var(--ms-ink); background:var(--ms-amber-l); border:1px solid #ecd6a4; border-left:4px solid var(--ms-amber); border-radius:8px; padding:.4rem .7rem; }
+
+/* Kit: the wells are drawn on the scene canvas behind the tray, so pieces stay see-through. */
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray {
+  grid-area:tray; justify-content:flex-start; gap:.55rem; padding:.7rem .6rem; overflow:hidden;
+  background:transparent !important; border-right:1px solid var(--ms-line); box-shadow:none;
+}
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray h3 { margin:0; color:var(--ms-ink-2); font:650 .78rem/1.2 var(--ms-font) !important; letter-spacing:.06em; text-transform:uppercase; }
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .part {
+  min-height:0 !important; padding:.3rem .3rem .35rem; gap:0; border:2px solid var(--ms-line); border-radius:var(--ms-r); box-shadow:none;
+  display:flex; flex-direction:column; align-items:stretch; pointer-events:auto;
+}
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .part:hover:not(:disabled) { border-color:var(--ms-teal); }
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray :is(.part[aria-pressed=true],.part.active) { border-color:var(--ms-teal); box-shadow:0 0 0 3px #1d6a6633; }
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .well { height:3.6rem; }
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .part-name { display:block; padding:.15rem .2rem 0; background:#ffffffd9; border-radius:5px 5px 0 0; color:var(--ms-ink); font:650 .92rem/1.2 var(--ms-font); text-align:center; }
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .part-count { display:block; padding:0 .2rem .1rem; background:#ffffffd9; border-radius:0 0 5px 5px; color:var(--ms-ink-2); font:400 .82rem/1.25 var(--ms-font); text-align:center; }
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .part-count:empty { display:none; }
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .tray-note { display:none; }
+main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray.return-zone { outline:3px dashed var(--ms-teal); outline-offset:-6px; }
+main.b06-studio #tray .ms-kitview { display:none; }
+/* Immerse keeps the kit it had before the redesign (user, 2026-11-18): the pale panel from shell.css and
+   hand-building.css (the rules above stop at Immerse), and one label line per piece, "C–H · 4 left". */
+main.lab-workspace[data-lab=b06].b06-studio.immersive #visual.lab-scene #tray .part:has(> .part-count:not(:empty)) { text-align:center; }
+main.lab-workspace[data-lab=b06].b06-studio.immersive #visual.lab-scene #tray .part:has(> .part-count:not(:empty)) > .part-name { display:inline; padding-right:0; }
+main.lab-workspace[data-lab=b06].b06-studio.immersive #visual.lab-scene #tray .part-count:not(:empty) { display:inline; padding:4px 2px 2px 0; color:#24444b; font:600 11px/1.25 var(--font, system-ui); white-space:nowrap; }
+main.lab-workspace[data-lab=b06].b06-studio.immersive #visual.lab-scene #tray .part-count:not(:empty)::before { content:"\00a0· "; }
+main.lab-workspace[data-lab=b06].b06-studio.immersive #visual.lab-scene #tray .part-count:empty { display:none; }
+
+/* View tools under the model. */
+main.b06-studio #visual .ms-viewbar { grid-area:viewbar; display:flex; flex-wrap:wrap; align-items:center; gap:.3rem; padding:.3rem .7rem; }
+main.lab-workspace.b06-studio .ms-viewbar .ms-seg button { padding-inline:.42rem; }
+main.b06-studio .ms-seg { display:flex; gap:2px; padding:2px; background:var(--ms-card); border:1px solid var(--ms-line); border-radius:9px; }
+main.b06-studio .ms-seg:empty { display:none; }
+main.lab-workspace.b06-studio .ms-seg button {
+  display:inline-flex; align-items:center; justify-content:center; width:auto; height:auto !important; min-width:40px; min-height:40px !important; margin:0;
+  padding:.15rem .5rem; border:0; border-radius:6px; background:none; color:var(--ms-ink); font:500 .88rem/1.1 var(--ms-font); box-shadow:none; white-space:nowrap;
+}
+main.lab-workspace.b06-studio .ms-seg button:hover:not(:disabled):not([aria-pressed=true]):not([aria-checked=true]) { background:var(--ms-teal-ll); }
+main.lab-workspace.b06-studio .ms-seg button:is([aria-pressed=true],[aria-checked=true]) { background:var(--ms-teal); color:#fff; }
+main.lab-workspace.b06-studio .ms-seg button:disabled { opacity:.45; cursor:not-allowed; }
+main.lab-workspace.b06-studio .ms-viewbar .turn, main.lab-workspace.b06-studio .ms-viewbar #roll { font-size:1.15rem; }
+
+/* One coach line. A notice from the checks replaces the guide and turns amber.
+   Shapes on a wide screen: an info card in the kit column under the pieces (studio-shell.js moves it
+   there, user round B6). The kit column has a fixed size, so a longer message never resizes the model
+   view and the camera stays still. In the stacked column (900px and below) it is a line under the
+   view tools. Build a molecule and Reactions keep a coach row of --ms-coach-row: its height is fixed
+   (two lines of text) and a rare third line grows the box upward over the model. */
+main.lab-workspace[data-lab=b06].b06-studio { --ms-coach-row:4.6rem; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout { --ms-coach-row:0px; }
+main.b06-studio #visual .ms-coach {
+  grid-area:coach; align-self:end; display:flex; align-items:center; gap:.6rem; margin:.2rem .7rem .6rem; min-height:3.8rem; padding:.5rem .8rem;
+  background:var(--ms-card); border:1px solid var(--ms-line); border-left:5px solid var(--ms-teal); border-radius:var(--ms-r); color:var(--ms-ink); font-size:.98rem; line-height:1.35;
+}
+main.b06-studio #visual .ms-coach .ms-ico { flex:none; display:grid; place-items:center; width:1.7rem; height:1.7rem; border-radius:50%; background:var(--ms-teal-l); color:var(--ms-teal-d); font-weight:700; }
+main.b06-studio #visual .ms-coach #notice { color:#6b4500; font-size:inherit; font-weight:600; }
+main.b06-studio #visual .ms-coach:has(#notice:not(:empty)) { border-left-color:var(--ms-amber); background:var(--ms-amber-l); }
+main.b06-studio #visual .ms-coach:has(#notice:not(:empty)) .ms-ico { background:#f6dfae; color:#6b4500; }
+main.b06-studio #visual .ms-coach:has(#notice:not(:empty)) #live-guide { display:none; }
+/* The card takes nearly all the shrinking if the kit runs out of height (three pieces, a long message,
+   a short screen in Projector mode): it then scrolls inside, and the pieces keep their size. */
+main.b06-studio #visual #tray > .ms-coach {
+  display:flow-root; flex:0 1000 auto; align-self:stretch; margin:.1rem 0 0; min-height:3.2rem; padding:.5rem .55rem .55rem; overflow-y:auto; overscroll-behavior:contain;
+  border-left-width:4px; font-size:.88rem; line-height:1.38; overflow-wrap:break-word; box-shadow:0 1px 2px #0f2f3214;
+}
+main.b06-studio #visual #tray > .ms-coach .ms-ico { float:left; width:1.35rem; height:1.35rem; margin:.02rem .4rem 0 0; font-size:.8rem; }
+
+main.b06-studio #visual .ms-shelf[hidden], main.b06-studio .ms-carriers[hidden] { display:none !important; }
+main.b06-studio #loading { position:absolute; z-index:6; left:var(--ms-kit); right:var(--ms-rail); top:42%; margin:0; text-align:center; color:var(--ms-ink-2); font:500 1rem var(--ms-font); pointer-events:none; }
+main.b06-studio #loading:is(:empty,[hidden]) { display:none; }
+
+/* ---------- Shapes: task rail ---------- */
+main.b06-studio .ms-rail {
+  position:absolute; top:0; right:0; bottom:0; width:var(--ms-rail); z-index:20; box-sizing:border-box;
+  display:grid; grid-template-rows:auto minmax(0,1fr) auto; background:var(--ms-card); border-left:1px solid var(--ms-line);
+  color:var(--ms-ink); font-size:1rem; line-height:1.4;
+}
+main.b06-studio .ms-rail[hidden], main.b06-studio .ms-foot[hidden] { display:none !important; }
+main.b06-studio .ms-steps { display:grid; grid-template-columns:repeat(4,1fr); margin:0; padding:.55rem .5rem .45rem; list-style:none; border-bottom:1px solid var(--ms-line); }
+main.b06-studio .ms-steps li { position:relative; text-align:center; font-size:.82rem; color:var(--ms-ink-3); }
+main.b06-studio .ms-steps li i { position:relative; z-index:1; display:grid; place-items:center; width:2rem; height:2rem; margin:0 auto .15rem; border:2px solid var(--ms-line); border-radius:50%; background:#fff; font:700 .95rem/1 var(--ms-font); font-style:normal; }
+main.b06-studio .ms-steps li::before { content:""; position:absolute; top:1rem; left:-50%; width:100%; height:2px; background:var(--ms-line); }
+main.b06-studio .ms-steps li:first-child::before { display:none; }
+main.b06-studio .ms-steps li.done i { background:var(--ms-teal-l); border-color:var(--ms-teal); color:var(--ms-teal-d); }
+main.b06-studio .ms-steps li:is(.done,[aria-current])::before { background:var(--ms-teal); }
+main.b06-studio .ms-steps li[aria-current] { color:var(--ms-ink); font-weight:700; }
+main.b06-studio .ms-steps li[aria-current] i { background:var(--ms-teal); border-color:var(--ms-teal); color:#fff; }
+
+main.b06-studio .ms-task { position:relative; min-height:0; overflow:auto; padding:.8rem 1rem .2rem; }
+main.b06-studio .ms-task:focus { outline:none; }
+main.b06-studio .ms-task h2:focus { outline:none; }
+main.b06-studio .ms-task h2:focus-visible { outline:3px solid var(--ms-aim); }
+main.lab-workspace.b06-studio .ms-task h2 { margin:0 0 .3rem; color:var(--ms-ink); font:650 1.22rem/1.25 var(--ms-font) !important; }
+main.lab-workspace.b06-studio .ms-task h2 small { margin-left:.3rem; font-size:.9rem; font-weight:400; color:var(--ms-ink-2); }
+main.b06-studio .ms-task p { margin:0 0 .65rem; font-size:1rem; }
+main.b06-studio .ms-task .ms-lead { color:var(--ms-ink-2); }
+main.b06-studio .ms-task h3 { margin:0 0 .1rem; font:650 1rem/1.3 var(--ms-font); color:var(--ms-ink); }
+main.b06-studio .ms-box { margin-bottom:.7rem; padding:.55rem .7rem; background:var(--ms-teal-ll); border:1px solid var(--ms-line-2); border-radius:8px; }
+main.b06-studio .ms-box small { display:block; color:var(--ms-ink-2); font-size:.85rem; }
+main.b06-studio .ms-box output { font:650 1.05rem/1.35 var(--ms-font); }
+main.b06-studio .ms-box .small { margin:.25rem 0 0; font-size:.85rem; color:var(--ms-ink-2); }
+
+main.b06-studio .ms-task details.ms-more { margin-bottom:.7rem; padding:.5rem .7rem; background:#fafcfb; border:1px solid var(--ms-line-2); border-radius:8px; }
+main.b06-studio .ms-task details.ms-more > summary { min-height:28px; cursor:pointer; color:var(--ms-teal-d); font:650 1rem/1.75 var(--ms-font); }
+main.b06-studio .ms-task details.ms-more :is(p,li) { margin:.4rem 0 0; font-size:.9rem; color:var(--ms-ink-2); }
+main.b06-studio .ms-task details.ms-more a { color:var(--ms-teal-d); }
+/* Build extras sit in one grouped list so the Build step does not scroll. */
+main.b06-studio .ms-task .ms-mores { margin-bottom:.7rem; border:1px solid var(--ms-line-2); border-radius:8px; background:#fafcfb; }
+main.b06-studio .ms-task .ms-mores > details.ms-more { margin:0; padding:.3rem .7rem; border:0; border-radius:0; background:none; }
+main.b06-studio .ms-task .ms-mores > details.ms-more + details.ms-more { border-top:1px solid var(--ms-line-2); }
+main.b06-studio .ms-task #vsepr-bond-summary { display:inline; margin-left:.35rem; font-size:.82rem; font-weight:400; color:var(--ms-ink-2); }
+/* Long sheets (Bond workshop, Place with buttons) open over the task body instead of pushing it into a scroll. */
+main.b06-studio .ms-task :is(#vsepr-workshop, .construction-tools)[open] {
+  position:absolute; inset:0; z-index:5; margin:0; padding:.9rem 1rem; overflow:auto; border:0; border-radius:0; background:#fff;
+}
+main.b06-studio .ms-task :is(#vsepr-workshop, .construction-tools)[open] > summary { position:sticky; top:-.9rem; margin:-.9rem -1rem .5rem; padding:.55rem 1rem; background:var(--ms-teal-ll); border-bottom:1px solid var(--ms-line); z-index:1; }
+main.b06-studio .ms-task :is(#vsepr-workshop, .construction-tools)[open] > summary::after { content:"Close"; float:right; font-weight:500; font-size:.9rem; color:var(--ms-ink-2); }
+main.b06-studio .ms-task .construction-tools button#apply { margin:.5rem 0; }
+
+/* Observe: the angle gauge is a box, not a drawer, while Observe is current. */
+main.b06-studio .ms-task details.ms-gauge { margin-bottom:.55rem; padding:.5rem .6rem; background:var(--ms-teal-ll); border:1px solid var(--ms-line); border-radius:var(--ms-r); }
+main.b06-studio .ms-task details.ms-gauge > summary { display:none; }
+main.b06-studio .ms-task .ms-gauge h3 { font-size:.95rem; margin-bottom:.25rem; }
+main.b06-studio .ms-task .ms-gauge .gauge-body { display:block; padding:0; border:0; background:none; }
+main.b06-studio .ms-task .ms-sites { display:grid; grid-template-columns:auto 1fr; gap:.3rem .5rem; align-items:center; margin-bottom:.4rem; font-size:.88rem; }
+main.b06-studio .ms-task .ms-sites .ms-seg { flex-wrap:wrap; justify-self:start; }
+main.lab-workspace.b06-studio .ms-task .ms-sites .ms-seg button { min-width:44px; font-weight:650; }
+main.b06-studio .ms-task .ms-readouts { display:grid; grid-template-columns:1fr 1.2fr; gap:.4rem; margin-bottom:.4rem; }
+main.b06-studio .ms-task .ms-readouts > div { padding:.25rem .5rem; background:#fff; border:1px solid var(--ms-line); border-radius:8px; }
+main.b06-studio .ms-task .ms-readouts small { display:block; font-size:.76rem; line-height:1.25; white-space:nowrap; color:var(--ms-ink-2); }
+main.b06-studio .ms-task .ms-readouts output { display:block; font:650 1.25rem/1.25 var(--ms-font); font-variant-numeric:tabular-nums; color:var(--ms-ink); }
+main.b06-studio .ms-task .ms-entry { display:flex; gap:.4rem; align-items:flex-end; margin:0 0 .3rem; }
+main.b06-studio .ms-task .ms-entry[hidden] { display:none; }
+main.lab-workspace.b06-studio .ms-task .ms-entry label { display:block; font:400 .82rem/1.25 var(--ms-font); color:var(--ms-ink-2); }
+main.lab-workspace.b06-studio .ms-task .ms-entry input { display:block; width:6.5rem; min-height:44px; box-sizing:border-box; padding:.3rem .5rem; border:2px solid var(--ms-line); border-radius:8px; font:500 1rem var(--ms-font); color:var(--ms-ink); background:#fff; }
+main.b06-studio .ms-task .gauge-tip { margin:0; font-size:.8rem; line-height:1.25; color:var(--ms-ink-2); }
+main.b06-studio .ms-task .ms-status { margin-bottom:.55rem; padding:.3rem .55rem; background:#fff; border:1px dashed var(--ms-line); border-radius:8px; font-size:.88rem; line-height:1.3; }
+main.b06-studio .ms-task .ms-status:is(:empty,[hidden]) { display:none; }
+main.b06-studio .ms-task .ms-status :is(p,ul,ol) { margin:0; }
+main.b06-studio .ms-task .ms-q { margin-bottom:.6rem; }
+main.lab-workspace.b06-studio .ms-task .ms-q h3 label { font:650 1rem/1.3 var(--ms-font); color:var(--ms-ink); }
+main.b06-studio .ms-task .ms-help { margin:0 0 .35rem; font-size:.88rem; color:var(--ms-ink-2); }
+main.b06-studio .ms-chips { display:grid; grid-template-columns:repeat(var(--cols,2),minmax(0,1fr)); gap:.35rem; }
+main.lab-workspace.b06-studio .ms-chips button { width:auto; height:auto !important; min-height:44px !important; margin:0; padding:.3rem .5rem; border:2px solid var(--ms-line); border-radius:8px; background:#fff; color:var(--ms-ink); font:500 .95rem/1.2 var(--ms-font); box-shadow:none; }
+main.lab-workspace.b06-studio .ms-chips button:hover:not([aria-pressed=true]) { border-color:var(--ms-teal); background:var(--ms-teal-ll); }
+main.lab-workspace.b06-studio .ms-chips button[aria-pressed=true] { border-color:var(--ms-teal); background:var(--ms-teal-l); font-weight:650; }
+main.lab-workspace.b06-studio .ms-task .ms-qrow { display:flex; justify-content:space-between; align-items:center; gap:.6rem; width:100%; height:auto !important; min-height:44px !important; margin:0 0 .6rem; padding:.3rem .7rem; border:1px solid var(--ms-line); border-radius:8px; background:#fff; color:var(--ms-ink); font:500 .95rem/1.25 var(--ms-font); text-align:left; box-shadow:none; }
+main.lab-workspace.b06-studio .ms-task .ms-qrow:hover { border-color:var(--ms-teal); background:var(--ms-teal-ll); }
+main.b06-studio .ms-task .ms-qrow b { color:var(--ms-teal-d); text-align:right; }
+main.lab-workspace.b06-studio .ms-task textarea { display:block; width:100%; height:3.3rem; min-height:3.3rem; box-sizing:border-box; margin-top:.3rem; padding:.5rem; border:2px solid var(--ms-line); border-radius:8px; font:400 1rem/1.35 var(--ms-font); color:var(--ms-ink); resize:vertical; }
+
+/* Compare. */
+main.b06-studio .ms-task .ms-crit { display:grid; gap:.3rem; margin:0 0 .7rem; padding:0; }
+main.b06-studio .ms-task .ms-crit > div { display:flex; justify-content:space-between; align-items:center; gap:.5rem; padding:.25rem .6rem; border:1px solid var(--ms-line-2); border-radius:8px; font-size:.92rem; line-height:1.3; }
+main.b06-studio .ms-task #result-body { font-size:.95rem; line-height:1.4; }
+main.b06-studio .ms-task #ms-compare-actions { margin-bottom:.7rem; }
+main.b06-studio .ms-task .ms-crit :is(dt,dd) { margin:0; font-weight:400; }
+main.b06-studio .ms-task .ms-tag { padding:.05rem .45rem; border-radius:6px; font-size:.82rem; font-weight:650; white-space:nowrap; }
+main.b06-studio .ms-task .ms-tag.ok { background:var(--ms-ok-l); color:var(--ms-ok); }
+main.b06-studio .ms-task .ms-tag.no { background:var(--ms-no-l); color:var(--ms-no); }
+main.b06-studio .ms-task .ms-note { margin-bottom:.7rem; padding:.55rem .7rem; background:var(--ms-amber-l); border:1px solid #ecd6a4; border-radius:8px; font-size:.92rem; }
+main.b06-studio .ms-task .ms-note h3 { font-size:.95rem; margin:.4rem 0 .15rem; }
+main.b06-studio .ms-task .ms-note h3:first-child { margin-top:0; }
+main.b06-studio .ms-task .ms-note p { font-size:.92rem; margin:0 0 .35rem; }
+
+/* Main button with its blocked reason. */
+main.b06-studio .ms-actions { padding:.55rem 1rem .7rem; background:#fff; border-top:1px solid var(--ms-line); }
+main.b06-studio .ms-why { margin:0 0 .4rem; font-size:.88rem; color:#6b4500; }
+main.b06-studio .ms-why:empty { display:none; }
+main.b06-studio .ms-btnrow { display:flex; flex-wrap:wrap; gap:.5rem; }
+/* style.css, studio.css and assignments.css pad .navigation and make it sticky; the action row already holds it. */
+main.b06-studio .ms-actions .navigation { margin:0; padding:0; position:static; background:none; }
+main.b06-studio .ms-btnrow > [hidden] { display:none !important; }
+main.lab-workspace.b06-studio .ms-btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:.35rem; width:auto; height:auto !important; min-height:48px !important; margin:0;
+  padding:.4rem .9rem; border:2px solid var(--ms-line); border-radius:9px; background:#fff; color:var(--ms-ink); font:650 1rem/1.2 var(--ms-font); box-shadow:none;
+}
+main.lab-workspace.b06-studio .ms-btn:hover:not(:disabled):not([aria-disabled=true]) { border-color:var(--ms-teal); background:var(--ms-teal-ll); }
+main.lab-workspace.b06-studio .ms-btn.ms-primary { flex:1; background:var(--ms-teal); border-color:var(--ms-teal); color:#fff; font-size:1.02rem; }
+main.lab-workspace.b06-studio .ms-btn.ms-primary:hover:not(:disabled):not([aria-disabled=true]) { background:var(--ms-teal-d); border-color:var(--ms-teal-d); }
+main.lab-workspace.b06-studio .ms-btn.ms-primary[aria-disabled=true] { background:#b9c8c5; border-color:#b9c8c5; color:#fff; cursor:not-allowed; }
+main.lab-workspace.b06-studio .ms-btn.ms-small { min-height:44px !important; font-weight:500; font-size:.92rem; }
+main.lab-workspace.b06-studio .ms-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+/* Native carriers stay live until the Shapes controls replace them. */
+main.b06-studio.ms-shapes-ready .ms-native { display:none !important; }
+main.b06-studio:not(.ms-hand-layout) [data-ms-hand] { display:none !important; }
+main.b06-studio.ms-hand-layout [data-ms-desk] { display:none !important; }
+main.b06-studio .ms-crit .ms-short { display:none; }
+
+/* Hand tiles: shared by the hand layout's task panel, kit and molecule shelf. */
+main.b06-studio .ms-tiles { display:grid; grid-template-columns:repeat(var(--cols,2),minmax(0,1fr)); gap:.5rem; margin-bottom:.5rem; }
+main.b06-studio .ms-tiles:empty { display:none; }
+main.lab-workspace.b06-studio .ms-tile {
+  display:block; width:auto; height:auto !important; min-width:0; min-height:3.1rem !important; margin:0; padding:.2rem .5rem;
+  border:3px solid var(--ms-line); border-radius:14px; background:#fff; color:var(--ms-ink); font:650 .92rem/1.15 var(--ms-font); text-align:center; box-shadow:none;
+}
+main.lab-workspace.b06-studio .ms-tile[aria-pressed=true] { border-color:var(--ms-teal); background:var(--ms-teal-l); }
+main.lab-workspace.b06-studio .ms-tile.ms-go { background:var(--ms-teal); border-color:var(--ms-teal); color:#fff; }
+main.lab-workspace.b06-studio .ms-tile:disabled { opacity:.45; cursor:not-allowed; }
+main.b06-studio .ms-keypad { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-rows:3rem; gap:.4rem; margin-bottom:.4rem; }
+main.lab-workspace.b06-studio .ms-keypad .ms-tile { min-height:0 !important; font-size:1.15rem; }
+main.lab-workspace.b06-studio .ms-keypad .ms-rec { grid-row:2 / 5; grid-column:4; font-size:.95rem; }
+main.b06-studio .ms-bigread { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.4rem; margin-bottom:.4rem; }
+main.b06-studio .ms-bigread > div { padding:.2rem .5rem; background:#fff; border:2px solid var(--ms-line); border-radius:10px; }
+main.b06-studio .ms-bigread small { display:block; font-size:.7rem; color:var(--ms-ink-2); white-space:nowrap; }
+main.b06-studio .ms-bigread b { font-size:1.15rem; font-variant-numeric:tabular-nums; }
+main.b06-studio .ms-rowlabel { margin:.3rem 0 .2rem; font-size:.85rem; font-weight:650; }
+
+/* ---------- Shapes: hand building layout (main.ms-hand-layout, set by studio-shell.js) ----------
+   Kit on the left edge, task tiles on the right edge, nothing to press along the top edge,
+   one dark hand bar with the camera thumbnail and one big status line along the bottom. */
+html.ms-root.ms-hands { font-size:20px; }
+/* --ms-rail is the narrowest width at which every molecule's Build, Predict, Observe, Compare
+   (including the longest failed check) and reference fit without scrolling (scripts/railsweep.cjs). */
+main.lab-workspace.b06-studio.ms-hand-layout { --ms-top:2.8rem; --ms-kit:10.5rem; --ms-rail:20rem; --ms-hbar:6rem; }
+main.lab-workspace[data-lab=b06][data-mode].b06-studio.ms-hand-layout .lab-top { padding:.2rem .9rem !important; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout .lab-top > :is(a,button,.lab-mode-switch,.ms-more-wrap,.ms-spacer) { display:none !important; }
+main.b06-studio.ms-hand-layout .lab-top .ms-handsub { display:block; flex:1; }
+main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio.ms-hand-layout .lab-surface { inset:var(--ms-top) 0 0 0 !important; }
+main.b06-studio.ms-hand-layout .ms-foot { display:none !important; }
+main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio.ms-hand-layout :is(.lab-camera, .immerse-hud) { display:none !important; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) #visual.lab-scene { inset:0 var(--ms-rail) var(--ms-hbar) 0 !important; }
+main.b06-studio.ms-hand-layout #visual > :is(.ms-stagehead,.ms-viewbar), main.b06-studio.ms-hand-layout #visual .ms-coach { display:none !important; }
+/* The top bar already names the molecule, so over the model only "Your assembly" or "Reference model"
+   stays in view; the long name would otherwise cover the top atom of PCl5 and PCl3 after Fit view
+   (scripts/fitcheck.cjs). The heading stays for screen readers. */
+main.b06-studio.ms-hand-layout #visual .ms-stagetitle h2 { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+main.b06-studio.ms-hand-layout .hand-aim { outline:4px solid var(--ms-aim) !important; outline-offset:3px; }
+
+/* Kit: bigger pieces, view tiles at the foot of the column. */
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout #visual.lab-scene #tray { gap:.5rem !important; padding:.6rem .6rem .7rem; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout #visual.lab-scene #tray .part { min-height:5.4rem !important; padding:.2rem .3rem .25rem; border-width:3px; border-radius:14px; justify-content:space-between; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout #visual.lab-scene #tray .well { height:2.6rem; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout #visual.lab-scene #tray .part-name { font-size:.88rem; line-height:1.15; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout #visual.lab-scene #tray .part-count { font-size:.76rem; line-height:1.2; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout #visual.lab-scene #tray .tray-note { display:none; }
+main.b06-studio #tray .ms-kitview { pointer-events:auto; }
+main.b06-studio.ms-hand-layout #tray .ms-kitview { display:grid; gap:.5rem; margin-top:auto; }
+main.b06-studio #tray .ms-kitview .ms-label { color:var(--ms-ink-2); font:650 .78rem/1.2 var(--ms-font); letter-spacing:.06em; text-transform:uppercase; }
+
+/* Molecule shelf over the model. */
+main.b06-studio.ms-hand-layout #visual .ms-shelf:not([hidden]) {
+  grid-area:1 / 2 / -1 / 3; position:relative; z-index:6; min-height:0; box-sizing:border-box;
+  display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; gap:.6rem; padding:.8rem 1rem; background:#f4f6f3f5; color:var(--ms-ink); font-family:var(--ms-font);
+}
+main.lab-workspace.b06-studio .ms-shelf h2 { margin:0; font:650 1.2rem/1.25 var(--ms-font) !important; color:var(--ms-ink); }
+main.b06-studio .ms-shelf .ms-tiles { margin:0; }
+main.b06-studio .ms-shelf .ms-cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-rows:minmax(0,1fr); gap:.6rem; min-height:0; }
+main.lab-workspace.b06-studio .ms-shelf .ms-cards .ms-tile { min-height:3.1rem !important; }
+main.b06-studio .ms-shelf .ms-cards b { display:block; font-size:1.3rem; }
+main.b06-studio .ms-shelf .ms-cards span { display:block; font-size:.72rem; font-weight:400; }
+main.b06-studio .ms-shelf .ms-pager { display:grid; grid-template-columns:1fr auto 1fr 1fr; gap:.6rem; align-items:center; }
+main.b06-studio .ms-shelf .ms-pager > span { font-size:.92rem; color:var(--ms-ink-2); }
+main.b06-studio .ms-shelf :focus-visible { outline:3px solid var(--ms-aim) !important; outline-offset:2px !important; }
+
+/* Task panel: compact steps, one question or one tile group at a time. One rail width for all
+   four steps, so the model view keeps its size and place and the panel never covers it. */
+main.b06-studio.ms-hand-layout .ms-rail { bottom:var(--ms-hbar); }
+main.b06-studio.ms-hand-layout .ms-steps { grid-template-columns:repeat(4,auto); justify-content:space-between; padding:.35rem .4rem; }
+main.b06-studio.ms-hand-layout .ms-steps li { display:flex; align-items:center; gap:.25rem; font-size:.78rem; }
+main.b06-studio.ms-hand-layout .ms-steps li i { width:1.5rem; height:1.5rem; margin:0; font-size:.78rem; }
+main.b06-studio.ms-hand-layout .ms-steps li::before { display:none; }
+main.b06-studio.ms-hand-layout .ms-task { padding:.6rem .8rem .2rem; }
+main.lab-workspace.b06-studio.ms-hand-layout .ms-task h2 { font:650 1.2rem/1.25 var(--ms-font) !important; }
+main.b06-studio.ms-hand-layout .ms-task p { margin-bottom:.45rem; font-size:.88rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-q h3 { font-size:.95rem; }
+/* Three answers a row (the shape names): slimmer padding and a slightly smaller font keep the longest
+   words ("bipyramidal", "Tetrahedral") inside their tiles at the 20rem rail. */
+main.lab-workspace.b06-studio.ms-hand-layout .ms-task .ms-q .ms-tiles[style*="--cols:3"] .ms-tile { padding-inline:.15rem; font-size:.84rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-help { font-size:.8rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-box { margin-bottom:.45rem; padding:.35rem .6rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-box small { font-size:.72rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-box output { font-size:.9rem; line-height:1.3; }
+main.b06-studio.ms-hand-layout .ms-task .ms-box .small { margin-top:.15rem; font-size:.72rem; line-height:1.3; }
+main.b06-studio.ms-hand-layout .ms-actions { padding:.4rem .8rem .6rem; }
+main.b06-studio.ms-hand-layout .ms-why { margin-bottom:.3rem; font-size:.82rem; line-height:1.3; }
+main.lab-workspace.b06-studio.ms-hand-layout .ms-actions .ms-btn { min-height:3.6rem !important; border-width:3px; border-radius:14px; }
+main.lab-workspace.b06-studio.ms-hand-layout #ms-compare-actions { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:.5rem; margin-bottom:.5rem; }
+main.lab-workspace.b06-studio.ms-hand-layout #ms-compare-actions .ms-btn { min-height:3.1rem !important; border-width:3px; border-radius:14px; font:650 .92rem/1.15 var(--ms-font); }
+main.lab-workspace.b06-studio.ms-hand-layout #ms-compare-actions .ms-btn[aria-pressed=true] { border-color:var(--ms-teal); background:var(--ms-teal-l); }
+/* Checks: a round mark before each short label, two per row; the word stays for screen readers. */
+main.b06-studio.ms-hand-layout .ms-task .ms-crit { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.3rem; margin-bottom:.4rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-crit > div { justify-content:flex-start; gap:.35rem; padding:.2rem .4rem; font-size:.8rem; line-height:1.2; }
+main.b06-studio.ms-hand-layout .ms-task .ms-crit dd { order:-1; flex:none; }
+main.b06-studio.ms-hand-layout .ms-task .ms-crit dt { min-width:0; }
+main.b06-studio.ms-hand-layout .ms-task .ms-crit .ms-long { display:none; }
+main.b06-studio.ms-hand-layout .ms-task .ms-crit .ms-short { display:inline; }
+main.b06-studio.ms-hand-layout .ms-task .ms-tag { display:grid; place-items:center; width:1.3rem; height:1.3rem; padding:0; border-radius:50%; font-size:.8rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-tagword { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+main.b06-studio.ms-hand-layout .ms-task #result-body { font-size:.8rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-note { margin-bottom:.4rem; padding:.4rem .6rem; font-size:.72rem; }
+main.b06-studio.ms-hand-layout .ms-task .ms-note :is(p,h3) { font-size:.72rem; margin-bottom:.25rem; }
+main.b06-studio.ms-hand-layout #reference-notes label.inline { display:none; }
+/* Hands cannot scroll: the hand reference keeps the measured structure, the angle note and the
+   arrow legend (the mock shows only the measured structure). The full notes stay in the desktop layout. */
+main.b06-studio.ms-hand-layout #reference-notes :is(h3,#observed,#ideal,#case-bonding,#reference-inventory) { display:none; }
+/* While the reference is shown, its notes take the place of the checks (Show my model brings them back). */
+main.b06-studio.ms-hand-layout section[data-step="3"]:has(#reference-notes:not([hidden])) :is(#result-body,#criteria) { display:none; }
+main.b06-studio.ms-hand-layout .ms-task .ms-hstatus { font-size:.85rem; line-height:1.3; }
+
+/* Hand bar: camera thumbnail, one big status line with the gesture hint, then the tiles. */
+main.b06-studio .hand-bar .ms-hcoach { display:contents; }
+main.b06-studio .hand-bar :is(.ms-hhint,.ms-stop-label) { display:none; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout .hand-bar:not([hidden]) {
+  position:absolute; left:0; right:0; bottom:0; top:auto; z-index:31; max-width:none; height:var(--ms-hbar); box-sizing:border-box;
+  display:grid; grid-template-columns:minmax(0,1fr) auto auto auto; align-items:center; gap:.6rem;
+  padding:.4rem .8rem .4rem 9.6rem; background:#12292b; color:#fff; border:0; border-top:1px solid var(--ms-line); border-radius:0; box-shadow:none;
+}
+main.b06-studio.ms-hand-layout .hand-bar .ms-hcoach { display:block; min-width:0; }
+main.b06-studio.ms-hand-layout .hand-bar [role=status] { margin:0; color:#fff; font:600 1.25rem/1.25 var(--ms-font); overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+main.b06-studio.ms-hand-layout .hand-bar.ms-warn [role=status] { color:#ffd98a; }
+main.b06-studio.ms-hand-layout .hand-bar .ms-hhint { display:block; margin-top:.2rem; color:#b8d4d0; font:400 .72rem/1.3 var(--ms-font); }
+main.b06-studio.ms-hand-layout .hand-bar [data-hand-undo] { display:none; }
+main.lab-workspace.b06-studio.ms-hand-layout .hand-bar button {
+  --control-h:3.1rem; flex:none; width:3.1rem; min-width:3.1rem; height:3.1rem; padding:0 .5rem;
+  background:none; color:#fff; border:3px solid #4b7175; border-radius:14px; font:650 .92rem/1.15 var(--ms-font);
+}
+main.lab-workspace.b06-studio.ms-hand-layout .hand-bar button svg { width:1.4rem; height:1.4rem; }
+main.lab-workspace.b06-studio.ms-hand-layout .hand-bar [data-voice-state=listening] { background:#2a5357; border-color:#8fd3c8; }
+main.lab-workspace.b06-studio.ms-hand-layout .hand-bar [data-stop] { width:auto; min-width:7rem; display:inline-flex; gap:.4rem; }
+main.b06-studio.ms-hand-layout .hand-bar .ms-stop-label { display:inline; }
+main.b06-studio.ms-hand-layout .hand-bar button:focus-visible { outline:3px solid var(--ms-aim); outline-offset:2px; }
+main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout .lab-surface > .hand-camera-image {
+  inset:auto auto calc((var(--ms-hbar) - 5rem) / 2) .8rem; z-index:32; width:8rem; height:5rem; box-sizing:border-box;
+  border:2px solid #8fd3c8; border-radius:10px; background:#0c1f21; object-fit:cover;
+}
+
+/* ---------- Shapes: footer ---------- */
+main.b06-studio .ms-foot {
+  position:absolute; left:0; right:0; bottom:0; z-index:30; height:var(--ms-foot); box-sizing:border-box;
+  display:flex; align-items:center; gap:.5rem; padding:.3rem .8rem; background:#eef2ef; border-top:1px solid var(--ms-line); color:var(--ms-ink);
+}
+main.b06-studio:not([data-mode=guided]) .ms-foot, main.b06-studio.immersive .ms-foot { display:none !important; }
+main.b06-studio .ms-foot .ms-saved { margin-left:auto; min-width:0; font-size:.88rem; color:var(--ms-ink-2); }
+main.b06-studio .ms-foot .ms-saved :is(p,#save-status) { margin:0; font-size:inherit; color:inherit; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+main.b06-studio .ms-foot #ms-notes-count:not(:empty)::before { content:"("; }
+main.b06-studio .ms-foot #ms-notes-count:not(:empty)::after { content:")"; }
+
+/* ---------- Drawers: Field notes, Help, Teacher view ---------- */
+main.b06-studio .ms-drawer {
+  position:absolute; top:0; right:0; bottom:0; z-index:95; width:min(31rem,100%); box-sizing:border-box;
+  display:grid; grid-template-rows:auto minmax(0,1fr); background:#fff; border-left:1px solid var(--ms-line); box-shadow:-12px 0 40px #0003;
+  color:var(--ms-ink); font-size:1rem; line-height:1.4;
+}
+main.b06-studio .ms-drawer[hidden] { display:none !important; }
+main.b06-studio .ms-drawer > header { display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.7rem 1rem; background:var(--ms-teal-ll); border-bottom:1px solid var(--ms-line); }
+main.lab-workspace.b06-studio .ms-drawer > header h2 { margin:0; font:650 1.15rem/1.25 var(--ms-font) !important; color:var(--ms-ink); }
+main.b06-studio .ms-drawer > header h2:focus { outline:none; }
+main.b06-studio .ms-drawer-tools { display:flex; gap:.4rem; }
+main.b06-studio .ms-drawer-body { overflow:auto; padding:1rem; }
+main.b06-studio .ms-drawer-body h3 { margin:1rem 0 .3rem; font:650 1rem/1.3 var(--ms-font); color:var(--ms-ink); }
+main.b06-studio .ms-drawer-body > h3:first-child, main.b06-studio .ms-drawer-body > div:first-child > h3:first-child { margin-top:0; }
+main.b06-studio .ms-drawer-body :is(p,li) { margin:0 0 .4rem; font-size:.95rem; }
+main.b06-studio .ms-drawer-body :is(ul,ol) { margin:.2rem 0 .6rem; padding-left:1.2rem; }
+main.b06-studio .ms-drawer-body code { font-size:.9rem; background:var(--ms-teal-ll); padding:0 .25rem; border-radius:4px; }
+main.b06-studio .ms-drawer .b06-mode-scope { display:contents; }
+main.b06-studio .ms-drawer #notebook > summary { display:none; }
+main.b06-studio .ms-drawer #notebook { margin:0; padding:0; border:0; background:none; }
+main.b06-studio .ms-drawer #entries:empty::before { content:"No field notes for this molecule yet. Notes are added as you work."; color:var(--ms-ink-2); font-size:.95rem; }
+main.b06-studio .ms-drawer .entry { font-size:.95rem; }
+main.b06-studio .ms-drawer section.notes { margin:1rem 0 0; padding:0; border:0; background:none; }
+main.b06-studio .ms-drawer section.notes > details > summary { font:650 1rem/1.75 var(--ms-font); color:var(--ms-teal-d); cursor:pointer; }
+main.b06-studio .ms-drawer section.notes p { font-size:.9rem; color:var(--ms-ink-2); }
+main.b06-studio .ms-drawer .vsepr-kit-inventory { margin:.8rem 0; }
+main.b06-studio .ms-drawer .vsepr-kit-inventory summary { font-size:.95rem; }
+main.b06-studio .ms-drawer .vsepr-element[hidden] { display:none !important; }
+main.b06-studio .ms-drawer .ms-kitparts { margin:.5rem 0 0; padding-left:1.2rem; }
+main.lab-workspace.b06-studio .ms-drawer .ms-switch { display:flex; align-items:center; gap:.6rem; min-height:48px; padding:.45rem 0; border-bottom:1px solid var(--ms-line-2); font:400 1rem/1.3 var(--ms-font); color:var(--ms-ink); cursor:pointer; }
+main.b06-studio .ms-drawer .ms-switch input { flex:none; width:1.3rem; height:1.3rem; margin:0; accent-color:var(--ms-teal); }
+main.b06-studio .ms-drawer .ms-switch small { display:block; color:var(--ms-ink-2); font-size:.85rem; }
+main.b06-studio .ms-drawer .ms-note { margin:.7rem 0; padding:.55rem .7rem; background:var(--ms-amber-l); border:1px solid #ecd6a4; border-radius:8px; font-size:.92rem; }
+main.b06-studio .ms-drawer .ms-note[hidden] { display:none; }
+
+/* ---------- Immerse ---------- */
+main.b06-studio.immersive :is(.ms-rail, .ms-foot, .ms-stagehead, .ms-viewbar, .ms-coach, .ms-overlay .ms-stagetitle) { display:none !important; }
+
+/* ---------- Narrow screens (900px wide and below) ----------
+   Top bar, every mode: the mode tabs scroll sideways; Teacher view moves into More and the
+   hand, Immerse and full screen icons stay (studio-shell.js). Shapes stacks into one column that scrolls: top bar, stage head and model,
+   view tools and coach line, task panel, footer. The model, its view tools and the coach line stay
+   pinned at the top edge while the task panel scrolls past; only the stage head scrolls away
+   (studio-shell.js measures it into --ms-headh). The hand layout is not used at these widths. */
+@media (max-width:900px) {
+  main.lab-workspace[data-lab=b06][data-mode].b06-studio .lab-top,
+  main.lab-workspace[data-lab=b06].b06-studio .lab-top { gap:.4rem !important; padding:0 .5rem !important; }
+  main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch {
+    flex:0 1 auto; min-width:0; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; overscroll-behavior-x:contain;
+  }
+  main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch::-webkit-scrollbar { display:none; }
+  main.lab-workspace[data-lab=b06].b06-studio .lab-top .lab-mode-switch button { flex:none; padding:.4rem .65rem; }
+  main.b06-studio .lab-top > a { padding-inline:.1rem; }
+  main.lab-workspace[data-lab=b06].b06-studio .lab-top .ms-icon + .ms-icon { margin-left:0; }
+
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive) {
+    --ms-kit:5.75rem; --ms-coach-row:auto; --ms-model-h:clamp(13rem,33dvh,28rem);
+    overflow-x:hidden !important; overflow-y:auto !important; overscroll-behavior-y:contain;
+    scroll-padding-top:var(--ms-stick,0px); display:flex; flex-direction:column;
+  }
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive) .lab-top { position:relative !important; inset:auto !important; flex:none; order:-1; }
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive) .lab-surface {
+    position:relative !important; inset:auto !important; height:auto !important; overflow:visible !important;
+    display:flex; flex-direction:column; flex:none;
+  }
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive) #visual.lab-scene {
+    position:sticky !important; inset:auto !important; top:calc(-1 * var(--ms-headh,0px)) !important; z-index:10;
+    flex:none; width:100% !important; height:auto !important;
+    grid-template-columns:var(--ms-kit) minmax(0,1fr) !important; grid-template-rows:auto var(--ms-model-h) auto auto !important;
+    grid-template-areas:"head head" "tray model" "viewbar viewbar" "coach coach" !important;
+    background:radial-gradient(ellipse at 58% 45%,#fbfcfb 0,#e7ece9 100%) !important;
+    border-bottom:1px solid var(--ms-line); box-shadow:0 6px 14px #0f2f3214;
+  }
+  main.b06-studio #visual .ms-stagehead { padding:.4rem .5rem .3rem; }
+  main.b06-studio #visual .ms-viewbar { gap:.25rem; padding:.3rem .5rem; background:#f7f9f7e6; border-top:1px solid var(--ms-line-2); }
+  main.lab-workspace.b06-studio #visual .ms-viewbar .ms-seg button { min-width:36px; padding-inline:.35rem; }
+  main.b06-studio #visual .ms-coach { margin:.1rem .5rem .45rem; min-height:0; padding:.4rem .6rem; font-size:.92rem; line-height:1.3; }
+  main.b06-studio #visual .ms-stagetitle { left:.5rem; top:.35rem; max-width:60%; }
+  main.b06-studio #visual .ms-stagetitle h2 { font-size:1rem !important; }
+  main.b06-studio #visual .ms-anglepill { right:.5rem; top:.35rem; padding:.2rem .5rem; font-size:.9rem; }
+  main.b06-studio #visual .ms-overlap { max-width:calc(100% - 4rem); }
+  main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray { gap:.35rem; padding:.45rem .35rem; }
+  main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray h3 { font-size:.7rem !important; letter-spacing:.03em; }
+  main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .part { padding:.2rem .2rem .25rem; }
+  main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .well { height:2.7rem; }
+  main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .part-name { font-size:.8rem; }
+  main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .part-count { font-size:.75rem; }
+  main.lab-workspace[data-lab=b06].b06-studio:where(:not(.immersive)) #visual.lab-scene #tray .tray-note { display:none; }
+  main.b06-studio #loading { left:0; right:0; top:12rem; }
+
+  main.b06-studio .ms-rail { position:relative; inset:auto; width:auto; z-index:1; display:block; border-left:0; }
+  main.b06-studio .ms-task { overflow:visible; padding:.8rem .9rem .3rem; }
+  main.b06-studio .ms-task :is(#vsepr-workshop, .construction-tools)[open] { position:static; margin:0 0 .7rem; padding:.5rem .7rem; overflow:visible; border:1px solid var(--ms-line-2); border-radius:8px; }
+  main.b06-studio .ms-task :is(#vsepr-workshop, .construction-tools)[open] > summary { position:static; margin:-.5rem -.7rem .5rem; padding:.5rem .7rem; }
+  main.b06-studio .ms-actions { padding:.55rem .9rem .8rem; }
+  main.b06-studio .ms-foot { position:relative; inset:auto; flex:none; order:1; height:auto; min-height:var(--ms-foot); flex-wrap:wrap; padding:.4rem .6rem; }
+  main.b06-studio .ms-foot .ms-saved { flex-basis:100%; margin-left:0; }
+  main.lab-workspace.b06-studio .ms-foot .ms-btn { padding-inline:.6rem; }
+  main.b06-studio .ms-drawer { position:fixed; }
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio .lab-toast { position:fixed; top:.6rem; }
+}
+/* Narrow screens with hands on (fix round). The wide hand layout is not used at these widths, so the
+   page stays one scrolling column. Nothing floats over it: the hand toolbars give way to the view bar
+   under the model, and the hand bar (camera picture, status line, hand tiles) joins the column under
+   the model (Shapes) or under the kit (Build a molecule, builder-ui.css). hand-controls.js maps the
+   camera over the part of the column that is on screen. */
+@media (max-width:900px) {
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-toolbar:is(.immerse-hud,.lab-camera) { display:none !important; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar:not([hidden]) {
+    position:relative; inset:auto; z-index:1; flex:none; order:1; width:auto; max-width:none; min-height:5rem; margin:0; box-sizing:border-box;
+    display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:.5rem .6rem .5rem 7.6rem;
+    background:#12292b; color:#fff; border:0; border-top:1px solid var(--ms-line); border-radius:0; box-shadow:none;
+  }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar [role=status] { flex:1 1 10rem; min-width:0; margin:0; color:#fff; font:600 1rem/1.3 var(--ms-font); }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar.ms-warn [role=status] { color:#ffd98a; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar button {
+    --control-h:3.75rem; flex:none; width:3.75rem; min-width:3.75rem; height:3.75rem; padding:0;
+    background:none; color:#fff; border:3px solid #4b7175; border-radius:14px;
+  }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar button:disabled { opacity:.45; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar button svg { width:1.4rem; height:1.4rem; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar [data-voice-state=listening] { background:#2a5357; border-color:#8fd3c8; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .lab-surface > .hand-camera-image {
+    position:relative; inset:auto; z-index:2; flex:none; order:1; align-self:flex-start; width:6.4rem; height:4rem; margin:.5rem 0 -4.5rem .6rem;
+    box-sizing:border-box; border:2px solid #8fd3c8; border-radius:10px; background:#0c1f21; object-fit:cover;
+  }
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .ms-rail { order:2; }
+  /* The view bar is a hand zone here (it takes over from the hand toolbars): hand-sized tiles, 8 px apart. */
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) :is(#ms-viewbar, #ms-bview) { flex-wrap:wrap; gap:8px; height:auto; padding:.5rem .6rem; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) :is(#ms-viewbar, #ms-bview) .ms-seg { flex-wrap:wrap; gap:8px; padding:0; background:none; border:0; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) :is(#ms-viewbar, #ms-bview) :is(.ms-seg button, .ms-bpop-open) {
+    --control-h:60px; min-width:60px; min-height:60px !important; padding-inline:.55rem; border:2px solid var(--ms-line); border-radius:12px; background:var(--ms-card); font-size:.95rem;
+  }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) :is(#ms-viewbar, #ms-bview) .ms-seg button:is([aria-pressed=true],[aria-checked=true]) { background:var(--ms-teal); color:#fff; border-color:var(--ms-teal); }
+  /* The task panel is a hand zone too: its buttons are hand-sized and 8 px apart. */
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) :is(#task-rail, #ms-brail) :is(button, summary) { --control-h:60px; min-height:60px !important; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) :is(#task-rail, #ms-brail) :is(.ms-btabs, .ms-tiles, .ms-seg, .ui-choice-options, .ms-bactions, .ms-acts) { gap:8px; }
+}
+@media (max-width:600px) {
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar:not([hidden]) { padding-left:6.4rem; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .hand-bar [role=status] { flex-basis:100%; }
+  main.lab-workspace[data-lab=b06].b06-studio.hands-on:not(.immersive):not(.ms-hand-layout) .lab-surface > .hand-camera-image { width:5.2rem; height:3.3rem; margin-bottom:-3.8rem; }
+}
+/* Phones: Build a molecule keeps workspace.css's panel docked at the foot (the taller top bar above
+   must not stretch it over the bench). */
+@media (max-width:580px) and (min-height:501px) {
+  main.lab-workspace[data-lab=b06].b06-studio .lab-panel { top:auto; max-height:34dvh; }
+}
+/* Short landscape phones: the model is not pinned, as it would fill the screen. */
+@media (max-width:900px) and (max-height:600px) {
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive) #visual.lab-scene { position:relative !important; top:auto !important; }
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.immersive) { scroll-padding-top:0; }
+}
+
+/* ---------- Print: only the field notes ---------- */
+@media print {
+  body.lab-mode main.b06-studio { height:auto !important; overflow:visible !important; background:#fff !important; }
+  body.lab-mode main.b06-studio > *:not(#ms-notes-drawer) { display:none !important; }
+  body.lab-mode main.b06-studio #ms-notes-drawer { display:block !important; position:static; width:auto; box-shadow:none; border:0; }
+  body.lab-mode main.b06-studio #ms-notes-drawer .ms-drawer-tools { display:none; }
+  body.lab-mode main.b06-studio #ms-notes-drawer .ms-drawer-body { overflow:visible; }
+}
+
+/* ---------- Short screens: school Chromebooks (1366x630 maximised, about 600 with the bookmarks bar) ----------
+   Under 740 px tall the fixed chrome tightens with the height: --ms-c1 is 0 at 740 px and 1px at 640 px
+   and below, and each size is its full value minus its saving times --ms-c1, so nothing jumps at one
+   height. Screens 740 px and taller are unchanged, and no text gets smaller. On the desk layout the task
+   panel also runs to the foot of the screen and the footer stops at its left edge.
+   Build a molecule's own parts are in builder-ui.css, Reactions' in reaction-studio.css. */
+@media (min-width:1001px) and (max-height:739.98px) {
+  main.lab-workspace[data-lab=b06].b06-studio { --ms-c1:clamp(0px, (740px - 100vh) / 100, 1px); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) {
+    --ms-top:calc(3.5rem - 8 * var(--ms-c1)); --ms-foot:calc(3.4rem - 8 * var(--ms-c1)); --ms-coach-row:calc(4.6rem - 10.4 * var(--ms-c1));
+  }
+  /* Top bar and footer. */
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .lab-top :is(.lab-mode-switch button, .ms-ghost) {
+    min-height:calc(44px - 4 * var(--ms-c1)) !important; padding-top:calc(.4rem - 2.4 * var(--ms-c1)); padding-bottom:calc(.4rem - 2.4 * var(--ms-c1));
+  }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .lab-top { --ms-icon:calc(44px - 4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-foot { right:var(--ms-rail); padding-top:calc(.3rem - 2.4 * var(--ms-c1)); padding-bottom:calc(.3rem - 2.4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-foot .ms-btn.ms-small { min-height:calc(44px - 6 * var(--ms-c1)) !important; }
+  /* Shapes: the task panel runs to the foot; the model column keeps the footer under it. */
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.ms-hand-layout):not(.immersive) .lab-surface { bottom:0 !important; }
+  main.lab-workspace[data-lab=b06][data-mode=guided].b06-studio:not(.ms-hand-layout):not(.immersive) #visual.lab-scene { bottom:var(--ms-foot) !important; }
+  /* Shapes kit: smaller wells and gaps keep the coach card clear of the kit foot under three pieces. */
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) #visual.lab-scene #tray { gap:calc(.55rem - 3 * var(--ms-c1)); padding-top:calc(.7rem - 3 * var(--ms-c1)); padding-bottom:calc(.7rem - 4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) #visual #tray > .ms-coach { padding-top:calc(.5rem - 2 * var(--ms-c1)); padding-bottom:calc(.55rem - 2 * var(--ms-c1)); line-height:calc(1.2144rem - 1.3 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) #visual.lab-scene #tray .well { height:calc(3.6rem - 14 * var(--ms-c1)); }
+  /* Stage head and view tools (the Shapes coach card is in the kit column). */
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) #visual .ms-stagehead { padding-top:calc(.45rem - 3.2 * var(--ms-c1)); padding-bottom:calc(.3rem - 1.6 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-pills { margin-bottom:calc(.35rem - 1.6 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-pills button { min-height:calc(36px - 4 * var(--ms-c1)) !important; }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-stagehead .ms-mols button { min-height:calc(44px - 4 * var(--ms-c1)) !important; }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) #visual .ms-viewbar { padding-top:calc(.3rem - 2.4 * var(--ms-c1)); padding-bottom:calc(.3rem - 2.4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) :is(#ms-viewbar, #ms-bview) .ms-seg button { min-height:calc(40px - 4 * var(--ms-c1)) !important; }
+  /* Task panel: steps, spacing and the main button. */
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-steps { padding-top:calc(.55rem - 3.2 * var(--ms-c1)); padding-bottom:calc(.45rem - 2.4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-steps li i { width:calc(2rem - 4 * var(--ms-c1)); height:calc(2rem - 4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-steps li::before { top:calc(1rem - 2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive):not(.ms-builder) .ms-task { padding-top:calc(.8rem - 3.2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-actions { padding-top:calc(.55rem - 2.4 * var(--ms-c1)); padding-bottom:calc(.7rem - 4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-why { margin-bottom:calc(.4rem - 2.4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-actions .ms-btn { min-height:calc(48px - 4 * var(--ms-c1)) !important; }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task p:not(.gauge-tip, .small, .ms-why, .ms-status p, .ms-note p, details.ms-more p) { margin-bottom:calc(.65rem - 3.2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-box { margin-bottom:calc(.7rem - 3.2 * var(--ms-c1)); padding-top:calc(.55rem - 2.4 * var(--ms-c1)); padding-bottom:calc(.55rem - 2.4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task :is(.ms-mores, .ms-crit, .ms-note) { margin-bottom:calc(.7rem - 3.2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task details.ms-more:not(.ms-mores > details) { margin-bottom:calc(.7rem - 3.2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task #ms-compare-actions { margin-bottom:calc(.7rem - 3.2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task :is(.ms-q, .ms-qrow) { margin-bottom:calc(.6rem - 3.2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-status { margin-bottom:calc(.55rem - 2.4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-status.observation { margin-top:calc(12px - 6 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task details.ms-gauge { margin-bottom:calc(.55rem - 3.2 * var(--ms-c1)); padding-top:calc(.5rem - 2.4 * var(--ms-c1)); padding-bottom:calc(.5rem - 2.4 * var(--ms-c1)); }
+  /* Angle gauge: tighter gaps between its rows. */
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-gauge h3 { margin-bottom:calc(.25rem - 1.6 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-sites { row-gap:calc(.3rem - 1.6 * var(--ms-c1)); margin-bottom:calc(.4rem - 2.4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-readouts { margin-bottom:calc(.4rem - 2.4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-readouts > div { padding-top:calc(.25rem - 1.6 * var(--ms-c1)); padding-bottom:calc(.25rem - 1.6 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-entry { margin-bottom:calc(.3rem - 1.6 * var(--ms-c1)); }
+  /* The six site buttons of a six-site molecule fit one row with their label above them. */
+  main.lab-workspace[data-lab=b06].b06-studio:not(.ms-hand-layout):not(.immersive) .ms-task .ms-sites { grid-template-columns:minmax(0,1fr); }
+  /* Hand layout (Shapes, Build a molecule and Reactions): a shorter title bar and hand bar give the model
+     and the side panels more height, and the task panel's gaps tighten. Every hand target stays 60 px or
+     more and 8 px or more apart; the hand bar still holds two status lines, the gesture hint and its tiles. */
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) { --ms-top:calc(2.8rem - 12 * var(--ms-c1)); --ms-hbar:calc(6rem - 8 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .hand-bar:not([hidden]) { padding-top:calc(.4rem - 2 * var(--ms-c1)); padding-bottom:calc(.4rem - 2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .hand-bar [role=status] { font-size:calc(1.25rem - 3 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .lab-surface > .hand-camera-image { bottom:calc((var(--ms-hbar) - 5rem + 12 * var(--ms-c1)) / 2); height:calc(5rem - 12 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .ms-steps { padding-top:calc(.35rem - 3 * var(--ms-c1)); padding-bottom:calc(.35rem - 3 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive):not(.ms-builder) .ms-task { padding-top:calc(.6rem - 4 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .ms-task p:not(.gauge-tip, .small, .ms-why, .ms-status p, .ms-note p, details.ms-more p) { margin-bottom:calc(.45rem - 3 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .ms-task .ms-box { margin-bottom:calc(.45rem - 3 * var(--ms-c1)); padding-top:calc(.35rem - 2 * var(--ms-c1)); padding-bottom:calc(.35rem - 2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .ms-task .ms-tiles { gap:calc(.5rem - 1.6 * var(--ms-c1)); margin-bottom:calc(.5rem - 3 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .ms-actions { padding-top:calc(.4rem - 3 * var(--ms-c1)); padding-bottom:calc(.6rem - 6 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .ms-actions .ms-btn { min-height:calc(3.6rem - 8 * var(--ms-c1)) !important; }
+  /* A hand cannot scroll the task panel, so on short screens it runs to the foot as on the desk and the
+     hand bar spans the kit and the model only; Exit shows its icon (its name stays as aria-label and title),
+     which keeps every status line within two lines (scripts/cb/coachfit.cjs). */
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .ms-rail { bottom:0; }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .hand-bar:not([hidden]) { right:var(--ms-rail); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .hand-bar .ms-stop-label { display:none; }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) .hand-bar button[data-stop] { width:3.1rem; min-width:3.1rem; padding:0; justify-content:center; }
+  /* Shapes kit: smaller bond wells, tighter gaps and the two view tiles side by side, so a kit of three
+     pieces (SF4, BrF5, SeF4) fits without scrolling. */
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) #visual.lab-scene #tray { gap:calc(.5rem - 2 * var(--ms-c1)) !important; }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) #visual.lab-scene #tray .part { min-height:calc(5.4rem - 20 * var(--ms-c1)) !important; }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) #visual.lab-scene #tray .well { height:calc(2.6rem - 20 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) #tray .ms-kitview { grid-template-columns:repeat(2,minmax(0,1fr)); gap:calc(.5rem - 2 * var(--ms-c1)); }
+  main.lab-workspace[data-lab=b06].b06-studio.ms-hand-layout:not(.immersive) #tray .ms-kitview .ms-label { grid-column:1 / -1; }
+}

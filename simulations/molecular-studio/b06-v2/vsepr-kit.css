@@ -1,0 +1,54 @@
+/* VSEPR Lab additions only; reuse the studio palette and compact typography. */
+.vsepr-library { margin:0 0 8px; }
+.vsepr-library-picker { margin:0 0 10px; padding:8px 10px; border:1px solid #bed2cc; border-radius:7px; background:linear-gradient(#fff,#f1f7f4); }
+.vsepr-library-picker > summary { font-size:12px; }
+.vsepr-library-picker > summary strong { display:block; font-size:14px; line-height:1.4; margin-top:4px; color:#24434a; }
+.vsepr-library-picker[open] > summary { margin-bottom:10px; }
+.vsepr-library-picker .molecule { margin:8px 0 0; }
+.vsepr-library > label { font-weight:700; }
+.vsepr-library .small { margin:6px 0; }
+.vsepr-kit-inventory { margin:8px 0 14px; padding:9px 0; border-block:1px solid #d2dedb; }
+.vsepr-kit-inventory summary { display:flex; justify-content:space-between; gap:8px; font-size:12px; }
+.vsepr-kit-inventory summary span { font-weight:400; color:#58716f; }
+.vsepr-elements { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px 5px; padding:12px 0 5px; }
+.vsepr-element { display:flex; align-items:center; gap:5px; min-width:0; font-size:10px; }
+.vsepr-element i { display:grid; place-items:center; flex:none; width:26px; height:26px; border-radius:50%; font:700 10px/1 system-ui; background:radial-gradient(circle at 32% 24%,#ffffffdd 0%,#ffffff33 19%,transparent 40%),var(--atom-color); box-shadow:inset -3px -4px 5px #0005,inset 1px 1px 3px #fff9,0 2px 3px #20382e30; }
+.vsepr-workshop { border:1px solid #c2d4cf; border-radius:8px; background:linear-gradient(145deg,#f7fbfa,#eaf2ef); padding:10px; margin:10px 0; }
+.vsepr-workshop summary { font-size:13px; }
+.vsepr-workshop summary span { display:block; font-weight:400; color:#56716e; font-size:11px; margin:3px 0 0 14px; }
+.vsepr-workshop > label { margin-top:10px; font-size:11px; }
+.vsepr-workshop .small { font-size:11px; line-height:1.5; margin:7px 0; }
+.vsepr-workshop .small a { color:#216d73; text-decoration:underline; text-underline-offset:2px; }
+.vsepr-bond-readout { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0 6px; }
+.vsepr-bond-readout > div { display:grid; gap:3px; }
+.vsepr-bond-readout span { font-size:10px; color:#58716f; }
+.vsepr-bond-readout strong { font-size:18px; font-weight:650; color:#21545c; font-variant-numeric:tabular-nums; }
+.vsepr-rotation-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:9px; border-top:1px solid #ccdbd6; font-size:12px; }
+.vsepr-rotation-heading output { font-variant-numeric:tabular-nums; font-weight:700; }
+.vsepr-workshop input[type=range] { width:100%; margin:8px 0; accent-color:#167b78; min-height:24px; }
+.vsepr-turn-buttons { display:flex; gap:5px; flex-wrap:wrap; }
+.vsepr-turn-buttons button { flex:1; min-height:32px; font-size:11px; padding:5px 7px; white-space:normal; background:linear-gradient(#fff,#edf4f1); border:1px solid #b6cbc5; border-radius:5px; }
+.vsepr-turn-buttons button:last-child { flex:1.6; }
+.vsepr-workshop button:disabled { opacity:.45; cursor:default; }
+#vsepr-carbon-connections, #vsepr-overlap-note { padding:8px; background:#fff8e9; border-left:3px solid #b28a40; }
+#valence-ledger { line-height:1.45; margin:6px 0 12px; }
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) #tray .part:disabled { opacity:.55; cursor:default; }
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) .lab-panel-body .inspector { max-height:none!important; overflow:visible!important; }
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) .molecule .ui-choices { max-height:180px; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; }
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) .molecule .ui-choice { font-size:12px; }
+@media(max-width:600px){ .vsepr-bond-readout strong {font-size:17px;} .vsepr-turn-buttons button {min-height:38px;} }
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) #visual.lab-scene #tray .part { height:auto!important; max-height:none!important; flex:0 0 auto; min-height:94px!important; }
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) #visual.lab-scene #tray { overflow-y:auto; scrollbar-width:thin; }
+@media(max-width:580px) and (min-height:501px){
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]):not(.immersive,.hands-on) .lab-top { height:88px; min-height:88px; padding:5px 8px; gap:4px 6px; flex-wrap:wrap; align-content:center; overflow:visible!important; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]):not(.immersive,.hands-on) .lab-top h1 { display:none; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]):not(.immersive,.hands-on) .lab-top .lab-step { display:none; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]):not(.immersive,.hands-on) .lab-surface { top:88px; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]):not(.immersive,.hands-on) .lab-camera { top:96px; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]):not(.immersive,.hands-on):has(.lab-panel:not([hidden])) .lab-surface { bottom:calc(57px + 34dvh + 4px); }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]) #visual.lab-scene #tray { padding:8px 5px; gap:7px; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]) #visual.lab-scene #tray .well { height:48px; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]) #visual.lab-scene #tray .part { min-height:82px!important; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]) .lab-ticket { max-width:calc(100% - 102px); left:92px!important; padding:5px 7px; }
+ main.lab-workspace[data-lab=b06]:not([data-mode=builder]) .lab-ticket small { display:none; }
+}

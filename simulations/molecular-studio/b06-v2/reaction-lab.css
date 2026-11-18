@@ -1,0 +1,18 @@
+/* The reaction workspace is deliberately independent of the two existing tabs. */
+main.lab-workspace[data-mode=reaction] :is(.lab-surface,.lab-panel,#lab-dock,.lab-camera,.lab-status,.immerse-hud,.hand-bar,#hand-periodic-orb,.model-views,.room-bar){display:none!important}
+/* Reactions has its own Hand building and Immerse (reaction-lab.js answers those two top-bar buttons). */
+main.lab-workspace[data-mode=reaction] .lab-top :is(.lab-step,#camera-backdrop,button[title="Hide or restore panels (F)"]){display:none!important}
+#reaction-mode{position:absolute;inset:var(--ms-top,46px) 0 0;display:block;overflow:hidden}
+#reaction-mode[hidden]{display:none!important}
+/* Immerse hides the top bar; .b06-studio outranks the studio shell's own top-bar rule, which loads later. */
+main.lab-workspace[data-lab=b06][data-mode=reaction].b06-studio.rx-immersive .lab-top{display:none!important}
+main.lab-workspace[data-mode=reaction].rx-immersive #reaction-mode{inset:0}
+@media(max-width:1100px){main.lab-workspace[data-mode=reaction] .lab-top h1{display:none}}
+/* Preserve the pre-existing tab-strip behavior in the other two workspaces. */
+@media(max-width:1100px){main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch .tab-tag{display:none}}
+@media(max-width:700px){
+ main.lab-workspace[data-lab=b06] .lab-top{gap:5px;padding:0 5px;height:46px}
+ main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch{margin-left:0;gap:0;padding:2px}
+ main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch button{padding:0 6px}
+ main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch button>span:not(.tab-tag){font-size:11px}
+}

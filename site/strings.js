@@ -83,7 +83,9 @@
                     virusdefenselab: "Virus Defense",
                     acidbasesolutions: "Acid–Base 3D",
                     latticeenergy: "Lattice Energy",
-                    chiralitynobel: "Chirality Nobel"
+                    chiralitynobel: "Chirality Nobel",
+                    molecularstudio: "Molecular Studio",
+                    lewisbuilder: "Lewis Builder"
                 },
                 about: {
                     eyebrow: "About",
@@ -122,6 +124,16 @@
                     title: "The Handedness Prize: Nobel Chemistry 2026",
                     description: "A 3½-minute tabbed lesson on the 2026 Chemistry Nobel (Kagan & Soai): rotate mirror-image molecules in 3D, assign R/S, calculate enantiomeric excess, and watch non-linear effects and asymmetric autocatalysis turn a tiny excess of one hand into an almost pure sample.",
                     tags: ["Chirality", "Catalysis", "Nobel 2026", "Chemistry"]
+                },
+                molecularstudio: {
+                    title: "Molecular Studio: Shapes, Polarity and Reactions",
+                    description: "Build VSEPR models in 3D from a hands-on kit, measure bond angles, predict shape and polarity, assemble molecules atom by atom, and follow every atom through balanced reactions. Works with a mouse, touch or hand tracking.",
+                    tags: ["VSEPR", "Molecular Geometry", "Polarity", "Chemistry"]
+                },
+                lewisbuilder: {
+                    title: "Lewis Structure Builder",
+                    description: "Draw Lewis structures for practice molecules and ions, check shared and lone pairs, then turn the matching electron-domain geometry in 3D.",
+                    tags: ["Lewis Structures", "Valence Electrons", "Molecular Geometry", "Chemistry"]
                 }
             }
         },
@@ -201,7 +213,9 @@
                     virusdefenselab: "Virus və müdafiə",
                     acidbasesolutions: "Turşu–qələvi 3D",
                     latticeenergy: "Qəfəs enerjisi",
-                    chiralitynobel: "Xirallıq Nobeli"
+                    chiralitynobel: "Xirallıq Nobeli",
+                    molecularstudio: "Molekulyar studiya",
+                    lewisbuilder: "Lyuis qurucusu"
                 },
                 about: {
                     eyebrow: "Haqqında",
@@ -240,6 +254,16 @@
                     title: "Xirallıq mükafatı: Kimya üzrə Nobel 2026",
                     description: "Kimya üzrə 2026 Nobel mükafatına (Kagan və Soai) həsr olunmuş 3½ dəqiqəlik interaktiv dərs: güzgü əksi olan molekulları 3D-də fırladın, R/S konfiqurasiyasını təyin edin, enantiomer artıqlığını hesablayın və qeyri-xətti effektlərin və asimmetrik avtokatalizin kiçik bir artıqlığı necə demək olar ki, təmiz bir formaya çevirdiyini izləyin.",
                     tags: ["Xirallıq", "Kataliz", "Nobel 2026", "Kimya"]
+                },
+                molecularstudio: {
+                    title: "Molekulyar studiya: formalar, polyarlıq və reaksiyalar",
+                    description: "Model dəsti ilə VSEPR modellərini 3D-də qurun, rabitə bucaqlarını ölçün, forma və polyarlığı proqnozlaşdırın, molekulları atom-atom yığın və bərabərləşdirilmiş reaksiyalarda hər atomu izləyin. Siçan, toxunma və ya əl izləmə ilə işləyir.",
+                    tags: ["VSEPR", "Molekulun həndəsəsi", "Polyarlıq", "Kimya"]
+                },
+                lewisbuilder: {
+                    title: "Lyuis strukturu qurucusu",
+                    description: "Təcrübə molekulları və ionlar üçün Lyuis strukturlarını çəkin, ortaq və bölünməmiş elektron cütlərini yoxlayın, sonra uyğun elektron domen həndəsəsini 3D-də fırladın.",
+                    tags: ["Lyuis strukturları", "Valent elektronlar", "Molekulun həndəsəsi", "Kimya"]
                 }
             }
         },
@@ -319,7 +343,9 @@
                     virusdefenselab: "Virüs savunması",
                     acidbasesolutions: "Asit–baz 3B",
                     latticeenergy: "Örgü enerjisi",
-                    chiralitynobel: "Kiralite Nobeli"
+                    chiralitynobel: "Kiralite Nobeli",
+                    molecularstudio: "Moleküler Stüdyo",
+                    lewisbuilder: "Lewis Kurucu"
                 },
                 about: {
                     eyebrow: "Hakkında",
@@ -358,6 +384,16 @@
                     title: "Kiralite Ödülü: 2026 Nobel Kimya Ödülü",
                     description: "2026 Nobel Kimya Ödülü (Kagan ve Soai) üzerine 3½ dakikalık sekmeli, etkileşimli bir ders: ayna görüntüsü molekülleri 3B olarak döndürün, R/S belirleyin, enantiyomerik fazlalığı hesaplayın ve doğrusal olmayan etkilerin ve asimetrik otokatalizin küçük bir fazlalığı nasıl neredeyse saf tek bir forma dönüştürdüğünü izleyin.",
                     tags: ["Kiralite", "Kataliz", "Nobel 2026", "Kimya"]
+                },
+                molecularstudio: {
+                    title: "Moleküler Stüdyo: Şekiller, Polarlık ve Tepkimeler",
+                    description: "Bir model kitiyle VSEPR modellerini 3B olarak kurun, bağ açılarını ölçün, şekli ve polarlığı tahmin edin, molekülleri atom atom oluşturun ve denkleştirilmiş tepkimelerde her atomu izleyin. Fare, dokunma veya el takibiyle çalışır.",
+                    tags: ["VSEPR", "Molekül Geometrisi", "Polarlık", "Kimya"]
+                },
+                lewisbuilder: {
+                    title: "Lewis Yapısı Kurucu",
+                    description: "Alıştırma molekülleri ve iyonları için Lewis yapıları çizin, bağlayıcı ve ortaklanmamış elektron çiftlerini kontrol edin, ardından uygun elektron bölgesi geometrisini 3B olarak döndürün.",
+                    tags: ["Lewis Yapıları", "Değerlik Elektronları", "Molekül Geometrisi", "Kimya"]
                 }
             }
         },
@@ -437,7 +473,9 @@
                     virusdefenselab: "Virusabwehr",
                     acidbasesolutions: "Säure–Base 3D",
                     latticeenergy: "Gitterenergie",
-                    chiralitynobel: "Chiralitäts-Nobel"
+                    chiralitynobel: "Chiralitäts-Nobel",
+                    molecularstudio: "Molekülstudio",
+                    lewisbuilder: "Lewis-Baukasten"
                 },
                 about: {
                     eyebrow: "Über",
@@ -476,6 +514,16 @@
                     title: "Der Händigkeitspreis: Chemie-Nobelpreis 2026",
                     description: "Eine 3½-minütige interaktive Lektion in Registerkarten zum Chemie-Nobelpreis 2026 (Kagan & Soai): Spiegelbildmoleküle in 3D drehen, R/S bestimmen, den Enantiomerenüberschuss berechnen und zusehen, wie nichtlineare Effekte und asymmetrische Autokatalyse einen winzigen Überschuss in eine fast reine Probe verwandeln.",
                     tags: ["Chiralität", "Katalyse", "Nobel 2026", "Chemie"]
+                },
+                molecularstudio: {
+                    title: "Molekülstudio: Formen, Polarität und Reaktionen",
+                    description: "Baue VSEPR-Modelle in 3D aus einem Modellbaukasten, miss Bindungswinkel, sage Form und Polarität voraus, setze Moleküle Atom für Atom zusammen und verfolge jedes Atom durch ausgeglichene Reaktionen. Funktioniert mit Maus, Touch oder Handerkennung.",
+                    tags: ["VSEPR", "Molekülgeometrie", "Polarität", "Chemie"]
+                },
+                lewisbuilder: {
+                    title: "Lewis-Strukturen-Baukasten",
+                    description: "Zeichne Lewis-Strukturen für Übungsmoleküle und Ionen, prüfe bindende und freie Elektronenpaare und drehe dann die passende Elektronendomänen-Geometrie in 3D.",
+                    tags: ["Lewis-Strukturen", "Valenzelektronen", "Molekülgeometrie", "Chemie"]
                 }
             }
         }

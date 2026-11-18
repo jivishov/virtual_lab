@@ -1,0 +1,136 @@
+/* Shared presentation contract. Page layouts remain in each bench's stylesheet. */
+:root {
+  --ink:#1f3330; --muted:#58706b; --line:#cfd6cf; --line-strong:#9fb0a8;
+  --paper:#fffdf8; --canvas:#f3f4ee; --panel:#ffffff;
+  --accent:#1f5f5b; --accent-ink:#143f3b; --accent-soft:#dcebe6; --accent-line:#2f6f69;
+  --warn:#9a5a1a; --warn-soft:#faf0da; --focus:#b8771f; --top:#173c3c;
+  --radius:6px; --control-h:36px; --gap:12px;
+  --font:"Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:Consolas,ui-monospace,monospace;
+  font:15px/1.45 var(--font);
+  color-scheme:light;
+}
+body { font:15px/1.45 var(--font); color:var(--ink); }
+/* Old benches include highly specific serif shorthands; this is the shared type scale. */
+body h1, body h2, body h3, body summary { font-family:var(--font)!important; }
+body h1 { font-size:22px!important; font-weight:600!important; line-height:1.2!important; }
+body h2 { font-size:17px!important; font-weight:650!important; line-height:1.3!important; }
+body label { font:650 13px/1.4 var(--font); color:var(--muted); }
+body :is(output, .ui-numeric, .readouts dd, .meters strong, .instruments strong) {
+  font-family:var(--mono); font-variant-numeric:tabular-nums;
+}
+body button, body input:not([type=range]):not([type=checkbox]):not([type=radio]) {
+  box-sizing:border-box; min-height:var(--control-h); border-radius:var(--radius);
+  font-family:var(--font); font-size:14px; font-weight:600;
+}
+body button:not(.primary) { border-color:var(--line-strong); }
+body button:hover:not(:disabled) { background-color:#eef3ee; }
+body button.primary:hover:not(:disabled) { background-color:var(--accent-ink); }
+body :focus-visible { outline:3px solid var(--focus); outline-offset:2px; }
+body button:disabled { opacity:.45; }
+
+/* Shared studio chrome: a 44px navigation bar and a 48px title row. */
+body .ui-topbar {
+  box-sizing:border-box; display:flex; align-items:center; justify-content:space-between; gap:16px;
+  height:44px; min-height:44px; padding:0 16px; margin:0;
+  background:var(--top); color:var(--paper); border:0; border-radius:0;
+  font:400 13px/1.4 var(--font); text-decoration:none;
+}
+body .ui-topbar a { color:var(--paper); font:inherit; }
+body .ui-title-row {
+  box-sizing:border-box; display:flex; align-items:center; gap:20px;
+  height:48px; min-height:48px; margin:0; padding:0; min-width:0;
+}
+body .ui-title-row h1 { flex:none; margin:0; letter-spacing:0; }
+@media(min-width:1101px) {
+  body.ui-standalone main { padding-top:0; }
+  body.ui-standalone .ui-title-row { height:48px; min-height:48px; padding-block:0; margin:0 0 16px; }
+  body.ui-standalone .page-head:has(.ui-title-row) { padding-bottom:0; }
+  body.ui-standalone .page-head nav { margin-bottom:0; }
+}
+body.ui-standalone .site-bar { box-sizing:border-box; height:44px; min-height:44px; border:0; }
+body.ui-standalone .site-bar nav { box-sizing:border-box; display:flex; align-items:center; height:44px; min-height:44px; }
+body.ui-standalone > header.mast { box-sizing:border-box; height:44px; min-height:44px; border:0; }
+
+/* All ordinary controls share the same minimum target; multi-line choices grow. */
+body button { min-height:var(--control-h)!important; }
+body :is(button.primary, button[type=submit], button.check-button) { padding-block:6px; line-height:1.3; }
+
+/* These sources still participate in native form validation and existing app bindings. */
+select.ui-select-source {
+  position:absolute!important; width:1px!important; height:1px!important;
+  min-width:0!important; max-width:1px!important; min-height:0!important;
+  padding:0!important; margin:0!important; border:0!important;
+  clip:rect(0,0,0,0)!important; clip-path:inset(50%)!important;
+  overflow:hidden!important; white-space:nowrap!important;
+}
+.ui-choices { box-sizing:border-box; display:grid; gap:6px; min-width:0; max-width:100%; margin:4px 0 8px; }
+.ui-choices[hidden] { display:none!important; }
+.ui-choice-options { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(104px,100%),1fr)); gap:6px; min-width:0; }
+:is(body, #editor) .ui-choices button.ui-choice {
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  position:relative; box-sizing:border-box; width:100%; min-width:0; max-width:none;
+  min-height:var(--control-h); height:auto; margin:0; padding:5px 8px;
+  border:1px solid var(--line-strong); border-radius:var(--radius);
+  background:var(--panel); color:var(--ink); box-shadow:none;
+  font:600 14px/1.3 var(--font); text-align:center; white-space:normal;
+  letter-spacing:normal; text-transform:none; cursor:pointer;
+}
+:is(body, #editor) .ui-choices button.ui-choice:hover:not(:disabled) { background:#eef3ee; border-color:var(--accent-line); }
+:is(body, #editor) .ui-choices button.ui-choice[aria-checked=true] {
+  background:var(--accent-soft); border-color:var(--accent-line); color:var(--accent-ink);
+}
+:is(body, #editor) .ui-choices button.ui-choice:focus-visible { z-index:1; outline:3px solid var(--focus); outline-offset:2px; }
+:is(body, #editor) .ui-choices button.ui-choice:disabled { opacity:.45; cursor:default; }
+.ui-choice-text { min-width:0; max-width:100%; overflow-wrap:normal; word-break:normal; hyphens:none; }
+.ui-choice-token { white-space:nowrap; }
+.ui-choice-sub { color:var(--muted); font:400 12px/1.3 var(--font); }
+.ui-choice-address { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.ui-choice-heading { color:var(--muted); font:650 12px/1.4 var(--font); padding:4px 2px; }
+.ui-choices.ui-required { outline:1px solid var(--warn); outline-offset:3px; border-radius:var(--radius); }
+
+.ui-choices[data-variant=segment] .ui-choice-options { display:flex; gap:0; }
+:is(body, #editor) .ui-choices[data-variant=segment] button.ui-choice { flex:1 1 0; border-radius:0; padding-inline:8px; }
+:is(body, #editor) .ui-choices[data-variant=segment] button.ui-choice + button { margin-left:-1px; }
+:is(body, #editor) .ui-choices[data-variant=segment] button.ui-choice:first-child { border-radius:var(--radius) 0 0 var(--radius); }
+:is(body, #editor) .ui-choices[data-variant=segment] button.ui-choice:last-child { border-radius:0 var(--radius) var(--radius) 0; }
+:is(body, #editor) .ui-choices[data-variant=segment] button.ui-choice:only-child { border-radius:var(--radius); }
+:is(body, #editor) .ui-choices[data-variant=segment] button.ui-choice[aria-checked=true] { z-index:1; }
+
+.ui-choices[data-variant=cards] .ui-choice-options { grid-template-columns:minmax(0,1fr); }
+:is(body, #editor) .ui-choices[data-variant=cards] button.ui-choice {
+  align-items:flex-start; text-align:left; padding:10px 12px 10px 36px; font-size:15px; font-weight:500;
+}
+:is(body, #editor) .ui-choices[data-variant=cards] button.ui-choice::before {
+  content:""; position:absolute; left:11px; top:50%; transform:translateY(-50%);
+  width:14px; height:14px; box-sizing:border-box; border:1px solid var(--line-strong); border-radius:50%; background:var(--panel);
+}
+:is(body, #editor) .ui-choices[data-variant=cards] button.ui-choice[aria-checked=true]::before {
+  border-color:var(--accent-line); background:var(--accent); box-shadow:inset 0 0 0 3px var(--panel);
+}
+
+.ui-choices[data-variant=list] {
+  display:block; max-height:calc(7 * var(--control-h) + 2px); overflow:auto; overscroll-behavior:contain;
+  border:1px solid var(--line-strong); border-radius:var(--radius); scrollbar-width:thin;
+  scroll-padding-block:28px 2px; background:var(--panel);
+}
+.ui-choices[data-variant=list] .ui-choice-options { grid-template-columns:minmax(0,1fr); gap:0; }
+.ui-choices[data-variant=list] .ui-choice-heading {
+  position:sticky; top:0; z-index:2; margin:0; padding:4px 10px;
+  background:var(--canvas); border-bottom:1px solid var(--line);
+}
+:is(body, #editor) .ui-choices[data-variant=list] button.ui-choice {
+  flex-direction:row; justify-content:flex-start; gap:6px; height:auto; min-height:var(--control-h);
+  padding:4px 10px; border:0; border-bottom:1px solid var(--line); border-radius:0; font-size:13px; font-weight:500; text-align:left;
+}
+:is(body, #editor) .ui-choices[data-variant=list] button.ui-choice[aria-checked=true] { box-shadow:inset 3px 0 var(--accent-line); }
+:is(body, #editor) .ui-choices[data-variant=list] button.ui-choice:focus-visible { outline-offset:-3px; }
+.ui-choices[data-variant=list] .ui-choice-text { overflow:visible; white-space:normal; }
+
+@media (min-width:801px) {
+  body .lab-workspace[data-lab] .lab-panel.lab-procedure { width:336px; }
+}
+body .lab-workspace[data-lab] .lab-panel-body button:not(.ui-choice) {
+  min-height:var(--control-h); border-radius:var(--radius); font:600 14px/1.3 var(--font); padding:6px 12px;
+}
+body .lab-workspace[data-lab] .lab-panel-body label { font:650 13px/1.4 var(--font); color:var(--muted); }

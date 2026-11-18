@@ -1,0 +1,59 @@
+{
+  "title": "Advanced 3D molecule builder",
+  "background": "Molecule builder is an open 3D construction bench for neutral main-group molecules. You define the structure: connectivity, bond orders and lone pairs, each atom placed by hand. For the selected atom the readouts give the VSEPR prediction, placed domains, electron geometry, AP hybridization (sp, sp² or sp³ for two to four domains, none assigned for more), the direction VSEPR predicts real angles to move, the σ and π bonds at that atom, and its formal charge. Model limits: positions are not energy-minimized, the 8° angle allowance is a construction tolerance rather than an experimental uncertainty, hybridization labels are bookkeeping rather than a measurement, and the angle trend is qualitative: Cl₂O, for example, measures about 111°, above the ideal 109.5°. A passing check adds the measured reference structure for comparison.",
+  "objective": "Build seven neutral structures from blank benches as optional design checks. Verify connectivity, bond orders, lone pairs and formal charges, then compare the local geometry at each named center with its VSEPR prediction and the measured structure.",
+  "steps": [
+    "1. Open Molecule builder and select a challenge under Workbench, or go straight to Free construction. Each challenge starts on an empty bench and keeps its own draft. Construction hints are optional.",
+    "2. Drag atoms onto the bench, set the bond order and snap atoms to open rings. To bond two placed atoms, select one and drag a bond to the other. Seat every lone pair, terminal ones included. Place and edit with buttons offers the same operations without dragging.",
+    "3. Select each named center and turn on Geometry. Read the domain count, electron geometry, shape, hybridization, σ/π tally and formal charge. Choose two neighbors to compare the 3D angle with the ideal angle. The bench is graded against ideal directions; the VSEPR angle trend gives the direction real angles usually move from them. In CH₃–C≡N, inspect both carbons.",
+    "4. Choose Check construction. Fix any flagged connection, bond order, lone pair or local angle. To re-spread domains, drag atoms or choose an arrangement under Place and edit with buttons. Check again, then use Save for an editable copy.",
+    "5. Move to the next challenge, or use Free construction for an open bench and separate editable reference models."
+  ],
+  "cases": [
+    "Acetonitrile (CH₃–C≡N)",
+    "Carbonyl fluoride (COF₂)",
+    "Hydrazine (H₂N–NH₂)",
+    "Hypofluorous acid (HOF)",
+    "Methanimine (H₂C=NH)",
+    "Dimethyl sulfide (CH₃–S–CH₃)",
+    "Ketene (H₂C=C=O)"
+  ],
+  "sources": [
+    {
+      "label": "R. J. Gillespie and E. A. Robinson · Electron domains and the VSEPR model",
+      "url": "https://doi.org/10.1002/anie.199604951"
+    },
+    {
+      "label": "NIST Chemistry WebBook · Acetonitrile structure",
+      "url": "https://webbook.nist.gov/cgi/cbook.cgi?Name=CH3CN"
+    },
+    {
+      "label": "NIST Chemistry WebBook · Carbonyl fluoride structure",
+      "url": "https://webbook.nist.gov/cgi/cbook.cgi?ID=353-50-4"
+    },
+    {
+      "label": "NIST Chemistry WebBook · Hydrazine structure",
+      "url": "https://webbook.nist.gov/cgi/cbook.cgi?ID=C302012"
+    },
+    {
+      "label": "NIST CCCBDB · Hypofluorous acid structure",
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=14034798&charge=0"
+    },
+    {
+      "label": "NIST Chemistry WebBook · Methanimine structure",
+      "url": "https://webbook.nist.gov/cgi/cbook.cgi?ID=C2053294&Mask=20"
+    },
+    {
+      "label": "NIST Chemistry WebBook · Dimethyl sulfide structure",
+      "url": "https://webbook.nist.gov/cgi/cbook.cgi?ID=C75183"
+    },
+    {
+      "label": "NIST Chemistry WebBook · Ketene structure",
+      "url": "https://webbook.nist.gov/cgi/inchi?ID=C463514&Mask=1"
+    },
+    {
+      "label": "NIST CCCBDB · Dichlorine monoxide (Cl₂O) experimental geometry",
+      "url": "https://cccbdb.nist.gov/exp2x.asp?casno=7791211&charge=0"
+    }
+  ]
+}

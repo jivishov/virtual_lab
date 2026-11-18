@@ -1,0 +1,196 @@
+/* Molecular studio in the shared lab shell (2026-11-12).
+   Two products on one page: the VSEPR lab is a physical model kit on a bench;
+   the molecule builder is a compact molecule-CAD tool with a parts rail, a view ribbon,
+   an Inspector and a status bar. main[data-mode] decides which one is on screen. */
+
+main.lab-workspace[data-lab=b06] { --b06-rail:188px; --b06-ribbon:46px; --b06-status:32px; --b06-line:#cbd5d3; --b06-chrome:#f5f7f6; --b06-ink:#1f3d46; --b06-muted:#5c7177; }
+
+/* One mode at a time. Moved elements no longer sit under their old mode wrapper. */
+main.lab-workspace[data-lab=b06] .b06-mode-scope { display:contents; }
+main.lab-workspace[data-lab=b06] [data-b06-mode][hidden],
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) [data-b06-mode=builder],
+main.lab-workspace[data-lab=b06][data-mode=builder] [data-b06-mode=guided] { display:none !important; }
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) :is(#builder-stage, #builder-tray, #builder-ribbon, .builder-panel, .examples, .builder-scene-header, .insight-strip, .file-tools, #builder-save-status, .builder-foot) { display:none !important; }
+main.lab-workspace[data-lab=b06][data-mode=builder] :is(#visual, .inspector, .bench-bar, .camera-bar, .instrument-line, #notebook, .notes, #save-status, #loading) { display:none !important; }
+/* Retain the shared workspace's panel resets through the mode guard. */
+main.lab-workspace[data-lab=b06] .lab-panel-body > .b06-mode-scope > :is(section,aside,nav,header,details,.guide,.controls) { border:0 !important; background:transparent !important; box-shadow:none !important; border-radius:0 !important; padding:0 !important; margin:0 !important; width:100% !important; max-width:none !important; display:block; }
+main.lab-workspace[data-lab=b06] .lab-panel-body > .b06-mode-scope > details { margin-bottom:9px !important; }
+
+/* Keep the learner's instructions present while moving the model over a camera. */
+main.lab-workspace[data-lab=b06].hands-on:is(.lab-handling,.lab-navigating) .lab-panel { opacity:1; pointer-events:auto; }
+main.lab-workspace[data-lab=b06] :is(#viewport,#builder-stage) { user-select:none; -webkit-user-select:none; }
+
+/* Scene backdrop: light studio grey, the same family as the other benches. */
+main.lab-workspace[data-lab=b06] .lab-surface { background:#e8ecea; }
+main.lab-workspace[data-lab=b06] :is(#visual, #builder-stage).lab-scene { background:radial-gradient(ellipse at 52% 40%, #f6f8f7 0%, #e9edeb 52%, #dbe2df 100%); }
+main.lab-workspace[data-lab=b06] #builder-stage.lab-scene::before { content:none; }
+/* The viewer draws its own contact shadow under the molecule; drop the older CSS floor ellipse. */
+main.lab-workspace[data-lab=b06] #builder-stage.lab-scene::after { content:none; }
+
+/* ---------- Top bar ---------- */
+main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch { display:flex; gap:2px; padding:2px; margin-left:6px; border:1px solid #3f5f68; border-radius:7px; background:#122e35; flex:none; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch button { height:28px; min-height:28px; padding:0 11px; border:0; border-radius:5px; background:transparent; color:#bfd8d6; font:600 12.5px/1 var(--font, system-ui); display:inline-flex; align-items:center; gap:6px; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch button > span:not(.tab-tag) { font-size:12.5px; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch button[aria-selected=true] { background:#e6f1ee; color:#173a42; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch .tab-tag { display:inline-block; border:1px solid currentColor; border-radius:3px; padding:0 4px; font-size:9px; line-height:14px; letter-spacing:.06em; opacity:.75; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch button:focus-visible { outline:2px solid #9fe0d6; outline-offset:1px; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-experience { display:inline-flex; align-items:center; gap:6px; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-experience svg { width:15px; height:15px; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-experience span { display:inline; }
+main.lab-workspace[data-lab=b06] .lab-top .lab-experience[aria-pressed=true] { background:#e6f1ee; color:#173a42; border-color:#e6f1ee; }
+
+/* Notices (camera, full screen) as a toast under the top bar. */
+main.lab-workspace[data-lab=b06] .lab-toast { position:absolute; top:58px; left:50%; transform:translateX(-50%); z-index:70; max-width:min(560px, calc(100% - 40px)); margin:0; padding:8px 14px; border-radius:6px; background:#183740; color:#f1f8f6; font:500 13px/1.35 var(--font, system-ui); box-shadow:0 6px 20px #10283033; pointer-events:none; }
+main.lab-workspace[data-lab=b06] .lab-toast:empty { display:none; }
+main.lab-workspace[data-lab=b06].immersive .lab-toast { top:auto; bottom:64px; }
+
+/* ---------- VSEPR lab: a physical model kit ---------- */
+main.lab-workspace[data-lab=b06]:not([data-mode=builder]) .lab-ticket { left:126px; }
+/* The tray thumbnails are drawn on the scene canvas behind the tray, so the tray and its compartments stay see-through. */
+main.lab-workspace[data-lab=b06] #visual.lab-scene #tray { justify-content:flex-start; gap:10px; padding:12px 8px; background:linear-gradient(90deg, #d5dddb99, #e3e8e64d); border-right:1px solid #b5c2bf; box-shadow:inset -6px 0 10px -8px #1d3a4040; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene #tray h3 { margin:0 0 2px; padding:0; background:none; color:#3d575d; font:700 10px/1.2 var(--font, system-ui); letter-spacing:.09em; text-transform:uppercase; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene #tray .part { min-height:0; padding:4px; border:1px solid #aebcb9; border-radius:9px; background:transparent; box-shadow:inset 0 2px 6px #1d3a401f, 0 1px 0 #ffffffb0; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene #tray .part:hover { border-color:#5e8c8a; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene #tray .part[aria-pressed=true], main.lab-workspace[data-lab=b06] #visual.lab-scene #tray .part.active { border-color:#245c72; box-shadow:inset 0 2px 5px #1d3a4024, 0 0 0 2px #245c7255; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene #tray .well { height:62px; border-radius:6px; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene #tray .part-name { background:transparent; font:600 11px/1.25 var(--font, system-ui); color:#24444b; padding:4px 2px 2px; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene #tray .tray-note { margin-top:auto; background:transparent; color:#4c6268; font-size:11px; line-height:1.35; }
+main.lab-workspace[data-lab=b06] #visual .scene-tip { color:#5a6f74; }
+main.lab-workspace[data-lab=b06] .lab-panel-body .inspector { border:0; padding:0; background:none; }
+
+/* ---------- Molecule builder: compact molecule-CAD layout ---------- */
+main.lab-workspace[data-lab=b06] #builder-stage.lab-scene { left:var(--b06-rail) !important; top:var(--b06-ribbon) !important; right:0 !important; bottom:var(--b06-status) !important; width:auto !important; height:auto !important; min-height:0 !important; }
+main.lab-workspace[data-lab=b06] #builder-stage .stage-caption { bottom:8px; }
+
+/* Parts rail (left). */
+main.lab-workspace[data-lab=b06] #builder-tray { position:absolute; left:0; top:0; bottom:0; width:var(--b06-rail); z-index:6; box-sizing:border-box; display:flex; flex-direction:column; gap:5px; padding:0 0 10px; overflow:hidden; background:var(--b06-chrome); border-right:1px solid var(--b06-line); color:var(--b06-ink); }
+main.lab-workspace[data-lab=b06] #builder-tray .builder-parts {
+  display:flex; flex-direction:column; gap:5px; flex:1; min-height:0;
+  padding:8px 10px 0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin;
+}
+main.lab-workspace[data-lab=b06] #builder-tray .builder-parts > * { flex-shrink:0; }
+main.lab-workspace[data-lab=b06] #builder-tray .build-step { margin:6px 0 2px; gap:6px; }
+main.lab-workspace[data-lab=b06] #builder-tray .build-step:first-child { margin-top:0; }
+main.lab-workspace[data-lab=b06] #builder-tray .step-number { display:none; }
+main.lab-workspace[data-lab=b06] #builder-tray .build-step h3 { margin:0; font:700 10px/1.2 var(--font, system-ui); letter-spacing:.09em; text-transform:uppercase; color:var(--b06-muted); }
+main.lab-workspace[data-lab=b06] #builder-tray #element-name { font-size:11px; color:#245c72; font-weight:600; }
+main.lab-workspace[data-lab=b06] #builder-tray .element-palette { grid-template-columns:repeat(3, minmax(0,1fr)); gap:4px; }
+main.lab-workspace[data-lab=b06] #builder-tray .element-palette button { min-height:48px; padding:3px 2px; border-radius:6px; background:#fff; border:1px solid #d3dcda; }
+main.lab-workspace[data-lab=b06] #builder-tray .element-palette button[aria-pressed=true] { border-color:#245c72; background:#e7f0f1; box-shadow:inset 0 0 0 1px #245c72; }
+main.lab-workspace[data-lab=b06] #builder-tray .bond-choices { gap:4px; }
+main.lab-workspace[data-lab=b06] #builder-tray .bond-choices button { min-height:46px; padding:3px 2px; font-size:10.5px; border-radius:6px; background:#fff; border:1px solid #d3dcda; }
+main.lab-workspace[data-lab=b06] #builder-tray .bond-choices button[aria-pressed=true] { border-color:#245c72; background:#e7f0f1; box-shadow:inset 0 0 0 1px #245c72; }
+main.lab-workspace[data-lab=b06] #builder-tray .pair-piece { min-height:46px; padding:6px 10px; gap:12px; border-radius:6px; background:#fff; border:1px solid #d3dcda; }
+main.lab-workspace[data-lab=b06] #builder-tray .kit-return { flex:none; margin:0 10px; padding:8px 10px; gap:8px; border-radius:6px; }
+main.lab-workspace[data-lab=b06] #builder-tray .kit-return:not(.accepting-part) { background:#eef1f0; border-color:#9fb0ad; box-shadow:none; }
+main.lab-workspace[data-lab=b06] #builder-tray .mobile-carry-hint { display:none; }
+
+/* View ribbon (top of the canvas). */
+main.lab-workspace[data-lab=b06] #builder-ribbon { position:absolute; left:var(--b06-rail); right:0; top:0; height:var(--b06-ribbon); z-index:6; box-sizing:border-box; display:flex; align-items:center; gap:10px; padding:0 10px; background:var(--b06-chrome); border-bottom:1px solid var(--b06-line); overflow-x:auto; scrollbar-width:none; }
+main.lab-workspace[data-lab=b06]:has(.lab-procedure[hidden]) #builder-ribbon { padding-right:300px; }
+main.lab-workspace[data-lab=b06] #builder-ribbon > * { flex:none; display:flex; align-items:center; gap:3px; margin:0; padding:0; }
+main.lab-workspace[data-lab=b06] #builder-ribbon > * + * { padding-left:10px; border-left:1px solid var(--b06-line); }
+main.lab-workspace[data-lab=b06] #builder-ribbon button { height:32px; min-height:32px; padding:0 9px; gap:6px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--b06-ink); font:600 12px/1 var(--font, system-ui); box-shadow:none; white-space:nowrap; }
+main.lab-workspace[data-lab=b06] #builder-ribbon button:hover:not(:disabled) { background:#e7eeec; }
+main.lab-workspace[data-lab=b06] #builder-ribbon button[aria-pressed=true] { background:#e1edee; border-color:#9fbcc0; color:#173f4c; }
+main.lab-workspace[data-lab=b06] #builder-ribbon .history-tools button { width:32px; padding:0; justify-content:center; }
+main.lab-workspace[data-lab=b06] #builder-ribbon svg { width:16px; height:16px; }
+main.lab-workspace[data-lab=b06] #builder-ribbon .model-views > button { flex-direction:row; min-height:32px; font-size:12px; }
+main.lab-workspace[data-lab=b06] #builder-ribbon .model-views .representation { transform:scale(.62); margin:0 -6px; }
+
+/* Status bar (bottom of the canvas): formula, counts and the VSEPR read-out. */
+main.lab-workspace.lab-ref[data-lab=b06][data-mode=builder] .lab-ticket { left:var(--b06-rail); right:0; bottom:0; top:auto; max-width:none; height:var(--b06-status); padding:0 12px; gap:0 16px; flex-wrap:nowrap; align-items:center; overflow:hidden; border:0; border-top:1px solid var(--b06-line); border-radius:0; background:var(--b06-chrome); box-shadow:none; font:400 12px/1 var(--font, system-ui); }
+main.lab-workspace.lab-ref[data-lab=b06][data-mode=builder] .lab-ticket > span { flex:none; white-space:nowrap; }
+main.lab-workspace.lab-ref[data-lab=b06][data-mode=builder] .lab-ticket > span:nth-child(2) strong { color:var(--b06-ink); font-size:13px; font-weight:700; }
+main.lab-workspace.lab-ref[data-lab=b06][data-mode=builder] .lab-ticket > span:not([hidden]) ~ span { padding-left:16px; border-left:1px solid var(--b06-line); }
+main.lab-workspace.lab-ref[data-lab=b06][data-mode=builder] .lab-ticket small { font-size:10px; letter-spacing:.06em; text-transform:uppercase; }
+
+/* Inspector, Analysis and File panels. Secondary panels open beside the parts rail, not over it. */
+main.lab-workspace[data-lab=b06][data-mode=builder] :is(.lab-readings, .lab-notes, .lab-about) { left:calc(var(--b06-rail) + 12px); right:auto; }
+main.lab-workspace[data-lab=b06][data-mode=builder] .lab-notes { width:320px; }
+main.lab-workspace[data-lab=b06] .lab-panel-body .builder-panel { padding:0 !important; max-height:none !important; overflow:visible !important; border:0 !important; background:none; }
+main.lab-workspace[data-lab=b06] .lab-panel-body .builder-panel .assignment { margin:0 0 10px; padding:0 0 12px; border-bottom:1px solid var(--b06-line); }
+main.lab-workspace[data-lab=b06] .lab-panel-body .builder-scene-header { padding:0 0 8px; min-height:0; gap:12px; flex-wrap:wrap; }
+main.lab-workspace[data-lab=b06] .lab-panel-body .insight-strip { grid-template-columns:1fr 1fr; gap:10px 12px; padding:10px 0 0; border-top:1px solid var(--b06-line); }
+main.lab-workspace[data-lab=b06] .lab-panel-body .insight-strip > div { border-right:0; }
+main.lab-workspace[data-lab=b06] .lab-panel-body .insight-strip strong { font-size:14px; }
+main.lab-workspace[data-lab=b06] .lab-panel-body .file-tools { display:flex; flex-wrap:wrap; gap:6px; }
+main.lab-workspace[data-lab=b06] .lab-panel-body .builder-foot { display:block; margin:0; color:inherit; font-size:12px; }
+main.lab-workspace[data-lab=b06] .lab-panel-body .builder-foot .build-tip { color:var(--b06-ink); }
+
+/* ---------- In your room ---------- */
+main.lab-workspace[data-lab=b06] .lab-scene.camera-live { background:#0d1719 !important; }
+main.lab-workspace[data-lab=b06] .lab-scene.camera-live .room-video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+main.lab-workspace[data-lab=b06] .room-video.mirrored { transform:scaleX(-1); }
+main.lab-workspace[data-lab=b06] .room-scrim { position:absolute; inset:0; z-index:0; pointer-events:none; background:#e8ecea; }
+main.lab-workspace[data-lab=b06].immersive .room-scrim { background:#132628; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene.camera-live > #viewport { z-index:1; }
+main.lab-workspace[data-lab=b06] #visual.lab-scene.camera-live #tray { background:#e3e9e7d9; }
+main.lab-workspace[data-lab=b06] .room-bar { position:absolute; z-index:7; top:10px; left:calc(112px + (100% - 112px) / 2); transform:translateX(-50%); display:flex; align-items:center; gap:4px; padding:4px; border-radius:8px; background:#11272cdd; color:#e8f3f1; box-shadow:0 4px 16px #0a1a1e40; font:500 12px/1 var(--font, system-ui); white-space:nowrap; }
+main.lab-workspace[data-lab=b06][data-mode=builder] .room-bar { top:calc(var(--b06-ribbon) + 10px); left:calc(var(--b06-rail) + (100% - var(--b06-rail)) / 2); }
+main.lab-workspace[data-lab=b06] .room-bar .room-note { display:inline-flex; align-items:center; gap:6px; padding:0 8px 0 6px; color:#b9d6d3; }
+main.lab-workspace[data-lab=b06] .room-bar .room-note svg { width:14px; height:14px; }
+main.lab-workspace[data-lab=b06] .room-bar .room-fade { display:inline-flex; align-items:center; gap:6px; margin:0; padding:0 8px; border-left:1px solid #3f5d63; color:#d4e6e3; font-size:12px; }
+main.lab-workspace[data-lab=b06] .room-bar .room-fade input { width:84px; accent-color:#7fd3c6; margin:0; }
+main.lab-workspace[data-lab=b06] .room-bar button { height:28px; min-height:28px; padding:0 9px; gap:5px; display:inline-flex; align-items:center; border-radius:5px; border:1px solid #4e6e74; background:#1d3a40; color:#eef7f5; font:600 12px/1 var(--font, system-ui); width:auto; margin:0; }
+main.lab-workspace[data-lab=b06] .room-bar button svg { width:14px; height:14px; }
+main.lab-workspace[data-lab=b06] .room-bar button[aria-pressed=true] { background:#e6f1ee; color:#173a42; border-color:#e6f1ee; }
+main.lab-workspace[data-lab=b06] .room-bar button:focus-visible { outline:2px solid #9fe0d6; outline-offset:1px; }
+
+/* ---------- Immerse: presentation view ---------- */
+main.lab-workspace[data-lab=b06] .immerse-hud { display:none; }
+main.lab-workspace[data-lab=b06].immersive { background:#142a2b; }
+main.lab-workspace[data-lab=b06].immersive :is(.lab-top, #lab-dock, .lab-panel, .lab-status, #builder-tray, #builder-ribbon, #tray, .scene-tip, .stage-caption) { display:none !important; }
+main.lab-workspace[data-lab=b06].immersive .lab-surface { inset:0 !important; right:0 !important; background:#142a2b; }
+main.lab-workspace[data-lab=b06].immersive :is(#visual, #builder-stage).lab-scene { inset:0 !important; background:radial-gradient(ellipse at 50% 42%, #33504b 0%, #1b3434 58%, #112426 100%); }
+main.lab-workspace[data-lab=b06].immersive #visual.lab-scene { grid-template-columns:0 minmax(0,1fr); }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .lab-camera { top:12px; background:#1d3a40e6; border-color:#3f5f68; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .lab-camera button { color:#e2efed; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .lab-camera button:hover:not(:disabled):not([aria-pressed=true]) { background:#25474e; color:#fff; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .lab-camera button[aria-pressed=true] { background:#e6f1ee; color:#173a42; border-color:#e6f1ee; }
+main.lab-workspace[data-lab=b06].immersive .lab-ticket { left:16px !important; right:auto !important; bottom:16px !important; height:auto !important; padding:7px 12px !important; border:1px solid #3f5f68 !important; border-radius:6px !important; background:#11272cdd !important; color:#e2efed; }
+main.lab-workspace[data-lab=b06].immersive .lab-ticket :is(small, strong) { color:#cfe4e0 !important; }
+main.lab-workspace[data-lab=b06].immersive .lab-ticket > span:not([hidden]) ~ span { border-left-color:#3f5f68 !important; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .immerse-hud { display:flex; position:absolute; z-index:60; top:12px; left:50%; transform:translateX(-50%); gap:4px; padding:4px; border-radius:9px; background:#11272cdd; border:1px solid #3f5f68; box-shadow:0 6px 22px #0a1a1e55; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .immerse-hud button { height:30px; min-height:30px; padding:0 11px; border-radius:6px; border:1px solid transparent; background:transparent; color:#e2efed; font:600 12.5px/1 var(--font, system-ui); width:auto; margin:0; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .immerse-hud button:hover:not(:disabled) { background:#25474e; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .immerse-hud button[data-hud=exit] { border-color:#5c7d83; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .immerse-hud button[aria-pressed=true] { background:#e6f1ee; color:#173a42; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .immerse-hud button:focus-visible { outline:2px solid #9fe0d6; outline-offset:1px; }
+main.lab-workspace[data-lab=b06]:is(.immersive,.hands-on) .immerse-hud button[hidden] { display:none; }
+main.lab-workspace[data-lab=b06].immersive .room-bar { top:58px !important; left:50% !important; }
+main.lab-workspace[data-lab=b06].immersive #labels, main.lab-workspace[data-lab=b06].immersive #builder-labels { color:#eef7f5; }
+
+/* Portrait tablets keep the model above a docked panel and give the title its own row. */
+@media (min-width:600px) and (max-width:979px) and (min-height:700px) and (orientation:portrait) {
+  main.lab-workspace[data-lab=b06]:not(.immersive) .lab-top {
+    display:grid; grid-template-columns:minmax(0,1fr) repeat(5,max-content); grid-template-rows:28px 36px;
+    box-sizing:border-box; height:82px; min-height:82px; padding:6px 8px; gap:5px 6px; overflow:visible !important;
+  }
+  main.lab-workspace[data-lab=b06] .lab-top > a { grid-row:1; grid-column:1; justify-self:start; }
+  main.lab-workspace[data-lab=b06] .lab-top > h1 {
+    grid-row:1; grid-column:2 / -1; justify-self:end; font-size:18px; white-space:normal; overflow:visible; text-overflow:clip;
+  }
+  main.lab-workspace[data-lab=b06] .lab-top .lab-step { display:none; }
+  main.lab-workspace[data-lab=b06] .lab-top .lab-mode-switch { grid-row:2; grid-column:1; justify-self:start; margin-left:0; }
+  main.lab-workspace[data-lab=b06] .lab-top > button { grid-row:2; }
+  main.lab-workspace[data-lab=b06]:not(.immersive) .lab-surface { top:82px; }
+  main.lab-workspace[data-lab=b06]:not(.immersive,.hands-on) .lab-camera { top:90px; }
+  main.lab-workspace[data-lab=b06]:not(.immersive) .lab-toast { top:90px; }
+  main.lab-workspace[data-lab=b06]:not([data-mode=builder],.immersive) .lab-panel {
+    left:8px !important; right:8px !important; top:auto !important; bottom:54px !important;
+    width:auto !important; height:auto !important; max-width:calc(100% - 16px); max-height:26dvh; resize:none;
+  }
+  main.lab-workspace[data-lab=b06]:not([data-mode=builder],.immersive) .lab-panel-head { cursor:default; }
+  main.lab-workspace[data-lab=b06]:not([data-mode=builder],.immersive) .lab-panel-head > span::before { content:none; }
+  main.lab-workspace[data-lab=b06]:not([data-mode=builder],.immersive):has(.lab-panel:not([hidden])) .lab-surface {
+    bottom:calc(26dvh + 60px);
+  }
+}
+
+/* The phone drawer sits 57px above the dock and can occupy 34dvh. */
+@media (max-width:580px) and (min-height:501px) {
+  main.lab-workspace[data-lab=b06][data-mode=builder]:not(.hands-on,.immersive):has(.lab-panel:not([hidden])) .lab-surface {
+    bottom:calc(57px + 34dvh + 4px);
+  }
+}

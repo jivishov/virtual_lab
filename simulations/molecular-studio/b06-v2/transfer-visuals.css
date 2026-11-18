@@ -1,0 +1,16 @@
+#builder-labels .transfer-electron {
+  position:absolute;
+  z-index:4;
+  transform:translate(-50%, -50%);
+  min-width:24px;
+  padding:2px 5px;
+  box-sizing:border-box;
+  border:2px solid #fff3c9;
+  border-radius:50%;
+  background:#854709;
+  color:white;
+  box-shadow:0 1px 5px #37260d70;
+  font:700 14px/1.15 system-ui,sans-serif;
+  text-align:center;
+  pointer-events:none;
+}

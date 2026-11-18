@@ -55,7 +55,9 @@ window.VL_CATALOG = [
     { key: 'virusdefenselab', sym: 'Vd', type: 'simulation', family: 'life', link: 'simulations/virus_defense_lab/' },
     { key: 'acidbasesolutions', sym: 'pH', type: 'simulation', family: 'chem', badge: '3D', link: 'simulations/acid_base_solutions/' },
     { key: 'latticeenergy', sym: 'Le', type: 'simulation', family: 'phys', link: 'simulations/lattice_energy_lab/' },
-    { key: 'chiralitynobel', sym: 'Ch', type: 'simulation', family: 'chem', badge: 'Nobel', link: 'simulations/chirality_nobel_2026/' }
+    { key: 'chiralitynobel', sym: 'Ch', type: 'simulation', family: 'chem', badge: 'Nobel', link: 'simulations/chirality_nobel_2026/' },
+    { key: 'molecularstudio', sym: 'Ms', type: 'simulation', family: 'chem', badge: '3D', link: 'simulations/molecular-studio/b06-v2/' },
+    { key: 'lewisbuilder', sym: 'Lw', type: 'simulation', family: 'chem', link: 'simulations/lewis-structure-builder/' }
 ];
 
 // ===== LINE ART =====
@@ -374,6 +376,35 @@ window.VL_CATALOG = [
                 <path class="art-ln" d="${gridF}"/>${front}
                 <path class="art-ac draw" pathLength="1" d="M40 40V150"/>${head(40, 162, 90, 8)}
                 <text class="art-tx" x="40" y="184" text-anchor="middle">ΔH &lt; 0</text>`;
+        },
+
+        molecularstudio() {
+            // A VSEPR hub with four lettered sockets and one seated bond piece.
+            const arms = [[160, 40, 'A'], [80, 150, 'B'], [246, 132, 'C'], [196, 168, 'D']];
+            let lines = '', ends = '';
+            arms.forEach(([x, y, t], i) => {
+                lines += `M160 104L${x} ${y}`;
+                ends += i === 0
+                    ? `<circle class="art-pt" cx="${x}" cy="${y}" r="13"/>`
+                    : `<circle class="art-ring" cx="${x}" cy="${y}" r="10"/><text class="art-tx" x="${x}" y="${y + 4}" text-anchor="middle">${t}</text>`;
+            });
+            return `<path class="art-ln art-dash art-soft" d="${lines}"/>
+                <path class="art-ac draw" pathLength="1" d="M160 104L160 40"/>
+                <circle class="art-fc" cx="160" cy="104" r="30"/>
+                <text class="art-tx" x="160" y="109" text-anchor="middle">C</text>
+                ${ends}
+                <text class="art-tx" x="284" y="40" text-anchor="middle">109.5°</text>`;
+        },
+
+        lewisbuilder() {
+            // Water as a Lewis structure: two bonds and two lone pairs on oxygen.
+            const dot = (x, y) => `<circle cx="${x}" cy="${y}" r="3.6" fill="currentColor"/>`;
+            return `<text class="art-tx" x="160" y="112" text-anchor="middle" style="font-size:34px">O</text>
+                <text class="art-tx" x="76" y="112" text-anchor="middle" style="font-size:30px">H</text>
+                <text class="art-tx" x="244" y="112" text-anchor="middle" style="font-size:30px">H</text>
+                <path class="art-ac draw" pathLength="1" d="M94 100H136M184 100H226"/>
+                ${dot(150, 64)}${dot(170, 64)}${dot(150, 134)}${dot(170, 134)}
+                <path class="art-ln art-dash art-soft" d="M40 30H280V170H40Z"/>`;
         },
 
         chiralitynobel() {

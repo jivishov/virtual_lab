@@ -1,0 +1,429 @@
+/* Reactions in the B06 studio layout (phase 3, 2026-11-17). Loaded inside the Reactions shadow root
+   after reaction-ui.css. The component values copy studio-shell.css (the --ms-* tokens inherit from
+   main.b06-studio through the host); reaction-ui.css still styles the 3D notation, dialogs and Immerse.
+   :host([data-hand-layout]) is the hand layout (mirrors main.ms-hand-layout); :host([data-immersive]) is Immerse. */
+[hidden]{display:none!important}
+:host{font:400 1rem/1.4 var(--ms-font,"Segoe UI",system-ui,sans-serif);color:var(--ms-ink,#16302f);background:var(--ms-paper,#f4f6f3)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+:host(:not([data-hand-layout]):not([data-imm-hands])) [data-rx-hand],:host([data-hand-layout]) [data-rx-desk],:host([data-imm-hands]) [data-rx-desk]{display:none!important}
+/* Buttons: every component sets --bg (and --bd); hover keeps it instead of reaction-ui.css's light green. */
+:host(:not([data-immersive])) button:hover:enabled{background:var(--bg-h,var(--bg,#eaf2ec));border-color:var(--bd-h,var(--bd,#668f82))}
+:host(:not([data-immersive])) :is(.rx-btn,.rx-tile,.rx-chips button,.rx-seg button,.rx-pills button,.rx-mols button,.rx-stops button,.rx-el,.rx-hbtn,.rx-sheet summary):focus-visible{outline:3px solid var(--ms-teal,#1d6a66);outline-offset:2px}
+
+/* ---------- Grid: kit | stage | task panel, footer under all three ----------
+   (:not(.rx-none) matches reaction-ui.css's .app:not(.library-open) specificity.) */
+.app:not(.rx-none){--rx-kit:11rem;height:100%;display:grid;grid-template-columns:var(--rx-kit) minmax(0,1fr) var(--ms-rail,24rem);grid-template-rows:minmax(0,1fr) var(--ms-foot,3.4rem);grid-template-areas:"kit stage rail" "foot foot foot";overflow:hidden;position:relative}
+.rx-kit{grid-area:kit;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:.55rem;padding:.7rem .6rem;background:#e9eeeb;border-right:1px solid var(--ms-line,#cfd9d5)}
+.rx-stagecol{grid-area:stage;min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto var(--ms-coach-row,4.6rem);background:radial-gradient(ellipse at 50% 45%,#fbfcfb 0,#e7ece9 100%)}
+.rx-rail{grid-area:rail;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--ms-card,#fff);border-left:1px solid var(--ms-line,#cfd9d5)}
+.rx-foot{grid-area:foot}
+.rx-hbar{grid-area:hbar}
+
+/* ---------- Kit ---------- */
+.rx-kitgroup{display:flex;flex-direction:column;gap:.4rem;min-height:0}
+.rx-label{margin:0;font:700 .78rem/1.2 var(--ms-font);letter-spacing:.08em;text-transform:uppercase;color:var(--ms-ink-2,#47605e)}
+.rx-terms{display:flex;flex-direction:column;gap:.35rem}
+.rx-term{border:1px solid var(--ms-line);background:#fff;border-radius:8px;padding:.3rem .5rem;font-weight:650;line-height:1.25}
+.rx-term small{display:block;font-weight:400;color:var(--ms-ink-2);font-size:.8rem}
+.rx-traynote{margin:0;font-size:.82rem;line-height:1.35;color:var(--ms-ink-2)}
+.rx-kit.rx-building #kit-terms .rx-traynote{display:none}
+.rx-elgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.3rem}
+.rx-el{--bg:#fff;--bd:var(--ms-line);min-height:44px;padding:.1rem;border:2px solid var(--bd);border-radius:8px;background:var(--bg);font:700 .95rem/1.1 var(--ms-font);color:var(--ms-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.05rem}
+.rx-el.need{--bg:var(--ms-amber-l,#fdf1d8);--bd:var(--ms-amber,#b97a12)}
+.rx-el small{font:400 .72rem/1.1 var(--ms-font);color:var(--ms-ink-2)}
+.rx-el span,.rx-el small{pointer-events:none}
+.rx-dot{display:inline-block;width:.75rem;height:.75rem;margin-right:.15rem;border-radius:50%;border:1px solid #7d8a89;vertical-align:-.08rem}
+
+/* ---------- Shared controls ---------- */
+.rx-btn{--bg:#fff;--bd:var(--ms-line);min-height:48px;padding:.4rem .9rem;border:2px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--ms-ink);font:650 1rem/1.2 var(--ms-font)}
+.rx-btn.rx-small{min-height:44px;padding:.3rem .75rem;font:500 .92rem/1.2 var(--ms-font)}
+.rx-btn.rx-primary{--bg:var(--ms-teal,#1d6a66);--bd:var(--ms-teal);--bg-h:var(--ms-teal-d,#155350);--bd-h:var(--ms-teal-d);flex:1;color:#fff;font-size:1.02rem}
+.rx-btn.rx-primary[aria-disabled=true]{--bg:#b9c8c5;--bd:#b9c8c5;--bg-h:#b9c8c5;--bd-h:#a3b5b1}
+.rx-btn[aria-pressed=true]{--bg:var(--ms-teal-l,#dcefe9);--bd:var(--ms-teal)}
+.rx-btn:disabled,.rx-tile:disabled,.rx-el:disabled,.rx-chips button:disabled,.rx-seg button:disabled,.rx-stops button:disabled{opacity:.45;cursor:not-allowed}
+.rx-btnrow{display:flex;gap:.5rem;flex-wrap:wrap}
+.rx-tiles{display:grid;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));gap:.5rem}
+.rx-tile{--bg:#fff;--bd:var(--ms-line);min-height:3.1rem;padding:.2rem .5rem;border:3px solid var(--bd);border-radius:14px;background:var(--bg);color:var(--ms-ink);font:650 .92rem/1.15 var(--ms-font)}
+.rx-tile[aria-pressed=true]{--bg:var(--ms-teal-l);--bd:var(--ms-teal)}
+.rx-chips{display:grid;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));gap:.35rem}
+.rx-chips button{--bg:#fff;--bd:var(--ms-line);min-height:44px;padding:.2rem .3rem;border:2px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--ms-ink);font:500 .95rem/1.15 var(--ms-font)}
+.rx-chips button[aria-pressed=true]{--bg:var(--ms-teal-l);--bd:var(--ms-teal);font-weight:650}
+.rx-chips button b{display:block;font-size:1.05rem}
+.rx-chips button small{display:block;font:400 .72rem/1.1 var(--ms-font);color:var(--ms-ink-2)}
+.rx-seg{display:flex;padding:2px;gap:2px;background:#fff;border:1px solid var(--ms-line);border-radius:9px}
+.rx-seg button{--bg:transparent;--bg-h:var(--ms-teal-ll,#eef7f4);--bd:transparent;min-width:40px;min-height:40px;padding:.15rem .6rem;border:0;border-radius:6px;background:var(--bg);color:var(--ms-ink);font:500 .88rem/1.1 var(--ms-font);white-space:nowrap}
+.rx-seg button[aria-pressed=true]{--bg:var(--ms-teal);--bg-h:var(--ms-teal-d);color:#fff}
+.rx-seg .rx-turn{font-size:1.15rem}
+
+/* ---------- Stage head: family pills and the five reactions ---------- */
+.rx-stagehead{padding:.45rem .7rem .3rem;border-bottom:1px solid var(--ms-line-2,#e3e9e6);background:#f7f9f7cc;user-select:none}
+.rx-pills{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.35rem}
+.rx-pills button{--bg:#fff;--bg-h:var(--ms-teal-ll);--bd:#8fa3a0;--bd-h:var(--ms-teal);min-height:36px;padding:.2rem .8rem;border:2px solid var(--bd);border-radius:999px;background:var(--bg);color:var(--ms-ink);font:500 .88rem/1.1 var(--ms-font)}
+.rx-pills button[aria-pressed=true]{--bg:var(--ms-ink);--bd:var(--ms-ink);--bg-h:var(--ms-ink);--bd-h:var(--ms-ink);color:#fff;font-weight:650}
+/* Clipped text keeps a line height of at least 1.3, so the tails of g, p, q and y are not cut off. */
+.rx-mols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.3rem}
+.rx-mols button{--bg:#fff;--bd:var(--ms-line);height:3.6rem;min-height:44px;min-width:0;padding:.15rem .45rem;border:2px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--ms-ink);text-align:left;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.rx-mols button[aria-pressed=true]{--bg:var(--ms-teal-l);--bd:var(--ms-teal)}
+.rx-mols button span{font:650 .8rem/1.3 var(--ms-font);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.rx-mols button small{display:block;font:400 .72rem/1.35 var(--ms-font);color:var(--ms-ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Narrow desktop stage head (about 1024 px): less side padding so names such as Magnesium fit. A word that
+   still does not fit breaks (overflow-wrap above) and the two-line clamp ends it with an ellipsis, instead
+   of the word being cut off at the button edge. */
+@media (min-width:901px) and (max-width:1100px){.rx-mols button{padding-inline:.25rem}}
+
+/* ---------- Model ---------- */
+.scene{background:none}
+.scene .rx-title{position:absolute;left:.8rem;top:.5rem;max-width:calc(100% - 1.6rem);z-index:2;pointer-events:none}
+.rx-title h2{margin:0;font:650 1.1rem/1.25 var(--ms-font);color:var(--ms-ink)}
+.rx-title p{margin:0;font:400 .88rem/1.3 var(--ms-font);color:var(--ms-ink-2)}
+/* The model sits under the title band, so the title never covers an atom. */
+.scene #reaction-stage{top:3.1rem}
+.scene .rx-side-headings{top:3.4rem;left:14px;right:14px}
+.scene .rx-side-headings strong{font:700 .78rem/1.2 var(--ms-font);letter-spacing:.08em;text-transform:uppercase;color:var(--ms-ink-2)}
+.scene .rx-side-headings span{font-size:.78rem;color:var(--ms-ink-3,#6b807e);margin-top:1px}
+.scene .rx-stage-caption{bottom:.4rem;font-size:.78rem;color:var(--ms-ink-3)}
+.scene .rx-stage-caption p:first-child{font-size:.78rem;color:var(--ms-ink-2);margin:0}
+.scene .empty-state{left:25%;top:40%;width:44%}
+.scene .empty-state>strong{font:600 1.15rem/1.25 var(--ms-font);color:var(--ms-ink)}
+.scene .empty-state>p{font-size:.92rem;color:var(--ms-ink-2);margin:.4rem 0 0}
+:host(:not([data-immersive])) .scene .rx-view-tools{display:none}
+/* Stacked sides (narrow model): each caption sits beside its group, outside the column, with its rule
+   on the side that faces the group. reaction-viewer.js sets .rx-beside. */
+.rx-equation-notation.rx-beside .rx-term-caption{transform:translate(calc(-100% - 6px),-50%);padding:2px 8px 2px 3px;border-top:0;border-right:1px solid #b5cdbb;text-align:right}
+.rx-equation-notation.rx-beside .rx-term-caption[data-rx-side=products]{transform:translate(6px,-50%);padding:2px 3px 2px 8px;border-right:0;border-left:1px solid #b5cdbb;text-align:left}
+.rx-equation-notation.rx-beside .rx-term-caption.pending{border-left-style:dashed}
+:host([data-immersive]) .rx-equation-notation.rx-beside .rx-term-caption{border-color:#a3bda7}
+/* When the sides sit close together the arrow glyph shrinks to the gap between them (reaction-viewer.js sets --rx-arrow-k). */
+.rx-equation-arrow span{font-size:calc(61px * var(--rx-arrow-k,1))}
+/* Captions shrink with the model only when it is too small for them (--rx-cap-k, set by reaction-viewer.js). */
+.rx-equation-notation .rx-term-caption strong{font-size:calc(17px * var(--rx-cap-k,1))}
+.rx-equation-notation .rx-term-caption small{font-size:max(10px,calc(12px * var(--rx-cap-k,1)))}
+/* When even three-quarter captions would touch (short screens), the phase name wraps under the formula
+   (reaction-viewer.js fit() sets rx-wrap), so "aqueous solution" no longer sets the caption width. */
+.rx-equation-notation.rx-wrap .rx-term-caption small{width:min-content;margin-inline:auto}
+/* Last step on the shortest screens: the phase name steps aside; the formula keeps its state symbol. */
+.rx-equation-notation.rx-terse .rx-term-caption small{display:none}
+.rx-shelf{position:absolute;inset:0;z-index:7;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;gap:.6rem;padding:.8rem 1rem;background:#f4f6f3}
+.rx-shelf h2{margin:0;font:650 1.2rem/1.25 var(--ms-font);color:var(--ms-ink)}
+.rx-shelf h2:focus{outline:none}
+.rx-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(3.1rem,1fr);gap:.6rem;min-height:0}
+.rx-cards .rx-tile{display:flex;flex-direction:column;justify-content:center;gap:.2rem;text-align:left;padding:.3rem .7rem}
+.rx-cards .rx-tile b{font-size:1rem;line-height:1.2}
+.rx-cards .rx-tile span{font:400 .72rem/1.2 var(--ms-font);color:var(--ms-ink-2)}
+.rx-shelfclose{display:grid}
+/* Controls outside the open shelf are inert (reaction-lab.js renderShelf) and look it. */
+.rx-shelf-off{opacity:.38;filter:grayscale(.6)}
+
+/* ---------- View tools and coach line ---------- */
+.rx-viewbar{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;padding:.3rem .7rem}
+.rx-coach{display:flex;align-items:center;gap:.6rem;margin:.2rem .7rem .6rem;min-height:3.8rem;padding:.5rem .8rem;background:var(--ms-card,#fff);border:1px solid var(--ms-line);border-left:5px solid var(--ms-teal);border-radius:var(--ms-r,10px);font-size:.98rem;line-height:1.35}
+.rx-ico{flex:none;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--ms-teal-l);color:var(--ms-teal-d);display:grid;place-items:center;font-weight:700}
+.rx-coach.rx-warn{border-left-color:var(--ms-amber);background:var(--ms-amber-l);color:#6b4500;font-weight:600}
+.rx-coach.rx-warn .rx-ico{background:#f6dfae;color:#6b4500}
+
+/* ---------- Task panel ---------- */
+.rx-steps{display:grid;grid-template-columns:repeat(3,1fr);margin:0;padding:.55rem .5rem .45rem;list-style:none;border-bottom:1px solid var(--ms-line)}
+.rx-steps li{position:relative;text-align:center;font-size:.82rem;color:var(--ms-ink-3)}
+.rx-steps li i{position:relative;z-index:1;display:grid;place-items:center;width:2rem;height:2rem;margin:0 auto .15rem;border:2px solid var(--ms-line);border-radius:50%;background:#fff;font:normal 700 .95rem/1 var(--ms-font)}
+.rx-steps li::before{content:"";position:absolute;top:1rem;left:-50%;width:100%;height:2px;background:var(--ms-line)}
+.rx-steps li:first-child::before{display:none}
+.rx-steps li.done i{background:var(--ms-teal-l);border-color:var(--ms-teal);color:var(--ms-teal-d)}
+.rx-steps li.done::before,.rx-steps li[aria-current]::before{background:var(--ms-teal)}
+.rx-steps li[aria-current]{color:var(--ms-ink);font-weight:700}
+.rx-steps li[aria-current] i{background:var(--ms-teal);border-color:var(--ms-teal);color:#fff}
+.rx-task{min-height:0;overflow:auto;padding:.8rem 1rem .2rem}
+.rx-task h2{margin:0 0 .3rem;font:650 1.22rem/1.25 var(--ms-font);color:var(--ms-ink)}
+.rx-task h2:focus{outline:none}
+.rx-task h3{margin:0 0 .25rem;font:650 1rem/1.25 var(--ms-font);color:var(--ms-ink)}
+.rx-task p{margin:0 0 .65rem}
+.rx-lead{color:var(--ms-ink-2);font-size:.95rem;line-height:1.35}
+.rx-lead.rx-cond{font-size:.88rem}
+.rx-lead b{color:var(--ms-ink)}
+.rx-box{margin-bottom:.7rem;padding:.55rem .7rem;background:var(--ms-teal-ll);border:1px solid var(--ms-line-2);border-radius:8px}
+.rx-box small{display:block;font-size:.85rem;color:var(--ms-ink-2)}
+.rx-box output{display:block;font:650 1.05rem/1.3 var(--ms-font)}
+.rx-prep{margin-bottom:.6rem}
+.rx-prep .rx-btn{flex:1}
+.rx-manual{margin-bottom:.6rem}
+.rx-manual .rx-chips{margin-bottom:.4rem}
+.rx-help{font-size:.85rem;line-height:1.3;color:var(--ms-ink-2)}
+.rx-task p.rx-help{margin:0 0 .4rem}
+.rx-status{margin-bottom:.6rem;padding:.3rem .55rem;background:#fff;border:1px dashed var(--ms-line);border-radius:8px;font-size:.88rem;line-height:1.35}
+.rx-status p{margin:0}
+.rx-acct b{font-weight:650}
+.rx-acct span{display:block;color:var(--ms-ink-2)}
+.rx-acct #inventory{display:inline;color:var(--ms-ink)}
+.rx-acct #inventory::before{content:"· "}
+.rx-sheets{display:grid;gap:.2rem;margin-bottom:.4rem}
+.rx-sheet summary{min-height:32px;display:list-item;align-content:center;font:600 .88rem/1.2 var(--ms-font);color:var(--ms-teal-d)}
+.rx-sheet[open]{margin-bottom:.3rem}
+.rx-sheet .atom-picker{margin:.3rem 0 .2rem}
+.rx-trackbox .rx-sheet summary{min-height:28px;font-size:.82rem}
+.rx-rowlab{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.55rem;font-size:.9rem}
+.rx-rowlab small{color:var(--ms-ink-2);font-size:.8rem}
+#task-build.rx-manual-on .rx-nomanual{display:none}
+#task-build.rx-manual-on .rx-lead{display:none}
+.rx-stops{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.25rem;margin-bottom:.5rem}
+.rx-stops button{--bg:#fff;--bd:var(--ms-line);min-height:44px;padding:.15rem .1rem;border:2px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--ms-ink);font:500 .72rem/1.1 var(--ms-font)}
+.rx-stops button b{display:block;font-size:.95rem}
+.rx-stops button[aria-pressed=true]{--bg:var(--ms-teal-l);--bd:var(--ms-teal)}
+.rx-prog{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.rx-prog input{flex:1;margin:0;accent-color:var(--ms-teal)}
+.rx-prog output{min-width:3rem;text-align:right;font-weight:650;font-variant-numeric:tabular-nums}
+.rx-actions{padding:.55rem 1rem .7rem;border-top:1px solid var(--ms-line);background:#fff}
+.rx-why{margin:0 0 .4rem;font-size:.88rem;line-height:1.3;color:#6b4500}
+.rx-why:empty{display:none}
+.rx-actions .rx-btnrow{flex-wrap:nowrap}
+
+/* ---------- Footer ---------- */
+.rx-foot{display:flex;align-items:center;gap:.5rem;padding:.3rem .8rem;background:#eef2ef;border-top:1px solid var(--ms-line);min-width:0;overflow:hidden}
+.rx-saved{margin-left:auto;font-size:.88rem;color:var(--ms-ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+
+/* ---------- Hand layout (wide screens, hands tracked) ---------- */
+:host([data-hand-layout]) .app{--rx-kit:var(--ms-kit,10.5rem);grid-template-rows:minmax(0,1fr) var(--ms-hbar,6rem);grid-template-areas:"kit stage rail" "hbar hbar hbar"}
+:host([data-hand-layout]) :is(.rx-stagehead,.rx-viewbar,.rx-coach,.rx-foot,.hands-session){display:none!important}
+:host([data-hand-layout]) .rx-stagecol{grid-template-rows:minmax(0,1fr)}
+:host([data-hand-layout]) .rx-kit{gap:.4rem}
+:host([data-hand-layout]) .rx-elgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+:host([data-hand-layout]) .rx-el{min-height:3.1rem;border-width:3px;border-radius:14px;flex-direction:row;gap:.3rem;font-size:.92rem}
+:host([data-hand-layout]) .rx-el small{font-size:.72rem;white-space:nowrap}
+:host([data-hand-layout]) .rx-steps{grid-template-columns:repeat(3,auto);justify-content:space-between;padding:.35rem .6rem}
+:host([data-hand-layout]) .rx-steps li{display:flex;align-items:center;gap:.25rem;font-size:.78rem}
+:host([data-hand-layout]) .rx-steps li i{width:1.5rem;height:1.5rem;margin:0;font-size:.78rem}
+:host([data-hand-layout]) .rx-steps li::before{display:none}
+:host([data-hand-layout]) .rx-task{overflow:hidden;padding:.6rem .8rem .2rem}
+:host([data-hand-layout]) .rx-task h2{font-size:1.2rem}
+:host([data-hand-layout]) .rx-task h3{font-size:.85rem}
+:host([data-hand-layout]) .rx-task p{font-size:.85rem;margin-bottom:.4rem}
+:host([data-hand-layout]) .rx-box{padding:.35rem .6rem;margin-bottom:.45rem}
+:host([data-hand-layout]) .rx-box small{font-size:.72rem}
+:host([data-hand-layout]) .rx-box output{font-size:.95rem}
+:host([data-hand-layout]) #task-build.rx-manual-on #needed-box,:host([data-hand-layout]) [data-acct=build]{display:none}
+:host([data-hand-layout]) .rx-prep{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin-bottom:.5rem}
+:host([data-hand-layout]) .rx-prep .rx-btn,:host([data-hand-layout]) .rx-chips button{min-height:3.1rem;padding:.2rem .3rem;border-width:3px;border-radius:14px;font:650 .85rem/1.15 var(--ms-font)}
+:host([data-hand-layout]) .rx-chips{gap:.5rem}
+:host([data-hand-layout]) .rx-manual .rx-chips{margin-bottom:.5rem}
+:host([data-hand-layout]) .rx-chips button small{display:none}
+:host([data-hand-layout]) .rx-chips button b{font-size:1.2rem}
+/* Connection tiles keep their word under the sign (the ionic dots alone do not read as a link). */
+:host([data-hand-layout]) #bond-buttons button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem}
+:host([data-hand-layout]) #bond-buttons button b{font-size:1.05rem;line-height:1}
+:host([data-hand-layout]) #bond-buttons button small{display:block;font:600 .74rem/1.1 var(--ms-font);color:var(--ms-ink-2)}
+:host([data-hand-layout]) .rx-stops{gap:.5rem}
+:host([data-hand-layout]) .rx-stops button{min-height:3.1rem;border-width:3px;border-radius:14px;font-size:.6rem}
+:host([data-hand-layout]) #task-play .rx-tiles{margin-bottom:.5rem}
+:host([data-hand-layout]) .rx-status{font-size:.8rem;padding:.3rem .5rem}
+:host([data-hand-layout]) .rx-actions{padding:.4rem .8rem .6rem}
+:host([data-hand-layout]) .rx-why{font-size:.82rem;margin-bottom:.3rem}
+:host([data-hand-layout]) .rx-actions .rx-btn{min-height:3.6rem;border-width:3px;border-radius:14px}
+:host([data-hand-layout]) .rx-actions .rx-btnrow{gap:.5rem}
+:host([data-hand-layout]) .hand-aim{outline:4px solid var(--ms-aim,#f0b23c)!important;outline-offset:3px!important}
+:host([data-hand-layout]) .app.hands-on :is(.rx-side-headings div,.rx-term-caption,.rx-equation-arrow){background:none}
+:host([data-hand-layout]) .app.hands-on .rx-stage-caption{bottom:.4rem}
+:host([data-hand-layout]) .rx-shelf{padding:.6rem .8rem;gap:.5rem}
+.rx-hbar{display:grid;grid-template-columns:8rem minmax(0,1fr) auto auto;gap:.8rem;align-items:center;padding:.4rem .8rem;background:#12292b;color:#fff;border-top:1px solid var(--ms-line)}
+.rx-hbar::before{content:"";grid-column:1;grid-row:1;height:5rem}
+.rx-hcoach{grid-column:2;min-width:0}
+.rx-hcoach p{margin:0;color:#fff;font:600 1.25rem/1.35 var(--ms-font);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.rx-hbar.rx-warn .rx-hcoach p{color:#ffd98a}
+.rx-hcoach small{display:block;margin-top:.2rem;color:#b8d4d0;font:400 .72rem/1.3 var(--ms-font)}
+/* A status line too long for two lines takes a third in place of the hint (reaction-lab.js fitHandStatus). */
+.rx-hbar.rx-long .rx-hcoach p{-webkit-line-clamp:3}
+.rx-hbar.rx-long #hand-bar-hint{display:none}
+.rx-hbtn{--bg:transparent;--bg-h:#2a5357;--bd:#4b7175;--bd-h:#8fd3c8;min-height:3.1rem;min-width:7rem;padding:.2rem .8rem;border:3px solid var(--bd);border-radius:14px;background:var(--bg);color:#fff;font:650 .92rem/1.15 var(--ms-font)}
+.rx-hbtn:focus-visible{outline:3px solid var(--ms-aim,#f0b23c);outline-offset:2px}
+/* In the hand layout reaction-lab.js moves the camera picture into the hand bar as a thumbnail. */
+.rx-hbar .camera-surface{position:static;grid-column:1;grid-row:1;width:8rem;height:5rem;opacity:1;border:2px solid #8fd3c8;border-radius:10px;background:#0c1f21;object-fit:cover}
+
+/* ---------- Immerse: the model fills the tab; Controls opens the task panel over it ---------- */
+:host([data-immersive]) .app{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);grid-template-areas:"stage"}
+:host([data-immersive]) :is(.rx-kit,.rx-foot,.rx-stagehead,.rx-viewbar,.rx-coach,.rx-hbar){display:none!important}
+:host([data-immersive]) .rx-stagecol{grid-template-rows:minmax(0,1fr);background:none}
+:host([data-immersive]) .scene .rx-title h2{color:#e5f0e8}
+:host([data-immersive]) .scene .rx-title p{color:#bdd2bb}
+:host([data-immersive]) .scene .rx-title{top:4rem}
+:host([data-immersive]) #reaction-stage{top:0}
+:host([data-immersive]) .scene .rx-side-headings strong{color:#d6e9d3}
+:host([data-immersive]) .scene .rx-side-headings span{color:#b1cbbb}
+:host([data-immersive]) .scene .empty-state>strong{color:#e5f0e8}
+:host([data-immersive]) .scene .empty-state>p{color:#bdd2bb}
+:host([data-immersive]) .rx-rail{display:none}
+:host([data-immersive].immersive-panel) .rx-rail{display:grid;position:absolute;z-index:6;right:14px;top:4.2rem;bottom:96px;width:min(24rem,calc(100% - 28px));border:1px solid #6c8c73;border-radius:9px;box-shadow:0 12px 40px #001b1580;overflow:hidden}
+:host([data-immersive].immersive-panel) .rx-rail .close-imm-controls{z-index:2;background:#fff;color:var(--ms-ink)}
+:host([data-immersive]) .rx-rail :is(button,select){background:var(--bg,#fff);color:var(--ms-ink);border-color:var(--bd,var(--ms-line))}
+:host([data-immersive]) .rx-rail .rx-btn.rx-primary{color:#fff}
+:host([data-immersive]) .rx-rail .rx-seg button[aria-pressed=true]{color:#fff}
+:host([data-immersive]) .rx-rail{color:var(--ms-ink)}
+:host([data-immersive]) .rx-rail .rx-sheet summary{color:var(--ms-teal-d,#164f4c)}
+:host([data-immersive]) .immersive-playback{color:#e5f0e8}
+:host([data-immersive]) .rx-shelf{background:#102a27}
+:host([data-immersive]) .rx-shelf h2{color:#e5f0e8}
+:host([data-immersive]) .rx-cards{grid-auto-rows:minmax(3.1rem,9rem);align-content:start}
+:host([data-immersive]) .rx-shelf .rx-tile{background:#23473e;color:#e6f1e9;border-color:#5c7a6d}
+:host([data-immersive]) .rx-shelf .rx-tile span{color:#bdd2bb}
+:host([data-immersive]) .rx-shelf .rx-tile[aria-pressed=true]{background:#b9dcc3;color:#193c2c;border-color:#b9dcc3}
+:host([data-immersive]) .rx-shelf .rx-tile[aria-pressed=true] span{color:#285040}
+
+/* ---------- Immerse with hands on: every control a hand can press is 62 px or more, 8 px or more apart
+   (px, since the page root is 16 px outside the hand layout) ---------- */
+:host([data-immersive]) .app.hands-on .experience-tools{gap:8px}
+:host([data-immersive]) .app.hands-on .experience-tools button{min-height:62px;min-width:62px;padding:.2rem .8rem;font-size:.85rem}
+:host([data-immersive]) .app.hands-on .hands-session{gap:8px 10px}
+:host([data-immersive]) .app.hands-on :is(.hand-navigation,.hand-session-actions){gap:8px}
+:host([data-immersive]) .app.hands-on .hands-session button{min-height:62px;min-width:62px;padding:.2rem .8rem}
+:host([data-immersive]) .app.hands-on .immersive-playback button{min-height:62px}
+:host([data-immersive]) .app.hands-on .immersive-playback #imm-progress{height:62px}
+:host([data-immersive]) .app.hands-on #reaction-stage,:host([data-imm-hands]) #reaction-stage{bottom:210px}
+/* The taller tools at the top right reach 84 px: the side headings sit under them and under the title. */
+:host([data-immersive]) .app.hands-on .rx-side-headings{top:112px}
+:host([data-immersive]) .app.hands-on .rx-shelf .rx-tile{min-height:62px}
+:host([data-immersive]) .app.hands-on .rx-shelf :is(.rx-tiles,.rx-cards){gap:10px}
+:host([data-immersive]) .app.hands-on .rx-stage-caption{bottom:210px}
+@media (max-width:1050px){
+ :host([data-immersive]) .app.hands-on #reaction-stage,:host([data-imm-hands]) #reaction-stage,:host([data-immersive]) .app.hands-on .rx-stage-caption{bottom:240px}
+}
+
+/* Task panel (Controls) in Immerse with hands on (data-imm-hands): the hand-layout task content (hand tiles, no
+   desk-only rows) at the hand layout's sizes, written in px because the page root is 16 px here, not 20 px.
+   It runs the full height; the hand controls under the model step aside while it is open (Controls closes it). */
+:host([data-imm-hands].immersive-panel) .rx-rail{top:96px;bottom:14px;width:min(400px,calc(100% - 28px))}
+:host([data-imm-hands].immersive-panel) :is(.hands-session,.immersive-playback,.immersive-limit){display:none!important}
+:host([data-imm-hands]) .rx-rail .close-imm-controls{width:62px;min-height:62px;top:6px;right:6px;border-width:3px;border-radius:14px}
+:host([data-imm-hands]) .rx-steps{grid-template-columns:repeat(3,auto);justify-content:space-between;padding:7px 80px 7px 12px;min-height:74px;align-items:center}
+:host([data-imm-hands]) .rx-steps li{display:flex;align-items:center;gap:5px;font-size:15.6px}
+:host([data-imm-hands]) .rx-steps li i{width:30px;height:30px;margin:0;font-size:15.6px}
+:host([data-imm-hands]) .rx-steps li::before{display:none}
+:host([data-imm-hands]) .rx-task{overflow:hidden;padding:12px 16px 4px}
+:host([data-imm-hands]) .rx-task h2{font-size:24px}
+:host([data-imm-hands]) .rx-task h3{font-size:17px}
+:host([data-imm-hands]) .rx-task p{font-size:17px;margin-bottom:8px}
+:host([data-imm-hands]) .rx-box{padding:7px 12px;margin-bottom:9px}
+:host([data-imm-hands]) .rx-box small{font-size:14.4px}
+:host([data-imm-hands]) .rx-box output{font-size:19px}
+:host([data-imm-hands]) #task-build.rx-manual-on #needed-box,:host([data-imm-hands]) [data-acct=build]{display:none}
+:host([data-imm-hands]) .rx-prep{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:10px}
+:host([data-imm-hands]) :is(.rx-prep .rx-btn,.rx-chips button){min-height:62px;padding:4px 6px;border-width:3px;border-radius:14px;font:650 17px/1.15 var(--ms-font)}
+:host([data-imm-hands]) .rx-chips{gap:10px}
+:host([data-imm-hands]) .rx-manual .rx-chips{margin-bottom:10px}
+:host([data-imm-hands]) .rx-chips button small{display:none}
+:host([data-imm-hands]) .rx-chips button b{font-size:24px}
+:host([data-imm-hands]) #bond-buttons button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+:host([data-imm-hands]) #bond-buttons button b{font-size:21px;line-height:1}
+:host([data-imm-hands]) #bond-buttons button small{display:block;font:600 14.8px/1.1 var(--ms-font);color:var(--ms-ink-2)}
+:host([data-imm-hands]) .rx-stops{gap:10px}
+:host([data-imm-hands]) .rx-stops button{min-height:62px;border-width:3px;border-radius:14px;font-size:12px}
+:host([data-imm-hands]) .rx-rail .rx-tiles{gap:10px}
+:host([data-imm-hands]) .rx-rail .rx-tile{min-height:62px;font-size:18.4px}
+:host([data-imm-hands]) #task-play .rx-tiles{margin-bottom:10px}
+:host([data-imm-hands]) .rx-status{font-size:16px;padding:6px 10px}
+:host([data-imm-hands]) .rx-actions{padding:8px 16px 12px}
+:host([data-imm-hands]) .rx-why{font-size:16.4px;margin-bottom:6px}
+:host([data-imm-hands]) .rx-actions .rx-btn{min-height:72px;border-width:3px;border-radius:14px}
+:host([data-imm-hands]) .rx-actions .rx-btnrow{gap:10px}
+
+/* ---------- Hand setup dialog, laid out as the B06 mock's setup sheet: camera and framing tiles on the left,
+   gesture pictures and the Adjust grip sensitivity fold on the right. Opened from a hand session it keeps reading
+   hands (reaction-experience.js watchDialog), so every button is hand-sized: 62 px tall, 8 px or more apart. ---------- */
+.hand-setup{width:min(864px,calc(100vw - 24px));max-height:calc(100dvh - 24px);border-radius:14px}
+.hand-setup .hand-setup-body{padding:18px 22px}
+.hand-setup h2{margin:0 0 4px;font-size:21px;line-height:1.25}
+.hand-setup .hand-setup-lead{margin:0 0 14px;font-size:15px;color:var(--muted)}
+.hand-setup .hand-setup-grid{grid-template-columns:288px minmax(0,1fr);gap:19px;align-items:start}
+.hand-camera{position:relative;display:grid;place-items:center;aspect-ratio:4/3;overflow:hidden;border-radius:10px;background:#12292b}
+.hand-camera .hand-preview{width:100%;max-height:100%;min-height:0;border:0!important;border-radius:0}
+.hand-camera #hand-enable{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);white-space:nowrap}
+.hand-camera #hand-enable:disabled{display:none}
+.hand-camera #hand-preview-empty:not([hidden])~.player-frame{display:none}
+.hand-setup :is(.frame-presets button,.hand-tuning-buttons button,.hand-setup-footer button,#hand-enable){min-height:62px;min-width:104px;padding:4px 14px;border-width:3px;border-radius:14px;font:650 15px/1.15 var(--ms-font,"Segoe UI",system-ui,sans-serif)}
+.hand-setup .frame-presets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 0}
+.hand-setup :is(.frame-presets button,#hand-mirror)[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent)}
+.hand-gestures{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.hand-gestures>div{padding:8px;border:1px solid var(--line);border-radius:10px;text-align:center;font-size:14px;line-height:1.3;color:var(--muted)}
+.hand-gestures b{display:block;font-size:15px;color:var(--ink)}
+.hand-gestures svg{display:block;margin:0 auto 3px;color:var(--accent)}
+.hand-setup .hand-tuning{margin-top:11px;padding:0;border:1px solid var(--line);border-radius:8px}
+.hand-setup .hand-tuning summary{display:list-item;box-sizing:border-box;min-height:62px;margin:0;padding:20px 12px;line-height:20px;font-size:15px;font-weight:650}
+/* Open, the fold takes the place of the gesture pictures so the dialog still fits on a short screen. */
+.hand-setup:has(.hand-tuning[open]) .hand-gestures{display:none}
+.hand-setup .hand-tuning[open]{margin-top:0}
+.hand-setup .hand-tuning-grid{grid-template-columns:1fr 1fr;gap:8px 14px;max-height:calc(100dvh - 290px);overflow:auto;padding:8px 12px 10px}
+.hand-tuning-buttons{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hand-setup .hand-tuning .small{grid-column:1/-1;margin:0;font-size:13px;color:var(--muted)}
+.hand-setup .hand-setup-footer{flex-wrap:wrap;gap:10px;margin-top:12px;padding-top:0;border-top:0}
+.hand-setup .hand-setup-footer p{flex:1 0 100%;min-height:20px;font-size:14px}
+.hand-setup .hand-setup-footer #hand-start{flex:1}
+@media(max-width:700px){.hand-setup .hand-setup-grid{grid-template-columns:minmax(0,1fr)}.hand-gestures{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ---------- Narrow screens: one scrolling column ---------- */
+@media (max-width:900px){
+ .app:not(.rx-none){display:flex;flex-direction:column;overflow-y:auto;height:100%}
+ .app:not(.rx-none)>*{flex:none}
+ .rx-kit{flex-direction:row;flex-wrap:wrap;overflow:visible;border-right:0;border-bottom:1px solid var(--ms-line)}
+ .rx-kitgroup{flex:1 1 12rem}
+ .rx-stagecol{grid-template-rows:auto clamp(20rem,62dvh,34rem) auto auto}
+ .rx-mols{grid-template-columns:repeat(auto-fill,minmax(9rem,1fr))}
+ .rx-rail{border-left:0;border-top:1px solid var(--ms-line)}
+ .rx-task{overflow:visible}
+ .rx-foot{flex-wrap:wrap;height:auto}
+ .rx-saved{margin-left:0;white-space:normal}
+ :host([data-immersive]) .app{display:grid;overflow:hidden}
+}
+
+/* ---------- Short screens: school Chromebooks (1366x630 maximised). Under 740 px tall the desk chrome
+   tightens with the height: --ms-c1 comes from studio-shell.css through the host (0 at 740 px, 1px at
+   640 px and below) and each size is its full value minus its saving times --ms-c1. The task panel runs to
+   the foot of the screen and the footer stops at its left edge. The side headings take one line, which
+   gives the drawn model that much more height (reaction-viewer.js fit() keeps clear of them). ---------- */
+@media (min-width:1001px) and (max-height:739.98px){
+ :host(:not([data-hand-layout]):not([data-immersive])) .app:not(.rx-none){grid-template-areas:"kit stage rail" "foot foot rail"}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-stagehead{padding-top:calc(.45rem - 3.2 * var(--ms-c1,0px));padding-bottom:calc(.3rem - 1.6 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-pills{margin-bottom:calc(.35rem - 1.6 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-pills button{min-height:calc(36px - 4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .scene .rx-title{top:calc(.5rem - 3.2 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .scene #reaction-stage{top:calc(3.1rem - 4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .scene .rx-side-headings{top:calc(3.4rem - 4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .scene .rx-side-headings strong{display:inline}
+ :host(:not([data-hand-layout]):not([data-immersive])) .scene .rx-side-headings span{display:inline;margin:0 0 0 .5em}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-viewbar{padding-top:calc(.3rem - 2.4 * var(--ms-c1,0px));padding-bottom:calc(.3rem - 2.4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-viewbar .rx-seg button{min-height:calc(40px - 4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-coach{margin-top:calc(.2rem - .8 * var(--ms-c1,0px));margin-bottom:calc(.6rem - 3.2 * var(--ms-c1,0px));min-height:calc(3.8rem - 8 * var(--ms-c1,0px));padding-top:calc(.5rem - 3.2 * var(--ms-c1,0px));padding-bottom:calc(.5rem - 3.2 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-foot{padding-top:calc(.3rem - 2.4 * var(--ms-c1,0px));padding-bottom:calc(.3rem - 2.4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-foot .rx-btn.rx-small{min-height:calc(44px - 6 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-steps{padding-top:calc(.55rem - 3.2 * var(--ms-c1,0px));padding-bottom:calc(.45rem - 2.4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-steps li i{width:calc(2rem - 4 * var(--ms-c1,0px));height:calc(2rem - 4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-steps li::before{top:calc(1rem - 2 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-task{padding-top:calc(.8rem - 3.2 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-task p{margin-bottom:calc(.65rem - 3.2 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-box{margin-bottom:calc(.7rem - 3.2 * var(--ms-c1,0px));padding-top:calc(.55rem - 2.4 * var(--ms-c1,0px));padding-bottom:calc(.55rem - 2.4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) :is(.rx-prep,.rx-manual,.rx-status){margin-bottom:calc(.6rem - 3.2 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-rowlab{margin-bottom:calc(.55rem - 3.2 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-actions{padding-top:calc(.55rem - 2.4 * var(--ms-c1,0px));padding-bottom:calc(.7rem - 4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-why{margin-bottom:calc(.4rem - 2.4 * var(--ms-c1,0px))}
+ :host(:not([data-hand-layout]):not([data-immersive])) .rx-actions .rx-btn{min-height:calc(48px - 4 * var(--ms-c1,0px))}
+ /* Hand layout: the hand bar is shorter (studio-shell.css sets --ms-hbar and --ms-top), so its status line
+    and the camera thumbnail shrink a little; the task panel's gaps tighten. Hand targets stay 60 px or more. */
+ :host([data-hand-layout]) .rx-hbar{padding-top:calc(.4rem - 2 * var(--ms-c1,0px));padding-bottom:calc(.4rem - 2 * var(--ms-c1,0px))}
+ :host([data-hand-layout]) .rx-hbar::before,:host([data-hand-layout]) .rx-hbar .camera-surface{height:calc(5rem - 12 * var(--ms-c1,0px))}
+ :host([data-hand-layout]) .rx-hcoach p{font-size:calc(1.25rem - 3 * var(--ms-c1,0px));line-height:calc(1.6875rem - 6.25 * var(--ms-c1,0px))}
+ :host([data-hand-layout]) .rx-steps{padding-top:calc(.35rem - 3 * var(--ms-c1,0px));padding-bottom:calc(.35rem - 3 * var(--ms-c1,0px))}
+ :host([data-hand-layout]) .rx-task{padding-top:calc(.6rem - 4 * var(--ms-c1,0px))}
+ :host([data-hand-layout]) .rx-task p{margin-bottom:calc(.4rem - 2 * var(--ms-c1,0px))}
+ :host([data-hand-layout]) .rx-box{margin-bottom:calc(.45rem - 3 * var(--ms-c1,0px));padding-top:calc(.35rem - 2 * var(--ms-c1,0px));padding-bottom:calc(.35rem - 2 * var(--ms-c1,0px))}
+ :host([data-hand-layout]) .rx-actions{padding-top:calc(.4rem - 3 * var(--ms-c1,0px));padding-bottom:calc(.6rem - 6 * var(--ms-c1,0px))}
+ :host([data-hand-layout]) .rx-actions .rx-btn{min-height:calc(3.6rem - 8 * var(--ms-c1,0px))}
+ /* A hand cannot scroll the task panel, so here it runs to the foot (as in Shapes and Build a molecule) and the
+    hand bar spans the kit and the model only. Its buttons get narrower (Exit keeps its words, on two lines);
+    a status line too long for two lines takes a third in place of the hint (scripts/cb/rxcoach.cjs). */
+ :host([data-hand-layout]) .app{grid-template-areas:"kit stage rail" "hbar hbar rail"}
+ :host([data-hand-layout]) .rx-hbar{gap:.5rem}
+ :host([data-hand-layout]) .rx-hexit{white-space:normal;min-width:0;max-width:6rem}
+ :host([data-hand-layout]) #hand-bar-settings{min-width:4.5rem}
+ /* Kit: Fit view and All IDs side by side, and Move atoms joins the element grid, so a five-element bench
+    (silver-chloride, barium-sulfate, calcium-carbonate, copper-hydroxide) fits without scrolling. */
+ :host([data-hand-layout]) #kit-view .rx-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+ :host([data-hand-layout]) #shelf-open{grid-column:1 / -1}
+ :host([data-hand-layout]) #kit-atoms:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem .5rem;align-content:start}
+ :host([data-hand-layout]) #kit-atoms>.rx-label{grid-column:1 / -1}
+ :host([data-hand-layout]) #kit-elements{display:contents}
+ :host([data-hand-layout]) #hand-move-tile{padding-inline:.3rem}
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Molecular structures · VirtualLab</title>
+  <link rel="stylesheet" href="./collection.css">
+  <link rel="stylesheet" href="./structure.css?v=20261110-p3">
+  <link rel="stylesheet" href="./lewis-pad.css?v=20261110-p2b">
+  <link rel="stylesheet" href="./geometry-pad.css?v=20261110-p2b">
+  <link rel="stylesheet" href="./direct-controls.css">
+  <script type="module" src="./structure.js?v=20261110-p2b"></script>
+  <link rel="stylesheet" href="./practice/ui.css?v=20261110-p3">
+  <script type="module" src="./practice/choices.js?v=20261110-p3"></script>
+</head>
+<body class="ui-standalone">
+  <a class="skip" href="#main">Skip to practice</a>
+  <header class="site-bar"><div class="bar-inner">
+    <a href="../../index.html">← Virtual Lab home</a>
+    <a href="../molecular-studio/b06-v2/#builder">Open the 3D molecule builder</a>
+  </div></header>
+  <main id="main" class="page" tabindex="-1">
+    <div class="ui-title-row">
+    <h1 id="tool-title">Molecular structures</h1>
+    <nav class="companion-modes" aria-label="Structure tools">
+      <a href="#lewis">Lewis drawing</a><a href="#geometry">Rotatable geometry</a>
+    </nav>
+    </div>
+    <div class="companion-controls"><label for="species">Practice molecule or ion</label><select id="species" data-choice="chips"></select></div>
+    <p id="case-prompt" class="case-prompt"></p>
+    <div id="editor"></div>
+    <p id="storage" class="secondary-text" role="status"></p>
+  </main>
+</body>
+</html>

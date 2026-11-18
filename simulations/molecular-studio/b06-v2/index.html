@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Molecular studio · Shape, polarity and construction</title>
+  <link rel="stylesheet" href="./style.css?v=20261110-p2b">
+<link rel="stylesheet" href="./studio.css?v=20261113-delete-tray">
+<link rel="stylesheet" href="./compact-header.css?v=20261110-p2b">
+<link rel="stylesheet" href="./assignments.css?v=20261111-p4">
+<link rel="stylesheet" href="../workspace.css?v=20261112-b06">
+
+  <link rel="stylesheet" href="../ui.css?v=20261110-p3">
+  <link rel="stylesheet" href="./shell.css?v=20261115-stable-input">
+  <link rel="stylesheet" href="./hand-building.css?v=20261118-u1">
+  <link rel="stylesheet" href="./hand-periodic.css?v=20261113-hand-targets">
+  <link rel="stylesheet" href="./ionic-builder.css?v=20261113-delete-tray">
+  <link rel="stylesheet" href="./transfer-visuals.css?v=20261113-transfer">
+  <link rel="stylesheet" href="./vsepr-kit.css?v=20261115-fidelity4">
+  <link rel="stylesheet" href="./reaction-lab.css?v=20261117-p3b">
+  <link rel="stylesheet" href="./studio-shell.css?v=20261118-b6">
+  <link rel="stylesheet" href="./builder-ui.css?v=20261118-u2">
+  <script type="importmap">
+    {
+      "imports": {
+        "./ionic-geometry.js": "./ionic-geometry.js?v=20261113-transfer",
+        "./builder.js": "./builder.js?v=20261118-v2",
+        "./free-controls.js": "./free-controls.js?v=20261115-stable-input",
+        "./drag-kit.js": "./drag-kit.js?v=20261117-f1",
+        "./bench-edits.js": "./bench-edits.js?v=20261113-ionic",
+        "./ionic-model.js": "./ionic-model.js?v=20261113-table-selection",
+        "./hand-placement.js": "./hand-placement.js?v=20261113-transfer",
+        "./hand-building.js": "./hand-building.js?v=20261118-v2",
+        "./hand-controls.js": "./hand-controls.js?v=20261118-b4",
+        "./molecule-model.js": "./molecule-model.js?v=20261113-transfer",
+        "./periodic-elements.js": "./periodic-elements.js?v=20261113-orb2",
+        "./hand-periodic.js": "./hand-periodic.js?v=20261118-u1",
+        "./periodic-voice.js": "./periodic-voice.js?v=20261115-mode-scope",
+        "./hand-detector.js": "./hand-detector.js?v=20261112-b06-hands",
+        "./hand-gestures.js": "./hand-gestures.js?v=20261115-stable-input",
+        "./hand-trace.js": "./hand-trace.js?v=20261112-b06-hands",
+        "./molecule-viewer.js": "./molecule-viewer.js?v=20261113-transfer",
+        "./reaction-layout.js": "./reaction-layout.js?v=20261115-ux",
+        "./studio.js": "./studio.js?v=20261118-u1",
+        "./studio-camera.js": "./studio-camera.js?v=20261112-b06-hands",
+        "./viewer.js": "./viewer.js?v=20261116-p1",
+        "./chemistry.js": "./chemistry.js?v=20261115-fidelity4",
+        "./labels.js": "./labels.js?v=20261115-fidelity4",
+        "./vsepr-assembly.js": "./vsepr-assembly.js?v=20261115-fidelity4",
+        "./vsepr-kit.js": "./vsepr-kit.js?v=20261115-fidelity4",
+        "./vsepr-cases.js": "./vsepr-cases.js?v=20261115-fidelity4",
+        "./vsepr-workshop.js": "./vsepr-workshop.js?v=20261118-cb1",
+        "./shapes-ui.js": "./shapes-ui.js?v=20261118-cb1"
+      }
+    }
+  </script>
+  <script type="module" src="../choices.js?v=20261110-p3"></script>
+</head>
+<body><main>
+  <header class="mast">
+    <div><p class="eyebrow">AP Chemistry &nbsp;/&nbsp; Topic 2.7</p><h1>VSEPR model kit</h1></div>
+    <label class="molecule">Molecule
+      <select id="species" data-choice="chips" data-label="Guided molecule" disabled></select>
+    </label>
+  </header>
+  <p class="intro">Build a molecular model, predict its shape and test what changes when you turn it.</p>
+  <p id="loading" role="status">Opening the modeling kit…</p>
+  <div class="station" id="station" inert>
+    <div id="visual">
+      <div class="ms-stagehead" id="ms-stagehead">
+        <div class="ms-pills" id="ms-sets" role="tablist" aria-label="Practice set"></div>
+        <div class="ms-mols" id="ms-mols" role="group" aria-label="Molecule"></div>
+      </div>
+      <div id="viewport" tabindex="0" role="img" aria-label="3D model. Use arrow keys to turn it. Site controls also allow placement and removal."><svg id="leaders" aria-hidden="true"></svg><div id="labels" aria-hidden="true"></div></div>
+      <div class="ms-overlay">
+        <div class="ms-stagetitle"><h2 id="stage-title">Your assembly</h2><small id="ms-stage-sub"></small></div>
+        <div class="ms-anglepill" id="ms-anglepill" hidden></div>
+        <svg class="triad" viewBox="0 0 60 48" role="img" aria-label="Orientation of model axes"><g id="axes"></g></svg>
+        <div id="ms-overlap-slot" class="ms-overlap"></div>
+      </div>
+      <div id="tray" aria-label="Model kit">
+        <h3>Model kit</h3>
+        <button class="part" id="bin-bond" type="button" data-tool="bond"><span class="well" id="well-bond"></span><span class="part-name" id="bond-label">Bond piece</span><span class="part-count" id="count-bond"></span></button>
+        <button class="part" id="bin-other" type="button" data-tool="other" hidden><span class="well" id="well-other"></span><span class="part-name" id="other-label">Second bond piece</span><span class="part-count" id="count-other"></span></button>
+        <button class="part" id="bin-pair" type="button" data-tool="pair"><span class="well" id="well-pair"></span><span class="part-name">Lone pair</span><span class="part-count" id="count-pair"></span></button>
+        <div class="tray-note" id="tray-note">Drag a piece to a socket, or press it and then a socket.</div>
+        <div class="ms-kitview" data-hand-zone role="group" aria-label="View"><span class="ms-label">View</span><button type="button" class="ms-tile" id="ms-hand-fit">Fit view</button><button type="button" class="ms-tile" id="ms-hand-atoms" aria-pressed="false">Atoms only</button></div>
+      </div>
+      <div class="ms-viewbar" id="ms-viewbar" data-hand-zone role="toolbar" aria-label="View tools">
+        <div class="ms-seg" id="ms-tool"><button type="button" data-ms-camera="move" aria-pressed="true" title="Drag pieces and sockets">Move</button><button type="button" data-ms-camera="orbit" aria-pressed="false" title="Drag anywhere to turn the model">Rotate</button><button type="button" data-ms-camera="pan" aria-pressed="false" title="Drag anywhere to slide the view">Pan</button></div>
+        <div class="ms-seg" id="ms-views" role="group" aria-label="View"></div>
+        <div class="ms-seg"><button type="button" class="turn" id="left" aria-label="Turn view left" title="Turn view left">↶</button><button type="button" class="turn" id="right" aria-label="Turn view right" title="Turn view right">↷</button><button type="button" id="roll" aria-label="Roll the model" title="Roll the model">⟲</button></div>
+        <div class="ms-seg"><button type="button" id="fit" class="fit" title="Oblique view at the starting size">Fit</button><button type="button" id="zoom-out" aria-label="Zoom out" title="Zoom out">−</button><button type="button" id="zoom-in" aria-label="Zoom in" title="Zoom in">+</button></div>
+        <div class="ms-seg"><button type="button" id="ms-atoms" aria-pressed="false">Atoms only</button></div>
+      </div>
+      <div class="ms-coach" id="ms-coach"><span class="ms-ico" aria-hidden="true">i</span><p id="live-guide" role="status">Drag open space to turn the model.</p><p id="notice" class="notice" role="status"></p></div>
+      <div class="ms-shelf" id="ms-shelf" data-hand-zone role="region" aria-labelledby="ms-shelf-title" hidden></div>
+      <div class="ms-carriers" hidden>
+        <label>Atoms only <input id="atoms" type="checkbox"></label>
+        <label>View <select id="view" data-choice="segment"><option value="Oblique">Oblique</option><option value="Front">Front</option><option value="Back">Back</option><option value="End-on">Along a bond</option><option value="Rotated" hidden>Rotated</option></select></label>
+      </div>
+    </div>
+    <aside id="task-rail" class="ms-rail" data-b06-mode="guided" data-hand-zone aria-label="Your task">
+      <ol class="ms-steps" id="steps" aria-label="Steps"><li><i>1</i><span>Build</span></li><li><i>2</i><span>Predict</span></li><li><i>3</i><span>Observe</span></li><li><i>4</i><span>Compare</span></li></ol>
+      <div class="ms-task" id="ms-task" tabindex="-1">
+        <section data-step="0">
+          <h2>Build around the center</h2>
+          <p id="task"></p>
+          <div class="ms-box inventory"><small>Your model</small><output id="counts"></output><p id="valence-ledger" class="small"></p></div>
+          <div class="ms-mores" id="ms-build-more" data-ms-desk>
+            <details class="ms-more" id="ms-lewis"><summary>Sketch the Lewis structure first</summary><p><a href="../../lewis-structure-builder/#lewis" target="_blank" rel="noreferrer">Open the Lewis structure pad</a> in a new tab.</p></details>
+            <details class="ms-more construction-tools"><summary>Place with buttons</summary>
+              <div class="choices"><label>Piece<select id="tool" data-choice="chips"><option value="bond">Bond piece</option><option value="other" hidden>Second bond piece</option><option value="pair">Lone pair</option><option value="empty">Remove piece</option><option value="move">Move fitted piece</option></select></label>
+              <label id="move-source" hidden>From site<select id="source-site" data-choice="chips"></select></label><label><span id="site-label">Site</span><select id="site" data-choice="chips"></select></label></div>
+              <button id="apply" type="button">Seat piece</button>
+              <p class="small" id="socket-map"></p>
+            </details>
+          </div>
+          <div class="ms-tiles" id="ms-build-tiles" data-ms-hand></div>
+        </section>
+        <section data-step="1" hidden>
+          <h2 id="ms-predict-title">Predict the structure</h2>
+          <div id="ms-predict"></div>
+          <div class="ms-native" id="ms-predict-native">
+            <p>Count every piece on the hub from your Lewis structure, name the shape from the atoms only, then use electronegativities and bond directions to predict the sum of the bond dipoles.</p>
+            <label>Electron domains at the center<input id="domainAnswer" type="number" min="1" max="6" step="1" inputmode="numeric"></label>
+            <label>Molecular shape<select id="shape" data-choice="chips"><option value="">Choose a shape</option><option>Linear</option><option>Bent</option><option>Trigonal planar</option><option>Trigonal pyramidal</option><option>Tetrahedral</option><option>Trigonal bipyramidal</option><option>Seesaw</option><option>T-shaped</option><option>Octahedral</option><option>Square pyramidal</option><option>Square planar</option></select></label>
+            <label>Result of adding the bond arrows<select id="dipole" data-choice="cards"><option value="">Choose a result</option></select></label>
+          </div>
+        </section>
+        <section data-step="2" hidden>
+          <h2 id="ms-observe-title">Inspect two views</h2>
+          <details id="gauge" class="instrument ms-gauge" data-ms-desk>
+            <summary>Angle gauge <span id="gauge-summary"></span></summary>
+            <h3 id="ms-gauge-title">Angle gauge</h3>
+            <p id="reference-gauge" hidden>The gauge reads your assembly. Use <button id="return-model" type="button">Show my model</button> to take another reading.</p>
+            <div class="gauge-body" id="gauge-body">
+              <div class="ms-sites"><span>Two atoms</span><div class="ms-seg" id="ms-sites" role="group" aria-label="Two atoms"></div></div>
+              <div class="pair-fields ms-native" id="ms-pair-native"><label>First site<select id="first" data-choice="segment"></select></label><label>Second site<select id="second" data-choice="segment"></select></label></div>
+              <div class="ms-readouts"><div><small>Model angle · 3D</small><output id="angle-value">None yet</output></div><div><small>On screen · flat projection</small><output id="screen-value">None yet</output></div></div>
+              <div class="gauge-entry ms-entry"><div><label for="angle-entry">Enter the model angle (°)</label><input id="angle-entry" type="number" inputmode="decimal" min="0" max="180" step="any" autocomplete="off"></div><button id="record" type="button" class="ms-btn">Record reading</button></div>
+              <p class="gauge-tip">On screen measures the projected angle. An end-on ray projects to a point.</p>
+            </div>
+          </details>
+          <div id="observation-status" class="observation ms-status" data-ms-desk></div>
+          <div class="ms-q" id="ms-reason-desk" data-ms-desk><h3><label for="reason">How do the two views change what you see?</label></h3><textarea id="reason" rows="2" placeholder="Compare your readings and describe any overlap."></textarea></div>
+          <div id="ms-observe-hands" data-ms-hand></div>
+        </section>
+        <section data-step="3" hidden>
+          <h2 id="result-title">Compare your model</h2>
+          <dl class="criteria ms-crit" id="criteria"></dl>
+          <p id="result-body"></p>
+          <div class="ms-btnrow" id="ms-compare-actions"><button id="compare" type="button" class="ms-btn ms-small">Inspect reference</button><button id="ms-revise" type="button" class="ms-btn ms-small" hidden>Revise assembly</button><button id="ms-hand-arrows" type="button" class="ms-btn ms-small" data-ms-hand aria-pressed="true" hidden>Bond arrows</button></div>
+          <div id="reference-notes" class="ms-note" hidden><h3>Shape and bond arrows</h3><p id="observed"></p><h3>Model vs measured structure</h3><p id="ideal"></p><p id="physical-reference" hidden></p>
+            <div id="reference-inventory"></div>
+            <label class="inline"><input id="arrows" type="checkbox" checked> Bond arrows and their sum</label><p id="arrow-legend" class="small"></p>
+          </div>
+        </section>
+      </div>
+      <div class="ms-actions">
+        <p class="ms-why" id="why-not"></p>
+        <div class="ms-btnrow navigation"><button id="back" type="button" class="ms-btn">Back</button><button id="next" type="button" class="ms-btn ms-primary">Continue to Predict</button></div>
+      </div>
+    </aside>
+    <footer class="ms-foot" id="ms-foot" data-b06-mode="guided" aria-label="Model tools">
+      <button id="undo" type="button" class="ms-btn ms-small">↶ Undo</button>
+      <button id="reset" type="button" class="ms-btn ms-small">Reset build</button>
+      <button id="ms-notes-open" type="button" class="ms-btn ms-small" aria-expanded="false" aria-controls="ms-notes-drawer">Field notes <span id="ms-notes-count"></span></button>
+      <button id="ms-help-open" type="button" class="ms-btn ms-small" aria-expanded="false" aria-controls="ms-help-drawer">Help</button>
+      <div class="ms-saved" id="ms-saved"></div>
+    </footer>
+  </div>
+  <section class="notes">
+    <details id="notebook"><summary id="notebook-label">Field notes</summary><div id="entries"></div></details>
+    <details><summary>Model and credits</summary><p>Each hub has exactly the electron-domain sockets required by its Lewis structure: two through six, with no extra holes. One socket represents a bond direction or a lone-pair region, not an individual valence electron. Single, double and triple bonds use one socket each, but contribute one, two and three shared electron pairs. Carbon has total bond order four and no lone pair in these cases. The socket directions give ideal VSEPR angles. Sphere sizes, pair markers and arrow lengths are classroom conventions. Experimental angles and dipole magnitudes can differ.</p><p>Connector lengths share one scale and stay fixed while you turn or move a piece. The Bond workshop identifies representative <a href="https://openstax.org/books/chemistry-2e/pages/8-1-valence-bond-theory">bond distances</a> or estimates from <a href="https://doi.org/10.1039/B801115J">covalent radii</a>. Estimates use the two radii added together, multiplied by 0.88 for a double bond or 0.78 for a triple bond. These factors are classroom approximations. PCl₅, SF₄, SeF₄ and BrF₅ supply distinct axial and equatorial lengths. Other equivalent links share one length; values are not a force-field calculation.</p><p>Single bonds permit rotation of attached groups; a double bond maintains its relative orientation and triple-bond ends are linear. Ethane’s CH₃ group can turn without stretching its bonds. Torsional energy barriers, collisions, vibration, resonance and reactions are not simulated. Branch groups arrive preassembled; the exercise counts domains at the labelled central hub.</p><p>The central amber inserts each represent one lone pair. Paired dots on an end piece count its terminal lone pairs; they do not affect the central domain count. Five-domain lone pairs occupy equatorial sites. Two lone pairs in a six-domain model sit opposite one another.</p><p>Workbench adapted from AP Chemistry Study Studio. <a href="../../../sources.html#source-b06">Collection credits and licenses</a></p></details>
+  </section>
+  <p id="save-status" class="save">Field notes are saved in this browser for each molecule.</p>
+<nav aria-label="Activity navigation"><a href="../../../index.html">Virtual Lab home</a></nav></main><script type="module" src="./app.js?v=20261118-v2"></script><script type="module" src="./compact-header.js?v=20261110-p3"></script><script type="module" src="../workspace.js?v=20261118-v2"></script><script type="module" src="./shell.js?v=20261115-equation"></script><script type="module" src="./studio-shell.js?v=20261118-b6"></script><script type="module" src="./builder-ui.js?v=20261117-f2"></script></body></html>
+
