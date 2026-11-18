@@ -1,6 +1,7 @@
 /* Local MediaPipe inference transport, adapted from the supplied ELISA camera lifecycle.
  * No gesture classification, frame storage, uploads or automatic camera start. */
 const FRAME_INTERVAL_MS=32,STALE_MS=600,WORKER_TIMEOUT_MS=18000,FRAME_TIMEOUT_MS=8000;
+const FIRST_FRAME_TIMEOUT_MS=30000;
 const aborted=()=>Object.assign(new Error('Camera startup cancelled.'),{name:'AbortError'});
 const closeDetector=detector=>{try{detector?.close()}catch{/* Disposal must not prevent camera-track cleanup. */}};
 const stopStream=stream=>{for(const track of stream?.getTracks?.()||[]){try{track.stop()}catch{/* Continue closing the other tracks. */}}};
@@ -101,7 +102,7 @@ export class HandCamera {
    }
    if(!this.current(gen))return false;
    this.modelReady=true;this.lastVideoTime=-1;this.lastSubmit=-Infinity;this.lastPacket=-Infinity;this.lastReceived=this.p.now();this.errors=0;this.lostSent=false;
-   this.status('Camera ready. Show your open hand to begin.');
+   this.status('Starting hand detection. Hold an open hand in view.');
    this.monitor=this.p.setInterval(()=>this.checkHealth(gen),100);this.schedule(gen);return true;
   }catch(error){
    if(!this.current(gen))return false;
@@ -166,6 +167,7 @@ export class HandCamera {
   if(!this.current(gen))return;
   const now=this.p.now(),age=now-data.stamp;
   if(!Number.isFinite(data.stamp)||age<0||age>STALE_MS||data.stamp<=this.lastPacket){this.lost('invalid-frame');return}
+  if(this.lastPacket===-Infinity)this.status('Camera ready. Show your open hand to begin.');
   this.lastPacket=data.stamp;this.lastReceived=now;this.errors=0;this.lostSent=false;
   this.callbacks.onFrame({landmarks:data.landmarks||[],worldLandmarks:data.worldLandmarks||[],handedness:data.handedness||[],stamp:data.stamp,inferenceMS:Number.isFinite(data.inferenceMS)?data.inferenceMS:0,
    frame:data.exposure?.image||null,crop:data.exposure?.crop||null,frameRevision:data.exposure?.revision});
@@ -173,8 +175,13 @@ export class HandCamera {
  lost(reason){if(!this.lostSent){this.lostSent=true;this.callbacks.onLost({reason,stamp:this.p.now()})}}
  checkHealth(gen){
   if(!this.current(gen)||!this.modelReady)return;const now=this.p.now();
-  if(now-this.lastReceived>STALE_MS)this.lost('stale-frames');
-  if(this.inFlight&&now-this.inFlight.stamp>FRAME_TIMEOUT_MS){this.stop();this.status('Hand tracking stopped responding. Start the camera again.',true)}
+  // A cold GPU can spend several seconds compiling the first inference.
+  // Only a fresh frame ends warm-up. Subsequent exposures use the normal watchdog.
+  const warmingUp=this.lastPacket===-Infinity;
+  if(!warmingUp&&now-this.lastReceived>STALE_MS)this.lost('stale-frames');
+  const timedOut=warmingUp?now-this.lastReceived>FIRST_FRAME_TIMEOUT_MS:
+   this.inFlight&&now-this.inFlight.stamp>FRAME_TIMEOUT_MS;
+  if(timedOut){this.stop();this.status('Hand tracking stopped responding. Start the camera again.',true)}
  }
  processingError(gen){
   if(!this.current(gen))return;this.busy=false;this.inFlight=null;this.lost('processing-error');

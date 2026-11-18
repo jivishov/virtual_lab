@@ -134,9 +134,33 @@ test('visibility hide, page leave and device disconnect stop the camera',async()
  }
 });
 
-test('unresponsive worker watchdog closes camera resources',async()=>{
+test('a cold first GPU inference can finish after ten seconds without aging into a gesture',async()=>{
  const pool=workerFactory(),f=fixture({Worker:pool.Worker,OffscreenCanvas:class{},createImageBitmap:async()=>({close(){}})});
- await f.camera.start();const gen=f.camera.generation;await f.camera.frame(gen);f.clock.now=8200;f.camera.checkHealth(gen);
+ await f.camera.start();const gen=f.camera.generation,worker=pool.instances[0];
+ await f.camera.frame(gen);const first=worker.posts.at(-1);
+ f.clock.now=10300;f.camera.checkHealth(gen);
+ assert.equal(f.camera.running,true);assert.equal(f.source.track.stops,0);assert.equal(f.lost.length,0);
+ worker.emit({type:'result',generation:gen,requestId:first.requestId,stamp:first.stamp,landmarks:[]});
+ assert.equal(f.packets.length,0,'The old exposure cannot operate the pipette');
+ f.video.currentTime=2;await f.camera.frame(gen);const fresh=worker.posts.at(-1);
+ f.clock.now+=50;worker.emit({type:'result',generation:gen,requestId:fresh.requestId,stamp:fresh.stamp,landmarks:[]});
+ assert.deepEqual(f.packets.map(p=>p.stamp),[fresh.stamp]);assert.match(f.statuses.at(-1).text,/Camera ready/);
+ f.camera.destroy();
+});
+
+test('an unresponsive first inference still closes the camera after its startup allowance',async()=>{
+ const pool=workerFactory(),f=fixture({Worker:pool.Worker,OffscreenCanvas:class{},createImageBitmap:async()=>({close(){}})});
+ await f.camera.start();const gen=f.camera.generation;await f.camera.frame(gen);
+ f.clock.now=31000;f.camera.checkHealth(gen);
+ assert.equal(f.camera.running,false);assert.equal(f.source.track.stops,1);assert.ok(pool.instances[0].terminated);f.camera.destroy();
+});
+
+test('unresponsive worker watchdog closes camera resources during tracking',async()=>{
+ const pool=workerFactory(),f=fixture({Worker:pool.Worker,OffscreenCanvas:class{},createImageBitmap:async()=>({close(){}})});
+ await f.camera.start();const gen=f.camera.generation;await f.camera.frame(gen);
+ const worker=pool.instances[0],first=worker.posts.at(-1);
+ worker.emit({type:'result',generation:gen,requestId:first.requestId,stamp:first.stamp,landmarks:[]});
+ f.video.currentTime=2;f.clock.now=150;await f.camera.frame(gen);f.clock.now=8200;f.camera.checkHealth(gen);
  assert.equal(f.camera.running,false);assert.equal(f.source.track.stops,1);assert.match(f.statuses.at(-1).text,/stopped responding/);f.camera.destroy();
 });
 
