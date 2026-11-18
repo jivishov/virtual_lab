@@ -1,0 +1,39 @@
+#arrangeButton{border-left:1px solid #cad5c6;border-radius:0;margin-left:4px;color:#345e51}
+#arrangeButton[aria-pressed="true"]{background:#236d66;color:#fff;border-radius:4px;border-color:transparent}
+.bench-layout[hidden]{display:none}
+.bench-layout{position:absolute;z-index:4;right:18px;top:96px;width:210px;max-height:calc(100% - 152px);overflow:auto;padding:14px;background:#fafbf3f5;border:1px solid #ffffffb8;border-radius:9px;box-shadow:0 5px 24px #243e3026;color:var(--ink);font-size:12px}
+.layout-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.layout-heading .eyebrow{font-size:8px;letter-spacing:1px}
+.layout-heading h2{font-size:16px;line-height:1.3;font-weight:600;letter-spacing:-.25px;margin:5px 0 0}
+.layout-heading .layout-done{font-size:10px;flex-shrink:0;padding:6px 8px;margin-top:1px;color:var(--teal)}
+.layout-intro{font-size:11px;line-height:1.5;color:#61746a;margin:10px 0 12px}
+.layout-settings{border-top:1px solid var(--line)}
+.layout-settings>summary{cursor:pointer;padding:10px 0 8px;line-height:1.4;font-size:11px;font-weight:600;list-style-position:inside}
+.layout-selected-label{display:block;font-size:10px;color:#62766b;font-weight:400;margin:4px 0 0 12px}
+.layout-fields{margin:0;padding:4px 0 0;border:0;min-width:0}
+.layout-select-label{display:block;margin:0 0 6px;font-size:10px;color:#61746a}
+.bench-layout select{font:inherit;width:100%;min-width:0;padding:9px 6px;background:#fffef8;color:var(--ink);border:1px solid #c7d3c5;border-radius:5px;font-size:11px}
+.bench-layout select:focus-visible{outline:3px solid #db9952;outline-offset:3px}
+.layout-nudge{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,36px);gap:4px;margin:12px 10px 8px}
+.layout-nudge button{padding:0;font-size:19px;line-height:1}
+.layout-up{grid-column:2;grid-row:1}.layout-left{grid-column:1;grid-row:2}.layout-right{grid-column:3;grid-row:2}.layout-down{grid-column:2;grid-row:3}
+.layout-nudge-center{grid-column:2;grid-row:2;display:grid;place-items:center;font-size:9px;color:#6d7c70}
+.layout-rotate{display:flex;gap:6px}
+.layout-rotate button{flex:1;font-size:19px;line-height:1;padding:8px 5px}
+.layout-rotate button span{font-size:11px;margin-left:4px}
+.layout-hint{font-size:10px;line-height:1.5;margin:10px 0;color:#6a796e}
+.bench-layout .layout-restore{width:100%;font-size:10px;padding:9px 6px;background:transparent;border-color:#cbd6c7}
+.layout-status{font-size:10px;line-height:1.5;margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line);color:#5b7467}
+.layout-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.arranging-bench .instrument-panel{visibility:hidden;pointer-events:none}
+.arranging-bench canvas{touch-action:none}
+@media(max-width:1050px){.bench-layout{right:12px;width:200px}.view-controls #arrangeButton{padding-left:7px;padding-right:7px}}
+@media(max-width:760px){
+ .view-controls{max-width:calc(100% - 24px);flex-wrap:wrap}
+ .view-controls #arrangeButton{font-size:9px;padding:6px 8px;margin-left:2px}
+ .bench-layout{top:auto;bottom:42px;right:10px;width:205px;max-height:calc(100% - 116px);padding:11px}
+ .layout-heading h2{font-size:15px}.layout-heading .layout-done{min-height:32px;font-size:11px}
+ .layout-intro{font-size:10px;margin:8px 0}.layout-settings>summary{font-size:11px;padding:9px 0}
+ .layout-nudge{grid-template-rows:repeat(3,40px);margin:10px 7px 8px}.layout-rotate button{min-height:40px}
+ .layout-status{margin-top:9px;padding-top:8px}.bench-layout select{min-height:40px;font-size:12px}
+}

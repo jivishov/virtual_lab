@@ -1,0 +1,19 @@
+{
+  "name": "@mediapipe/tasks-vision",
+  "version": "0.10.17",
+  "license": "Apache-2.0",
+  "homepage": "http://mediapipe.dev",
+  "dist": {
+    "shasum": "2c1c73ed81902b21d37336a587b96183bb6882d5",
+    "tarball": "https://registry.npmjs.org/@mediapipe/tasks-vision/-/tasks-vision-0.10.17.tgz",
+    "fileCount": 11,
+    "integrity": "sha512-CZWV/q6TTe8ta61cZXjfnnHsfWIdFhms03M9T7Cnd5y2mdpylJM0rF1qRq+wsQVRMLz1OYPVEBU9ph2Bx8cxrg==",
+    "signatures": [
+      {
+        "sig": "MEYCIQDoMmX+5Ag/oZW5+K21gB6Yk/nrtUTHbI+A65LRNUT4pwIhAJWxN3dULqiyjTd7uJ11cBWZy4GjROPYo2SBF4UakL8F",
+        "keyid": "SHA256:jl3bwswu80PjjokCgh0o2w5c2U4LhQAE57gj9cz1kzA"
+      }
+    ],
+    "unpackedSize": 20412943
+  }
+}

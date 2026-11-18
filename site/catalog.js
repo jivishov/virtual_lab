@@ -15,7 +15,13 @@
 //                  (2D/3D, or v2/v1; a buttons.launchV2 link is drawn filled, as the one to pick)
 
 window.VL_CATALOG = [
-    { key: 'spectrophotometry', sym: 'Sp', type: 'lab', family: 'chem', link: 'experiments/spectrophotometry/' },
+    {
+        key: 'spectrophotometry', sym: 'Sp', type: 'lab', family: 'chem', badge: '3D', tableVersions: true,
+        versions: [
+            { label: 'site.buttons.v2d', link: 'experiments/spectrophotometry/' },
+            { label: 'site.buttons.v3d', link: 'experiments/spectrophotometry_v2/' }
+        ]
+    },
     {
         key: 'dnamicroarray', sym: 'Ma', type: 'lab', family: 'life', badge: '3D',
         versions: [

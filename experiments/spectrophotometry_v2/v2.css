@@ -1,0 +1,63 @@
+/* Cool enamel and warm paper echo the instrument, rack and dilution station. */
+:root { --ink:#233b46; --teal:#24646c; --paper:#faf8f1; --line:#cdd6d2; }
+.identity .tag { color:#315665; background:#f4efe3; }
+.notebook { background:#faf9f3; }
+.notebook .dialog-head { border-bottom:2px solid #3c666e; }
+.notebook .dialog-head h2 { font-size:clamp(24px,3vw,30px); }
+.notebook-intro p { max-width:none; }
+.graph-section svg text { font:12px "Segoe UI",sans-serif; }
+.graph-legend .line { border-top:2px solid #246e76; background:none; }
+.graph-legend .signal-line { display:inline-block; width:14px; border-top:2px dashed #9d572c; }
+.decision { margin:12px 24px; padding:16px 18px; border:1px solid #c9d6d3; border-left:3px solid #2b6972; background:#f0f5f1; border-radius:5px; }
+.decision h3 { margin:0; font-size:20px; }
+.decision p { margin:6px 0 12px; line-height:1.5; }
+.decision label { font-size:13px; font-weight:600; }
+.decision input { width:90px; min-width:0; margin:4px 8px; padding:8px; border:1px solid #a8bab8; border-radius:4px; }
+.report-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:10px; }
+.report-fields input { display:block; width:100%; margin:5px 0; }
+#decisionFeedback { margin:8px 24px; color:#274e57; font-weight:600; }
+#decisionFeedback:empty { display:none; }
+#fitButton { margin-top:8px; }
+[hidden] { display:none !important; }
+
+#meniscusGuide {
+  position:absolute; left:0; top:0; z-index:1; pointer-events:none;
+  color:#193b43; font:600 13px/20px "Segoe UI",Arial,sans-serif; font-variant-numeric:tabular-nums;
+}
+#meniscusGuide::before {
+  content:""; position:absolute; left:5px; top:-1px; width:20px;
+  border-top:2px solid #244b55; box-shadow:0 1px 0 #fffdf1;
+}
+#meniscusGuide span {
+  position:absolute; left:25px; top:-11px; padding:0 6px; white-space:nowrap;
+  background:#faf9ef; border:1px solid #547077; border-radius:4px;
+}
+#meniscusGuide.face-left::before { left:auto; right:5px; }
+#meniscusGuide.face-left span { left:auto; right:25px; }
+@media(max-width:650px) {
+  .decision { margin:12px; padding:14px; }
+  .report-fields { grid-template-columns:1fr; gap:4px; }
+  #decisionFeedback { margin:8px 12px; }
+}
+
+
+/* Give the instrument the right-hand sightline on wide benches. */
+@media(min-width:1100px){
+  .task-ribbon { top:12px; left:50%; right:auto; transform:translateX(-50%); width:min(480px,37vw); }
+}
+
+.follow-step { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; color:var(--ink); cursor:pointer; }
+.follow-step input { margin:0; accent-color:var(--teal); }
+@media(min-width:768px) and (max-width:1099px){
+  .task-ribbon:not(.collapsed) {
+    top:68px; left:18px; right:18px; width:auto; padding:8px 12px 0;
+    display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; column-gap:20px;
+  }
+  .task-ribbon:not(.collapsed) .task-top { grid-area:1 / 1; }
+  .task-ribbon:not(.collapsed) #instruction { grid-area:2 / 1; margin:2px 0 7px; }
+  .task-ribbon:not(.collapsed) .task-meta { grid-area:1 / 2 / 3 / 3; margin:0; }
+  .task-ribbon:not(.collapsed) .progress-track { grid-column:1 / -1; margin:0 -12px; }
+}
+@media(pointer:coarse) and (min-width:768px){
+  .follow-step,.task-meta .locate-target { min-height:40px; }
+}

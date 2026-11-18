@@ -1,0 +1,15 @@
+# Local hand-tracking assets
+
+This folder supports the explicit **Start camera** control. The browser loads all tracking code, WASM and model files from this local lab. Webcam frames are processed in memory on the device and are not uploaded, recorded or saved by the lab. No runtime CDN fallback is configured.
+
+The module `mediapipe/vision_bundle.mjs`, the SIMD WASM loader/binary and `models/hand_landmarker.task` were copied unchanged from the supplied ELISA lab's `vendor/mediapipe` folder. Their byte hashes are recorded in `mediapipe/provenance.json`. The inherited module matches the published `@mediapipe/tasks-vision` **0.10.17** module after line-ending normalization; the repository's original bytes are retained. This preserves the supplied working dependency rather than introducing an upgraded version or installation requirement.
+
+The inherited package uses `FilesetResolver.forVisionTasks` to select SIMD or non-SIMD WASM. The source lab omitted its two non-SIMD files, so the corresponding `vision_wasm_nosimd_internal.js` and `.wasm` files were added from the same published package. These are local compatibility assets, not runtime downloads. The package's metadata declares Apache-2.0; its license is included in `mediapipe/LICENSE`. [Published package metadata](https://registry.npmjs.org/@mediapipe/tasks-vision/0.10.17), [upstream license](https://github.com/google-ai-edge/mediapipe/blob/master/LICENSE).
+
+The unchanged model is the file referenced by the source ELISA camera implementation: [Google's Hand Landmarker model asset](https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task). The detector emits image landmarks, world landmarks and handedness. The lab's own gesture controller interprets those results. [Official Hand Landmarker documentation](https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker?tab=Web).
+
+`src/hand-camera.js` owns permission, camera streams, frame scheduling, stale-response rejection and cleanup. `src/hand-worker.js` runs inference in a classic worker because this inherited WASM loader uses `importScripts`. GPU initialization falls back to CPU; a worker initialization failure falls back to a detector on the main thread. That compatibility fallback may be less responsive on older devices.
+
+Camera startup occurs only through an explicit call to `HandCamera.start()` from the Start control, with `audio: false`. Stop, tab hiding, page exit and camera disconnection close camera tracks and tracking resources. A pending permission or detector result from an older session is discarded and disposed. Only one frame is submitted at a time; stale or mismatched results cannot reach gesture control. Parent interaction code owns gesture timing and recovery after missing hands.
+
+Run the automated lifecycle checks with `node --test tests/camera-lifecycle.test.mjs`. These use simulated streams and detectors; the separate browser detector check can exercise the actual local model with a generated solid-color canvas without opening a physical camera. Human-camera ergonomics still need a real-person check.

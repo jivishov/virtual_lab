@@ -1,0 +1,43 @@
+{
+  "package": "@mediapipe/tasks-vision",
+  "inheritedVersion": "0.10.17",
+  "publishedBundleMatch": "identical text after normalizing CRLF/LF; repository copy preserved byte-for-byte",
+  "files": [
+    {
+      "path": "vision_bundle.mjs",
+      "bytes": 139712,
+      "sha256": "242e14b4e1d064cc239b1f4562cd8e471f71c34ccc2676120c9826c0b2aa0449",
+      "origin": "unchanged copy of supplied ELISA vendor asset"
+    },
+    {
+      "path": "wasm/vision_wasm_internal.js",
+      "bytes": 203839,
+      "sha256": "67f8654eecaeceb902d2cd7a4010c60ad64ebec00a14cd2451b9c829bfa1a924",
+      "origin": "unchanged copy of supplied ELISA vendor asset"
+    },
+    {
+      "path": "wasm/vision_wasm_internal.wasm",
+      "bytes": 9514390,
+      "sha256": "c88cf472dd5cab0a3954b071e5f442102ded3701dcccc987a7a02ee8f54aae85",
+      "origin": "unchanged copy of supplied ELISA vendor asset"
+    },
+    {
+      "path": "models/hand_landmarker.task",
+      "bytes": 7819105,
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "origin": "unchanged copy of supplied ELISA vendor asset"
+    },
+    {
+      "path": "wasm/vision_wasm_nosimd_internal.js",
+      "bytes": 203672,
+      "sha256": "4e8d07dcf8cbb55b343cd76b7fc30d4303220f049d5529d6412f6f93296726a8",
+      "origin": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.17/wasm/vision_wasm_nosimd_internal.js"
+    },
+    {
+      "path": "wasm/vision_wasm_nosimd_internal.wasm",
+      "bytes": 9379090,
+      "sha256": "f840f69d7229f89dedaed39c7ac7a52f0964a7cec02d6cb1ac9eff891db86dc2",
+      "origin": "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.17/wasm/vision_wasm_nosimd_internal.wasm"
+    }
+  ]
+}
