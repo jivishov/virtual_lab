@@ -1,0 +1,260 @@
+/* components.css - Buttons, Step Progress, Pipette Chips, Feedback & Data Table */
+
+/* --- Dedicated Pipette Color Chips --- */
+.pipette-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pipette-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+
+.pipette-chip:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+}
+
+.pipette-chip__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.pipette-chip--stock .pipette-chip__dot   { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+.pipette-chip--water .pipette-chip__dot   { background: #22d3ee; box-shadow: 0 0 8px #22d3ee; }
+.pipette-chip--unknown .pipette-chip__dot { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+
+.pipette-chip__vol {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding-left: 4px;
+    border-left: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+.pipette-chip--active {
+    border-color: var(--accent-amber);
+    background: rgba(245, 158, 11, 0.14);
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.35);
+}
+
+/* --- Instructions Strip --- */
+.instructions-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(22, 34, 56, 0.95));
+    border-color: rgba(56, 189, 248, 0.28);
+}
+
+.instructions-bar__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.instructions-bar__step-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 520px;
+}
+
+.step-badge {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    background: rgba(56, 189, 248, 0.16);
+    border: 1px solid rgba(56, 189, 248, 0.42);
+    color: #7dd3fc;
+}
+
+.step-badge--done {
+    background: rgba(34, 197, 94, 0.18);
+    border-color: rgba(74, 222, 128, 0.55);
+    color: #86efac;
+}
+
+.instruction-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #f8fafc;
+    line-height: 1.35;
+}
+
+.instructions-bar__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- Progress Track --- */
+.progress-track {
+    width: 100%;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.15);
+    overflow: hidden;
+}
+
+.progress-track__fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4, #22c55e);
+    transition: width 0.25s ease;
+}
+
+/* --- Buttons --- */
+.button {
+    padding: 6px 13px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.button--secondary {
+    background: rgba(51, 65, 85, 0.85);
+    border-color: rgba(148, 163, 184, 0.3);
+    color: #f1f5f9;
+}
+
+.button--secondary:hover:not(:disabled) {
+    background: rgba(71, 85, 105, 0.95);
+}
+
+.button--ghost {
+    background: transparent;
+    border-color: rgba(148, 163, 184, 0.25);
+    color: #cbd5e1;
+}
+
+.button--ghost:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(248, 113, 113, 0.45);
+    color: #fca5a5;
+}
+
+.button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* --- Feedback Status Line --- */
+.feedback {
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.feedback--info    { color: #38bdf8; }
+.feedback--success { color: #4ade80; }
+.feedback--error   { color: #f87171; }
+
+/* --- Data Table --- */
+.table-wrap {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+.data-table__cell {
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    padding: 5px 8px;
+    text-align: center;
+    color: #e2e8f0;
+}
+
+.data-table__header {
+    background: rgba(30, 41, 59, 0.9);
+    color: #94a3b8;
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+}
+
+.data-table__cell--label {
+    text-align: left;
+    font-weight: 600;
+}
+
+.data-table__cell--mono {
+    font-family: var(--font-mono);
+}
+
+.data-table__row--measured {
+    background: rgba(34, 197, 94, 0.07);
+}
+
+.data-table__row--unknown {
+    background: rgba(168, 85, 247, 0.08);
+}
+
+.results-summary {
+    margin-top: 7px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.result-callout {
+    flex: 1 1 260px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.35;
+}
+
+.result-callout--slope {
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    color: #fecaca;
+    font-weight: 700;
+}
+
+.result-callout--unknown {
+    background: rgba(34, 197, 94, 0.14);
+    border: 1px solid rgba(74, 222, 128, 0.42);
+    color: #bbf7d0;
+}
+
+/* --- Calibration Graph Canvas --- */
+#graph-canvas {
+    width: 100%;
+    height: 235px;
+    display: block;
+    border-radius: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: #0f172a;
+}

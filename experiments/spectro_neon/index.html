@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Chemistry — 3D Photorealistic Spectrophotometry (Beer's Law)</title>
+    <meta name="description" content="Interactive photorealistic 3D Beer's Law Spectrophotometry virtual lab built with Blender 5.2 and Three.js, featuring dedicated pipettes per liquid type and a live Spectronic 20D+.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://virtuallab.az/experiments/spectro_neon/">
+    <meta property="og:title" content="3D Photorealistic Spectrophotometry Lab (Beer's Law)">
+    <meta property="og:description" content="Interactive 83-step AP Chemistry spectrophotometry lab modeled in Blender 5.2 with PBR borosilicate glassware, Cycles HDRI lighting, separate dedicated pipettes, and a live Spectronic 20D+.">
+    <meta property="og:image" content="https://virtuallab.az/experiments/spectro_neon/assets/og-preview.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="3D Photorealistic Spectrophotometry Lab (Beer's Law)">
+    <meta name="twitter:description" content="Interactive 83-step AP Chemistry spectrophotometry lab built with Blender 5.2 + Three.js, separate pipettes, and live Beer-Lambert curve plotting.">
+    <meta name="twitter:image" content="https://virtuallab.az/experiments/spectro_neon/assets/og-preview.jpg">
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/simulation.css">
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "./vendor/three/build/three.module.js",
+            "three/addons/": "./vendor/three/addons/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <header class="app-header">
+        <div class="app-header__title-group">
+            <span class="app-header__badge">3D BLENDER LAB</span>
+            <h1 class="app-header__title">Spectrophotometry Simulation <span class="app-header__sub">(Beer's Law • 630 nm)</span></h1>
+        </div>
+        <div class="app-header__meta">
+            <div class="pipette-legend" aria-label="Dedicated Pipettes by Liquid Type">
+                <button id="chip-pipette-stock" class="pipette-chip pipette-chip--stock" type="button" title="Select Blue #1 Pipette (Stock & Dilutions)">
+                    <span class="pipette-chip__dot"></span>
+                    <span class="pipette-chip__name">Blue #1</span>
+                    <span class="pipette-chip__vol">Empty</span>
+                </button>
+                <button id="chip-pipette-water" class="pipette-chip pipette-chip--water" type="button" title="Select Water (H₂O) Pipette (Distilled Water & Blank)">
+                    <span class="pipette-chip__dot"></span>
+                    <span class="pipette-chip__name">H₂O</span>
+                    <span class="pipette-chip__vol">Empty</span>
+                </button>
+                <button id="chip-pipette-unknown" class="pipette-chip pipette-chip--unknown" type="button" title="Select Unknown Pipette (Unknown Drink)">
+                    <span class="pipette-chip__dot"></span>
+                    <span class="pipette-chip__name">Unknown</span>
+                    <span class="pipette-chip__vol">Empty</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-container">
+        <!-- Procedural Instructions & Controls Strip -->
+        <section id="instructions-panel" class="panel instructions-bar">
+            <div class="instructions-bar__top">
+                <div class="instructions-bar__step-wrap">
+                    <span id="step-badge" class="step-badge">Step 1 / 83</span>
+                    <p id="instruction-text" class="instruction-text">Loading 3D laboratory...</p>
+                </div>
+                <div class="instructions-bar__actions">
+                    <button id="undo-button" class="button button--secondary" type="button" disabled>Undo Last Step</button>
+                    <button id="reset-button" class="button button--ghost" type="button">Reset Lab</button>
+                </div>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+                <div id="progress-fill" class="progress-track__fill" style="width: 0%;"></div>
+            </div>
+            <div class="feedback feedback--info">Welcome! Follow the instructions.</div>
+        </section>
+
+        <!-- Photorealistic 3D Interactive Lab Stage -->
+        <section id="simulation-area" class="viewport-stage">
+            <div id="viewport-3d" class="viewport-3d" aria-label="Interactive 3D Spectrophotometry Lab Bench"></div>
+            <div id="labels-overlay" class="labels-overlay"></div>
+
+            <!-- Floating Camera Presets (Top Left) -->
+            <div class="hud-bar hud-bar--top-left" role="toolbar" aria-label="Camera Presets">
+                <button class="cam-btn cam-btn--active" data-preset="overview" type="button">1. Bench Overview</button>
+                <button class="cam-btn" data-preset="reagents" type="button">2. Reagents &amp; Pipettes</button>
+                <button class="cam-btn" data-preset="rack" type="button">3. Dilution Rack</button>
+                <button class="cam-btn" data-preset="spec20" type="button">4. Spec 20D+</button>
+            </div>
+
+            <!-- Floating Quick Readout & Labels Toggle (Top Right) -->
+            <div class="hud-bar hud-bar--top-right">
+                <span id="spec-quick-readout" class="hud-readout">-- %T • 630 nm</span>
+                <button id="labels-toggle-btn" class="hud-pill hud-pill--active" type="button">Labels: ON</button>
+            </div>
+
+            <!-- Floating Live Hover Inspector (Bottom Left) -->
+            <div class="hud-bar hud-bar--bottom-left">
+                <span id="hover-info" class="hover-info">Drag (or click) a dedicated pipette or cuvette to interact • Drag empty space to orbit</span>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="loading-overlay">
+                <div class="loading-card">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-title">Loading Photorealistic 3D Lab Assets...</p>
+                    <div class="loading-bar">
+                        <div id="loading-bar-fill" class="loading-bar__fill"></div>
+                    </div>
+                    <span id="loading-pct" class="loading-pct">0%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lab Notebook: Data Table + Beer's Law Graph -->
+        <section class="notebook-grid">
+            <div id="data-panel" class="panel">
+                <div class="panel__header">
+                    <h4>Data Table &amp; Results</h4>
+                    <span class="panel__sub">FD&amp;C Blue #1 Standard Curve (λ = 630 nm)</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="data-table__header data-table__cell">Solution</th>
+                                <th class="data-table__header data-table__cell">Dilution (Stock/Water)</th>
+                                <th class="data-table__header data-table__cell">Concentration (µM)</th>
+                                <th class="data-table__header data-table__cell">Measured %T</th>
+                                <th class="data-table__header data-table__cell">T (Decimal)</th>
+                                <th class="data-table__header data-table__cell">Absorbance (-log T)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="results-summary">
+                    <p id="slope-display" class="result-callout result-callout--slope" hidden></p>
+                    <p id="unknown-result" class="result-callout result-callout--unknown" hidden></p>
+                </div>
+            </div>
+
+            <div id="graph-panel" class="panel">
+                <div class="panel__header">
+                    <h4>Graph: Absorbance vs. Concentration</h4>
+                    <span class="panel__sub">Beer-Lambert Calibration Plot</span>
+                </div>
+                <canvas id="graph-canvas" width="380" height="240"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

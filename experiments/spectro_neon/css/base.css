@@ -1,0 +1,37 @@
+/* base.css - Global Reset, Design Tokens & Typography */
+:root {
+    --bg-app: #0b1120;
+    --bg-panel: #111827;
+    --bg-panel-elev: #1e293b;
+    --border-subtle: rgba(148, 163, 184, 0.18);
+    --border-strong: rgba(148, 163, 184, 0.34);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-violet: #a855f7;
+    --accent-amber: #f59e0b;
+    --accent-green: #22c55e;
+    --accent-red: #ef4444;
+    --font-sans: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "Consolas", "Cascadia Code", ui-monospace, monospace;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(circle at top center, #131c31 0%, var(--bg-app) 68%);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+h1, h3, h4, p {
+    margin: 0;
+}

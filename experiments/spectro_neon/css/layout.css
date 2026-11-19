@@ -1,0 +1,99 @@
+/* layout.css - Application Header, Stage & Lab Notebook Grid */
+
+.app-header {
+    max-width: 1640px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px 18px 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.app-header__title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-header__badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(6, 182, 212, 0.25));
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #7dd3fc;
+}
+
+.app-header__title {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #f8fafc;
+}
+
+.app-header__sub {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+#main-container {
+    max-width: 1640px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.panel {
+    background: rgba(17, 24, 39, 0.92);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 12px 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.panel--highlight {
+    border-color: rgba(245, 158, 11, 0.85);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.panel__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.panel__header h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.panel__sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.notebook-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr);
+    gap: 12px;
+    align-items: stretch;
+}
+
+@media (max-width: 980px) {
+    .notebook-grid {
+        grid-template-columns: 1fr;
+    }
+}
