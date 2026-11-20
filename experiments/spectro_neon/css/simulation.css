@@ -17,6 +17,15 @@
     position: relative;
 }
 
+.viewport-3d::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    background: radial-gradient(ellipse at 50% 48%, rgba(0, 0, 0, 0) 64%, rgba(6, 10, 18, 0.22) 100%);
+}
+
 .viewport-3d canvas {
     display: block;
     width: 100%;
@@ -240,4 +249,32 @@
     font-family: var(--font-mono);
     font-size: 12px;
     color: #94a3b8;
+}
+
+/* --- Responsive HUD Layout (Prevents Top-Bar Overlap on Narrow / Mobile Viewports) --- */
+@media (max-width: 860px) {
+    .hud-bar--top-right {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        justify-content: space-between;
+    }
+
+    .hud-bar--top-left {
+        top: 44px;
+        left: 10px;
+        right: 10px;
+        gap: 4px;
+    }
+
+    .cam-btn,
+    .hud-pill {
+        padding: 4px 8px;
+        font-size: 10.5px;
+    }
+
+    .hud-readout {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
 }

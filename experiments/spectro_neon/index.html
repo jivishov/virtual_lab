@@ -78,7 +78,7 @@
         <!-- Photorealistic 3D Interactive Lab Stage -->
         <section id="simulation-area" class="viewport-stage">
             <div id="viewport-3d" class="viewport-3d" aria-label="Interactive 3D Spectrophotometry Lab Bench"></div>
-            <div id="labels-overlay" class="labels-overlay"></div>
+            <div id="labels-overlay" class="labels-overlay labels-overlay--hidden"></div>
 
             <!-- Floating Camera Presets (Top Left) -->
             <div class="hud-bar hud-bar--top-left" role="toolbar" aria-label="Camera Presets">
@@ -91,7 +91,7 @@
             <!-- Floating Quick Readout & Labels Toggle (Top Right) -->
             <div class="hud-bar hud-bar--top-right">
                 <span id="spec-quick-readout" class="hud-readout">-- %T • 630 nm</span>
-                <button id="labels-toggle-btn" class="hud-pill hud-pill--active" type="button">Labels: ON</button>
+                <button id="labels-toggle-btn" class="hud-pill" type="button">Labels: OFF</button>
             </div>
 
             <!-- Floating Live Hover Inspector (Bottom Left) -->
