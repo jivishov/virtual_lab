@@ -19,7 +19,7 @@ import {
     setDragVisualState,
     setCameraPreset,
     syncSceneFromState,
-} from './scene3d.js';
+} from './scene3d.js?v=3';
 
 let actions = {};
 let hoverInfoEl = null;

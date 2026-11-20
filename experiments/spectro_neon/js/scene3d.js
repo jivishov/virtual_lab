@@ -1126,10 +1126,11 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     const pmrem = new THREE.PMREMGenerator(renderer);
     pmrem.compileEquirectangularShader();
 
+    const ASSET_VER = '?v=3';
     try {
         const rgbeLoader = new RGBELoader();
         rgbeLoader.setDataType(THREE.FloatType);
-        const hdrTex = await rgbeLoader.loadAsync('./assets/env/lab_studio.hdr');
+        const hdrTex = await rgbeLoader.loadAsync(`./assets/env/lab_studio.hdr${ASSET_VER}`);
         if (hdrTex.image && hdrTex.image.data) {
             const d = hdrTex.image.data;
             for (let i = 0; i < d.length; i++) {
@@ -1234,12 +1235,12 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     const loadedMap = {};
 
     const [shadowRound, shadowRect, caustic, highlightRing] = await Promise.all([
-        loadDecalSafe('./assets/textures/contact_shadow_round.png'),
-        loadDecalSafe('./assets/textures/contact_shadow_rect.png'),
-        loadDecalSafe('./assets/textures/glass_caustic.png'),
-        loadDecalSafe('./assets/textures/highlight_ring.png'),
+        loadDecalSafe(`./assets/textures/contact_shadow_round.png${ASSET_VER}`),
+        loadDecalSafe(`./assets/textures/contact_shadow_rect.png${ASSET_VER}`),
+        loadDecalSafe(`./assets/textures/glass_caustic.png${ASSET_VER}`),
+        loadDecalSafe(`./assets/textures/highlight_ring.png${ASSET_VER}`),
         ...keys.map(async (k) => {
-            const gltf = await gltfLoader.loadAsync(assetPaths[k]);
+            const gltf = await gltfLoader.loadAsync(`${assetPaths[k]}${ASSET_VER}`);
             loadedMap[k] = gltf.scene;
             loadedCount++;
             if (onProgress) onProgress(loadedCount / keys.length);

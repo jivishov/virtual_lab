@@ -13,8 +13,8 @@ import {
     setLabelsVisible,
     getLabelsVisible,
     getScreenPoint,
-} from './scene3d.js';
-import { initInteraction3D, handleUndoClick, handleResetClick } from './interaction3d.js';
+} from './scene3d.js?v=3';
+import { initInteraction3D, handleUndoClick, handleResetClick } from './interaction3d.js?v=3';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const getEl = (id) => document.getElementById(id);
