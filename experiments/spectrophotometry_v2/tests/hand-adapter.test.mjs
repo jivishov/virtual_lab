@@ -205,6 +205,7 @@ test('a closed B06 hand draws and delivers a guided dose, and interruption prese
  const partial=f.state.pipette.volume;assert.ok(partial>0&&partial<10);assert.equal(f.hand.pipetteCue().bulb,'relaxed');
  assert.match(f.hand.pipetteCue().instruction,/Drawing/);
  await f.sleep(40);f.hand.packet({landmarks:[],stamp:f.clock.now});const interrupted=f.state.pipette.volume;
+ await f.sleep(40);f.hand.packet({landmarks:[],stamp:f.clock.now});
  await trace.hold('grip',500);assert.equal(f.state.pipette.volume,interrupted);assert.equal(f.m.flow,false);
  assert.match(f.hand.pipetteCue().instruction,/lift.*dip again/i);
  await trace.withdraw();await trace.align();await trace.lower();await trace.hold('grip',420);await trace.finishFlow(0);
@@ -220,6 +221,67 @@ test('a closed B06 hand draws and delivers a guided dose, and interruption prese
  assert.ok(actions(0).indexOf('squeeze-bulb')<actions(0).indexOf('lower'));
  assert.ok(actions(0).indexOf('relax-bulb')<actions(0).indexOf('start-flow'));
  assert.ok(actions(1).indexOf('lower')<actions(1).indexOf('squeeze-bulb'));
+});
+
+test('one dropped exposure holds the volume still until the same seated grasp is seen again',async t=>{
+ const f=fixture(t),trace=createB06HandTrace({lab:f.lab,canvas:{clientWidth:1200,clientHeight:800},now:()=>f.clock.now,sleep:f.sleep});
+ await trace.grasp('pipette');await trace.align();await trace.lower();await trace.hold('grip',420);
+ const contact=f.m.contact,owner=f.hand.primary;
+ await f.sleep(100);f.hand.packet({landmarks:[],stamp:f.clock.now});
+ const volume=f.state.pipette.volume;assert.equal(f.m.flow,false);
+ await f.sleep(110);assert.equal(f.state.pipette.volume,volume);
+ f.hand.packet(b06Packet('grip',trace.pointer,{stamp:f.clock.now}));
+ assert.equal(f.hand.primary,owner);assert.equal(f.m.contact,contact);assert.equal(f.m.flow,true);
+ assert.equal(f.state.pipette.volume,volume,'The missed interval must never count toward the dose');
+ await f.sleep(45);assert.ok(f.state.pipette.volume>volume);
+ await f.sleep(40);f.hand.packet({landmarks:[],stamp:f.clock.now});
+ const partial=f.state.pipette.volume;
+ await trace.hold('open',300);
+ assert.equal(f.m.owner,null);assert.equal(f.m.flow,false);assert.equal(f.state.pipette.volume,partial);
+});
+
+test('a delayed detector needs two fresh seated grasps and never meters the time spent waiting',async t=>{
+ const f=fixture(t),trace=createB06HandTrace({lab:f.lab,canvas:{clientWidth:1200,clientHeight:800},now:()=>f.clock.now,sleep:f.sleep});
+ await trace.grasp('pipette');await trace.align();await trace.lower();await trace.hold('grip',420);
+ assert.equal(f.hand.holdForDetector(),true);assert.equal(f.m.flow,false);
+ const partial=f.state.pipette.volume,owner=f.hand.primary;
+ const send=()=>f.hand.packet(b06Packet('grip',trace.pointer,{stamp:f.clock.now}));
+ await f.sleep(1460);send();
+ assert.equal(f.state.pipette.volume,partial);assert.equal(f.m.flow,false);
+ await f.sleep(50);send();
+ assert.equal(f.hand.primary,owner);assert.equal(f.m.flow,true);assert.equal(f.state.pipette.volume,partial);
+ await f.sleep(80);assert.ok(f.state.pipette.volume>partial);
+ assert.equal(f.hand.holdForDetector(),true);
+ const retained=f.state.pipette.volume;await f.sleep(1500);send();
+ assert.equal(f.m.owner,null);assert.equal(f.m.frozen,true);assert.equal(f.state.pipette.volume,retained);
+});
+
+test('an in-flight exposure from before a detector pause cannot start the two-frame confirmation',async t=>{
+ const f=fixture(t),trace=createB06HandTrace({lab:f.lab,canvas:{clientWidth:1200,clientHeight:800},now:()=>f.clock.now,sleep:f.sleep});
+ await trace.grasp('pipette');await trace.align();await trace.lower();await trace.hold('grip',420);
+ const inFlight=f.clock.now+25;
+ await f.sleep(300);assert.equal(f.hand.holdForDetector(),true);
+ const partial=f.state.pipette.volume,owner=f.hand.primary;
+ const send=stamp=>f.hand.packet(b06Packet('grip',trace.pointer,{stamp}));
+ send(inFlight);
+ await f.sleep(55);send(f.clock.now);
+ assert.equal(f.m.owner,'hand');assert.equal(f.hand.primary,owner);assert.equal(f.m.flow,false);
+ await f.sleep(55);send(f.clock.now);
+ assert.equal(f.m.flow,true);assert.equal(f.state.pipette.volume,partial);
+});
+
+test('a closing palm cannot pick up equipment it crosses during the grasp dwell',async t=>{
+ const f=fixture(t),grip=f.lab.affordances.regions['pipette-grip'];
+ const start={x:grip.x-65,y:grip.y};
+ const send=async(pose,point,ms)=>{await f.sleep(ms);f.hand.packet(b06Packet(pose,point,{stamp:f.clock.now}))};
+ await send('open',start,50);await send('open',start,90);
+ await send('grip',start,60);await send('grip',grip,90);await send('grip',grip,110);
+ assert.equal(f.m.owner,null);
+ await send('open',grip,80);await send('open',grip,240);
+ // A slight shift as the fingers curl keeps the grip that was under the open palm.
+ const shift={x:grip.x+14,y:grip.y+5};
+ await send('grip',shift,60);await send('grip',shift,200);
+ assert.equal(f.m.owner,'hand');assert.equal(f.m.tool,'pipette');
 });
 
 test('short B06 palm dips draw 8 mL of stock and dispense it into the second tube',async t=>{
@@ -256,6 +318,34 @@ test('short B06 palm dips draw 8 mL of stock and dispense it into the second tub
  assert.equal(f.state.tubes.tube_10_0.volume,10);assert.equal(f.state.tubes.tube_8_2.volume,8);
  assert.equal(f.state.tubes.tube_6_4.volume,0);assert.equal(f.state.pipette.volume,0);
  assert.equal(f.state.history.length,4);assert.ok(Math.abs(totalVolume(f.state)-2500)<1e-8);
+});
+
+test('losing the hand during either fourth-tube dispense preserves both sides of the partial dose',async t=>{
+ const f=fixture(t),trace=createB06HandTrace({lab:f.lab,canvas:{clientWidth:1200,clientHeight:800},now:()=>f.clock.now,sleep:f.sleep});
+ const interrupted=[];
+ while(f.lab.step.index<14){
+  const step=f.lab.step,tool=step.pipetteId;
+  if(f.m.contact)await trace.withdraw();
+  if(f.m.tool!==tool){await trace.park();await trace.grasp(tool)}
+  await trace.align();await trace.lower();await trace.hold('grip',360);
+  if(step.target==='tube_4_6'&&step.action==='dispense'){
+   for(const delay of [40,220]){await f.sleep(delay);f.hand.packet({landmarks:[],stamp:f.clock.now})}
+   assert.equal(f.m.frozen,true);assert.equal(f.m.owner,null);
+   const rack=structuredClone(f.state.tubes),pipette=structuredClone(f.state[tool]);
+   assert.ok(pipette.volume>0&&pipette.volume<step.volume);
+   await trace.hold('grip',320);assert.equal(f.m.owner,null);
+   await trace.grasp(tool);await trace.withdraw();await trace.align();
+   assert.deepEqual(f.state.tubes,rack);assert.deepEqual(f.state[tool],pipette);
+   await trace.lower();await trace.hold('grip',360);
+   interrupted.push(tool);
+  }
+  await trace.finishFlow(step.index);
+ }
+ assert.deepEqual(interrupted,['pipette','waterPipette']);
+ const fourth=f.state.tubes.tube_4_6;
+ assert.ok(Math.abs(fourth.stockVolume-4)<1e-8&&Math.abs(fourth.waterVolume-6)<1e-8);
+ assert.equal(f.state.tubes.tube_2_8.volume,0);assert.equal(f.state.history.length,14);
+ assert.ok(Math.abs(totalVolume(f.state)-2500)<1e-8);
 });
 
 test('short guided dips prepare and sample every rack tube and the unknown dilution',async t=>{

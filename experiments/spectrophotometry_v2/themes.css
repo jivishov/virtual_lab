@@ -1,0 +1,129 @@
+/* Only the interface changes palette. The camera, bench lighting and measurements
+   belong to the experiment. */
+:root[data-theme=scifi] {
+  color-scheme:dark;--ink:var(--visor-ink);--teal:var(--visor-cyan);--muted:#b2cbd5;
+  --paper:#0e2332;--line:#335568;--dock-paper:#112a38;
+  --switch-track:#0a1c29;--switch-edge:#406272;--switch-idle:#a7c2cc;--switch-on:#edfbff;
+  --switch-fill:linear-gradient(155deg,#28566a,#173b4b);--switch-rim:#659eb1;
+}
+:root[data-theme=classic] {
+  color-scheme:light;--visor-ink:var(--ink);--visor-cyan:#21675f;--visor-soft:#4d6861;
+  --visor-line:#b7c9bd;--visor-glass:#faf9f5f5;--visor-amber:#94541d;
+  --spectrum-label:#496960;--edge:#9db4a7;
+  --switch-track:#e7ece6;--switch-edge:#bdcbc0;--switch-idle:#536a62;--switch-on:#174c44;
+  --switch-fill:linear-gradient(155deg,#fffefa,#f5f8f2);--switch-rim:#cedacf;
+}
+
+/* The same two native radio choices are available in the header and Settings. */
+.theme-switch {
+  position:relative;isolation:isolate;display:inline-grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:stretch;flex:none;margin:0;padding:3px;min-width:156px;border:1px solid var(--switch-edge);
+  border-radius:999px;background:var(--switch-track);box-shadow:inset 0 1px 2px #00141918;
+}
+#headerTheme {margin-inline-start:auto;margin-inline-end:14px}
+#settingsTheme {align-self:stretch}
+.theme-switch::before {
+  content:"";position:absolute;inset:3px auto 3px 3px;width:calc((100% - 6px)/2);box-sizing:border-box;
+  border-radius:inherit;border:1px solid var(--switch-rim);background:var(--switch-fill);
+  box-shadow:0 1px 3px #00141d30,inset 0 1px #ffffff28;transition:transform .18s ease-out;
+}
+[data-theme=scifi] .theme-switch::before {transform:translateX(100%)}
+.theme-switch[role=radiogroup] label {
+  display:flex;position:relative;align-items:center;justify-content:center;gap:6px;min-height:29px;padding:0 9px;
+  border-radius:999px;font:600 12px/1.2 "Segoe UI",Arial,sans-serif;color:var(--switch-idle);cursor:pointer;
+}
+.theme-switch .icon {width:16px;height:16px;stroke-width:1.7}
+.theme-switch .icon,.theme-switch span {pointer-events:none}
+.theme-switch input {
+  position:absolute;z-index:1;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;
+}
+[data-theme=classic] .theme-switch label:first-child,[data-theme=scifi] .theme-switch label:last-child {color:var(--switch-on)}
+[data-theme=classic] .theme-switch label:first-child .icon,[data-theme=scifi] .theme-switch label:last-child .icon {color:var(--visor-cyan)}
+.theme-switch label:has(:focus-visible) {outline:2px solid var(--visor-cyan);outline-offset:2px}
+@media(max-width:565px) and (min-height:500px) {
+  .topbar {
+    display:grid;grid-template-columns:minmax(0,1fr) auto;align-content:center;gap:4px 8px;
+    height:92px;padding:5px 10px;
+  }
+  .topbar .identity {grid-column:1/-1}
+  #headerTheme {justify-self:start;margin:0;min-width:148px}
+  .top-actions {justify-self:end}
+  body:not(.studio-immersive) .workspace {height:calc(100dvh - 92px)}
+}
+@media(max-width:565px) and (max-height:499px) {#headerTheme {display:none}}
+@media(prefers-reduced-motion:reduce) {.theme-switch::before {transition:none}}
+@media(forced-colors:active) {
+  .theme-switch {border-color:ButtonText}
+  .theme-switch::before {border:2px solid Highlight}
+  .theme-switch label:has(:focus-visible) {outline-color:Highlight}
+}
+
+/* SciFi uses the same dark instrument surfaces in the regular and immersive views. */
+:where([data-theme=scifi]) {
+  .topbar {background:linear-gradient(105deg,#102c3a,#0c202e 65%),var(--paper);border-color:var(--visor-line)}
+  .identity h1 {color:var(--ink)}
+  .brandmark rect {fill:#174050}
+  .brandmark path:first-child {stroke:#d8f7ff}
+  .brandmark path:last-child {stroke:var(--visor-cyan)}
+  .top-actions button {color:var(--ink);border-color:var(--visor-line);background:#132f3f}
+  .top-actions #helpButton {background:transparent}
+  .top-actions button:hover {color:white;background:#21485b;border-color:#71adbf}
+  .top-actions .immersive-button {background:#184458;border-color:#508ca0}
+  .top-actions #readingCount {background:#234454;color:#bdebf7}
+  .loader {background:var(--paper);color:var(--ink)}
+  .loading-mark {border-color:#315266;border-top-color:var(--visor-cyan)}
+  .scene-feedback,#pipetteCue {background:var(--visor-glass);color:var(--ink);border-color:var(--visor-line)}
+  .scene-feedback.error {color:var(--visor-amber)}
+  .bench-dock>button:hover,.bench-dock .dock-entry>summary:hover {background:#225266;color:white}
+  #arrangeButton:disabled {color:#adc3cd}
+  :is(button,summary,a):focus-visible {outline-color:var(--visor-cyan)}
+}
+
+/* Classic keeps the warm enamel controls throughout the full-screen bench. */
+:where([data-theme=classic]) {
+  .visor-panel:is(#handPanel,#cameraPanel,#layoutPanel,#taskRibbon,dialog,.dock-popover) {
+    background:var(--paper);color:var(--ink);border-color:#c3d0c5;accent-color:var(--teal);
+  }
+  .studio-immersive.protocol-open #taskRibbon {width:min(366px,calc(100% - 24px))}
+  .scene-feedback,#pipetteCue {background:#fbfbf6f7;color:var(--ink);border-color:#b6c8bb}
+  .scene-feedback.error {color:#884717;background:#fff2da}
+  #pipetteCue[data-state=squeezed] strong {color:var(--visor-amber)}
+  #pipetteCue[data-state=flow] strong {color:var(--teal)}
+  #hudProcedure,.bench-readout:has(#handHud:not([hidden])) {
+    --panel:none;clip-path:none;border:1px solid #b5c7bd;border-radius:8px;background:var(--visor-glass);
+    box-shadow:0 2px 10px #20392f20;
+  }
+  #hudProcedure::before,.bench-readout:has(#handHud:not([hidden]))::before,
+  .bench-readout:has(#handHud:not([hidden]))::after {content:none}
+  #hudProcedure::after {background:linear-gradient(to right,var(--teal) var(--progress),#d8e4db var(--progress))}
+  .visor-step-head b,#hudVolume {color:var(--ink)}
+  .visor-audio,.hud-values>div:nth-child(2) {border-color:var(--visor-line)}
+  .visor-audio button:hover,.visor-audio button:focus-visible {background:#dfeae2;color:var(--ink)}
+  .hud-values dt {color:var(--visor-soft)}
+  .hud-liquid dt {color:var(--instrument)}
+  .dial-rim,.dial-calibration {stroke:#5b8379}
+  .dial-track,.dial-inner {stroke:#bdcfc5}
+  .dial-index {fill:var(--teal)}
+  #hudLock {filter:drop-shadow(0 0 1px #fbfff8) drop-shadow(0 1px 1px #31483c)}
+  #handHud:not([hidden])+#interactionStatus {color:var(--ink);border-color:var(--visor-line)}
+  #handHud:not([hidden])+#interactionStatus.error {color:var(--visor-amber)}
+  #wavelengthScale:not([hidden]),.wavelength-setting {background:#eaf0e9;border-left-color:var(--teal);border-radius:4px;clip-path:none}
+  #wavelengthScale>span {color:var(--spectrum-label)}
+  .spectrum-ruler i {background:#20483e;box-shadow:0 0 2px white}
+  .spectrum-ruler i::before {border-top-color:#20483e}
+  .spectrum-control {--thumb-edge:#34746b;--thumb-fill:linear-gradient(90deg,#f5fcf5 40%,#205d54 40% 60%,#f5fcf5 60%)}
+  .preview-idle {color:#36584f;background:radial-gradient(ellipse,#f0f5ef,#dfe8df)}
+  .preview-idle .icon {color:#597a70}
+  .preview-idle::after {--corner:#87a69b}
+  #roomMap,#handPreview {background-color:#e5ece5}
+  #roomMap,#handImageFrame,.frame-key,#benchCameraFrame {--visor-cyan:#008394;--visor-amber:#9b580a}
+  #notebookDialog :is(.table-scroll,.notebook-grid>section) {min-width:0}
+  #notebookDialog .graph-legend {flex-wrap:wrap}
+  #calibrationGraph text {fill:#344e48}
+  #calibrationGraph .plot-grid {stroke:#cbd8d1}
+  #calibrationGraph .plot-axis {stroke:#69867b}
+  #calibrationGraph .plot-point {fill:#337a6b}
+  #calibrationGraph .plot-fit {stroke:#246e76}
+  #calibrationGraph .plot-signal {stroke:#9d572c}
+  #calibrationGraph .plot-signal-label {fill:#85491f}
+}

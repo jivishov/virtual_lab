@@ -42,6 +42,7 @@ export class StudioCamera extends EventTarget {
   async use(owner) {
     const token=this.generation;
     this.owners.add(owner);
+    this.notify();
     try {
       if(!this.video)await (this.pending||this.opening('',owner==='room'?'environment':'user'));
       if(token!==this.generation||!this.owners.has(owner)||!this.video)throw new DOMException('Camera request ended','AbortError');

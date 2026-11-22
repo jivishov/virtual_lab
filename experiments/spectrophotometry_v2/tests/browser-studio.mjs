@@ -61,7 +61,7 @@ export async function runStudioChecks(page,onOutline=async()=>{}){
   await page.locator('#notebookDialog [data-close]').click();await page.locator('#immersiveProtocol').click();
   await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>lab.studio.immersive),false);
 
-  await page.locator('#cameraButton').click();await page.locator('#liveRoom').click();
+  await page.locator('#cameraButton').click();await page.locator('#cameraSettingsButton').click();
   await page.waitForFunction(()=>lab.studio.liveRoom);
   const mirror=await page.locator('#mirrorCamera').isChecked();
   await page.locator('#mirrorCamera').click();assert.equal(await page.evaluate(()=>lab.studio.mirrored),!mirror);
@@ -72,7 +72,7 @@ export async function runStudioChecks(page,onOutline=async()=>{}){
   await page.locator('#handPanel').waitFor({state:'hidden'});await page.locator('#handButton').click();
   await page.locator('#handStart').click();
   assert.deepEqual(await page.evaluate(()=>lab.studio.cameraUsers),['room']);
-  await page.locator('#handClose').click();await page.locator('#handOff').click();
+  await page.locator('#handClose').click();await page.locator('#cameraButton').click();
   assert.deepEqual(await page.evaluate(()=>lab.studio.cameraUsers),[]);
   assert.equal(await page.evaluate(()=>lab.studio.liveRoom),false);
   return {backend,palmPickup:true,oneHandOrbit:true,twoHandZoom:true,immersiveNotebook:true};

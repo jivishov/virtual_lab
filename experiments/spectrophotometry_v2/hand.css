@@ -1,19 +1,122 @@
-.hand-panel[hidden],.hand-cursor[hidden]{display:none}.hand-panel{position:absolute;z-index:5;top:96px;left:22px;width:264px;max-height:calc(100% - 150px);overflow:auto;background:#fbfcf4f5;border:1px solid #ffffffb8;border-radius:9px;padding:14px;box-shadow:0 5px 24px #243e3026;font-size:12px}.hand-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.hand-heading h2{font-size:18px;font-weight:600;margin:0}.hand-heading button{padding:2px 8px;font-size:22px;border:0;background:transparent}.hand-intro{line-height:1.5;color:#5a7169;margin:10px 0}.hand-start-row{display:flex;gap:7px}.hand-start-row button{font-size:11px;flex:1}.hand-preview{position:relative;margin-top:12px;height:134px;overflow:hidden;background:#1c3632;border-radius:5px}.hand-preview video,.hand-preview canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.hand-preview video{transform:scaleX(-1)}.hand-preview:before{content:'Camera off';position:absolute;inset:0;display:grid;place-items:center;color:#e1eee6;font-size:11px}.camera-on .hand-preview:before{display:none}.hand-status{font-size:10px;line-height:1.5;color:#61736c;margin:9px 0}.hand-status.error{color:#9c4929}.hand-held{font-weight:600;margin:9px 0;color:#245f52}.hand-hint{line-height:1.5;margin:0 0 10px}.hand-settings{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:center;border-top:1px solid #d6dfd2;padding-top:12px}.hand-settings label{font-size:10px}.hand-settings select{font:inherit;min-width:0;padding:6px;border:1px solid #c7d3c5;border-radius:4px;background:#fffef8;color:inherit}.hand-gain{display:flex;align-items:center;gap:7px}.hand-gain input{width:100%;min-width:0;accent-color:#216f6b}.hand-gain output{font-size:10px;white-space:nowrap}.hand-privacy{font-size:10px;line-height:1.5;color:#65776b;margin:12px 0 0}.hand-safety{padding:9px;background:#fff0d8;border:1px solid #d7b57b;border-radius:5px;margin:10px 0;line-height:1.5}.hand-safety button{width:100%;margin-top:7px;font-size:12px}.hand-safety[hidden]{display:none}#handButton.camera-on{background:#216f6b;color:white}#handButton{border-left:1px solid #cad5c6;border-radius:0;margin-left:4px}.hand-cursor{position:absolute;z-index:8;pointer-events:none;transform:translate(-50%,-50%);width:36px;height:36px;border:2px solid #f6fff6;outline:2px solid #216f6b;border-radius:50%;background:conic-gradient(#e8a957 var(--dwell,0deg),#216f6b44 0);box-shadow:0 2px 8px #142b3540}.hand-cursor:after{content:'+';display:grid;place-items:center;height:100%;font-size:22px;color:#fff}.hand-cursor[data-pose=held]{border-radius:10px;background:#216f6baa}.hand-cursor[data-pose=held]:after{content:'●';font-size:14px}.hand-cursor[data-pose=point]:after{content:'•'}.hand-cursor[data-pose=lost]{outline-color:#b36c31;background:#b36c3188}.hand-cursor>span{position:absolute;top:43px;left:50%;transform:translateX(-50%);padding:5px 8px;background:#fffdf4ed;white-space:nowrap;border:1px solid #c9d9cb;border-radius:4px;font-size:11px;color:#315a4a}.hand-mode-note{font-size:11px;color:#60756b;line-height:1.5;margin:10px 0 0}.arranging-bench .hand-panel{max-height:calc(100% - 150px)}
-@media(max-width:1050px){.hand-panel{left:12px;top:110px;width:240px}.view-controls{max-width:calc(100% - 34px);flex-wrap:wrap}}
-@media(max-width:760px){.hand-panel{top:98px;bottom:39px;max-height:none;width:min(264px,calc(100% - 24px));padding:11px}.hand-heading h2{font-size:17px}.hand-preview{height:100px}.hand-panel button{min-height:36px}.hand-panel select{min-height:36px}.hand-intro,.hand-hint{font-size:11px}.hand-status,.hand-privacy{font-size:10px}.hand-cursor{width:28px;height:28px}.hand-cursor>span{top:34px;font-size:10px}.view-controls #handButton{font-size:9px;padding:6px 8px}.hand-panel.camera-on{padding-top:10px}}
+/* Hand setup and its two camera coordinate systems. */
+#handPanel {
+  top:65px; right:18px; bottom:auto; left:auto; width:min(662px,calc(100% - 36px));
+  max-height:calc(100% - 80px); padding:0; overflow:auto; overscroll-behavior:contain;
+  color:var(--ink); background:#fafaf6; border:1px solid #aabcb5; border-radius:12px;
+  box-shadow:0 12px 36px #12292d33; font-size:14px; line-height:1.4;
+}
+#handPanel .hand-heading,.hand-actions,.frame-tools,.hand-actions>div {display:flex;align-items:center;gap:10px}
+#handPanel .hand-heading {justify-content:space-between;margin:0 20px;padding:14px 0 12px;border-bottom:1px solid var(--line)}
+.camera-panel .hand-heading {display:flex;align-items:center;justify-content:space-between;gap:12px}
+.camera-panel .hand-heading h2 {margin:0}
+.camera-panel .hand-heading button {border:0;background:transparent}
+#handsTitle {display:flex;align-items:center;gap:10px;margin:0;font-size:23px;font-weight:600;letter-spacing:-.5px}
+#handsTitle .icon {box-sizing:content-box;width:20px;height:20px;padding:6px;color:#a8f4e4;background:#193d43;border-radius:7px}
+#handClose {border:0;background:transparent;color:#365455;font-size:24px;width:36px;height:36px;padding:0;line-height:1}
+.hand-setup {display:grid;grid-template-columns:minmax(0,1.16fr) minmax(0,1fr);gap:20px;padding:17px 20px}
+.hand-framing,.hand-settings {min-width:0}
+#handPreview {
+  position:relative;isolation:isolate;width:100%;aspect-ratio:4/3;max-height:none;height:auto;
+  margin:0;overflow:hidden;border-radius:7px;background:#122c32;cursor:crosshair;touch-action:manipulation;
+}
+#handPreview:focus-visible {outline:3px solid var(--teal);outline-offset:3px}
+.preview-idle {position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  color:#c5dcd9;background:radial-gradient(ellipse at 50% 65%,#21464c,transparent 68%),
+    repeating-linear-gradient(0deg,transparent 0 25px,#8dd9c709 25px 26px),repeating-linear-gradient(90deg,transparent 0 25px,#8dd9c709 25px 26px)}
+.preview-idle .icon {width:32px;height:32px;color:#90bbb7;stroke-width:1.2}
+.preview-idle:after {content:"";position:absolute;inset:12px;--corner:#7db3af;--arm:12px;
+  background:linear-gradient(var(--corner),var(--corner)) left top/var(--arm) 1px,
+    linear-gradient(var(--corner),var(--corner)) left top/1px var(--arm),
+    linear-gradient(var(--corner),var(--corner)) right top/var(--arm) 1px,
+    linear-gradient(var(--corner),var(--corner)) right top/1px var(--arm),
+    linear-gradient(var(--corner),var(--corner)) left bottom/var(--arm) 1px,
+    linear-gradient(var(--corner),var(--corner)) left bottom/1px var(--arm),
+    linear-gradient(var(--corner),var(--corner)) right bottom/var(--arm) 1px,
+    linear-gradient(var(--corner),var(--corner)) right bottom/1px var(--arm);background-repeat:no-repeat}
+#handPreview video,#handPreview #handOverlay {position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+#handPanel:not(.camera-on) :is(#handVideo,#handOverlay,#handHeld),.camera-on .preview-idle,.camera-on .preview-off {visibility:hidden}
+.hand-player-frame {position:absolute;outline:1.5px solid #a9ffea;box-shadow:0 0 0 1000px #09282e50;pointer-events:none}
+.preview-pose {position:absolute;left:9px;bottom:9px;padding:3px 8px;background:#122b30e8;color:#c5ffe9;border-radius:3px;font-size:12px;pointer-events:none}
+.preview-pose:empty {display:none}
+#handImageFrame {position:absolute;left:50%;top:50%;width:var(--webcam-scale,80%);height:var(--webcam-scale,80%);
+  transform:translate(-50%,-50%);overflow:hidden;background:#122c32}
+#handImageFrame::after {content:"";position:absolute;inset:0;border:2px solid var(--visor-cyan);pointer-events:none}
+#handPreview {background-color:#091c28;background-image:linear-gradient(#69aab414 1px,transparent 1px),linear-gradient(90deg,#69aab414 1px,transparent 1px);background-size:18px 18px}
+#handPreview .hand-player-frame {border:2px dashed var(--visor-amber);outline:1px solid #19303d;box-shadow:inset 0 0 0 1px #19303d,0 0 0 500px #071b273b}
+.frame-key {display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.frame-key>span {display:inline-flex;align-items:center;gap:4px}
+.frame-key>span::before {content:"";width:12px;border-top:2px solid var(--visor-cyan)}
+.frame-key>span+span::before {border-top:2px dashed var(--visor-amber)}
+.frame-tools {margin-top:8px;justify-content:space-between;flex-wrap:wrap;gap:3px 6px}
+.frame-tools span,#modeHelp,#bulbHelp,#handStatus {color:#4c6262;font-size:13px}
+#handCenter {display:inline-flex;align-items:center;gap:5px;padding:4px 7px;min-height:32px;font-size:12px}
+#handCenter .icon {width:15px;height:15px}
+#handPanel:not(.camera-on) #handCenter {display:none}
+.stage:has(#handPanel:not([hidden])) #palmTrace {visibility:hidden}
+.stage:has(#handPanel:not([hidden]),#cameraPanel:not([hidden])) #interactionStatus {visibility:hidden}
+#handPanel .hand-modes {display:flex;gap:2px;margin:0;padding:3px;background:#e6ece7;border-radius:6px}
+.hand-modes button {display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:1;min-height:34px;padding:5px;border:0;background:transparent}
+#handPanel .hand-modes [aria-pressed=true] {background:#21484d;color:#fff}
+#modeHelp {margin:7px 0 13px}
+#bulbHelp {margin:4px 0 9px}
+.hand-field,.hand-range {display:grid;align-items:center;gap:8px}
+.hand-field {grid-template-columns:minmax(74px,.8fr) minmax(106px,1.2fr);margin-top:6px}
+.hand-field select {width:100%;min-width:0;min-height:32px;border:1px solid #b8c7c0;border-radius:4px;color:var(--ink);background:#fff;padding:4px 6px;font:inherit}
+.hand-field label,.hand-range label {font-weight:550;font-size:13px}
+.hand-range {grid-template-columns:auto minmax(24px,1fr) 3.4ch;min-height:30px}
+.hand-range input {min-width:0;width:100%;margin:0;height:26px;accent-color:var(--teal)}
+.hand-range output {font-variant-numeric:tabular-nums;font-size:13px;text-align:right}
+.scale-help {margin:0;font-size:12px;line-height:1.4}
+.hand-settings .scale-help {margin:0 0 5px}
+.room-framing {display:flex;align-items:center;gap:14px;margin:13px 0}
+.room-framing .scale-help {flex:1;margin:0}
+#roomMap {position:relative;flex:none;width:min(44%,calc(78px * var(--bench-aspect,1.6)));aspect-ratio:var(--bench-aspect,1.6);overflow:hidden;
+  outline:1px solid #496b79;background:repeating-linear-gradient(0deg,transparent 0 11px,#56849730 11px 12px),repeating-linear-gradient(90deg,transparent 0 11px,#56849730 11px 12px),#091a26}
+#roomImageFrame {position:absolute;outline:2px solid var(--visor-cyan);outline-offset:-2px;background:#53d2ef24}
+#benchCameraFrame {position:absolute;pointer-events:none;z-index:2}
+#benchCameraFrame #palmTrace {inset:0;width:100%;height:100%}
+.stage:has(#handPanel:not([hidden]) #handCameraSize:focus,#cameraPanel:not([hidden]) #roomCameraSize:focus) #benchCameraFrame::after {
+  content:"";position:absolute;inset:0;border:2px solid var(--visor-cyan);box-shadow:inset 0 0 0 1px #102637;pointer-events:none;
+}
+.hand-actions {justify-content:space-between;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--line);background:#f0f3ed}
+.hand-actions>div {margin-left:auto;flex-wrap:wrap;gap:7px}
+#handStatus {flex:1 1 110px;margin:0}
+#handStatus.error {color:#933d23}
+.hand-actions button {min-height:38px;padding:7px 15px;font-size:14px}
+#handPanel.camera-on #handStart {background:transparent;border:1px solid #b5c3bc;color:var(--ink)}
+.hand-safety {display:flex;align-items:center;gap:12px;margin:0 20px 12px;color:#793d1d}
+#handButton.camera-on {background:#234a4f;color:#fff}
+.studio-immersive #handPanel {top:102px;max-height:calc(100% - 115px)}
 
-/* Controls live beside the experiment so they never cover the apparatus. */
-.procedure .hand-panel{position:static;grid-column:1/-1;width:100%;max-height:none;overflow:visible;padding:12px;margin:0 0 14px;border-color:#cedbce;box-shadow:none;background:#eff4e9}.procedure .hand-preview{height:124px}.procedure .hand-intro{font-size:11px}.procedure .hand-heading h2{font-size:17px}
-
-#handOff[hidden]{display:none}#handOff{color:#8b4c2d;background:#fff3de;border:1px solid #d5b38e}.procedure-foot{position:sticky;bottom:-16px;z-index:6;background:var(--paper);padding-bottom:8px;box-shadow:0 -8px 12px -10px #8b9e8c}@media(max-width:760px){.procedure-foot{position:static;box-shadow:none}}
-
-/* B06 player-frame preview: the image, outline and working surface share one crop. */
-#handPreview{width:100%;height:auto;max-height:none;cursor:crosshair;touch-action:none}
-#handPreview video{width:100%;height:100%;object-fit:fill}
-#handPreview canvas{inset:auto;object-fit:fill;pointer-events:none}
-.hand-player-frame{position:absolute;outline:2px solid #a5f1db;pointer-events:none;box-shadow:0 0 0 1000px #071f2859}
-.hand-panel:not(.camera-on) .hand-player-frame{display:none}
-.hand-frame-help{font-size:11px;line-height:1.4;margin:7px 0;color:#5a7169}
-#handBegin{width:100%;margin:0 0 8px;font-size:12px;min-height:36px}
-#handBegin[hidden]{display:none}
-#handPreview:focus-visible{outline:3px solid #2f8582;outline-offset:3px}
+/* An open reticle leaves the equipment and palm contour visible at its center. */
+.hand-cursor {position:absolute;z-index:3;pointer-events:none;transform:translate(-50%,-50%);border-radius:50%;
+  border:1px solid #eafff9;outline:1px solid #254d51;background:conic-gradient(#efb86c var(--dwell,0deg),#123b4755 0)}
+.hand-cursor:after {content:'+';display:grid;place-items:center;height:100%;color:#fff;line-height:1}
+.hand-cursor>span {position:absolute;top:23px;left:50%;transform:translateX(-50%);padding:3px 6px;border-radius:3px;background:#183a3eef;color:white;white-space:nowrap}
+.bench-readout {display:contents}
+#benchFooter>.bench-readout {pointer-events:none}
+@media(max-width:840px) {
+  #handPanel {right:10px;width:calc(100% - 20px)}
+  .hand-setup {gap:14px}
+}
+@media(max-width:760px) {
+  #handPanel {position:fixed;top:70px;bottom:auto;right:8px;width:min(606px,calc(100% - 16px));max-height:calc(100dvh - 80px)}
+  .studio-immersive #handPanel {top:50px;max-height:calc(100dvh - 58px)}
+}
+@media(max-width:565px) {
+  .hand-setup {grid-template-columns:minmax(0,1fr);gap:10px;padding:12px 15px}
+  #handPanel .hand-heading {margin:0 15px;padding:7px 0}
+  #handsTitle {font-size:21px}
+  .hand-framing {display:grid;justify-items:center}
+  #handPreview {width:min(100%,250px);width:min(100%,calc(clamp(118px,22dvh,180px) * var(--preview-aspect,1.3333)))}
+  .frame-tools {width:100%;margin-top:5px}
+  .hand-actions {padding:10px 15px}
+  #modeHelp {margin:5px 0 8px}
+  .hand-actions button,.hand-modes button,.hand-field select {min-height:36px}
+}
+@media(max-width:565px) and (max-height:660px) {
+  #handPanel,.studio-immersive #handPanel {top:8px;max-height:calc(100dvh - 16px);z-index:9}
+}
+@media(max-height:560px) {
+  #handPanel,.studio-immersive #handPanel {position:fixed;top:6px;right:8px;bottom:auto;width:min(662px,calc(100% - 16px));max-height:calc(100dvh - 12px);z-index:12}
+}

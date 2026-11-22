@@ -11,7 +11,7 @@ const source=process.env.HAND_VIDEO||process.argv[2];
  try{
   const context=await browser.newContext({viewport:{width:1440,height:900},permissions:['camera']});
   const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto('http://127.0.0.1:8774/');await page.waitForFunction(()=>!!window.lab);
+  await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');await page.waitForFunction(()=>!!window.lab);
   await page.evaluate(async()=>{const {HandControls}=await import('./src/hand-controls.js'),packet=HandControls.prototype.packet;HandControls.prototype.packet=function(value){window.lastCameraPacket=value;return packet.call(this,value)}});
   await page.locator('#handButton').click();await page.locator('#handStart').click();
   await page.locator('#handBegin').waitFor({state:'visible',timeout:30000});
@@ -47,7 +47,7 @@ const source=process.env.HAND_VIDEO||process.argv[2];
   await page.screenshot({path:path.join(out,'registered-bench.png')});
   if(process.env.UPDATE_HAND_PREVIEW==='1')await page.screenshot({path:path.join(root,'preview','palm-outline.jpg'),type:'jpeg',quality:90});
   // Changing mirroring or crop is an input discontinuity: require a new open palm.
-  await page.locator('#cameraButton').click();await page.locator('#mirrorCamera').click();await page.locator('#cameraClose').click();
+  await page.locator('#cameraSettingsButton').click();await page.locator('#mirrorCamera').click();await page.locator('#cameraClose').click();
   await page.waitForFunction(()=>lab.hand.state.armed&&!document.querySelector('#handCursor').hidden);
   await page.screenshot({path:path.join(out,'opposite-mirror.png')});
   await page.locator('#handButton').click();await page.locator('#handGain').fill('65');await page.locator('#handBegin').click();

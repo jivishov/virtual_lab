@@ -11,24 +11,24 @@ function graph(state, fit) {
   const content = [];
   for (let i = 0; i <= 5; i++) {
     const a = i / 10;
-    content.push(`<path d="M${left} ${y(a)}H487" stroke="#d6dde0"/><text x="51" y="${y(a)+4}" text-anchor="end">${a.toFixed(1)}</text>
+    content.push(`<path class="plot-grid" d="M${left} ${y(a)}H487"/><text x="51" y="${y(a)+4}" text-anchor="end">${a.toFixed(1)}</text>
       <text x="${x(i/2)}" y="273" text-anchor="middle">${(i/2).toFixed(1)}</text>`);
   }
-  content.push(`<path d="M62 19V252H487" stroke="#768793" fill="none"/><text x="275" y="301" text-anchor="middle">Blue #1 concentration (µM)</text><text transform="translate(17 138) rotate(-90)" text-anchor="middle">Absorbance</text>`);
+  content.push(`<path class="plot-axis" d="M62 19V252H487" fill="none"/><text x="275" y="301" text-anchor="middle">Blue #1 concentration (µM)</text><text transform="translate(17 138) rotate(-90)" text-anchor="middle">Absorbance</text>`);
   if (state.analysis.fitted) {
-    content.push(`<path d="M62 252L${x(fit.maxConcentration)} ${y(fit.maxConcentration*fit.slope)}" stroke="#246e76" stroke-width="2"/>`);
+    content.push(`<path class="plot-fit" d="M62 252L${x(fit.maxConcentration)} ${y(fit.maxConcentration*fit.slope)}" stroke-width="2"/>`);
   }
   for (const sample of SAMPLES) {
     const r = state.results[sample.id];
-    if (r) content.push(`<circle cx="${x(r.concentration)}" cy="${y(r.absorbance)}" r="4.5" fill="#194f63"><title>${sample.name}, ${format(r.concentration)} µM, A = ${r.absorbance}</title></circle>`);
+    if (r) content.push(`<circle class="plot-point" cx="${x(r.concentration)}" cy="${y(r.absorbance)}" r="4.5"><title>${sample.name}, ${format(r.concentration)} µM, A = ${r.absorbance}</title></circle>`);
   }
   for (const [id, label] of unknowns) {
     const r = state.results[id];
     if (!r) continue;
     const level = y(r.absorbance);
     const end = id === 'unknown' ? 487 : x(r.absorbance / fit.slope);
-    content.push(`<path d="M62 ${level}H${end}${id==='tube_dilution'?'V252':''}" fill="none" stroke="#9d572c" stroke-dasharray="4 4"/>
-      <text x="${id==='unknown'?482:72}" y="${level-7}" text-anchor="${id==='unknown'?'end':'start'}" fill="#884c2b">${label}</text>`);
+    content.push(`<path class="plot-signal" d="M62 ${level}H${end}${id==='tube_dilution'?'V252':''}" fill="none" stroke-dasharray="4 4"/>
+      <text class="plot-signal-label" x="${id==='unknown'?482:72}" y="${level-7}" text-anchor="${id==='unknown'?'end':'start'}">${label}</text>`);
   }
   el('calibrationGraph').innerHTML = content.join('');
   el('calibrationGraph').setAttribute('aria-label', `Absorbance against concentration. ${fit.count} calibration readings. Values appear in the measurement record.`);

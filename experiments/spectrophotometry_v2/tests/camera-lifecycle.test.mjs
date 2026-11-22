@@ -182,3 +182,16 @@ test('worker retains the submitted exposure and crop until its matching response
  worker.emit({type:'result',generation:f.camera.generation,requestId:request.requestId,stamp:100,landmarks:[]});
  assert.equal(f.packets[0].frame,image);assert.deepEqual(f.packets[0].crop,crop);assert.equal(f.packets[0].frameRevision,12);f.camera.destroy();
 });
+
+test('a detector detail view returns its landmarks to the full exposure for the outline and grip',async()=>{
+ const f=fixture(),image={width:640,height:480},detectorImage={width:320,height:320};
+ const crop={left:.25,top:.125,width:.375,height:.5},world=[[{x:.12,y:.04,z:-.06}]];
+ f.camera.frameSource=()=>({image,detectorImage,crop,revision:3});
+ f.detector.detectForVideo=input=>{
+  assert.equal(input,detectorImage);return {landmarks:[[{x:.5,y:.75,z:-.125}]],worldLandmarks:world};
+ };
+ await f.camera.start();await f.camera.frame(f.camera.generation);
+ assert.equal(f.packets[0].frame,image);assert.equal(f.packets[0].worldLandmarks,world);
+ assert.deepEqual(f.packets[0].landmarks,[[{x:.4375,y:.5,z:-.046875}]]);
+ f.camera.destroy();
+});

@@ -1,5 +1,6 @@
 import {StudioExperience} from './studio.js';
 import {StudioCamera} from './studio-camera.js';
+import {ProcedureVoice} from './procedure-voice.js';
 import {renderNotebook,bindNotebook,readingsCsv} from './notebook.js';
 import {PIPETTES,pipetteIds} from './pipettes.js';
 import {createState,getStep,setStatus,setWavelength,STEPS,fitCalibration} from './model.js';
@@ -11,9 +12,14 @@ import {MouseInput} from './mouse-input.js';
 import {InteractionOverlay} from './interaction-overlay.js';
 import {HandControls} from './hand-controls.js';
 const $=id=>document.getElementById(id),canvas=$('labCanvas');
+function setText(id,text){
+ const el=$(id);
+ if(el.textContent!==text)el.textContent=text;
+}
 let state=createState(),scene,renderer,layout,geometry,interaction,hands,overlay,mouse,dirty=true,uiDirty=true,observations='';
-let noticeTimer,studio,lastRoomFrame=0;
+let noticeTimer,studio,lastRoomFrame=0,lastBenchFrame=-Infinity;
 const source=new StudioCamera();
+const voice=new ProcedureVoice($('procedureAudio'));
 const benchPointers=new Set();
 canvas.addEventListener('pointerdown',e=>{benchPointers.add(e.pointerId);if(hands?.camera.running)hands.yieldToPointer()},true);
 for(const event of ['pointerup','pointercancel','lostpointercapture']){
@@ -85,21 +91,50 @@ function updateUI(){
  renderer.insertedPipette=inserted?interaction.tool:null;
  renderer.surroundingLiquid=inserted?scene.liquids[contact.target]?.node:null;
  scene?.setBulbPressed(!!interaction?.compressed,interaction?.tool);
- const step=getStep(state);$('stepCount').textContent=String(Math.min(step.index+1,STEPS.length)).padStart(2,'0')+' / '+STEPS.length;$('stepTitle').textContent=step.phase==='prepare'?step.title.replace(/^Prepare (.+)$/,'Prepare the $1 standard'):step.title;updateProtocol(step);$('instruction').textContent=step.instruction;$('progressFill').style.width=step.index/STEPS.length*100+'%';
- $('readingCount').textContent=Object.keys(state.results).length+'/8';$('runStatus').textContent=state.status==='paused'?'Paused':state.status==='stopped'?'Stopped':interaction?.flow?'Transferring':state.finished?'Complete':'Ready';
+ const step=getStep(state);
+ setText('stepCount',String(Math.min(step.index+1,STEPS.length)).padStart(2,'0')+' / '+STEPS.length);
+ setText('stepTitle',step.phase==='prepare'?step.title.replace(/^Prepare (.+)$/,'Prepare the $1 standard'):step.title);
+ setText('instruction',step.instruction);
+ updateProtocol(step);$('progressFill').style.width=step.index/STEPS.length*100+'%';
+ setText('readingCount',Object.keys(state.results).length+'/8');
+ setText('runStatus',state.status==='paused'?'Paused':state.status==='stopped'?'Stopped':interaction?.flow?'Transferring':state.finished?'Complete':'Ready');
  for(const [id,status] of [['runButton','running'],['pauseButton','paused'],['stopButton','stopped']]){$(id).classList.toggle('active',state.status===status);$(id).setAttribute('aria-pressed',String(state.status===status))}
- $('wavelength').value=state.wavelength;$('wavelength').disabled=state.status!=='running'||!!interaction?.flow;layout?.refresh();hands?.refresh();followOperation(step);overlay?.update(hands?.pipetteCue());
- if(hands?.camera.running&&!['mouse','touch'].includes(interaction.owner)){
-   if(studio?.mode==='view')$('microInstruction').textContent='Close one palm to orbit. Spread two closed palms to zoom.';
-   else if(!hands.camera.modelReady)$('microInstruction').textContent='Starting local hand tracking…';
-   else if(!interaction.tool)$('microInstruction').textContent=step.pipetteId?'Open your palm over the '+PIPETTES[step.pipetteId].mark.toLowerCase()+' pipette, then close to grasp.':hands.hint.textContent;
+ const wavelengthInput=$('wavelength'),wavelengthSlider=$('wavelengthSlider');
+ wavelengthInput.disabled=state.status!=='running'||!!interaction?.flow;
+ wavelengthSlider.disabled=wavelengthInput.disabled;
+ if(document.activeElement!==wavelengthInput)wavelengthInput.value=state.wavelength;
+ wavelengthSlider.value=state.wavelength;
+ const spokenWavelength=state.wavelength+' nanometers';
+ if(wavelengthSlider.getAttribute('aria-valuetext')!==spokenWavelength)wavelengthSlider.setAttribute('aria-valuetext',spokenWavelength);
+ layout?.refresh();hands?.refresh();followOperation(step);
+ const handCue=hands?.pipetteCue();
+ overlay?.update(handCue,!studio?.immersive);
+ let hint=handCue?.instruction||mouse?.instruction()||'';
+ if(hands?.camera.running&&!['mouse','touch','keyboard'].includes(interaction.owner)){
+   if(studio?.mode==='view')hint='Close one palm to orbit. Spread two to zoom.';
+   else if(!hands.camera.modelReady)hint='Starting local hand tracking…';
+   else if(!interaction.tool){
+    const target=interaction.hoverRegion;
+    hint=hands.cursor.hidden?'Show an open palm.':target?(hands.gate.holding?'Open your palm.':target.endsWith('-grip')?'Curl three fingers to grasp.':'Close and open to select.'):
+      step.pipetteId?'Aim your open palm at the '+PIPETTES[step.pipetteId].mark.toLowerCase()+' pipette.':hands.hint;
+   }
  }
+ hint=studio?.updateHud(step,overlay.guides.focus)||hint;
+ setText('microInstruction',hint);
+ voice.sync(step,state.status);
  uiDirty=false;if($('notebookDialog').open)renderNotebook(state);
 }
 function control(status){suspendInput(status==='running'?'Regrasp the marked tool to continue.':status==='paused'?'Paused. All partial volumes and poses are preserved.':'Stopped. Partial volumes are preserved; choose Run and regrasp.');if(status==='stopped')studio?.stop();else hands?.resetInput();setStatus(state,status);changed();updateUI()}
-function animate(now){interaction?.tick(now);
- if(renderer?.roomVideo&&renderer.roomVideo.currentTime!==renderer.videoTime&&now-lastRoomFrame>55){dirty=true;lastRoomFrame=now}
- if(uiDirty)updateUI();if(dirty&&renderer){renderer.render();dirty=false}requestAnimationFrame(animate)}
+function animate(now){
+ // Leave GPU time for camera inference while continuously rendering a dose.
+ // Liquid advances by elapsed time; gesture evidence uses sensor timestamps.
+ if(!hands?.camera.running||now-lastBenchFrame>=1000/30-1){
+  lastBenchFrame=now;interaction?.tick(now);
+  if(renderer?.roomVideo&&renderer.roomVideo.currentTime!==renderer.videoTime&&now-lastRoomFrame>55){dirty=true;lastRoomFrame=now}
+  if(uiDirty)updateUI();
+  if(dirty&&renderer){renderer.render();dirty=false}
+ }
+ requestAnimationFrame(animate)}
 function guardViewChange(){
  stopFollowing();
  if(interaction?.owner)suspendInput('View changed. Pick up the tool again to continue.');
@@ -120,37 +155,68 @@ function setupCamera(){
  let pointer=null;
  const clamp=(x,lo,hi)=>Math.max(lo,Math.min(hi,x));
  const local=e=>{const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}};
+ const panLimits=[7,4.5,4.5];
  const pan=(from,to)=>{
   if(!from||!to)return;
-  const at=renderer.cam.at;at[0]=clamp(at[0]+from[0]-to[0],-7,7);at[2]=clamp(at[2]+from[2]-to[2],-4.5,4.5);renderer.updateCamera();
+  const at=renderer.cam.at;
+  const offset=from.map((value,axis)=>value-to[axis]);
+  // Stop the whole motion at a limit. Clipping components separately would
+  // make a vertical drag slide sideways or move closer to the apparatus.
+  let fraction=1;
+  for(let axis=0;axis<3;axis++){
+   const delta=offset[axis];
+   if(Math.abs(delta)<1e-8)continue;
+   const edge=Math.sign(delta)*panLimits[axis];
+   fraction=Math.min(fraction,Math.max(0,(edge-at[axis])/delta));
+  }
+  for(let axis=0;axis<3;axis++)at[axis]+=offset[axis]*fraction;
+  renderer.updateCamera();
+ };
+ const endDrag=()=>{
+  if(!pointer)return;
+  const {id,drag}=pointer;pointer=null;
+  if(canvas.hasPointerCapture(id))canvas.releasePointerCapture(id);
+  if(drag)canvas.style.cursor=layout.active?'grab':'';
  };
  canvas.addEventListener('contextmenu',e=>e.preventDefault());
  canvas.addEventListener('auxclick',e=>{if(e.button===1)e.preventDefault()});
  canvas.addEventListener('pointerdown',e=>{
-  if(!e.isPrimary||![1,2].includes(e.button)||mouse.stroke)return;
-  usePointer();e.preventDefault();const p=local(e);canvas.setPointerCapture(e.pointerId);
-  pointer={id:e.pointerId,button:e.button,start:p,last:p,drag:false,orbit:e.button===1||e.shiftKey||e.altKey};
+  if(!e.isPrimary||pointer||mouse.stroke||layout.drag||![0,1,2].includes(e.button))return;
+  if(e.button===0&&e.pointerType!=='mouse')return;
+  const mode=e.button===2&&!e.shiftKey&&!e.altKey?'pan':'orbit';
+  const p=local(e);
+  usePointer();e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);
+  pointer={id:e.pointerId,button:e.button,buttons:e.buttons,mode,last:p,drag:false};
  });
  canvas.addEventListener('pointermove',e=>{
   if(!pointer||pointer.id!==e.pointerId)return;
+  if(e.buttons!==pointer.buttons){endDrag();return}
   const p=local(e),last=pointer.last;
+  const dx=p.x-last.x,dy=p.y-last.y;
   if(!pointer.drag){
-   if(Math.hypot(p.x-pointer.start.x,p.y-pointer.start.y)<=3)return;
+   if(Math.hypot(dx,dy)<=3)return;
    pointer.drag=true;guardViewChange();scene.viewSelection=null;
+   canvas.style.cursor='grabbing';
   }
-  if(pointer.orbit)renderer.cam.yaw-=(p.x-last.x)*.006;
-  else pan(renderer.onPlane(last.x,last.y),renderer.onPlane(p.x,last.y));
-  renderer.cam.pitch=clamp(renderer.cam.pitch+(p.y-last.y)*.005,.22,1.5);
-  renderer.updateCamera();pointer.last=p;changed();
+  if(pointer.mode==='pan'){
+   // Drag in the plane of the screen at the bench's focus distance.
+   const depth=renderer.project(renderer.cam.at).z;
+   pan(renderer.unproject(last.x,last.y,depth),renderer.unproject(p.x,p.y,depth));
+  }else{
+   renderer.cam.yaw-=dx*.006;
+   if(dy)renderer.cam.pitch=clamp(renderer.cam.pitch+dy*.005,.22,1.5);
+   renderer.updateCamera();
+  }
+  pointer.last=p;changed();
  });
  canvas.addEventListener('pointerup',e=>{
   if(!pointer||pointer.id!==e.pointerId)return;
-  const was=pointer;pointer=null;
-  if(was.button===2&&!was.drag)mouse.secondary(local(e));
-  if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
+  const secondaryClick=pointer.button===2&&e.button===2&&!pointer.drag;
+  endDrag();if(secondaryClick)mouse.secondary(local(e));
  });
- const cancel=e=>{if(pointer?.id===e.pointerId)pointer=null};
+ const cancel=e=>{if(pointer?.id===e.pointerId)endDrag()};
  canvas.addEventListener('pointercancel',cancel);canvas.addEventListener('lostpointercapture',cancel);
+ window.addEventListener('blur',endDrag);
  canvas.addEventListener('wheel',e=>{
   e.preventDefault();guardViewChange();scene.viewSelection=null;
   const p=local(e),before=renderer.onPlane(p.x,p.y);
@@ -179,8 +245,18 @@ function setupControls(){
  document.querySelectorAll('dialog').forEach(d=>d.addEventListener('close',changed));
  $('runButton').onclick=()=>control('running');$('pauseButton').onclick=()=>control('paused');$('stopButton').onclick=()=>control('stopped');
  $('resetButton').onclick=()=>{$('labMenu').open=false;suspendInput('Reset confirmation open.');$('resetDialog').showModal()};
- $('confirmReset').onclick=()=>{studio.stop();studio.setMode('work');hands.reset();state=createState();scene.cancel();scene.sync(state);interaction.reset();setView('overview');$('followStep').checked=useTabletFraming();observations='';$('observations').value='';for(const id of ['aliquot','original','factor','diluted'])$(id).value='';$('decisionFeedback').textContent='';$('resetDialog').close();clearNotice();changed();updateUI()};
- $('wavelength').onchange=()=>{const r=setWavelength(state,Number($('wavelength').value));feedback(r.message,!r.ok);scene.sync(state,false);changed()};
+ $('confirmReset').onclick=()=>{studio.stop();studio.setMode('work');hands.reset();voice.reset();state=createState();scene.cancel();scene.sync(state);interaction.reset();setView('overview');$('followStep').checked=useTabletFraming();observations='';$('observations').value='';for(const id of ['aliquot','original','factor','diluted'])$(id).value='';$('decisionFeedback').textContent='';$('resetDialog').close();clearNotice();changed();updateUI()};
+ const tuneWavelength=e=>{
+  const input=e.currentTarget;
+  if(interaction.flow){input.value=state.wavelength;return}
+  const result=setWavelength(state,input.valueAsNumber);
+  $('wavelength').value=state.wavelength;
+  if(e.type==='change')feedback(result.message,!result.ok);
+  scene.updateTransmission(state.reading);scene.updateLCD(state);changed();
+ };
+ $('wavelength').onchange=tuneWavelength;
+ $('wavelengthSlider').oninput=tuneWavelength;
+ $('wavelengthSlider').onchange=tuneWavelength;
  $('followStep').onchange=()=>{if(!$('followStep').checked)scene.viewSelection=null;changed()};
  $('notebookButton').onclick=openNotebook;$('helpButton').onclick=()=>{suspendInput('Guide open. Pick up the tool again after closing it.');hands.resetInput();$('helpDialog').showModal()};
  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()}}));
@@ -190,7 +266,7 @@ function setupControls(){
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const open=document.querySelector('.dock-entry[open]');if(open){closeDockMenus();open.querySelector('summary').focus();e.preventDefault()}}});
  $('handButton').addEventListener('click',closeDockMenus);
  for(const item of scene.layoutItems){$('inspectEquipment').add(new Option(item.label,item.id))}
- $('inspectEquipment').onchange=()=>{const id=$('inspectEquipment').value;if(!id)return;guardViewChange();closeDockMenus();$('inspectMenu').classList.add('selected');scene.inspectEquipment(id);document.querySelectorAll('[data-view]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});feedback('Inspecting '+$('inspectEquipment').selectedOptions[0].text+'. Middle-drag to orbit. Choose Bench to return.');changed()};
+ $('inspectEquipment').onchange=()=>{const id=$('inspectEquipment').value;if(!id)return;guardViewChange();closeDockMenus();$('inspectMenu').classList.add('selected');scene.inspectEquipment(id);document.querySelectorAll('[data-view]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});feedback('Inspecting '+$('inspectEquipment').selectedOptions[0].text+'. Drag empty space to orbit. Choose Bench to return.');changed()};
  $('qualityButton').onclick=()=>{const levels=['balanced','high','low'],next=levels[(levels.indexOf(renderer.level)+1)%3];renderer.setQuality(next);$('qualityButton').textContent='Quality: '+next;changed()};
  const toggleGuidance=()=>{const collapsed=$('taskRibbon').classList.toggle('collapsed');$('collapseTask').setAttribute('aria-expanded',String(!collapsed));$('collapseTask').setAttribute('aria-label',collapsed?'Expand step guidance':'Minimize step guidance');$('collapseTask').textContent=collapsed?'+':'−'};
  $('collapseTask').onclick=toggleGuidance;$('taskRibbon').addEventListener('click',e=>{if(e.target.id!=='collapseTask'&&$('taskRibbon').classList.contains('collapsed'))toggleGuidance()});
@@ -216,7 +292,7 @@ async function start(){try{
  mouse=new MouseInput({canvas,geometry,interaction,layout,usePointer,handActive:()=>!!hands?.camera.running});
  overlay=new InteractionOverlay({scene,geometry,interaction,layout,mouse,onLocate:locateTarget,stopHand:()=>{if(hands?.camera.running)hands.stop()}});
  hands=new HandControls({scene,geometry,interaction,layout,canvas,source,pointerBusy:()=>benchPointers.size>0||['mouse','touch','keyboard'].includes(interaction.owner),onStart:()=>suspendInput('Hand control enabled. Grasp the tool to continue.'),getState:()=>state,onChange:changed,onFeedback:feedback});
- studio=new StudioExperience({source,hands,renderer,scene,canvas,suspend:suspendInput,stopFollowing,changed,openNotebook});
+ studio=new StudioExperience({source,hands,renderer,scene,canvas,suspend:suspendInput,stopFollowing,changed,trackingChanged:()=>{uiDirty=true},openNotebook});
  setupCamera();setupControls();setView(canvas.clientWidth<=760?'prepare':'overview');$('followStep').checked=useTabletFraming();
  $('loading').hidden=true;clearNotice();updateUI();renderer.render();requestAnimationFrame(animate);
  globalThis.lab={get state(){return structuredClone(state)},get step(){return {...getStep(state)}},get busy(){return interaction.flow},control,get camera(){return structuredClone(renderer.cam)},get layout(){return scene.layoutData()},get layoutActive(){return layout.active},get equipmentPositions(){return Object.fromEntries(scene.layoutItems.map(({id})=>[id,[...scene.objects[id].pos]]))},get chamber(){return [...scene.chamber]},get poses(){return {pipette:[...scene.objects.pipette.pos],cuvette:[...scene.objects.cuvette.pos],cuvetteRotation:[...scene.objects.cuvette.rot],lid:scene.lid.rot[0]}},get manipulation(){return structuredClone(interaction.state)},get atomicHistory(){return structuredClone(interaction.history)},get targeting(){return {next:interaction.nextTarget(),hover:interaction.hoverTarget||interaction.hoverRegion,locked:interaction.contact?.target||null,settle:interaction.aimSettler.progress,label:null,rings:{next:overlay.guides.beacon.id,focus:overlay.guides.focus.id},targets:Object.fromEntries([...new Set([...interaction.candidates(),...pipetteIds.map(id=>id+'-grip'),...['cuvette-grip','lid','zero','read','clipboard']])].map(id=>[id,geometry.screenTarget(id)]))}},get affordances(){return readAffordances()},hand:{frame:f=>hands.frame(f),packet:p=>hands.packet(p),lost:()=>hands.lost(),get state(){return {active:hands.camera.running,backend:hands.camera.backend,armed:hands.gate.armed,holding:interaction.owner==='hand'?interaction.tool:hands.held?.id||null}}},get studio(){return {immersive:studio.immersive,handMode:studio.mode,liveRoom:!!renderer.roomVideo,cameraUsers:[...source.owners],mirrored:source.mirrored}},get renderInfo(){return {quality:renderer.level,resolution:[canvas.width,canvas.height],css:[canvas.clientWidth,canvas.clientHeight],bloom:renderer.bloomOn,meshes:renderer.meshes.length}},get assetMeta(){return scene.assetMeta}};

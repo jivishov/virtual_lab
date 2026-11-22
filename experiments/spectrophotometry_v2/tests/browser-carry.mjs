@@ -1,5 +1,56 @@
 import assert from 'node:assert/strict';
 
+// Check screen motion as well as camera angles so a vertical pan cannot
+// silently become a tilt or a slide toward the far side of the worktop.
+export async function runCameraDragChecks(page){
+ const canvas=page.locator('#labCanvas'),rect=await canvas.boundingBox();
+ const x=rect.x+rect.width*.36,y=rect.y+rect.height*.31;
+ const read=()=>page.evaluate(()=>({cam:lab.camera,grip:lab.affordances.regions['pipette-grip'],events:lab.atomicHistory.length}));
+ const drag=async(button,dx,dy)=>{
+  await page.mouse.move(x,y);await page.mouse.down({button});
+  try{await page.mouse.move(x+dx,y+dy,{steps:5})}finally{await page.mouse.up({button})}
+ };
+ assert.ok(await canvas.evaluate((el,[x,y])=>document.elementFromPoint(x,y)===el,[x,y]),'The background drag must start on the canvas');
+ const start=await read();
+ await drag('left',2,1);
+ assert.deepEqual((await read()).cam,start.cam,'A slight wobble should leave the view in place');
+ await drag('left',32,0);
+ const orbited=await read();
+ assert.ok(orbited.cam.yaw<start.cam.yaw-.1,'A horizontal left-button drag should orbit the bench');
+ assert.deepEqual(orbited.cam,{...start.cam,yaw:orbited.cam.yaw},'Horizontal orbit should only change yaw');
+ assert.ok(Math.hypot(orbited.grip.x-start.grip.x,orbited.grip.y-start.grip.y)>1,'Orbit should move the apparatus on screen');
+ await drag('left',-32,16);
+ const diagonal=await read();
+ assert.ok(Math.abs(diagonal.cam.yaw-start.cam.yaw)<1e-6,'Reversing the horizontal drag should restore the original yaw');
+ assert.ok(diagonal.cam.pitch>orbited.cam.pitch+.04,'A diagonal drag should also tilt the view');
+ await drag('left',0,16);
+ const tilted=await read();
+ assert.ok(tilted.cam.pitch>diagonal.cam.pitch+.04,'Dragging straight down should tilt the view');
+ assert.deepEqual(tilted.cam,{...diagonal.cam,pitch:tilted.cam.pitch},'A vertical left-button drag should only change pitch');
+ await drag('right',0,32);
+ const down=await read();
+ assert.deepEqual(down.cam,{...tilted.cam,at:down.cam.at},'Right-drag should preserve all viewing angles and zoom');
+ assert.ok(down.grip.y>tilted.grip.y+15&&Math.abs(down.grip.x-tilted.grip.x)<.25,'The bench should follow the pointer straight down');
+ await drag('right',0,-32);
+ const up=await read();
+ assert.ok(Math.hypot(up.grip.x-tilted.grip.x,up.grip.y-tilted.grip.y)<.25,'Dragging back up should restore the bench framing');
+ await drag('right',24,0);
+ const across=await read();
+ assert.ok(across.grip.x>up.grip.x+10&&Math.abs(across.grip.y-up.grip.y)<.25,'Sideways panning should stay horizontal');
+ assert.deepEqual(across.grip.world,start.grip.world);
+ assert.equal(across.events,start.events,'Moving the view must not handle equipment');
+ await drag('middle',115,100);
+ const oblique=await read();
+ for(let i=0;i<5;i++)await drag('right',0,rect.height*.4);
+ const edge=await read();
+ assert.ok(Math.abs(edge.grip.x-oblique.grip.x)<.25,'The bench should stay on the same screen vertical at the pan limit');
+ await drag('right',0,rect.height*.4);
+ assert.ok(Math.abs((await read()).grip.y-edge.grip.y)<.25,'The bench should stop at the limit');
+ await drag('right',0,-32);
+ const back=await read();
+ assert.ok(back.grip.y<edge.grip.y-10&&Math.abs(back.grip.x-oblique.grip.x)<.25,'Dragging back from the limit should move straight up');
+}
+
 // Exercise the rendered apparatus with real pointer capture. Coordinates from
 // the studio are observations only. Every pickup, move and drop is a DOM event.
 export async function runCarryChecks(page){
@@ -14,12 +65,13 @@ export async function runCarryChecks(page){
  const move=async p=>{const q=await client(p);await page.mouse.move(q.x,q.y)};
  const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
  const checks=[];
+ await reset();await runCameraDragChecks(page);
  for(const [view,region,shaft] of [
   ['overview','pipette-bulb'],['overview','waterPipette-grip'],['prepare','unknownPipette-bulb'],
   ['prepare','pipette-grip',true],['instrument','cuvette-grip']
  ]){
   await reset(view);
-  const initial=await read(),feature=initial.regions[region],start={x:feature.x,y:feature.y};
+  const initial=await read(),camera=await page.evaluate(()=>lab.camera),feature=initial.regions[region],start={x:feature.x,y:feature.y};
   if(shaft){
    const bulb=initial.regions['pipette-bulb'];
    start.x+=1.9*(feature.x-bulb.x);start.y+=1.9*(feature.y-bulb.y);
@@ -35,6 +87,7 @@ export async function runCarryChecks(page){
    maxError=Math.max(maxError,dist(held,{x:grabbed.held.x+dx,y:grabbed.held.y+dy}));
   }
   assert.ok(maxError<1.3,region+' slipped by '+maxError+' px');
+  assert.deepEqual(await page.evaluate(()=>lab.camera),camera,'Dragging equipment should keep the camera fixed');
   await page.mouse.up();const placed=await read();assert.equal(placed.control.owner,null);
   await move({x:start.x+85,y:start.y+35});
   assert.deepEqual((await read()).regions[region].world,placed.regions[region].world,'Released tool chased the pointer');

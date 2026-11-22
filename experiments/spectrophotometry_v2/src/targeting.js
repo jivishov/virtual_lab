@@ -48,13 +48,14 @@ export class TargetGuides{
    const rings=(beacon?[[1,.033],[1.26,.018]]:[[1,.055]]).map(([radius,thickness])=>{
     const mesh=r.mesh(G.torus(radius,thickness,48),scene.mat(beacon?'#a4ecdc':'#5fd0bd',{pattern:5,emission:beacon?.55:.8,rough:1}),group);mesh.noShadow=true;return mesh;
    });
-   return {group,rings,id:null};
+   return {group,rings,id:null,screen:null};
   };
   this.beacon=make(true);this.focus=make(false);
  }
  mount(guide,id,{locked=false,invalid=false}={}){
   const frame=id&&this.geometry.targetFrame(id),q=frame&&this.geometry.screenTarget(id,{frame});
   guide.group.visible=!!frame&&!!q?.visible;
+  guide.screen=guide.group.visible?q:null;
   if(!guide.group.visible){guide.id=null;return}
   const parent=this.geometry.node(frame.equipment);
   if(guide.group.parent!==parent){const old=guide.group.parent;if(old)old.children=old.children.filter(n=>n!==guide.group);parent.add(guide.group)}
@@ -63,5 +64,5 @@ export class TargetGuides{
   if(guide===this.focus){const color=globalThis.E3D.rgb(invalid?'#df9672':locked?'#f2b134':'#5fd0bd');for(const ring of guide.rings)ring.mat.color=color}
  }
  update(next,current,options={}){this.mount(this.beacon,next===current?null:next);this.mount(this.focus,current,options)}
- hide(){this.beacon.group.visible=this.focus.group.visible=false;this.beacon.id=this.focus.id=null}
+ hide(){this.beacon.group.visible=this.focus.group.visible=false;this.beacon.id=this.focus.id=null;this.beacon.screen=this.focus.screen=null}
 }

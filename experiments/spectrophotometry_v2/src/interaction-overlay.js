@@ -114,12 +114,11 @@ export class InteractionOverlay {
   label.style.left=Math.max(5,Math.min(w-width-5,x))+'px';
   label.style.top=Math.max(5,Math.min(h-height-5,y))+'px';
  }
- update(handCue=null){
+ update(handCue=null,showBulb=true){
   const c=this.interaction;
   this.scene.marker.visible=false;
   this.updateMeniscus();
-  this.updateBulbCue(handCue);
-  textIfChanged(byId('microInstruction'),handCue?.instruction||this.mouse.instruction());
+  this.updateBulbCue(showBulb?handCue:null);
   const item=c.tool||c.step.pipetteId||'pipette';const v=c.getState()[item].volume;
   textIfChanged(byId('toolReadout'),v.toFixed(1)+' mL · '+(item==='cuvette'?'cuvette':c.targetName(item).toLowerCase()));
   byId('locateTarget').disabled=!c.nextTarget()||this.layout.active;

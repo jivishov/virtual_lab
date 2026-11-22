@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {cameraRect,DEFAULT_CAMERA_SIZE,savedCameraSize} from '../src/camera-framing.js';
+import {cameraRect,DEFAULT_CAMERA_SIZE,savedCameraSize,heldHandCrop} from '../src/camera-framing.js';
 import {playerFrame} from '../src/view-gestures.js';
 
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} versus ${b}`);
@@ -40,4 +40,15 @@ test('camera size stays constant through a reach, the center holds still, and ev
 test('saved size accepts the supported range and uses the studio default on a first visit or invalid preference',()=>{
  for(const value of [null,'',0,'no',Infinity,.49,1.01])assert.equal(savedCameraSize(value),DEFAULT_CAMERA_SIZE);
  for(const value of ['.5','.65','1'])assert.equal(savedCameraSize(value),Number(value));
+});
+
+test('the held-hand detail follows either mirror setting, holds still through jitter and stays inside the sensor',()=>{
+ const points=x=>Array.from({length:21},(_,i)=>({x:x+(i===5?-.04:i===17?.04:0),y:.5+(i===0?.05:0)}));
+ for(const mirror of [true,false]){
+  const first=heldHandCrop(points(.42),960,720,mirror,null);
+  assert.deepEqual(heldHandCrop(points(.425),960,720,mirror,first),first);
+  const next=heldHandCrop(points(.96),960,720,mirror,first);
+  assert.equal(next.size,first.size);assert.equal(next.left,mirror?0:960-next.size);
+  assert.ok(next.top>=0&&next.top+next.size<=720);
+ }
 });

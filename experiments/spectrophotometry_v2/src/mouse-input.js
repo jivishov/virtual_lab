@@ -62,22 +62,26 @@ export class MouseInput {
  cancel(e){ if(this.stroke?.pointer===e.pointerId) this.interrupt(); }
  down(e){
   if(e.button!==0 || !e.isPrimary || this.layout.active || !this.interaction.usable() || this.stroke) return;
+  const c=this.interaction;
+  if(c.pointerDose){ this.consume(e); return; }
+  const p=this.xy(e), ownsTool=pointerOwner(c.owner), contact=c.contact;
+  const poised=!ownsTool&&contact&&!c.frozen&&contact.target===c.desiredTarget()&&
+   (contact.depth===0||contact.mode==='dispense'&&contact.depth<1);
+  const atOpening=poised&&(c.targetAt(p.x,p.y)===contact.target||c.receiverDepth(p)!==null);
+  const region=ownsTool||atOpening?null:this.geometry.pointerControl(p.x,p.y);
+  // The camera gets a left press only when the apparatus has no action there.
+  if(e.pointerType==='mouse'&&!ownsTool&&!atOpening&&!region) return;
   this.consume(e);
-  if(this.interaction.pointerDose) return;
   this.canvas.focus({preventScroll:true});
   this.usePointer();
-  const c=this.interaction, p=this.xy(e);
   const owner=e.pointerType==='touch'?'touch':'mouse';
-  if(!pointerOwner(c.owner)){
-   const contact=c.contact,poised=contact&&!c.frozen&&contact.target===c.desiredTarget()&&
-    (contact.depth===0||contact.mode==='dispense'&&contact.depth<1);
-   if(poised&&(c.targetAt(p.x,p.y)===contact.target||c.receiverDepth(p)!==null)){
+  if(!ownsTool){
+   if(atOpening){
     c.grab(c.tool,owner,p.x,p.y);
     if(c.contact.kind==='pour'){this.turnCuvette(p);return}
     if(c.holdsPipette)c.squeeze(true);
     this.capture(e,c.holdsPipette?c.step.action:'seat',p);return;
    }
-   const region=this.geometry.pointerControl(p.x,p.y);
    if(!region) return;
    if(!region.endsWith('-grip')){ c.activate(region); return; }
    const tool=region.slice(0,-5);
@@ -141,7 +145,7 @@ export class MouseInput {
    if(pointerOwner(c.owner)){
     if(!c.contact)c.move(p.x,p.y);else c.lastPointer=p;
     this.canvas.style.cursor=c.hoverTarget||c.contact?'crosshair':'grabbing';
-   }else if(!c.owner){
+   }else if(!c.owner&&!e.buttons){
     const id=this.geometry.pointerControl(p.x,p.y);
     if(id!==c.hoverRegion){ c.hoverRegion=id; c.changed(); }
     this.canvas.style.cursor=id?.endsWith('-grip')?'grab':id?'pointer':'default';

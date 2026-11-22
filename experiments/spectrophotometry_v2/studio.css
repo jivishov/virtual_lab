@@ -1,6 +1,7 @@
 :root {
   --ink:#1c343a; --teal:#245e61; --paper:#faf9f5; --line:#d9ddd5;
   --studio-dark:#173c42; --dock-paper:#f9f9f4; --muted:#5f706e;
+  --station-top:16px;
   font-family:"Segoe UI",Arial,sans-serif; color:var(--ink); background:var(--paper);
 }
 .symbols {position:absolute;width:0;height:0;overflow:hidden}
@@ -13,7 +14,7 @@
 .identity h1 {font-size:29px;line-height:1.08;font-weight:620;letter-spacing:-1px;color:#182f35}
 .identity p {font-size:12px;margin:4px 0 0;color:var(--muted);letter-spacing:.12px}
 .top-actions {display:flex;gap:8px}
-.top-actions button,.camera-tools button,.station-views button,.session-controls button,.locate-target,#immersiveActions button,#liveControls button {
+.top-actions button,.camera-tools button,.station-views button,.session-controls button,.locate-target,#immersiveActions button,#liveHandModes button {
   display:inline-flex;align-items:center;justify-content:center;gap:7px;line-height:1.1;white-space:nowrap;font-size:13px;font-weight:550;
 }
 .top-actions button {height:38px;padding:0 13px;background:transparent;border-color:#cbd3cc;color:var(--ink)}
@@ -59,10 +60,24 @@
 .session-controls button {padding:7px 9px;background:transparent;color:#405854;border-color:#d3dbd1;font-size:12px;flex:1}
 .session-controls button.active {background:#e3ece3;border-color:#b8cbbd;color:#1e5147}
 .session-controls svg {height:13px;width:13px}
-#stationBar {position:absolute;z-index:4;top:16px;left:18px;right:18px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;pointer-events:none}
-#stationBar>* {pointer-events:auto}
+body {--station-panel-top:calc(var(--station-top) + var(--station-controls-height,42px) + 7px)}
+#stationBar {
+  position:absolute;z-index:4;top:var(--station-top);left:18px;right:18px;
+  display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;grid-template-areas:"views guide actions";
+  align-items:start;gap:7px 10px;pointer-events:none;
+}
+.station-instruments,.station-actions {display:flex;flex-direction:column;gap:5px}
+.station-instruments {grid-area:views;align-items:flex-start}
+.station-actions {grid-area:actions;justify-self:end}
+.station-views,.station-actions>div {pointer-events:auto}
 .station-views,.camera-tools {display:flex;gap:2px;padding:3px;background:rgba(250,250,245,.96);border:1px solid #c8d0c7;border-radius:7px;box-shadow:0 2px 10px #172c2a24}
 .station-views button,.camera-tools button {border:0;padding:8px 10px;color:#314a49;background:transparent;border-radius:4px;min-height:32px;font-size:12px}
+.camera-switch {display:flex;align-items:stretch}
+.camera-tools>button,.camera-switch {flex:1 0 auto}
+.camera-switch #cameraButton {flex:1;border-radius:3px 0 0 3px}
+.camera-switch #cameraSettingsButton {min-width:26px;padding:0 3px;border-left:1px solid #9aabae;border-radius:0 3px 3px 0}
+#cameraSettingsButton .icon {width:13px;height:13px;stroke-width:2}
+#cameraSettingsButton[aria-expanded=true] .icon {transform:rotate(180deg)}
 .station-views .active,.station-views .active:hover,.camera-tools .camera-on,#handButton.camera-on {background:#234a4f;color:white}
 #handButton {margin:0;border:0;border-radius:4px}
 #benchFooter {position:absolute;bottom:16px;left:18px;right:18px;z-index:5;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;pointer-events:none}
@@ -97,12 +112,12 @@
 .camera-size output {text-align:right;font-variant-numeric:tabular-nums}
 .hand-cursor {z-index:3;width:17px;height:17px;outline-width:1px;background:#173d4552}
 .hand-cursor:after {font-size:11px}.hand-cursor>span {top:22px;font-size:10px}
-#liveControls,#immersiveActions {position:absolute;left:18px;top:64px;display:flex;gap:5px;z-index:4}
-#liveControls button,#immersiveActions button {position:static;inset:auto;padding:7px 10px;border-radius:4px;font-size:12px;min-height:30px}
-#immersiveActions {left:auto;right:18px}
+#liveHandModes,#immersiveActions {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+#immersiveActions {gap:4px}
+#liveHandModes button,#immersiveActions button {position:static;padding:6px 8px;gap:6px;border-radius:4px;font-size:12px;min-height:32px}
+#liveHandModes .icon,.hand-modes .icon {width:16px;height:16px;stroke-width:1.7}
 .studio-immersive .topbar {display:none}
-#liveHandModes {display:flex;align-items:stretch}
-#liveHandModes[hidden],#pipetteCue[hidden] {display:none}
+#liveHandModes[hidden],#immersiveActions[hidden],#pipetteCue[hidden] {display:none}
 #liveHandModes button {border-radius:0}
 #liveHandModes button:first-child {border-radius:4px 0 0 4px}
 #liveHandModes button:last-child {border-radius:0 4px 4px 0}
@@ -114,7 +129,7 @@
 #pipetteCue[data-state=flow] strong {color:#a5f0d9}
 .studio-immersive .workspace {display:block;height:100dvh}
 .studio-immersive .protocol {display:none}
-.studio-immersive.protocol-open .protocol {display:flex;position:absolute;right:18px;top:108px;bottom:auto;height:auto;width:min(300px,calc(100vw - 36px));max-height:calc(100dvh - 182px);border:1px solid #bacbc0;border-radius:8px;box-shadow:0 8px 26px #162d2833}
+.studio-immersive.protocol-open .protocol {display:flex;position:absolute;right:18px;top:var(--station-panel-top);bottom:auto;height:auto;width:min(300px,calc(100vw - 36px));max-height:calc(100% - var(--station-panel-top) - 46px);border:1px solid #bacbc0;border-radius:8px;box-shadow:0 8px 26px #162d2833}
 .studio-immersive .protocol-stages,.studio-immersive .bench-readouts {display:none}
 .studio-immersive .protocol .session-controls {margin:0}
 .studio-immersive .hand-panel,.studio-immersive .camera-panel {top:106px}
@@ -148,7 +163,7 @@
   .session-controls button {padding:5px;min-width:28px;min-height:28px}
   .session-controls .dock-label {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
   .protocol.collapsed .current-step>:not(.step-index):not(h3),.protocol.collapsed .session-controls {display:none}
-  #stationBar {top:10px}
+  :root {--station-top:10px}
   .station-views .dock-label {display:inline}
   .station-views button,.camera-tools button {min-height:32px;font-size:11px}
   .camera-tools button {gap:4px}.camera-tools svg {width:15px;height:15px}
@@ -160,16 +175,13 @@
   .bench-dock>button,.bench-dock .dock-entry>summary {min-width:48px;min-height:28px;flex-direction:row;padding:4px 6px;gap:4px}
   .bench-dock .dock-label {display:inline;font-size:10px}
   .hand-panel,.camera-panel {top:54px;right:10px;max-height:calc(100% - 62px)}
-  #liveControls,#immersiveActions {top:55px}
-  .studio-immersive.protocol-open .protocol {top:99px;max-height:calc(100% - 170px);padding:16px}
+  .studio-immersive.protocol-open .protocol {padding:16px}
   .studio-immersive .protocol .session-controls {position:static;align-self:flex-start}
 }
 @media(max-width:410px) {
   .identity>.brandmark {display:none}
   .station-views button,.camera-tools button {padding:7px 6px}
-  #liveControls {left:8px}
-  #immersiveActions {right:8px}
-  #liveControls button,#immersiveActions button {padding:6px 5px}
+  #liveHandModes button,#immersiveActions button {padding:5px 6px;gap:4px}
   .studio-immersive .camera-tools button span {display:none}
 }
 @media(max-height:560px) and (min-width:600px) {

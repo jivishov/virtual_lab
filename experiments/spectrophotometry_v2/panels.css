@@ -1,0 +1,227 @@
+/* SciFi panel surfaces. Classic uses the original studio controls. */
+:where(html[data-theme=scifi]) {
+  .visor-panel {
+    --ink:var(--visor-ink);--muted:#b2cbd5;--teal:var(--visor-cyan);--line:#335568;
+    --paper:#0e2332;--field:#091b28;--control:#163242;--edge:#4e7384;
+    --panel-surface:linear-gradient(45deg,transparent 42%,#568397 44% 49%,transparent 51%) right 5px top 5px/9px 9px no-repeat,
+      linear-gradient(90deg,var(--visor-cyan),#4fa4ba) 17px 0/54px 2px no-repeat,
+      linear-gradient(128deg,#143242 0,#0d2332 45%,#0c202e 100%);
+    color-scheme:dark;accent-color:var(--visor-cyan);scrollbar-color:#527b8c #0b1e2b;
+    overscroll-behavior:contain;
+  }
+  .visor-panel:is(#handPanel,#cameraPanel,#layoutPanel,#taskRibbon,dialog,.dock-popover) {
+    color:var(--ink);background:var(--panel-surface) var(--paper);border:1px solid var(--visor-line);
+    border-radius:3px 10px 3px 3px;box-shadow:inset 0 1px #93d9ef22,0 9px 30px #05131f55;
+  }
+  .visor-panel .eyebrow,.visor-panel .tag,.visor-panel .step-index,.visor-panel .frame-key span,
+  .visor-panel .hand-range output,.visor-panel .camera-size output,.visor-panel .layout-selected-label {
+    font-family:var(--visor-type);font-weight:500;letter-spacing:.035em;color:var(--visor-cyan);
+  }
+  .visor-panel .eyebrow,.visor-panel .step-index {font-size:10px;letter-spacing:.08em}
+  .visor-panel h2,.visor-panel h3,.visor-panel label {color:var(--ink)}
+  .visor-panel .frame-key span {font-size:11px;letter-spacing:.02em}
+  .visor-panel .frame-key>span+span {color:var(--visor-amber)}
+  .visor-panel p,.visor-panel .follow-step {color:var(--muted)}
+  .visor-panel :is(button,select,textarea,input[type=number]) {
+    color:var(--ink);background:var(--control);border:1px solid var(--edge);border-radius:3px;
+  }
+  .visor-panel :is(select,textarea,input[type=number]),.visor-panel select option {background-color:var(--field);color:var(--ink)}
+  .visor-panel :is(input,textarea)::placeholder {color:#9bb4c1;opacity:1}
+  .visor-panel :is(button,select,summary):hover:not(:disabled) {background-color:#224b60;color:white;border-color:#80b7c9}
+  .visor-panel :is(input,textarea,select,button,summary,[tabindex],a):focus-visible {
+    outline:2px solid var(--visor-cyan);outline-offset:2px;
+  }
+  .visor-panel :is(input[type=range],input[type=checkbox]) {accent-color:var(--visor-cyan)}
+  .visor-panel button:disabled {opacity:.56}
+  .visor-panel :is(button.primary,.ink-button,#targetUse),.visor-panel :is(button.primary,.ink-button,#targetUse):hover:not(:disabled) {
+    color:#06212e;background:#82dff0;border-color:#9debfa;font-weight:650;
+  }
+  .visor-panel :is(button.primary,.ink-button,#targetUse):hover:not(:disabled) {background:#b6f4ff}
+  .visor-panel :is(.close-button,#handClose,#cameraClose) {color:var(--muted);background:transparent;border:0}
+  .visor-panel :is(.close-button,#handClose,#cameraClose):hover {color:white;background:var(--control)}
+  .visor-panel .dialog-head,.visor-panel .hand-heading {border-bottom:1px solid var(--line)}
+  .visor-panel .hand-heading h2 {font-size:22px;font-weight:600;letter-spacing:-.035em}
+  .visor-panel .dialog-head h2 {font-size:clamp(24px,2.3vw,30px);color:var(--ink)}
+  dialog.visor-panel::backdrop {background:#061725a6;backdrop-filter:blur(3px)}
+
+  /* Tool setup and camera calibration. */
+  #handPanel .hand-actions {background:#0a1d2a}
+  #handPanel #handsTitle .icon {color:var(--visor-cyan);background:#183f51;border:1px solid #386072;border-radius:4px}
+  #handPanel :is(#modeHelp,#bulbHelp,#handStatus,.scale-help) {color:var(--muted)}
+  #handPanel :is(.hand-safety,#handStatus.error),.visor-panel #voiceNotice {color:var(--visor-amber)}
+  #handPanel #handPreview {border-radius:3px;box-shadow:0 0 0 1px #3e6577}
+  #handPanel .preview-idle {color:#c0deea;background:radial-gradient(ellipse,#183f50,#102738 75%)}
+  #handPanel .preview-idle .icon {color:#a2ddef}
+  #handPanel .preview-idle::after {content:none}
+  #handPanel .preview-pose {color:var(--visor-ink);background:#0a2230f2;border:1px solid var(--edge)}
+  #handPanel .hand-modes,#cameraPanel .camera-choices {gap:2px;padding:3px;border:1px solid var(--line);border-radius:4px;background:var(--field)}
+  #handPanel .hand-modes button,#cameraPanel .camera-choices button {background:transparent;border:0;color:var(--muted)}
+  #handPanel .hand-modes button[aria-pressed=true],#cameraPanel .camera-choices button[aria-pressed=true],
+  #taskRibbon button[aria-pressed=true],#taskRibbon .session-controls .active {
+    background:#174356;color:#dffaff;box-shadow:inset 0 -2px var(--visor-cyan);border-color:#578da0;
+  }
+  #handPanel .hand-modes button:hover,#cameraPanel .camera-choices button:hover {background:#224b60;color:white}
+  #handPanel.camera-on #handStart {color:var(--ink);border-color:var(--edge);background:var(--control)}
+  #cameraPanel .hand-heading {padding-bottom:9px}
+  #cameraPanel .scale-help {color:var(--muted);margin:0}
+  #cameraPanel #roomStatus {padding-top:10px;border-top:1px solid var(--line)}
+
+  /* Bench tool drawers. */
+  .dock-popover.visor-panel label,.visor-panel .layout-settings summary {font-size:14px;font-weight:600}
+  .dock-popover.visor-panel>label:first-child {font:500 11px/1.5 var(--visor-type);letter-spacing:.07em;text-transform:uppercase;color:var(--visor-cyan)}
+  .dock-popover.visor-panel p,.visor-panel :is(.layout-intro,.layout-hint,.layout-status,.layout-nudge-center,.layout-select-label) {color:var(--muted);font-size:12px}
+  .visor-panel .layout-intro {margin:10px 0}
+  .visor-panel .layout-settings>summary {padding-block:12px}
+  .visor-panel .layout-selected-label {font-size:11px}
+  .visor-panel .layout-heading h2 {font-size:20px;line-height:1.15;margin-top:4px}
+  .visor-panel .layout-settings select {font-size:13px}
+  .visor-panel .layout-restore {background:var(--control);border-color:var(--edge);font-size:12px}
+  .visor-panel .layout-done {font-size:12px}
+  .visor-panel #resetButton,.visor-panel #confirmReset {color:var(--visor-amber);background:#332e28;border-color:#8b7151}
+  .visor-panel #confirmReset:hover,.visor-panel #resetButton:hover {color:#fff1c8;background:#44392b}
+  .bench-dock {--dock-paper:#112a38}
+  .bench-dock .dock-entry[open]>summary,#arrangeButton[aria-pressed=true] {
+    background:#194456;color:var(--visor-ink);box-shadow:inset 0 -2px var(--visor-cyan);
+  }
+  #arrangeButton {color:var(--visor-ink);border-left-color:var(--visor-line)}
+  #handHud[hidden]+#interactionStatus {color:var(--visor-ink);border-color:var(--visor-line);background:var(--visor-glass);border-radius:3px}
+  #handHud[hidden]+#interactionStatus.error {color:var(--visor-amber)}
+
+  /* Protocol rail and its floating counterpart. Reserve space for changing step copy. */
+  #taskRibbon {border-radius:0;border-width:0 0 0 1px;box-shadow:none}
+  #taskRibbon .step-index {text-transform:uppercase;align-items:baseline}
+  #taskRibbon #stepCount {color:var(--visor-ink);font-family:var(--visor-type)}
+  #taskRibbon #runStatus {color:var(--muted)}
+  #taskRibbon #runStatus::before {background:#88e7cc}
+  #taskRibbon #runStatus:is([data-status=paused],[data-status=stopped])::before {background:var(--visor-amber)}
+  #taskRibbon .progress-track {background:#2a4757}
+  #taskRibbon .progress-track>div {background:var(--visor-cyan)}
+  #taskRibbon #locateTarget,#taskRibbon .session-controls button {color:var(--ink);border-color:var(--edge);background:var(--control)}
+  #taskRibbon #locateTarget:hover,#taskRibbon .session-controls button:hover {background:#224b60}
+  #taskRibbon .procedure-audio button,.visor-panel .follow-step {color:var(--ink)}
+  #taskRibbon .session-controls button.active {background:#174356}
+  #phaseList li,#taskRibbon .bench-readouts dd {color:var(--muted)}
+  #phaseList li::before {background:var(--field);color:var(--muted);border-color:var(--edge)}
+  #phaseList li:not(:last-child)::after {background:var(--edge)}
+  #phaseList .current {color:var(--visor-ink)}
+  #phaseList .current::before {color:var(--visor-cyan);background:#194354;border-color:var(--visor-cyan)}
+  #phaseList .done::before {color:#a4f2d9;background:#163f42}
+  .studio-immersive.protocol-open #taskRibbon {
+    width:min(366px,calc(100% - 24px));
+    border:1px solid var(--visor-line);border-radius:3px 10px 3px 3px;box-shadow:0 9px 30px #05131f55;
+  }
+  /* Scientific data stays legible against the same instrument glass. */
+  #notebookDialog {--plot-point:#a4f2db;--plot-fit:var(--visor-cyan);--plot-signal:var(--visor-amber)}
+  #notebookDialog .tag {border-color:var(--visor-line);border-radius:2px}
+  #notebookDialog :is(.table-scroll,.notebook-grid>section) {min-width:0}
+  #notebookDialog table {font-variant-numeric:tabular-nums}
+  #notebookDialog th {color:#a7d6e3;border-color:var(--edge);font-size:11px}
+  #notebookDialog td {border-color:#2d4959;color:#dbedf4}
+  #notebookDialog tbody tr:nth-child(even) {background:#89d4f309}
+  #notebookDialog :is(th,td):first-child {padding-left:5px}
+  #notebookDialog .graph-section svg {background:#0a1c29;border:1px solid #325163;border-radius:3px}
+  #calibrationGraph text {fill:#c0dbe6}
+  #calibrationGraph .plot-grid {stroke:#314e5e}
+  #calibrationGraph .plot-axis {stroke:#88afc0}
+  #calibrationGraph .plot-point {fill:var(--plot-point)}
+  #calibrationGraph .plot-fit {stroke:var(--plot-fit)}
+  #calibrationGraph .plot-signal {stroke:var(--plot-signal)}
+  #calibrationGraph .plot-signal-label {fill:var(--plot-signal)}
+  #notebookDialog .graph-legend {color:var(--muted);font-size:11px;flex-wrap:wrap;gap:4px 12px}
+  #notebookDialog .graph-legend .dot {background:var(--plot-point)}
+  #notebookDialog .graph-legend .line {border-color:var(--plot-fit)}
+  #notebookDialog .graph-legend .signal-line {border-color:var(--plot-signal)}
+  #notebookDialog :is(.analysis-block,.decision) {background:#112e3e;border:1px solid var(--line);border-left:2px solid var(--visor-cyan);border-radius:3px}
+  #notebookDialog .analysis-block.result {background:#222d32;border-left-color:var(--visor-amber)}
+  #notebookDialog .result .eyebrow {color:var(--visor-amber)}
+  #notebookDialog .decision {margin-inline:0}
+  #notebookDialog .notes-label textarea {color:var(--ink);background:var(--field);border-color:var(--edge)}
+  #notebookDialog #decisionFeedback {color:var(--visor-amber);margin-inline:0}
+  #helpDialog .guide-content p {color:var(--muted)}
+  .visor-panel a {color:var(--visor-cyan)}
+
+}
+
+/* Panel geometry and instrument controls are shared by both themes. */
+.wavelength-setting {
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 8px;padding:6px 10px 10px;
+}
+.settings-popover .wavelength-setting label {color:var(--spectrum-label,#b1dce6);font:500 11px/1.3 var(--visor-type);letter-spacing:.045em;text-transform:uppercase}
+.wavelength-value {display:flex;align-items:baseline;gap:4px;color:var(--visor-soft);font:500 12px/1 var(--visor-type)}
+.wavelength-value input[type=number] {
+  appearance:textfield;width:5.5ch;height:28px;padding:0 2px;text-align:right;
+  background:transparent;color:var(--visor-ink);font:500 17px/1.2 var(--visor-type);
+  border:0;border-bottom:1px dotted var(--edge);border-radius:0;
+}
+.wavelength-value input::-webkit-inner-spin-button,.wavelength-value input::-webkit-outer-spin-button {appearance:none;margin:0}
+.spectrum-control {
+  --thumb-width:14px;--thumb-edge:#c2f5ff;--thumb-fill:linear-gradient(90deg,#123446 40%,#e2fbff 40% 60%,#123446 60%);
+  grid-column:1/-1;min-width:0;border-radius:2px;
+}
+#wavelengthSlider {
+  position:relative;z-index:1;display:block;appearance:none;box-sizing:border-box;width:100%;height:44px;margin:0;padding:0;border:0;border-radius:2px;cursor:pointer;
+  background:var(--wavelength-spectrum) center / calc(100% - var(--thumb-width)) 6px no-repeat;
+}
+.spectrum-control:has(:focus-visible) {outline:2px solid var(--visor-cyan);outline-offset:2px}
+#wavelengthSlider:focus-visible {outline:none}
+#wavelengthSlider::-webkit-slider-runnable-track {height:6px;background:transparent}
+#wavelengthSlider::-moz-range-track {height:6px;background:transparent}
+#wavelengthSlider::-moz-range-progress {background:transparent}
+#wavelengthSlider::-webkit-slider-thumb {
+  appearance:none;box-sizing:border-box;width:var(--thumb-width);height:22px;margin-top:-8px;border:1px solid var(--thumb-edge);
+  border-radius:3px;background:var(--thumb-fill);box-shadow:0 1px 3px #03131d;
+}
+#wavelengthSlider::-moz-range-thumb {
+  box-sizing:border-box;width:var(--thumb-width);height:22px;border:1px solid var(--thumb-edge);
+  border-radius:3px;background:var(--thumb-fill);box-shadow:0 1px 3px #03131d;
+}
+#wavelengthSlider:disabled,.wavelength-value input:disabled {opacity:.55;cursor:default}
+.spectrum-graduations {
+  position:relative;pointer-events:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 0;justify-items:start;
+  margin:-17px calc(var(--thumb-width) / 2) 0;padding-top:8px;color:var(--visor-soft);font:500 10px/1.3 var(--visor-type);
+  background:linear-gradient(90deg,#84a9b8 1px,transparent 1px) left top / calc(100% / 3) 6px repeat-x,
+    linear-gradient(90deg,#567d90 1px,transparent 1px) left top / calc(100% / 30) 3px repeat-x,
+    linear-gradient(#84a9b8,#84a9b8) right top / 1px 6px no-repeat;
+}
+.spectrum-graduations span {transform:translateX(-50%)}
+@media (forced-colors:active) {
+  #wavelengthSlider {forced-color-adjust:none;--wavelength-spectrum:linear-gradient(CanvasText,CanvasText);--thumb-fill:Highlight;--thumb-edge:CanvasText}
+}
+#layoutPanel {top:68px;bottom:auto;width:min(282px,calc(100% - 24px));max-height:calc(100% - 126px);z-index:6}
+.dock-popover.visor-panel {max-height:calc(var(--bench-height,100dvh) - 80px)}
+.studio-immersive #layoutPanel {top:104px;max-height:calc(100% - 164px)}
+#taskRibbon .step-copy {display:flow-root;font-size:14px;line-height:1.55;min-block-size:4.85lh}
+#taskRibbon #instruction {color:var(--muted);margin:6px 0 0}
+#taskRibbon .procedure-audio {margin:10px 0}
+.studio-immersive #taskRibbon .current-step {margin-top:18px}
+.studio-immersive #taskRibbon .step-copy {min-block-size:3.65lh}
+@media(min-height:650px) {
+  .studio-immersive :is(#handPanel,#cameraPanel) {
+    top:var(--station-panel-top);max-height:calc(100% - var(--station-panel-top) - 8px);
+  }
+}
+@media(max-width:760px) {
+  #taskRibbon {border-width:1px 0 0}
+  #taskRibbon .step-copy,.studio-immersive #taskRibbon .step-copy {min-block-size:3.7lh;font-size:13px;line-height:1.35}
+  #taskRibbon #instruction {margin-top:4px}
+  #taskRibbon .procedure-audio {margin:6px 0}
+  #taskRibbon.collapsed .current-step>.step-copy {display:block;min-block-size:0}
+  #taskRibbon.collapsed #instruction {display:none}
+  .studio-immersive #taskRibbon .protocol-head {position:static}
+  .studio-immersive #taskRibbon .protocol-head :is(h2,#runStatus) {display:inline-flex}
+  .studio-immersive #taskRibbon .protocol-head h2 {font-size:21px}
+  .studio-immersive #taskRibbon .session-controls {align-self:stretch;padding-top:10px}
+  .studio-immersive #taskRibbon .session-controls .dock-label {position:static;clip-path:none;width:auto;height:auto}
+  .studio-immersive #taskRibbon .progress-track {position:static;margin:8px 0 12px}
+  .studio-immersive.protocol-open #taskRibbon {right:10px}
+  #layoutPanel,.studio-immersive #layoutPanel {top:54px;right:10px;max-height:calc(100% - 105px)}
+}
+@media(min-width:600px) and (max-width:760px) and (max-height:560px) {
+  body:not(.studio-immersive) #taskRibbon .step-copy {min-block-size:4.95lh}
+}
+@media(max-height:500px) {
+  #cameraPanel,.studio-immersive #cameraPanel {position:fixed;top:6px;right:8px;max-height:calc(100dvh - 12px);z-index:12}
+}
+@media(max-width:565px) {
+  #calibrationGraph text {font-size:18px}
+}

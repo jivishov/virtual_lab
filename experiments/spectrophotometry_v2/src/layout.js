@@ -85,10 +85,13 @@ export class BenchLayout {
  swallow(event){event.preventDefault();event.stopImmediatePropagation()}
  pointerDown(event){
   if(!this.active||event.button!==0||!event.isPrimary||this.drag)return;
-  this.swallow(event);
-  if(this.isBusy()){this.refresh();return}
+  if(this.isBusy()){this.swallow(event);this.refresh();return}
   const [x,y]=this.localPoint(event),grip=this.scene.layoutGrip(x,y);
-  if(!grip){this.announce('Choose equipment on the bench, or use the list.',false);return}
+  if(!grip){
+   if(event.pointerType!=='mouse')this.swallow(event);
+   this.announce('Choose equipment on the bench, or use the list.',false);return;
+  }
+  this.swallow(event);
   this.selected=grip.id;this.updateSelection();
   this.drag={pointerId:event.pointerId,id:grip.id,grip,moved:false,lastMessage:''};this.scene.beginEquipmentDrag?.(grip.id);
   this.canvas.setPointerCapture(event.pointerId);this.canvas.style.cursor='grabbing';this.canvas.focus({preventScroll:true});

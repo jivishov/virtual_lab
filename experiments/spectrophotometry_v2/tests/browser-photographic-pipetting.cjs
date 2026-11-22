@@ -2,8 +2,11 @@
 // photographs. The test moves the pictures and observes the normal bench UI.
 const {chromium}=require('playwright');
 const fs=require('node:fs/promises'),assert=require('node:assert/strict');
+const path=require('node:path');
 const standards=[10,8,6,4,2,0].map(stock=>({id:`tube_${stock}_${10-stock}`,stock,water:10-stock}));
 const allTubes=process.argv.includes('--all-tubes');
+const immersive=process.argv.includes('--immersive')||process.env.WIDE_BENCH==='1';
+const previewDir=process.env.HAND_PREVIEW_DIR;
 const near=(actual,expected,label)=>assert.ok(Math.abs(actual-expected)<1e-7,`${label}: expected ${expected}, observed ${actual}`);
 
 function checkRack(tubes,expected){
@@ -47,16 +50,53 @@ async function installCamera(page,openFile,fistFile){
 async function verify(page){
  await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');
  await page.waitForFunction(()=>!!window.lab);
+ // Capture diagnostics only when the controller actually drops a held tool.
+ // This leaves the detector and the timing of every ordinary packet untouched.
+ await page.evaluate(async()=>{
+  const {HandControls}=await import('./src/hand-controls.js'),lost=HandControls.prototype.lost;
+  window.replayLosses=[];
+  HandControls.prototype.lost=function(){
+   if(this.interaction.owner==='hand')window.replayLosses.push({
+    step:this.interaction.step.index,pose:photoHand.pose,waitingForGrip:!!this.delayedGrip,
+    msSinceHand:Math.round(performance.now()-this.lastSeen),
+    msSinceCamera:Math.round(performance.now()-this.camera.lastReceived),
+    caller:new Error().stack?.split('\n').slice(2,5).join(' / ')
+   });
+   return lost.call(this);
+  };
+ });
  await page.locator('#labMenu summary').click();await page.locator('#qualityButton').click();await page.locator('#labMenu summary').click();
  if(process.env.WIDE_BENCH==='1'){
   await page.locator('#followStep').uncheck();await page.locator('#immerseButton').click();
   await page.locator('[data-view="overview"]').click();
- }else await page.locator('#followStep').check();
+ }else{
+  await page.locator('#followStep').check();
+  if(immersive)await page.locator('#immerseButton').click();
+ }
  await page.locator('#handButton').click();
  if(process.env.HAND_SIDE)await page.locator('#handSide').selectOption(process.env.HAND_SIDE);
  assert.equal(await page.locator('#bulbMode').inputValue(),'guided');
- await page.locator('#handStart').click();await page.locator('#handBegin').click({timeout:30000});
+ await page.locator('#handStart').click();
+ await page.locator('#handBegin').waitFor({state:'visible',timeout:45000});
+ const setup=await page.locator('#handPanel').evaluate(panel=>{
+  const preview=document.querySelector('#handPreview').getBoundingClientRect(),mode=panel.querySelector('.hand-settings').getBoundingClientRect();
+  return {viewport:innerWidth,width:panel.clientWidth,stacked:mode.top>=preview.bottom,
+   scrollHeight:panel.scrollHeight,height:panel.clientHeight,contentWidth:panel.scrollWidth};
+ });
+ assert.equal(setup.contentWidth,setup.width,'Setup must fit horizontally');
+ assert.equal(setup.stacked,setup.viewport<=565);
+ if(setup.viewport>=1024){assert.ok(setup.width>=600);assert.equal(setup.scrollHeight,setup.height)}
+ if(previewDir){
+  await fs.mkdir(previewDir,{recursive:true});
+  await page.waitForFunction(()=>document.querySelector('#handHeld').textContent.includes('Open palm'),null,{timeout:45000});
+  await page.screenshot({path:path.join(previewDir,'hands-setup.jpg'),quality:90});
+ }
+ await page.locator('#handBegin').click({timeout:30000});
  await page.waitForFunction(()=>lab.hand.state.armed,null,{timeout:30000});
+ if(immersive){
+  assert.ok(await page.locator('#handHud').isVisible());
+  await page.waitForFunction(()=>document.querySelector('#hudGrip').textContent==='Open palm');
+ }
  // Position the hand photograph in the sensor frame. The resulting pickup,
  // liquid, occlusion, regrasp and withdrawal all run through the actual camera.
  await page.evaluate(async()=>{
@@ -88,7 +128,9 @@ async function verify(page){
   };
  });
  const move=p=>page.evaluate(({x,y})=>photoHand.move(x,y),p);
- const observed=()=>page.evaluate(()=>({volume:lab.state[lab.manipulation.tool]?.volume||0,cue:document.getElementById('pipetteCue').innerText}));
+ const observed=()=>page.evaluate(()=>({volume:lab.state[lab.manipulation.tool]?.volume||0,
+  cue:lab.studio.immersive?document.getElementById('hudFlow').textContent+' '+document.getElementById('interactionStatus').innerText:
+   document.getElementById('pipetteCue').innerText}));
  const awaitState=(fn,arg)=>page.waitForFunction(fn,arg,{timeout:14000});
  const cursor=()=>page.evaluate(()=>{const c=document.getElementById('handCursor');return {x:parseFloat(c.style.left),y:parseFloat(c.style.top)}});
  async function takePipette(id){
@@ -100,8 +142,16 @@ async function verify(page){
    await page.evaluate(()=>photoHand.pose='open');
    await awaitState(()=>!lab.manipulation.tool&&lab.hand.state.armed);
   }
-  const grip=id+'-grip';await move(await page.evaluate(key=>lab.affordances.regions[key],grip));
+  const grip=id+'-grip';
+  // Parking can reframe Follow step. Aim at the newly rendered station.
+  await awaitState(key=>Object.values(lab.targeting.rings).includes(key),grip);
+  await move(await page.evaluate(key=>lab.affordances.regions[key],grip));
   await awaitState(key=>{const c=document.getElementById('handCursor'),p=lab.affordances.regions[key];return !c.hidden&&Math.hypot(parseFloat(c.style.left)-p.x,parseFloat(c.style.top)-p.y)<15},grip);
+  if(immersive){
+   await awaitState(key=>lab.targeting.hover===key&&document.querySelector('#hudTargetLabel').textContent==='Palm target'&&
+    document.querySelector('#hudTarget').textContent.toLowerCase().includes(key.startsWith('water')?'water':'stock'),grip);
+   assert.match(await page.locator('#hudTarget').textContent(),id==='pipette'?/Stock/i:/water/i);
+  }
   await page.evaluate(()=>photoHand.pose='fist');
   await awaitState(tool=>lab.manipulation.owner==='hand'&&lab.manipulation.tool===tool,id);
  }
@@ -138,12 +188,31 @@ async function verify(page){
   assert.ok(dy>0&&dy<=21,'A short dip should seat the pipette, observed '+dy+' px');
   dips.push({action,target,volume,palmTravelPx:+dy.toFixed(1)});
   const flowing=await observed();
-  assert.ok(await page.locator('#pipetteCue').isVisible());
+  assert.ok(await page.locator(immersive?'#handHud':'#pipetteCue').isVisible());
   assert.match(flowing.cue,drawing?/Drawing/:/Dispensing/);
+  if(immersive){
+   assert.equal(await page.locator('#hudFlow').textContent(),drawing?'Drawing':'Dispensing');
+   assert.equal(await page.locator('#hudGripLabel').textContent(),'Holding');
+   assert.equal(await page.locator('#hudTargetLabel').textContent(),'Tip target');
+   const targetName=target==='stockBottle'?'Blue #1 stock':target==='waterBottle'?'Distilled water':target.slice(5).split('_').join(' / ');
+   assert.ok((await page.locator('#hudTarget').textContent()).includes(targetName));
+   assert.ok(await page.evaluate(()=>document.querySelector('#hudVolume').textContent===document.querySelector('#meniscusGuide span').textContent));
+   assert.equal(await page.evaluate(()=>lab.studio.liveRoom),false);
+   const hudFits=await page.locator('#handHud').evaluate(el=>{
+    const r=el.getBoundingClientRect(),dock=document.querySelector('.bench-dock').getBoundingClientRect();
+    return r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&(r.right<=dock.left||r.bottom<=dock.top);
+   });
+   assert.ok(hudFits,'The HUD must clear the bench tool dock');
+   if(previewDir&&index===3){
+    await awaitState(()=>lab.state.tubes.tube_8_2.stockVolume>=2);
+    await page.screenshot({path:path.join(previewDir,'immersive-hands.jpg'),quality:92});
+   }
+  }
   if(index===0){
    // Lose tracking during aspiration, then regrasp and re-dip at the same mouth.
    await page.evaluate(()=>photoHand.pose='missing');
    await awaitState(()=>lab.manipulation.frozen&&!lab.manipulation.owner);
+   await awaitState(()=>/regrasp/i.test(document.getElementById(lab.studio.immersive?'interactionStatus':'pipetteCue').innerText));
    const interrupted=await observed();assert.ok(interrupted.volume>0&&interrupted.volume<10);
    assert.match(interrupted.cue,/regrasp/);
    await move(await page.evaluate(()=>lab.affordances.regions['pipette-grip']));
@@ -174,10 +243,12 @@ async function verify(page){
  }
  const outcome=await page.evaluate(()=>({stock:lab.state.bottles.stockBottle.volume,water:lab.state.bottles.waterBottle.volume,
   tube1:lab.state.tubes.tube_10_0.volume,tube2:lab.state.tubes.tube_8_2.volume,tube3:lab.state.tubes.tube_6_4.volume,pipette:lab.state.pipette.volume,
-  records:lab.state.history.length,backend:lab.hand.state.backend,grips:lab.atomicHistory.filter(e=>['grasp','regrasp'].includes(e.action)).map(e=>e.input)}));
+  records:lab.state.history.length,backend:lab.hand.state.backend,grips:lab.atomicHistory.filter(e=>['grasp','regrasp'].includes(e.action)).map(e=>e.input),
+  freezes:lab.atomicHistory.filter(e=>e.action==='freeze').map(e=>e.step)}));
  assert.equal(outcome.records,strokes.length);
  assert.ok(outcome.grips.length>0&&outcome.grips.every(owner=>owner==='hand'));
- await page.locator(process.env.WIDE_BENCH==='1'?'#immersiveNotebook':'#notebookButton').click();
+ assert.deepEqual(outcome.freezes,[0],'Only the deliberately hidden hand should require a regrasp');
+ await page.locator(immersive?'#immersiveNotebook':'#notebookButton').click();
  const download=page.waitForEvent('download');await page.locator('#exportJson').click();
  const notebook=JSON.parse(await fs.readFile(await (await download).path(),'utf8'));
  assert.equal(notebook.step,strokes.length);assert.equal(notebook.history.length,strokes.length);
@@ -185,22 +256,31 @@ async function verify(page){
  const tubes=Object.fromEntries(standards.map(({id})=>{
   const {stockVolume,waterVolume,volume}=notebook.tubes[id];return [id,{stockVolume,waterVolume,volume}];
  }));
+ await page.locator('#notebookDialog [data-close]').click();
+ assert.deepEqual(await page.evaluate(()=>lab.studio.cameraUsers),['hands']);
+ const track=await page.locator('#handVideo').evaluateHandle(video=>video.srcObject.getVideoTracks()[0]);
+ await page.locator('#cameraButton').click();
+ assert.equal(await track.evaluate(t=>t.readyState),'ended');
+ assert.deepEqual(await page.evaluate(()=>lab.studio.cameraUsers),[]);
  console.log(JSON.stringify({...outcome,workingHand:await page.locator('#handSide').inputValue(),tubes,dips}));
 }
 
-(async()=>{
+async function main(){
  const [openFile,fistFile]=process.argv.slice(2);
  if(!openFile||!fistFile)throw Error('Pass MediaPipe right_hands.jpg and fist.jpg as the two arguments.');
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE||undefined,
   args:['--enable-unsafe-swiftshader','--disable-renderer-backgrounding','--disable-background-timer-throttling']});
  try{
-  const page=await browser.newPage({viewport:process.env.WIDE_BENCH==='1'?{width:1856,height:866}:{width:1440,height:900}});
+  const page=await browser.newPage({viewport:process.env.WIDE_BENCH==='1'?{width:1856,height:866}:
+   process.argv.includes('--phone')?{width:390,height:844}:process.argv.includes('--laptop')?{width:1280,height:800}:{width:1440,height:900}});
   await installCamera(page,openFile,fistFile);
   try{await verify(page)}catch(error){
    console.error(await page.evaluate(()=>({step:lab.step.index,state:lab.manipulation,next:lab.affordances.aim,
     tip:lab.affordances.end,hover:lab.targeting.hover,status:document.getElementById('handStatus').innerText,
     cue:document.getElementById('pipetteCue').innerText,cursor:document.getElementById('handCursor').style.cssText,
-    events:lab.atomicHistory.slice(-5)})));throw error;
+    events:lab.atomicHistory.slice(-5),losses:window.replayLosses})));throw error;
   }
  }finally{await browser.close()}
-})().catch(error=>{console.error(error);process.exitCode=1});
+}
+module.exports={installCamera};
+if(require.main===module)main().catch(error=>{console.error(error);process.exitCode=1});

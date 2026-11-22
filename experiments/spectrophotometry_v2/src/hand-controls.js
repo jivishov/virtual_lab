@@ -1,8 +1,8 @@
 import {pipetteIds} from './pipettes.js';
 /* B06 camera events adapted to the shared laboratory manipulation controller. */
 import {bulbPressure,GraspGate} from './grasp-core.js';
-import {HandGestures} from './view-gestures.js';
-import {HandCamera} from './hand-camera.js';
+import {HandGestures,steadyHandMotion} from './view-gestures.js';
+import {HandCamera,HELD_FRAME_LIMIT_MS} from './hand-camera.js';
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),wrap=v=>Math.atan2(Math.sin(v),Math.cos(v));
 
 // During a fast carry MediaPipe can report a second, flattened set of
@@ -41,14 +41,15 @@ export class HandControls {
  constructor({scene,geometry,interaction,layout,canvas,getState,onChange,onFeedback,onStart,source=null,pointerBusy=()=>false}){
   Object.assign(this,{scene,geometry,interaction,layout,canvas,getState,onChange,onFeedback,onStart,pointerBusy});
   this.gate=new GraspGate();this.gestures=new HandGestures();this.lastPacket=this.lastSeen=-Infinity;this.primary=null;this.lastRaw=null;this.held=null;this.suspended=null;this.dwell=null;this.pointLatched=false;this.press={band:null,since:0,down:false,armed:false};
-  const $=id=>document.getElementById(id);this.panel=$('handPanel');this.cursor=$('handCursor');this.video=$('handVideo');this.overlay=$('handOverlay');this.status=$('handStatus');this.hint=$('handHint');
+  const $=id=>document.getElementById(id);this.panel=$('handPanel');this.cursor=$('handCursor');this.video=$('handVideo');this.overlay=$('handOverlay');this.status=$('handStatus');
+  this.hint='Show an open palm.';this.previewPose='';
   this.bulbMode='guided';
   $('bulbMode').value=this.bulbMode;
   $('bulbMode').onchange=e=>this.setBulbMode(e.target.value);
-  this.camera=new HandCamera({video:this.video,source,onFrame:p=>this.packet(p),onStatus:(s,error)=>{this.status.textContent=s;this.status.classList.toggle('error',!!error)},onActive:a=>this.active(a),onLost:()=>this.lost()});
-  $('handStart').onclick=()=>this.camera.running?this.camera.stop():this.camera.start();$('handOff').onclick=()=>this.camera.stop();
-  $('handButton').onclick=()=>{this.panel.hidden=!this.panel.hidden;$('handButton').setAttribute('aria-expanded',String(!this.panel.hidden))};$('handClose').onclick=()=>{this.panel.hidden=true;$('handButton').setAttribute('aria-expanded','false');this.resetInput()};
-  $('handCenter').onclick=()=>{if(this.lastRaw&&this.camera.modelReady&&performance.now()-this.lastSeen<350&&!this.busy){this.studio?.centerOnHand();this.hint.textContent='Frame centered. Open your hand, then grasp the marked tool.'}};
+  this.camera=new HandCamera({video:this.video,source,onFrame:p=>this.packet(p),onStatus:(s,error)=>{this.status.textContent=s;this.status.classList.toggle('error',!!error)},onActive:a=>this.active(a),onLost:()=>this.lost(),onDelay:()=>this.holdForDetector()});
+  $('handStart').onclick=()=>this.camera.running?this.camera.stop():this.camera.start();
+  $('handButton').onclick=()=>{this.panel.hidden=!this.panel.hidden;$('handButton').setAttribute('aria-expanded',String(!this.panel.hidden));if(!this.panel.hidden)$('handClose').focus({preventScroll:true})};$('handClose').onclick=()=>{this.panel.hidden=true;$('handButton').setAttribute('aria-expanded','false');this.resetInput();$('handButton').focus({preventScroll:true})};
+  $('handCenter').onclick=()=>{if(this.lastRaw&&this.camera.modelReady&&performance.now()-this.lastSeen<350&&!this.busy)this.studio?.centerOnHand()};
   $('handSide').onchange=()=>{this.lost();this.primary=null};$('handGain').oninput=e=>this.studio?.setFrameWidth(Number(e.target.value)/100);
   $('handReturn').onclick=()=>{if(this.suspended){this.scene.endEquipmentDrag(this.suspended.id,true);this.layout.save();this.suspended=null;this.refresh();this.onChange()}};
   this.refresh();
@@ -59,15 +60,55 @@ export class HandControls {
   if(this.interaction.owner==='hand')this.interaction.suspend('Bulb control changed. Regrasp the pipette to continue.');
   this.bulbMode=mode;
   document.getElementById('bulbMode').value=mode;
-  document.getElementById('bulbHelp').textContent=mode==='guided'?'Keep three fingers curled. At the opening, dip your hand slightly and hold it there while the liquid moves.':'Keep your middle, ring and little fingers curled. Pinch thumb and index to squeeze the bulb. Spread them to relax.';
+  document.getElementById('bulbHelp').textContent=mode==='guided'?'Dip slightly and hold to move liquid.':'Pinch to squeeze. Spread to draw.';
   this.resetInput();this.refresh();
  }
- resetInput(){this.studio?.clearHands();this.gestures.reset();this.missedCarry=null;this.primary=null;this.workCommand=null;this.pendingTool=null;this.gate.reset();this.dwell=null;this.pointLatched=false;this.press={band:null,since:0,down:false,armed:false};this.cursor.style.setProperty('--dwell','0deg');this.interaction.clearAim();this.onChange()}
- interruptEvidence(){this.gate.interruptEvidence();this.dwell=null;this.press={band:null,since:0,down:false,armed:false};this.cursor.style.setProperty('--dwell','0deg');this.interaction.clearAim();if(this.interaction.owner==='hand'){this.interaction.interruptHandStroke();this.interaction.flow=false}this.onChange()}
- active(a){if(a)this.onStart?.();this.studio?.clearCameraFrames();document.getElementById('handStart').textContent=a?'Stop hands':'Start hands';document.getElementById('handStart').setAttribute('aria-pressed',String(a));document.getElementById('handOff').hidden=!a;document.getElementById('handButton').classList.toggle('camera-on',a);this.panel.classList.toggle('camera-on',a);this.studio?.syncCamera();if(!a){this.lost();this.overlay.getContext('2d').clearRect(0,0,this.overlay.width,this.overlay.height)}this.refresh()}
+ resetInput(){this.studio?.clearHands();this.gestures.reset();this.missedCarry=this.pausedStroke=this.delayedGrip=null;this.aimAnchor=this.openAim=null;this.previewPose='';this.primary=null;this.workCommand=null;this.pendingTool=null;this.gate.reset();this.dwell=null;this.pointLatched=false;this.press={band:null,since:0,down:false,armed:false};this.cursor.style.setProperty('--dwell','0deg');this.interaction.clearAim();this.onChange()}
+ interruptEvidence(bridge=false){
+  this.gate.interruptEvidence();this.dwell=null;this.aimAnchor=this.openAim=null;this.press={band:null,since:0,down:false,armed:false};
+  this.cursor.style.setProperty('--dwell','0deg');const c=this.interaction;c.clearAim();
+  if(c.owner==='hand'){
+   this.pausedStroke=bridge&&c.flow&&this.bulbMode==='guided'&&c.contact?.depth===1&&c.contact.handStroke?.started
+    ?{contact:c.contact,stroke:c.contact.handStroke,point:c.lastPointer}:null;
+   if(!this.pausedStroke)c.interruptHandStroke();
+   c.flow=false;
+  }
+  this.onChange();
+ }
+ holdForDetector(){
+  const c=this.interaction,owner=this.gestures.hands.find(h=>h.id===this.primary);
+  if(this.delayedGrip)return performance.now()-this.lastSeen<HELD_FRAME_LIMIT_MS;
+  if(this.bulbMode!=='guided'||!c.flow||c.owner!=='hand'||c.contact?.depth!==1||!c.contact.handStroke?.started||
+     !owner?.grip||!owner.label||owner.missing||owner.candidate||this.gestures.hands.length!==1||this.missedCarry)return false;
+  this.delayedGrip={id:owner.id,seen:owner.seen,started:performance.now(),first:null};
+  this.cursor.hidden=true;this.interruptEvidence(true);
+  return true;
+ }
+ confirmDelayedGrip(packet,owner,aspect,mirror){
+  const pause=this.delayedGrip;
+  // A slow detector supplies no evidence about the hand. Require two new
+  // closed-palm observations at the seated wrist before restoring its ID.
+  const probe=new HandGestures(this.gestures.settings);
+  const [event]=probe.update(packet,packet.stamp,aspect,mirror),seen=probe.hands[0];
+  const distance=(a,b)=>Math.hypot((a.x-b.x)*aspect,a.y-b.y);
+  const span=points=>Math.max(distance(points[5],points[17]),distance(points[0],points[9]));
+  const gap=packet.stamp-(pause.first??pause.seen);
+  if(!owner||owner.id!==pause.id||gap>=(pause.first===null?HELD_FRAME_LIMIT_MS:260)||
+     packet.landmarks.length!==1||!event?.points||event.label!==owner.label||event.closure*100<this.gestures.settings.close||
+     distance(seen.wrist,owner.wrist)>.3*span(owner.points)||Math.min(span(seen.points),span(owner.points))<.8*Math.max(span(seen.points),span(owner.points))){
+   this.lost();return false;
+  }
+  // An exposure already in the worker when flow stopped can identify a loss,
+  // but cannot count as one of the two observations after the pause.
+  if(packet.stamp<pause.started)return false;
+  if(pause.first===null){pause.first=packet.stamp;this.lastSeen=performance.now();return false}
+  Object.assign(owner,{wrist:seen.wrist,points:seen.points,seen:packet.stamp,vx:0,vy:0});
+  this.delayedGrip=null;return true;
+ }
+ active(a){if(a)this.onStart?.();this.studio?.clearCameraFrames();document.getElementById('handStart').textContent=a?'Stop hands':'Start hands';document.getElementById('handStart').setAttribute('aria-pressed',String(a));document.getElementById('handButton').classList.toggle('camera-on',a);this.panel.classList.toggle('camera-on',a);this.studio?.syncCamera();if(!a){this.lost();this.overlay.getContext('2d').clearRect(0,0,this.overlay.width,this.overlay.height)}this.refresh()}
  stop(){this.camera.stop()}
  reset(){if(this.held||this.suspended){this.scene.endEquipmentDrag((this.held||this.suspended).id,true);this.layout.save()}this.held=this.suspended=null;this.camera.stop();this.primary=null;this.lastRaw=null;this.lastPacket=this.lastSeen=-Infinity;this.resetInput();this.refresh()}
- lost(){if(this.interaction.owner==='hand')this.interaction.suspend('Tracking paused. Regrasp the marked tool; no transfer will restart by itself.');if(this.held){this.suspended=this.held;this.held=null;this.panel.hidden=false}this.cursor.hidden=true;this.resetInput();this.hint.textContent='Show your whole open hand to re-arm.';this.refresh()}
+ lost(){if(this.interaction.owner==='hand')this.interaction.suspend('Tracking paused. Regrasp the marked tool to continue.');if(this.held){this.suspended=this.held;this.held=null;this.panel.hidden=false}this.cursor.hidden=true;this.resetInput();this.hint='Show an open palm.';this.refresh()}
  suspend(){this.lost()}
  yieldToPointer(){
   if(this.interaction.owner==='hand')this.interaction.suspend('Using mouse or touch. Open your hand to resume hand control.');
@@ -76,20 +117,26 @@ export class HandControls {
   this.held=this.suspended=null;this.cursor.hidden=true;this.resetInput();this.refresh();
  }
  refresh(){
-  const $=id=>document.getElementById(id),c=this.interaction;
+  const $=id=>document.getElementById(id);
   $('handCenter').disabled=!this.camera.modelReady||performance.now()-this.lastSeen>350||this.busy;$('handGain').disabled=this.busy;$('handSide').disabled=this.busy;$('handBegin').hidden=!this.camera.modelReady;
-  $('handHeld').textContent=this.held?'Holding layout equipment':c.owner==='hand'?'Holding '+c.targetName(c.tool):c.owner?'Using '+c.owner+' controls':c.tool?'Tool placed · open your palm to regrasp':'Open hand to begin';
+  const pose=this.camera.modelReady?(this.previewPose||'Show an open palm'):'';
+  if(!this.panel.hidden&&$('handHeld').textContent!==pose)$('handHeld').textContent=pose;
   $('handSafety').hidden=!this.suspended;$('handReturn').hidden=!this.suspended;$('handReturn').textContent='Place here';
  }
  workGestures(packet,held,aspect,mirror){
-  // At 10–15 fps one empty exposure can span B06's 180 ms loss interval.
-  // Stop motion immediately. Only bridge that one exposure when the same
-  // palm returns at the predicted wrist position during an unseated carry.
+  // One empty exposure on a slow camera can span the B06 loss interval.
+  // Withhold motion until the next image confirms the same wrist and scale.
   const missed=this.missedCarry;this.missedCarry=null;
-  if(missed&&held?.id===missed.id&&held.seen===missed.seen&&!followsHeldWrist(packet,held,aspect))
-   this.gestures.update({landmarks:[]},missed.stamp,aspect,mirror);
-  if(!missed&&held?.grip&&held.label&&!held.missing&&!held.candidate&&!this.interaction.contact&&
-     !packet.landmarks.length&&packet.stamp-held.seen<=180){
+  if(missed){
+   const same=held?.id===missed.id&&held.seen===missed.seen&&followsHeldWrist(packet,held,aspect);
+   if(!same){
+    this.gestures.update({landmarks:[]},missed.stamp,aspect,mirror);
+    if(this.pausedStroke){this.interaction.interruptHandStroke();this.pausedStroke=null}
+    if(!this.gestures.hands.some(h=>h.id===missed.id))return [{id:missed.id,phase:'lost'}];
+   }
+  }
+  if(!missed&&held?.grip&&held.label&&!held.missing&&!held.candidate&&
+     !packet.landmarks.length&&packet.stamp-held.seen<=300){
    this.missedCarry={id:held.id,seen:held.seen,stamp:packet.stamp};
    return [{id:held.id,phase:'missing'}];
   }
@@ -107,7 +154,8 @@ export class HandControls {
    const events=this.gestures.update(p,p.stamp,aspect,this.camera.source?.mirrored??true),seen=events.find(e=>e.points&&e.id===this.studio.framingHand)||events.find(e=>e.points);
    this.studio.paint(p,seen);this.cursor.hidden=true;
    if(seen){this.lastSeen=now;this.lastRaw={...seen.palm}}
-   this.refresh();document.getElementById('handHeld').textContent=events.filter(e=>e.points).map(e=>`${e.label||'Tracked'} hand · ${Math.round(e.closure*100)}% closed · ${Math.round(e.openness*100)}% open`).join(' / ')||'Show your open hands inside the frame.';
+   this.previewPose=events.filter(e=>e.points).map(e=>(e.label?e.label+' · ':'')+(e.closure*100>=this.gestures.settings.close?'Grasp':e.openness*100>=this.gestures.settings.open?'Open palm':'Hand in view')).join(' / ');
+   this.refresh();
    return;
   }
   if(this.studio?.handleViewPacket(p))return;
@@ -116,6 +164,7 @@ export class HandControls {
   const aspect=p.frame?p.frame.width/p.frame.height:this.canvas.clientWidth/this.canvas.clientHeight;
   const held=this.interaction.owner==='hand'&&this.interaction.holdsPipette&&this.gestures.hands.length===1?this.gestures.hands[0]:null;
   if(held)p=resolveDuplicatePalm(p,held,aspect);
+  if(this.delayedGrip&&!this.confirmDelayedGrip(p,held,aspect,mirror)){this.studio?.paint(p);return}
   const events=this.workGestures(p,held,aspect,mirror);
   const old=events.find(e=>e.id===this.primary);
   const allowed=e=>e.points&&(preference==='Auto'||preference===e.label);
@@ -125,7 +174,7 @@ export class HandControls {
   if(old?.phase==='missing'){
    // B06 keeps the same owner through a short occlusion; freeze the tool and
    // liquid immediately, then allow only that ID to resume the hold.
-   this.cursor.hidden=true;this.workCommand=null;this.pendingTool=null;this.interruptEvidence();return;
+   this.cursor.hidden=true;this.workCommand=null;this.pendingTool=null;this.interruptEvidence(!!this.missedCarry);return;
   }
   if(old?.phase==='lost'){
    if(this.interaction.owner==='hand'||this.held){this.lost();return}
@@ -139,7 +188,11 @@ export class HandControls {
   const tracked=this.gestures.hands.find(h=>h.id===event.id),index=p.landmarks.findIndex(points=>points[0]===tracked?.wrist);
   const lm=p.landmarks[index],pressure=this.bulbMode==='manual'?bulbPressure(lm,p.worldLandmarks?.[index],aspect):null;
   const roll=lm?Math.atan2((mirror?-1:1)*(lm[9].x-lm[0].x)*aspect,-(lm[9].y-lm[0].y)):0;
-  const cursor=this.studio?this.studio.mapHand(event,p):{x:event.x*this.canvas.clientWidth,y:event.y*this.canvas.clientHeight};
+  let cursor=this.studio?this.studio.mapHand(event,p):{x:event.x*this.canvas.clientWidth,y:event.y*this.canvas.clientHeight};
+  if(!this.interaction.owner&&!this.held){
+   cursor=steadyHandMotion(this.aimAnchor?.id===event.id?this.aimAnchor:null,cursor,2);
+   this.aimAnchor={id:event.id,x:cursor.x,y:cursor.y};
+  }else this.aimAnchor=null;
   const {x,y}=cursor,pose=event.openness*100>=this.gestures.settings.open?'open':event.grip||event.intent?'grip':'neutral';
   this.gate.armed=event.armed;this.gate.holding=!!event.grip;
   if(this.studio){
@@ -161,16 +214,35 @@ export class HandControls {
   this.cursor.hidden=false;this.cursor.style.left=f.x+'px';this.cursor.style.top=f.y+'px';this.cursor.dataset.pose=f.pose;
   if(this.layout.active){this.arrange(f,edge.edge);this.refresh();return}
   const c=this.interaction;
-  if(f.b06?.intent&&!c.owner&&this.pendingTool?.since!==f.b06.intentSince){
-   this.pendingTool={...this.pickWorkTarget(f.x,f.y),x:f.x,y:f.y,since:f.b06.intentSince};
+  let aim;
+  if(f.b06&&!c.owner){
+   aim=this.pickWorkTarget(f.x,f.y);
+   if(f.pose==='open')this.openAim={...aim,x:f.x,y:f.y,at:f.now,id:f.b06.id};
+   if(f.b06.intent&&f.b06.phase!=='press'&&this.pendingTool?.since!==f.b06.intentSince){
+    // Closing shifts the palm center. Reserve the last open-palm hit when
+    // it is still under the grip, then keep that choice through B06's dwell.
+    const open=this.openAim;
+    const useOpen=open?.id===f.b06.id&&f.now-open.at<=240&&Math.hypot(f.x-open.x,f.y-open.y)<=22;
+    const choice=useOpen?open:aim;
+    this.pendingTool={id:choice.tool,region:choice.region,x:f.x,y:f.y,since:f.b06.intentSince};
+   }
+   if(this.pendingTool&&Math.hypot(f.x-this.pendingTool.x,f.y-this.pendingTool.y)>32)this.pendingTool.cancelled=true;
   }
   if(edge.edge==='grab'){
    const reserved=this.pendingTool;
-   const target=reserved&&Math.hypot(f.x-reserved.x,f.y-reserved.y)<40?reserved:f.b06?this.pickWorkTarget(f.x,f.y):{id:this.pickTool(f.x,f.y)};
+   const confirmed=reserved&&!reserved.cancelled&&reserved.since===f.b06?.intentSince;
+   const target=f.b06?(confirmed?reserved:{}):{id:this.pickTool(f.x,f.y)};
    if(target.id&&c.grab(target.id,'hand',f.x,f.y)){this.rollBase=f.roll||0;this.lastContact=c.contact;this.cursor.dataset.pose='held'}
    else if(target.region)this.workCommand={region:target.region,x:f.x,y:f.y};
   }
   if(c.owner==='hand'){
+   if(this.pausedStroke){
+    const {contact,stroke,point}=this.pausedStroke;this.pausedStroke=null;
+    if(c.contact===contact&&contact.handStroke===stroke&&f.b06?.closure*100>=this.gestures.settings.close&&
+       Math.hypot(f.x-point.x,f.y-point.y)<=8&&c.step.target===contact.target&&c.step.action===contact.mode){
+     c.flow=true;c.lastNow=performance.now();
+    }else c.interruptHandStroke();
+   }
    if(f.pose==='grip'){
    c.move(f.x,f.y,{hand:true,guidedBulb:this.bulbMode==='guided',now:f.now});
    if(c.contact!==this.lastContact){this.rollBase=f.roll||0;this.lastContact=c.contact}
@@ -200,11 +272,19 @@ export class HandControls {
    }
   }
   if(edge.edge==='release')this.pendingTool=null;
-  if(!c.owner){c.hover(f.x,f.y,{hand:true});this.point(f)}
+  if(!c.owner){
+   if(aim){
+    const hit=this.pendingTool&&!this.pendingTool.cancelled&&f.b06.intent?this.pendingTool:null;
+    const tool=hit?hit.id:aim.tool,region=hit?hit.region:aim.region;
+    const id=tool?tool+'-grip':region||null;
+    if(c.hoverRegion!==id){c.hoverRegion=id;c.changed()}
+   }else c.hover(f.x,f.y,{hand:true});
+   this.point(f);
+  }
   if(c.owner==='hand'&&!c.contact)this.cursor.style.setProperty('--dwell',c.aimSettler.progress*360+'deg');
   else if(c.contact)this.cursor.style.setProperty('--dwell','0deg');
   this.cursor.querySelector('span').textContent=c.owner==='hand'?(c.flow?'Liquid moving':c.contact?'Tip positioned':'Carrying'):(this.workCommand?'Open to select':edge.armed?'Close to grasp':'Open hand');
-  this.hint.textContent=this.pipetteCue()?.instruction||c.describe().instruction;this.refresh();
+  this.hint=this.pipetteCue()?.instruction||c.describe().instruction;this.refresh();
  }
  pipetteCue(){
   const c=this.interaction;
@@ -216,20 +296,21 @@ export class HandControls {
   const source=c.targetName(s.target),volume=c.getState()[c.tool].volume.toFixed(1)+' mL';
   const bulb=c.compressed?'squeezed':'relaxed';
   let instruction;
-  if(needsGrip)instruction='Open your palm over the pipette, then curl three fingers to regrasp.';
-  else if(c.flow)instruction=(c.flowAction==='aspirate'?'Drawing from ':'Dispensing into ')+source+'. Hold steady.';
-  else if(at&&(at.target!==s.target||at.mode!==s.action))instruction=guided?'Lift slightly and carry to '+c.targetName(c.desiredTarget())+'.':'Lift your hand to withdraw the tip.';
+  if(needsGrip)instruction='Open over the grip. Curl three fingers to regrasp.';
+  else if(this.pausedStroke)instruction='Hold steady at the opening.';
+  else if(c.flow)instruction=(c.flowAction==='aspirate'?'Drawing':'Dispensing')+' · hold steady.';
+  else if(at&&(at.target!==s.target||at.mode!==s.action))instruction=guided?'Lift and carry to '+c.targetName(c.desiredTarget())+'.':'Lift to withdraw.';
   else if(c.tool!==s.pipetteId)instruction='Place this pipette in its stand.';
   else if(!at){
    const mouth=c.targetScreen(s.target),tip=c.workingEnd();
-   if(c.hoverTarget===s.target)instruction=guided?'Dip your closed hand slightly into the opening.':'Hold the tip steady over the opening.';
+   if(c.hoverTarget===s.target)instruction=guided?'Dip slightly at the opening.':'Hold over the opening.';
    else if(mouth?.visible&&Math.abs(tip.x-mouth.x)<mouth.radius&&tip.y>mouth.y+10)instruction='Lift the tip to the opening of '+source+'.';
    else instruction='Guide the tip to '+source+'.';
   }
   else if(guided){
-   if(at.depth>0&&(!at.handStroke||at.handStroke.started))instruction='Lift slightly to clear the opening, then dip again to resume.';
+   if(at.depth>0&&(!at.handStroke||at.handStroke.started))instruction='Lift, then dip again to resume.';
    else if(at.depth===1)instruction='Hold here to '+action+' '+s.volume+' mL.';
-   else instruction='Dip your closed hand slightly to '+action+' '+s.volume+' mL.';
+   else instruction='Dip slightly to '+action+' '+s.volume+' mL.';
   }else if(s.action==='aspirate'&&!c.charged){
    instruction=at.depth>0?'Lift the tip above the liquid to squeeze again.':'Spread thumb and index, then pinch to squeeze.';
   }else if(at.depth<1)instruction=s.action==='aspirate'?'Keep pinching and lower your hand.':'Lower your hand into the receiving vessel.';
@@ -248,9 +329,9 @@ export class HandControls {
   const controls=['lid','zero','read','clipboard'];
   const direct=this.geometry.pointerControl?.(x,y)||this.geometry.pick(x,y,{only:[...pipetteIds.flatMap(id=>[id+'-grip',id+'-bulb']),'cuvette-grip',...controls],padding:0})?.id;
   if(controls.includes(direct))return {region:direct};
-  if(direct){const tool=direct.split('-')[0];if([...pipetteIds,'cuvette'].includes(tool))return {id:tool}}
+  if(direct){const tool=direct.split('-')[0];if([...pipetteIds,'cuvette'].includes(tool))return {tool}}
   const command=this.geometry.pick(x,y,{only:controls,padding:10})?.id;
-  return command?{region:command}:{id:this.pickTool(x,y)};
+  return command?{region:command}:{tool:this.pickTool(x,y)};
  }
  thumb(f,operate=true){
   const v=Number.isFinite(f.thumbPress)?f.thumbPress:(f.squeeze===true?1:f.squeeze===false?0:0),band=v>.68?'press':v<.3?'rest':'middle',p=this.press;

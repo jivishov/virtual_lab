@@ -2,6 +2,8 @@
  * No gesture classification, frame storage, uploads or automatic camera start. */
 const FRAME_INTERVAL_MS=32,STALE_MS=600,WORKER_TIMEOUT_MS=18000,FRAME_TIMEOUT_MS=8000;
 const FIRST_FRAME_TIMEOUT_MS=30000;
+const SLOW_FRAME_MS=260;
+export const HELD_FRAME_LIMIT_MS=1500;
 const aborted=()=>Object.assign(new Error('Camera startup cancelled.'),{name:'AbortError'});
 const closeDetector=detector=>{try{detector?.close()}catch{/* Disposal must not prevent camera-track cleanup. */}};
 const stopStream=stream=>{for(const track of stream?.getTracks?.()||[]){try{track.stop()}catch{/* Continue closing the other tracks. */}}};
@@ -20,7 +22,7 @@ export async function createDetector({offscreen=false,signal}={},runtime={}){
  for(const delegate of ['GPU','CPU']){
   let detector;
   try{
-   const options={baseOptions:{modelAssetPath:source.model,delegate},runningMode:'VIDEO',numHands:2,minHandDetectionConfidence:.55,minHandPresenceConfidence:.55,minTrackingConfidence:.55};
+   const options={baseOptions:{modelAssetPath:source.model,delegate},runningMode:'VIDEO',numHands:2,minHandDetectionConfidence:.55,minHandPresenceConfidence:.55,minTrackingConfidence:.6};
    if(offscreen&&Canvas)options.canvas=new Canvas(640,480);
    detector=await mp.HandLandmarker.createFromOptions(files,options);
    if(signal?.aborted){closeDetector(detector);throw aborted()}
@@ -43,9 +45,9 @@ function platformDefaults(){
 }
 
 export class HandCamera {
- constructor({video,source=null,frameSource=null,onFrame=()=>{},onStatus=()=>{},onActive=()=>{},onLost=()=>{}}={},platform={}){
+ constructor({video,source=null,frameSource=null,onFrame=()=>{},onStatus=()=>{},onActive=()=>{},onLost=()=>{},onDelay=null}={},platform={}){
   if(!video)throw new Error('A camera preview video is required.');
-  this.source=source;this.video=video;this.frameSource=frameSource;this.callbacks={onFrame,onStatus,onActive,onLost};this.p={...platformDefaults(),...platform};
+  this.source=source;this.video=video;this.frameSource=frameSource;this.callbacks={onFrame,onStatus,onActive,onLost,onDelay};this.p={...platformDefaults(),...platform};
   this.running=false;this.modelReady=false;this.generation=0;this.worker=null;this.detector=null;this.stream=null;this.backend='';
   this.busy=false;this.inFlight=null;this.frameID=0;this.lastVideoTime=-1;this.lastSubmit=-Infinity;this.lastPacket=-Infinity;
   this.lastReceived=0;this.lostSent=false;this.errors=0;this.vfc=null;this.raf=null;this.monitor=null;this.abort=null;this.startPromise=null;this.trackListeners=[];
@@ -102,7 +104,7 @@ export class HandCamera {
    }
    if(!this.current(gen))return false;
    this.modelReady=true;this.lastVideoTime=-1;this.lastSubmit=-Infinity;this.lastPacket=-Infinity;this.lastReceived=this.p.now();this.errors=0;this.lostSent=false;
-   this.status('Starting hand detection. Hold an open hand in view.');
+   this.status('Show an open palm.');
    this.monitor=this.p.setInterval(()=>this.checkHealth(gen),100);this.schedule(gen);return true;
   }catch(error){
    if(!this.current(gen))return false;
@@ -145,7 +147,7 @@ export class HandCamera {
   try{
    // Keep the captured exposure until its result arrives so the contour and
    // displayed webcam pixels correspond to the same instant.
-   const exposure=this.frameSource?.(this.video,now)||null,input=exposure?.image||this.video;
+   const exposure=this.frameSource?.(this.video,now)||null,input=exposure?.detectorImage||exposure?.image||this.video;
    this.inFlight={requestId,stamp:now,exposure};
    if(worker){
     const bitmap=await this.p.createImageBitmap(input);
@@ -166,19 +168,34 @@ export class HandCamera {
  accept(data,gen){
   if(!this.current(gen))return;
   const now=this.p.now(),age=now-data.stamp;
-  if(!Number.isFinite(data.stamp)||age<0||age>STALE_MS||data.stamp<=this.lastPacket){this.lost('invalid-frame');return}
-  if(this.lastPacket===-Infinity)this.status('Camera ready. Show your open hand to begin.');
+  if(!Number.isFinite(data.stamp)||age<0||data.stamp<=this.lastPacket){this.lost('invalid-frame');return}
+  if(age>STALE_MS){if(!this.holdDelayedFrame(now))this.lost('invalid-frame');return}
+  if(this.lastPacket!==-Infinity&&now-this.lastReceived>SLOW_FRAME_MS)this.holdDelayedFrame(now);
+  if(this.lastPacket===-Infinity)this.status('Camera ready. Tracking locally.');
   this.lastPacket=data.stamp;this.lastReceived=now;this.errors=0;this.lostSent=false;
-  this.callbacks.onFrame({landmarks:data.landmarks||[],worldLandmarks:data.worldLandmarks||[],handedness:data.handedness||[],stamp:data.stamp,inferenceMS:Number.isFinite(data.inferenceMS)?data.inferenceMS:0,
-   frame:data.exposure?.image||null,crop:data.exposure?.crop||null,frameRevision:data.exposure?.revision});
+  const crop=data.exposure?.crop;
+  let landmarks=data.landmarks||[];
+  // Consumers use full sensor coordinates for matching, contour, mirror and
+  // bench projection. MediaPipe normalizes z to the input image's width.
+  if(crop&&data.exposure.detectorImage)landmarks=landmarks.map(hand=>hand.map(p=>({...p,x:crop.left+p.x*crop.width,y:crop.top+p.y*crop.height,z:(p.z??0)*crop.width})));
+  this.callbacks.onFrame({landmarks,worldLandmarks:data.worldLandmarks||[],handedness:data.handedness||[],stamp:data.stamp,inferenceMS:Number.isFinite(data.inferenceMS)?data.inferenceMS:0,
+   frame:data.exposure?.image||null,crop:crop||null,frameRevision:data.exposure?.revision});
  }
  lost(reason){if(!this.lostSent){this.lostSent=true;this.callbacks.onLost({reason,stamp:this.p.now()})}}
+ holdDelayedFrame(now){
+  return !this.lostSent&&this.lastPacket!==-Infinity&&now-this.lastReceived<HELD_FRAME_LIMIT_MS&&this.callbacks.onDelay?.()===true;
+ }
  checkHealth(gen){
   if(!this.current(gen)||!this.modelReady)return;const now=this.p.now();
   // A cold GPU can spend several seconds compiling the first inference.
   // Only a fresh frame ends warm-up. Subsequent exposures use the normal watchdog.
   const warmingUp=this.lastPacket===-Infinity;
-  if(!warmingUp&&now-this.lastReceived>STALE_MS)this.lost('stale-frames');
+  if(!warmingUp&&now-this.lastReceived>SLOW_FRAME_MS){
+   const holding=this.holdDelayedFrame(now);
+   if(now-this.lastReceived>STALE_MS&&!holding)this.lost('stale-frames');
+  }
+  // Hidden setup video can present callbacks slowly even as the source advances.
+  if(!this.busy&&now-this.lastSubmit>=100&&this.video.currentTime!==this.lastVideoTime)void this.frame(gen);
   const timedOut=warmingUp?now-this.lastReceived>FIRST_FRAME_TIMEOUT_MS:
    this.inFlight&&now-this.inFlight.stamp>FRAME_TIMEOUT_MS;
   if(timedOut){this.stop();this.status('Hand tracking stopped responding. Start the camera again.',true)}
@@ -198,7 +215,7 @@ export class HandCamera {
   const detector=this.detector;this.detector=null;closeDetector(detector);
   const stream=this.stream;this.stream=null;if(this.source)this.source.release('hands');else stopStream(stream);this.video.pause?.();this.video.srcObject=null;
   this.busy=false;this.inFlight=null;this.lastPacket=-Infinity;this.lastVideoTime=-1;this.lostSent=false;this.lost('stopped');
-  this.callbacks.onActive(false);this.status('Camera off · mouse controls available.');
+  this.callbacks.onActive(false);this.status('Camera off. Video stays on this device.');
  }
  destroy(){this.stop();this.source?.removeEventListener('change',this.sourceChanged);this.p.document?.removeEventListener('visibilitychange',this.onVisibility);this.p.window?.removeEventListener('pagehide',this.onPageHide)}
 }

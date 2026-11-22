@@ -125,7 +125,7 @@ export function createHandOutliner({cameraImage=true}={}) {
     }
     return edge;
   }
-  return function paint(output,frame,result) {
+  return function paint(output,frame,result,benchScale=null) {
     if(output.width!==frame.width||output.height!==frame.height){output.width=frame.width;output.height=frame.height;}
     const ctx=output.getContext('2d');
     ctx.clearRect(0,0,output.width,output.height);
@@ -140,8 +140,11 @@ export function createHandOutliner({cameraImage=true}={}) {
         const a=edge[j],b=edge[(j+1)%edge.length];
         ctx.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2);
       }
-      ctx.closePath();ctx.lineWidth=4;ctx.strokeStyle='#153438';ctx.stroke();
-      ctx.lineWidth=2;ctx.strokeStyle=result.handedness?.[i]?.[0]?.categoryName==='Left'?'#ffce78':'#8ff2d5';ctx.stroke();
+      // In the HUD keep the contour legible in screen pixels, including on a phone.
+      const inner=benchScale?Math.max(1,Math.min(7,1.9/benchScale)):2;
+      const left=result.handedness?.[i]?.[0]?.categoryName==='Left';
+      ctx.closePath();ctx.lineWidth=inner*2;ctx.strokeStyle='#153438';ctx.stroke();
+      ctx.lineWidth=inner;ctx.strokeStyle=left?(benchScale?'#a5edff':'#ffce78'):'#8ff2d5';ctx.stroke();
     }
   };
 }
