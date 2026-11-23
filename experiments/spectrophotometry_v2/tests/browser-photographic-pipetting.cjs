@@ -248,6 +248,7 @@ async function verify(page){
  assert.equal(outcome.records,strokes.length);
  assert.ok(outcome.grips.length>0&&outcome.grips.every(owner=>owner==='hand'));
  assert.deepEqual(outcome.freezes,[0],'Only the deliberately hidden hand should require a regrasp');
+ if(immersive&&!await page.locator('#immersiveNotebook').isVisible())await page.locator('#dataWing summary').click();
  await page.locator(immersive?'#immersiveNotebook':'#notebookButton').click();
  const download=page.waitForEvent('download');await page.locator('#exportJson').click();
  const notebook=JSON.parse(await fs.readFile(await (await download).path(),'utf8'));

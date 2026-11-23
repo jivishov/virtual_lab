@@ -24,6 +24,7 @@ export const SAMPLES = Object.freeze([10,8,6,4,2,0].map((stock, i) => Object.fre
   name:stock ? `Standard ${i+1}` : 'Water blank', stock, water:10-stock,
   concentration:calculateConcentration(stock, 10-stock)
 })));
+export const DRINK_SAMPLES = Object.freeze([['unknown', 'Original drink'], ['tube_dilution', 'Diluted drink']]);
 
 export function percentT(concentration) {
   // -1 is accepted only as the original source's explicit unknown-data sentinel.
@@ -123,6 +124,17 @@ export function setStatus(state,status) {
   if (!['running','paused','stopped'].includes(status)) return {ok:false,message:'Choose Run, Pause, or Stop.'};
   state.status=status;
   return {ok:true,message:status==='running' ? 'Ready to continue.' : status==='paused' ? 'Experiment paused.' : 'Experiment stopped. Partial transfers are preserved; Run resumes the current step.'};
+}
+
+// Both the bench LCD and the HUD display the last acquisition for the seated
+// cuvette. Opening the lid suspends the display. Removing or retuning clears it.
+export function instrumentDisplay(state) {
+  if (state.lidOpen) return {caption:'Chamber open', reading:null};
+  if (!state.cuvette.inserted) return {caption:'Chamber empty', reading:null};
+  if (state.wavelength !== TARGET_WAVELENGTH) return {caption:`Select ${TARGET_WAVELENGTH} nm`, reading:null};
+  if (!state.zeroed || state.zeroWavelength !== state.wavelength) return {caption:'Set blank reference', reading:null};
+  const reading = state.reading;
+  return {caption:reading ? (reading.id ? 'Reading recorded' : 'Blank reference set') : 'Ready to read', reading};
 }
 
 export function setWavelength(state,value) {

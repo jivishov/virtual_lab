@@ -21,6 +21,9 @@ let noticeTimer,studio,lastRoomFrame=0,lastBenchFrame=-Infinity;
 const source=new StudioCamera();
 const voice=new ProcedureVoice($('procedureAudio'));
 const benchPointers=new Set();
+document.addEventListener('pointerdown',e=>{
+ if(e.isTrusted&&studio?.spatial.active){benchPointers.add(e.pointerId);studio.panelPointer.cancel()}
+},true);
 canvas.addEventListener('pointerdown',e=>{benchPointers.add(e.pointerId);if(hands?.camera.running)hands.yieldToPointer()},true);
 for(const event of ['pointerup','pointercancel','lostpointercapture']){
  window.addEventListener(event,e=>benchPointers.delete(e.pointerId),true);
@@ -86,6 +89,7 @@ function followOperation(step){
  document.querySelectorAll('[data-view]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});
 }
 function updateUI(){
+ scene.updateInstrument(state);
  const contact=interaction?.contact;
  const inserted=contact?.kind==='pipette'&&contact.depth>0;
  renderer.insertedPipette=inserted?interaction.tool:null;
@@ -252,7 +256,7 @@ function setupControls(){
   const result=setWavelength(state,input.valueAsNumber);
   $('wavelength').value=state.wavelength;
   if(e.type==='change')feedback(result.message,!result.ok);
-  scene.updateTransmission(state.reading);scene.updateLCD(state);changed();
+  changed();
  };
  $('wavelength').onchange=tuneWavelength;
  $('wavelengthSlider').oninput=tuneWavelength;
@@ -262,7 +266,7 @@ function setupControls(){
  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()}}));
  document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{setView(b.dataset.view);closeDockMenus()});
  for(const menu of document.querySelectorAll('.dock-entry')){menu.addEventListener('toggle',()=>{menu.querySelector('summary').setAttribute('aria-expanded',String(menu.open));if(menu.open){document.querySelectorAll('.dock-entry').forEach(other=>{if(other!==menu)other.open=false});$('handPanel').hidden=true;$('handButton').setAttribute('aria-expanded','false')}})}
- document.addEventListener('pointerdown',e=>{if(!e.target.closest('.dock-entry'))closeDockMenus()});
+ document.addEventListener('pointerdown',e=>{if(!e.target.closest('.dock-entry,.hand-choice'))closeDockMenus()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const open=document.querySelector('.dock-entry[open]');if(open){closeDockMenus();open.querySelector('summary').focus();e.preventDefault()}}});
  $('handButton').addEventListener('click',closeDockMenus);
  for(const item of scene.layoutItems){$('inspectEquipment').add(new Option(item.label,item.id))}
@@ -290,11 +294,14 @@ async function start(){try{
  interaction=new Manipulation({scene,geometry,getState:()=>state,onChange:changed,onFeedback:(message,error)=>{if(error)feedback(message,true)},onNotebook:openNotebook});
  layout=new BenchLayout(scene,{canvas,onChange:changed,onFeedback:feedback,isBusy:()=>interaction.busy||!!hands?.busy,onModeChange:()=>{hands?.resetInput();closeDockMenus();changed()}});
  mouse=new MouseInput({canvas,geometry,interaction,layout,usePointer,handActive:()=>!!hands?.camera.running});
- overlay=new InteractionOverlay({scene,geometry,interaction,layout,mouse,onLocate:locateTarget,stopHand:()=>{if(hands?.camera.running)hands.stop()}});
+ overlay=new InteractionOverlay({scene,geometry,interaction,layout,mouse,onLocate:locateTarget,stopHand:()=>{if(hands?.camera.running&&!studio?.spatial.active)hands.stop()}});
  hands=new HandControls({scene,geometry,interaction,layout,canvas,source,pointerBusy:()=>benchPointers.size>0||['mouse','touch','keyboard'].includes(interaction.owner),onStart:()=>suspendInput('Hand control enabled. Grasp the tool to continue.'),getState:()=>state,onChange:changed,onFeedback:feedback});
- studio=new StudioExperience({source,hands,renderer,scene,canvas,suspend:suspendInput,stopFollowing,changed,trackingChanged:()=>{uiDirty=true},openNotebook});
+ studio=new StudioExperience({source,hands,renderer,scene,canvas,suspend:suspendInput,stopFollowing,changed,trackingChanged:()=>{uiDirty=true},openNotebook,locateTarget,pointerDown:()=>benchPointers.size>0});
+ $('targetsMenu').addEventListener('toggle',()=>{
+   if(!$('targetsMenu').open&&studio.spatial.active&&interaction.owner==='keyboard')suspendInput('Targets closed. Regrasp the marked tool to continue.');
+ });
  setupCamera();setupControls();setView(canvas.clientWidth<=760?'prepare':'overview');$('followStep').checked=useTabletFraming();
  $('loading').hidden=true;clearNotice();updateUI();renderer.render();requestAnimationFrame(animate);
- globalThis.lab={get state(){return structuredClone(state)},get step(){return {...getStep(state)}},get busy(){return interaction.flow},control,get camera(){return structuredClone(renderer.cam)},get layout(){return scene.layoutData()},get layoutActive(){return layout.active},get equipmentPositions(){return Object.fromEntries(scene.layoutItems.map(({id})=>[id,[...scene.objects[id].pos]]))},get chamber(){return [...scene.chamber]},get poses(){return {pipette:[...scene.objects.pipette.pos],cuvette:[...scene.objects.cuvette.pos],cuvetteRotation:[...scene.objects.cuvette.rot],lid:scene.lid.rot[0]}},get manipulation(){return structuredClone(interaction.state)},get atomicHistory(){return structuredClone(interaction.history)},get targeting(){return {next:interaction.nextTarget(),hover:interaction.hoverTarget||interaction.hoverRegion,locked:interaction.contact?.target||null,settle:interaction.aimSettler.progress,label:null,rings:{next:overlay.guides.beacon.id,focus:overlay.guides.focus.id},targets:Object.fromEntries([...new Set([...interaction.candidates(),...pipetteIds.map(id=>id+'-grip'),...['cuvette-grip','lid','zero','read','clipboard']])].map(id=>[id,geometry.screenTarget(id)]))}},get affordances(){return readAffordances()},hand:{frame:f=>hands.frame(f),packet:p=>hands.packet(p),lost:()=>hands.lost(),get state(){return {active:hands.camera.running,backend:hands.camera.backend,armed:hands.gate.armed,holding:interaction.owner==='hand'?interaction.tool:hands.held?.id||null}}},get studio(){return {immersive:studio.immersive,handMode:studio.mode,liveRoom:!!renderer.roomVideo,cameraUsers:[...source.owners],mirrored:source.mirrored}},get renderInfo(){return {quality:renderer.level,resolution:[canvas.width,canvas.height],css:[canvas.clientWidth,canvas.clientHeight],bloom:renderer.bloomOn,meshes:renderer.meshes.length}},get assetMeta(){return scene.assetMeta}};
+ globalThis.lab={get state(){return structuredClone(state)},get step(){return {...getStep(state)}},get busy(){return interaction.flow},control,get camera(){return structuredClone(renderer.cam)},get layout(){return scene.layoutData()},get layoutActive(){return layout.active},get equipmentPositions(){return Object.fromEntries(scene.layoutItems.map(({id})=>[id,[...scene.objects[id].pos]]))},get chamber(){return [...scene.chamber]},get poses(){return {pipette:[...scene.objects.pipette.pos],cuvette:[...scene.objects.cuvette.pos],cuvetteRotation:[...scene.objects.cuvette.rot],lid:scene.lid.rot[0]}},get manipulation(){return structuredClone(interaction.state)},get atomicHistory(){return structuredClone(interaction.history)},get targeting(){return {next:interaction.nextTarget(),hover:interaction.hoverTarget||interaction.hoverRegion,locked:interaction.contact?.target||null,settle:interaction.aimSettler.progress,label:null,rings:{next:overlay.guides.beacon.id,focus:overlay.guides.focus.id},targets:Object.fromEntries([...new Set([...interaction.candidates(),...pipetteIds.map(id=>id+'-grip'),...['cuvette-grip','lid','zero','read','clipboard']])].map(id=>[id,geometry.screenTarget(id)]))}},get affordances(){return readAffordances()},hand:{frame:f=>hands.frame(f),packet:p=>hands.packet(p),lost:()=>hands.lost(),get state(){return {active:hands.camera.running,backend:hands.camera.backend,armed:hands.gate.armed,holding:interaction.owner==='hand'?interaction.tool:hands.held?.id||null}}},get studio(){return {immersive:studio.immersive,handMode:studio.mode,liveRoom:!!renderer.roomVideo,cameraUsers:[...source.owners],mirrored:source.mirrored}},get renderInfo(){return {frameTime:lastBenchFrame,quality:renderer.level,resolution:[canvas.width,canvas.height],css:[canvas.clientWidth,canvas.clientHeight],bloom:renderer.bloomOn,meshes:renderer.meshes.length}},get assetMeta(){return scene.assetMeta}};
  }catch(error){console.error(error);$('loading').hidden=false;$('loading').querySelector('h2').textContent='The 3D laboratory could not start';$('loading').querySelector('p').textContent=error.message;$('loading').querySelector('.loading-mark').style.display='none'}}
 start();

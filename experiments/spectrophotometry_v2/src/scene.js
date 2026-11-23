@@ -1,5 +1,6 @@
 import {beginCarry,carryPosition} from './tool-carry.js';
 import {PIPETTES,pipetteIds,isPipette,pipetteLevel} from './pipettes.js';
+import {instrumentDisplay} from './model.js';
 /* Classroom and rendering helpers adapted from the supplied ELISA scene.
    All spectrophotometry apparatus meshes are evaluated exports from Blender. */
 import {fitCamera} from './camera-fit.js';
@@ -180,8 +181,9 @@ export class LabScene{
   }
   this.r.texture(c,plate.mat.map);
  }
- updateLCD(state){
-  const measured=state.reading,caption=state.cuvette.inserted?(state.zeroed?'Ready to read':'Set blank reference'):state.zeroed?'Blank set':'Insert water blank';
+ updateInstrument(state){
+  const {reading:measured,caption}=instrumentDisplay(state);
+  this.updateTransmission(measured);
   const key=[measured?.absorbance,measured?.percentT,state.wavelength,caption].join('|');
   if(this.lcdValue===key)return;this.lcdValue=key;
   const c=this.screen.canvas,ctx=c.getContext('2d'),wash=ctx.createLinearGradient(0,0,0,c.height);
@@ -335,7 +337,7 @@ export class LabScene{
   this.syncLiquids(state);
   this.inserted=state.cuvette.inserted;this.targets.cuvette.offset=state.cuvette.inserted?[0,CUVETTE.height+.04,0]:[0,CUVETTE.height*.52,0];this.targets.cuvette.radius=state.cuvette.inserted?.30:CUVETTE.width*.65;
   if(resetPose){for(const id of pipetteIds){this.objects[id].set(...this.home[id]);this.objects[id].rot=[0,this.homeYaw[id]||0,0]}this.objects.cuvette.set(...(state.cuvette.inserted?this.chamber:this.home.cuvette));this.objects.cuvette.rot=[0,state.cuvette.inserted?(this.homeYaw.instrument||0):(this.homeYaw.cuvette||0),0];if(this.lid)this.lid.rot[0]=state.cuvette.inserted?0:-1.4}
-  this.updateTransmission(state.reading);this.updateLCD(state);this.r.dirtyShadow=true;this.r.root.update();
+  this.updateInstrument(state);this.r.dirtyShadow=true;this.r.root.update();
  }
  targetPosition(id){const t=this.targets[id];if(!t)return null;this.r.root.update();return M.point(t.group.world,t.offset)}
  mark(id){this.expected=id;let p=this.targetPosition(id);this.marker.visible=!!p;if(p){let y=.022;if(id==='spec20'||id==='cuvette'&&this.inserted){p=[this.chamber[0],1.29,this.chamber[2]];y=1.29}this.marker.set(p[0],y,p[2]);this.marker.scale=[1,1,1]}}
@@ -370,14 +372,33 @@ export class LabScene{
   const mobile=width<=760;
   const bottomOf=id=>document.getElementById(id)?.getBoundingClientRect().bottom??rect.top;
   const topOf=id=>document.getElementById(id)?.getBoundingClientRect().top??rect.bottom;
-  const top=Math.min(height*.23,Math.max(12,bottomOf('stationBar')-rect.top+12));
-  const bottom=Math.min(height*.22,Math.max(16,rect.bottom-topOf('benchFooter')+12));
+  const spatial=document.body.classList.contains('hand-console');
+  const bottom=Math.min(height*(spatial ? .32 : .22),Math.max(16,rect.bottom-topOf('benchFooter')+12));
+  // The overview puts the outermost pipettes directly beneath the panel wings.
+  // Station close-ups use the middle of the screen and need more height for handling.
+  const overview=spatial&&!working&&!inspection;
+  const topLimit=overview?height-bottom-Math.min(140,height*.22):height*(spatial ? .44 : .23);
+  const top=Math.min(topLimit,Math.max(12,bottomOf(spatial?'spatialHud':'stationBar')-rect.top+12));
   // A pipette carry needs room for the whole moving hand at both ends.
   // Keep its source, receiver and stand in the central camera workspace.
   const margin=handReach?width*.18:mobile?20:inspection?50:30;
   const vertical=handReach?height*.10:0;
   const insets={top:Math.max(top,vertical),bottom:Math.max(bottom,vertical),left:margin,right:margin};
-  Object.assign(this.r.cam,fitCamera(points,{width,height,yaw,pitch,fov:42,insets,minDistance:inspection||focus?1.2:3}));
+  const settings={width,height,yaw,pitch,fov:42,minDistance:inspection||focus?1.2:3};
+  let camera=fitCamera(points,{...settings,insets});
+  if(spatial&&this.viewSelection?.view==='instrument'){
+    // A wide display can show a larger instrument between the two panels.
+    // On portrait tablets, the space beneath the panels usually fits it better.
+    const left=document.getElementById('opticsWing').getBoundingClientRect();
+    const right=document.getElementById('dataWing').getBoundingClientRect();
+    const middle={top:Math.max(12,bottomOf('spatialGuide')-rect.top+12),bottom,
+      left:Math.max(margin,left.right-rect.left+12),right:Math.max(margin,rect.right-right.left+12)};
+    if(width-middle.left-middle.right>=width/3&&middle.top+middle.bottom<height){
+      const between=fitCamera(points,{...settings,insets:middle});
+      if(between.distance<camera.distance)camera=between;
+    }
+  }
+  Object.assign(this.r.cam,camera);
   this.r.updateCamera();
  }
  setView(view){

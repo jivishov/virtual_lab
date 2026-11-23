@@ -1,8 +1,7 @@
-import { SAMPLES, FINAL_VOLUME, fitCalibration, getStep, notebookDecision } from './model.js';
+import { SAMPLES, DRINK_SAMPLES, FINAL_VOLUME, fitCalibration, getStep, notebookDecision } from './model.js';
 
 const el = id => document.getElementById(id);
 const format = (value, places = 3) => value == null ? '—' : value.toFixed(places);
-const unknowns = [['unknown', 'Original drink'], ['tube_dilution', 'Diluted drink']];
 
 function graph(state, fit) {
   const left = 62, bottom = 252;
@@ -22,7 +21,7 @@ function graph(state, fit) {
     const r = state.results[sample.id];
     if (r) content.push(`<circle class="plot-point" cx="${x(r.concentration)}" cy="${y(r.absorbance)}" r="4.5"><title>${sample.name}, ${format(r.concentration)} µM, A = ${r.absorbance}</title></circle>`);
   }
-  for (const [id, label] of unknowns) {
+  for (const [id, label] of DRINK_SAMPLES) {
     const r = state.results[id];
     if (!r) continue;
     const level = y(r.absorbance);
@@ -40,7 +39,7 @@ export function renderNotebook(state) {
     const r = results[s.id], tube = state.tubes[s.id];
     return [s.name, s.stock+' / '+s.water, format(r?.concentration ?? (tube.volume ? tube.concentration : null)), r];
   });
-  for (const [id, name] of unknowns) rows.push([name, '—', '—', results[id]]);
+  for (const [id, name] of DRINK_SAMPLES) rows.push([name, '—', '—', results[id]]);
   el('dataRows').innerHTML = rows.map(([name, volumes, c, r]) =>
     '<tr>'+[name,volumes,c,format(r?.percentT,1),format(r?.transmittance,3),format(r?.absorbance,4)].map(cell=>'<td>'+cell+'</td>').join('')+'</tr>').join('');
   el('calibrationSummary').textContent = analysis.fitted ? `A = ${format(fit.slope,5)} C` : `${fit.count} of 6 calibration readings`;
@@ -85,7 +84,7 @@ export function readingsCsv(state) {
     const r=results[s.id];
     rows.push([s.name,s.stock,s.water,s.concentration,r?.percentT,r?.transmittance,r?.absorbance,'',analysis.fitted?fit.slope:'','','','']);
   }
-  for (const [id,name] of unknowns) {
+  for (const [id,name] of DRINK_SAMPLES) {
     const r=results[id];
     if (!r) continue;
     const mixed=id==='tube_dilution', report=mixed?analysis.report?.submitted:null;

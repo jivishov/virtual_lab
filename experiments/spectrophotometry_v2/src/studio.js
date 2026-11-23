@@ -2,13 +2,15 @@ import {HandGestures,steadyHandMotion,playerFrame} from './view-gestures.js';
 import {createHandOutliner} from './palm-outline.js';
 import {cameraRect,CAMERA_SIZE_KEY,DEFAULT_CAMERA_SIZE,savedCameraSize,heldHandCrop} from './camera-framing.js';
 import {PIPETTES} from './pipettes.js';
+import {SpatialHud} from './spatial-hud.js';
+import {PanelPointer} from './panel-pointer.js';
 
 const $=id=>document.getElementById(id);
 const clamp=(v,lo=0,hi=1)=>Math.max(lo,Math.min(hi,v));
 
 export class StudioExperience {
-  constructor({source,hands,renderer,scene,canvas,suspend,stopFollowing,changed,trackingChanged,openNotebook}){
-    Object.assign(this,{source,hands,renderer,scene,canvas,suspend,stopFollowing,changed,trackingChanged});
+  constructor({source,hands,renderer,scene,canvas,suspend,stopFollowing,changed,trackingChanged,openNotebook,locateTarget,pointerDown}){
+    Object.assign(this,{source,hands,renderer,scene,canvas,suspend,stopFollowing,changed,trackingChanged,pointerDown});
     this.mode='work';this.trace=createHandOutliner({cameraImage:false});this.navigation=new HandGestures();
     this.navigationAnchor=null;this.zoomSpan=null;this.frameCenter={x:.5,y:.5};this.frameWidth=.8;this.frameRevision=0;
     this.cameraSize=DEFAULT_CAMERA_SIZE;
@@ -22,6 +24,18 @@ export class StudioExperience {
     this.cameraPlane=$('benchCameraFrame');this.roomMapFrame=$('roomImageFrame');
     this.hud=$('handHud');
     this.lock=$('hudLock');
+    this.spatial=new SpatialHud(locateTarget);
+    this.panelPointer=new PanelPointer((x,y)=>{
+      const rect=canvas.getBoundingClientRect();
+      const id=hands.geometry.pointerControl(x-rect.left,y-rect.top);
+      return ['lid','zero','read','clipboard'].includes(id)?id:null;
+    },id=>hands.interaction.activate(id));
+    new ResizeObserver(()=>{
+      if(this.spatial.active&&!this.spatial.shell.classList.contains('panels-open')&&scene.viewSelection&&
+          !hands.busy&&!hands.interaction.tool&&!hands.layout.active&&!this.pointerDown()){
+        scene.refitView();this.changed();
+      }
+    }).observe(this.spatial.shell);
     this.hands.studio=this;
     this.hands.camera.frameSource=video=>this.captureFrame(video);
     const preview=$('handPreview');
@@ -43,6 +57,12 @@ export class StudioExperience {
     $('immerseButton').onclick=()=>this.immerse(true);
     $('exitImmersive').onclick=()=>this.immerse(false);
     $('immersiveProtocol').onclick=()=>this.protocol(!document.body.classList.contains('protocol-open'));
+    $('spatialProtocolClose').onclick=()=>{this.protocol(false);$('immersiveProtocol').focus({preventScroll:true})};
+    $('locateTarget').addEventListener('click',()=>{
+      if(this.spatial.active&&document.body.classList.contains('protocol-open')){
+        this.protocol(false);$('immersiveProtocol').focus({preventScroll:true});
+      }
+    });
     $('immersiveNotebook').onclick=openNotebook;
     $('cameraButton').onclick=()=>{
       if(hands.camera.running||source.owners.size)this.stop();
@@ -80,6 +100,7 @@ export class StudioExperience {
     };
     $('handBegin').onclick=()=>{
       $('handClose').click();
+      if(this.spatial.active)this.scene.refitView();
       document.querySelector('[data-quick-mode][aria-pressed=true]').focus({preventScroll:true});
     };
     source.addEventListener('change',()=>this.syncCamera());
@@ -140,7 +161,12 @@ export class StudioExperience {
   syncCamera(){
     const feed=this.source,video=feed.video,room=!!video&&feed.owners.has('room');
     const tracking=this.hands.camera.running;
-    document.body.classList.toggle('hand-console',this.immersive&&tracking);
+    const useHud=this.immersive&&tracking;
+    document.body.classList.toggle('hand-console',useHud);
+    if(this.spatial.active&&!useHud){this.panelPointer.releaseLayer();this.usingPanel=false}
+    const switching=this.spatial.active!==useHud;
+    this.spatial.enable(useHud);
+    if(switching&&!this.hands.busy)this.scene.refitView();
     this.renderer.mirrored=feed.mirrored;
     $('photoRoom').setAttribute('aria-pressed',String(!room));$('liveRoom').setAttribute('aria-pressed',String(room));
     $('liveRoom').disabled=room||(!video&&feed.owners.has('room'));
@@ -298,11 +324,16 @@ export class StudioExperience {
   updateHud(step,focus){
     const h=this.hands,c=h.interaction,tracking=h.camera.running,view=tracking&&this.mode==='view';
     const bench=this.immersive&&h.panel.hidden&&$('cameraPanel').hidden&&!h.layout.active&&!document.querySelector('dialog[open]');
+    this.spatial.update(c.getState(),h,!bench||document.body.classList.contains('protocol-open')||!!document.querySelector('.dock-entry[open]'));
     const procedure=$('hudProcedure');
     procedure.hidden=!bench||document.body.classList.contains('protocol-open');
     const scale=$('wavelengthScale');
     scale.hidden=!this.immersive;
     const set=(id,text)=>{const el=$(id);if(el.textContent!==text)el.textContent=text};
+    const reason=$('stepRationale');
+    reason.hidden=!this.spatial.active||!step.detail;
+    if(reason.hidden)reason.open=false;
+    else set('stepReason',step.detail);
     if(!scale.hidden){
       const wavelength=c.getState().wavelength;
       set('scaleValue',wavelength+' nm');
@@ -317,18 +348,22 @@ export class StudioExperience {
     this.hud.hidden=!bench||!c.usable();
     if(this.hud.hidden){this.lock.hidden=true;return}
     const held=!!c.owner,usingHands=tracking&&(!held||c.owner==='hand'),visible=!usingHands||!h.cursor.hidden;
+    const benchTarget=this.panelPointer.benchTarget;
+    const panelTarget=this.spatial.active&&!held&&(this.usingPanel||!c.hoverRegion)?
+      (benchTarget?c.targetName(benchTarget):this.panelPointer.targetName):'';
     const target=held?(c.contact?.target||c.hoverTarget):visible?c.hoverRegion:null;
     const next=!usingHands&&!held&&!target?c.nextTarget():null;
     const acting=this.navigation.hands.filter(hand=>!hand.missing);
     const closed=acting.filter(hand=>hand.grip).length;
     this.hud.dataset.view=String(view);
-    set('hudTargetLabel',view?'View gesture':held?'Tip target':usingHands?'Palm target':next?'Next target':'Pointer target');
+    set('hudTargetLabel',panelTarget?(benchTarget?'Bench control':'Panel control'):view?'View gesture':held?'Tip target':usingHands?'Palm target':next?'Next target':'Pointer target');
     const id=target||next,markName=id?.endsWith('-grip')&&PIPETTES[id.slice(0,-5)]?.mark;
     const targetName=markName?markName[0]+markName.slice(1).toLowerCase()+' pipette':id?c.targetName(id):'No target';
-    set('hudTarget',view?(closed>=2?'Zoom':closed?'Orbit':'Open palm'):targetName);
-    set('hudGripLabel',view?'Tracking':held&&visible?'Holding':'Grip');
+    set('hudTarget',panelTarget||(view?(closed>=2?'Zoom':closed?'Orbit':'Open palm'):targetName));
+    set('hudGripLabel',panelTarget?'Gesture':view?'Tracking':held&&visible?'Holding':'Grip');
     let grip='Searching';
-    if(usingHands&&!h.camera.modelReady)grip='Starting camera';
+    if(panelTarget)grip=this.panelPointer.press?'Pinching':'Pointing';
+    else if(usingHands&&!h.camera.modelReady)grip='Starting camera';
     else if(view)grip=acting.length===2?'Two hands':acting.length===1?'One hand':'Searching';
     else if(held){
       const mark=PIPETTES[c.tool]?.mark;
@@ -341,13 +376,16 @@ export class StudioExperience {
     const volume=c.holdsPipette?c.getState()[c.tool].volume:null;
     this.hud.dataset.flow=c.flow?'active':'idle';
     const targetDose=volume===null&&step.pipetteId?step.volume:null;
-    const display=volume??targetDose;
+    const display=volume??targetDose, optical=this.spatial.active&&display===null;
+    const signal=optical?this.spatial.opticsReading?.percentT:null;
+    const level=clamp(optical?(signal??0)/100:(display??0)/10);
+    this.hud.dataset.meter=optical?'optical':'volume';
     set('hudFlow',c.flow?(c.flowAction==='aspirate'?'Drawing':'Dispensing'):
-      volume!==null&&(c.frozen||h.pausedStroke)?'Paused':targetDose!==null?'Dose target':'Pipette');
-    set('hudVolume',display===null?'—':display.toFixed(1)+' mL');
-    this.hud.style.setProperty('--dial-level',String(clamp((display||0)/10)*75));
-    this.hud.style.setProperty('--index-angle',(clamp((display||0)/10)*270-135)+'deg');
-    const mark=!view&&visible&&!c.frozen&&target===focus.id?focus.screen:null;
+      volume!==null&&(c.frozen||h.pausedStroke)?'Paused':targetDose!==null?'Dose target':optical?'Detector':'Pipette');
+    set('hudVolume',display!==null?display.toFixed(1)+' mL':signal!=null?signal.toFixed(1)+' %T':'—');
+    this.hud.style.setProperty('--dial-level',String(level*75));
+    this.hud.style.setProperty('--index-angle',(level*270-135)+'deg');
+    const mark=!panelTarget&&!view&&visible&&!c.frozen&&target===focus.id?focus.screen:null;
     this.lock.hidden=!mark?.visible;
     if(mark?.visible){
       const radius=Math.round(clamp(mark.radius+6,15,52));
@@ -355,6 +393,7 @@ export class StudioExperience {
       this.lock.style.transform='translate('+Math.round(mark.x-radius)+'px,'+Math.round(mark.y-radius)+'px)';
       this.lock.dataset.state=c.flow?'flow':c.contact?'seated':'aim';
     }
+    if(panelTarget)return this.panelPointer.press?.range?'Move sideways to adjust.':this.panelPointer.press?'Open thumb and index to click.':'Pinch thumb and index to click.';
     if(usingHands&&held&&c.flow)return 'Hold steady.';
     if(!usingHands&&!held&&!c.frozen&&next?.endsWith('-grip')){
       return next==='cuvette-grip'?'Drag the rim to pick it up.':'Drag the handle to pick it up.';
@@ -364,9 +403,48 @@ export class StudioExperience {
     const rect=this.canvas.getBoundingClientRect();
     return document.elementFromPoint(rect.left+point.x,rect.top+point.y);
   }
+  handlePanelPacket(packet){
+    if(!this.spatial.active)return false;
+    const h=this.hands,pointer=this.panelPointer;
+    if(this.pointerDown()||h.held||h.interaction.owner==='hand'||this.navigationAnchor||this.zoomSpan){
+      if(pointer.owner!=null)pointer.cancel();
+      return false;
+    }
+    const reach=packet.frame?this.region():{left:0,top:0,width:1,height:1};
+    if(this.source.mirrored)reach.left=1-reach.left-reach.width;
+    const aspect=packet.frame?packet.frame.width/packet.frame.height:this.benchAspect;
+    const onBench=h.getState().status==='running'&&h.panel.hidden&&$('cameraPanel').hidden&&
+      !h.layout.active&&!document.body.classList.contains('protocol-open')&&!document.querySelector('dialog[open],.dock-entry[open]');
+    const benchEnabled=onBench&&this.mode==='work'&&!h.interaction.tool;
+    const event=pointer.update(packet,{aspect,mirrored:this.source.mirrored,reach,preference:$('handSide').value,canvas:this.canvas,benchEnabled});
+    if(!event){this.usingPanel=false;return false}
+    if(!this.spatial.active)return true;
+    // A relaxed index can cross the top glass while the palm is aiming at a
+    // pipette. Only a UI pinch or the palm entering the panel takes the bench.
+    const aimedControl=pointer.benchTarget||event.pointing&&pointer.hover;
+    if(onBench&&!pointer.captured&&!aimedControl){
+      const palm=this.mapHand(event.palm,packet);
+      if(this.targetAt(palm)===this.canvas){
+        const work=pointer.hover&&this.mode==='work'?h.pickWorkTarget(palm.x,palm.y):null;
+        if(!pointer.hover||work?.tool||work?.region||event.curled[0]){this.usingPanel=false;return false}
+      }
+    }
+    h.lastSeen=performance.now();h.lastRaw={...event.palm};
+    h.previewPose=(event.label?event.label+' · ':'')+(pointer.press?'Pinch':
+      event.closure>=.65?'Grasp':event.openness>=.7?'Open palm':'Hand in view');
+    this.paint(packet,event);
+    h.cursor.hidden=true;
+    if(!this.usingPanel){
+      h.primary=null;h.workCommand=h.pendingTool=null;
+      h.gestures.reset();h.gate.reset();h.interruptEvidence();this.resetNavigation();
+    }
+    this.usingPanel=true;h.refresh();
+    return true;
+  }
   blockWorkAt(point,event,holding){
     const target=this.targetAt(point);
     if(holding||target===this.canvas){this.command=null;return false}
+    if(this.spatial.active)return true;
     const button=target?.closest('button,summary');
     if(event.phase==='press')this.command={button,id:event.id};
     if(event.phase==='release'){
@@ -388,7 +466,7 @@ export class StudioExperience {
     visible.forEach(e=>{
       const center=this.mapHand(e,packet);
       if(e.grip&&e.phase!=='release'&&this.targetAt(center)===this.canvas)contacts.push({id:e.id,...center});
-      const button=this.targetAt(center)?.closest('button,summary');
+      const button=!this.spatial.active&&this.targetAt(center)?.closest('button,summary');
       if(e.phase==='press'&&button&&!button.disabled)this.command={id:e.id,button};
       if(e.phase==='release'&&this.command?.id===e.id){
         const activate=this.command.button===button;this.command=null;

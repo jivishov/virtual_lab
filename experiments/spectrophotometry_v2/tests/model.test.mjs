@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {SAMPLES,STEPS,createState,getStep,perform,validate,calculateConcentration,percentT,absorbanceFromPercentT,fitCalibration,totalVolume,setStatus,setWavelength} from '../src/model.js';
 
-import { notebookDecision } from '../src/model.js';
+import { instrumentDisplay, notebookDecision } from '../src/model.js';
 function advanceProtocol(s,step){
   if(step.target!=='notebook')return perform(s,step.action,step.target);
   return notebookDecision(s,step.action,step.action==='report'?{diluted:1.555,factor:2,original:3.11}:{aliquot:5});
@@ -19,6 +19,29 @@ test('source dilution concentrations and optical conversions are correct',()=>{
   assert.ok(Math.abs(percentT(1.848)-58.0304347826087)<1e-12);
   assert.ok(Math.abs(absorbanceFromPercentT(39)-.4089353929735008)<1e-12);
   assert.throws(()=>percentT(NaN));assert.throws(()=>percentT(-2));assert.throws(()=>absorbanceFromPercentT(0));assert.throws(()=>absorbanceFromPercentT(101));
+});
+
+test('instrument readouts require the closed chamber, acquired signal and matching reference',()=>{
+  const state=createState();
+  assert.equal(instrumentDisplay(state).caption,'Chamber empty');
+  until(state,step=>step.action==='zero');
+  assert.deepEqual(instrumentDisplay(state),{caption:'Set blank reference',reading:null});
+  next(state);
+  assert.equal(instrumentDisplay(state).reading.percentT,100);
+  until(state,step=>step.action==='measure'&&step.sample==='tube_10_0');
+  assert.deepEqual(instrumentDisplay(state),{caption:'Ready to read',reading:null});
+  next(state);
+  const measured=instrumentDisplay(state).reading;
+  assert.equal(measured.percentT,49);
+  state.lidOpen=true;
+  assert.deepEqual(instrumentDisplay(state),{caption:'Chamber open',reading:null});
+  state.lidOpen=false;
+  assert.equal(instrumentDisplay(state).reading,measured);
+  setWavelength(state,540);
+  assert.deepEqual(instrumentDisplay(state),{caption:'Select 630 nm',reading:null});
+  setWavelength(state,630);
+  assert.deepEqual(instrumentDisplay(state),{caption:'Ready to read',reading:null});
+  assert.equal(state.results.tube_10_0.percentT,49);
 });
 
 test('full source path completes and conserves every mL and stock equivalent',()=>{

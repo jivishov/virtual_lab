@@ -108,7 +108,13 @@ export class HandControls {
  active(a){if(a)this.onStart?.();this.studio?.clearCameraFrames();document.getElementById('handStart').textContent=a?'Stop hands':'Start hands';document.getElementById('handStart').setAttribute('aria-pressed',String(a));document.getElementById('handButton').classList.toggle('camera-on',a);this.panel.classList.toggle('camera-on',a);this.studio?.syncCamera();if(!a){this.lost();this.overlay.getContext('2d').clearRect(0,0,this.overlay.width,this.overlay.height)}this.refresh()}
  stop(){this.camera.stop()}
  reset(){if(this.held||this.suspended){this.scene.endEquipmentDrag((this.held||this.suspended).id,true);this.layout.save()}this.held=this.suspended=null;this.camera.stop();this.primary=null;this.lastRaw=null;this.lastPacket=this.lastSeen=-Infinity;this.resetInput();this.refresh()}
- lost(){if(this.interaction.owner==='hand')this.interaction.suspend('Tracking paused. Regrasp the marked tool to continue.');if(this.held){this.suspended=this.held;this.held=null;this.panel.hidden=false}this.cursor.hidden=true;this.resetInput();this.hint='Show an open palm.';this.refresh()}
+ lost(){
+  const pointer=this.studio?.panelPointer;
+  if(pointer&&!pointer.adjusting)pointer.cancel();
+  if(this.interaction.owner==='hand')this.interaction.suspend('Tracking paused. Regrasp the marked tool to continue.');
+  if(this.held){this.suspended=this.held;this.held=null;this.panel.hidden=false}
+  this.cursor.hidden=true;this.resetInput();this.hint='Show an open palm.';this.refresh();
+ }
  suspend(){this.lost()}
  yieldToPointer(){
   if(this.interaction.owner==='hand')this.interaction.suspend('Using mouse or touch. Open your hand to resume hand control.');
@@ -145,6 +151,7 @@ export class HandControls {
  packet(p){
   const now=performance.now();if(!Number.isFinite(p.stamp)||p.stamp<=this.lastPacket||now-p.stamp>600||now-p.stamp< -10){this.lost();return}this.lastPacket=p.stamp;
   if(this.studio&&p.frameRevision!==undefined&&p.frameRevision!==this.studio.frameRevision)return;
+  if(this.studio?.handlePanelPacket?.(p))return;
   if(this.pointerBusy()){
    this.studio?.paint(p);this.studio?.resetNavigation();this.gestures.reset();this.gate.reset();this.primary=null;
    this.workCommand=this.pendingTool=null;this.press={band:null,since:0,down:false,armed:false};this.cursor.hidden=true;return;

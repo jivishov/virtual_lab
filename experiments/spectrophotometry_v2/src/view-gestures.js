@@ -164,9 +164,11 @@ export class HandGestures {
       }
       const palm = palmCenter(points);
       const aim = (grip||intent)==='pinch' ? points[8] : palm;
+      const pointing = !s.curled[0] && s.curled[1] && s.curled[2] && s.curled[3];
       next.push(h);
       events.push({id:h.id,x:clamp(aim.x),y:clamp(aim.y),phase,armed:h.armed,
-        points,palm,curled:s.curled,grip,intent,intentSince:h.since,label:s.label,closure:s.closure,openness:s.openness});
+        points,palm,pointing,indexTip:{x:mirrored?1-s.points[8].x:s.points[8].x,y:s.points[8].y},
+        curled:s.curled,pinch:s.pinch,grip,intent,intentSince:h.since,label:s.label,closure:s.closure,openness:s.openness});
     }
     const lost = [];
     for (const h of this.hands) {
