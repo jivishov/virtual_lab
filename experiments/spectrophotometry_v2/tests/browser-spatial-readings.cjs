@@ -115,6 +115,17 @@ async function run() {
           const state=await page.evaluate(()=>lab.state);
           assert.equal(await $('#hudVolume').textContent(),state.reading.percentT.toFixed(1)+' %T');
           await preview('laptop');
+          const camera=await page.evaluate(()=>lab.camera);
+          for (const [value,label] of [['original','Original'],['refined','Refined']]) {
+            await pinch($('#labMenu summary'));
+            await pinch($('#benchFinish'));
+            await pinch($('.hand-choice').getByRole('button',{name:label,exact:true}));
+            await pinch($('#labMenu summary'));
+            await page.waitForFunction(finish=>lab.renderInfo.finish===finish,value);
+            assert.deepEqual(await page.evaluate(()=>lab.state),state);
+            assert.deepEqual(await page.evaluate(()=>lab.camera),camera);
+            await verifyOptics();
+          }
         }
       }
       await pinch($('#immersiveNotebook'));

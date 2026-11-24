@@ -224,12 +224,16 @@ constructor(canvas,level='balanced'){this.canvas=canvas;this.gl=canvas.getContex
   this.cameraTexture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,this.cameraTexture);this.textureParams();
   this.setQuality(level);
 }
-async loadRoom(){
+async roomImages(folder=''){
   const load=async name=>{
-    const image=new Image();image.src=new URL('assets/'+name,document.baseURI).href;await image.decode();
-    return this.texture(image);
+    const image=new Image();image.src=new URL('assets/'+folder+name,document.baseURI).href;await image.decode();
+    return image;
   };
-  [this.roomTexture,this.reflections]=await Promise.all([load('clean-lab.webp'),load('room-reflections.webp')]);
+  return Promise.all([load('clean-lab.webp'),load('room-reflections.webp')]);
+}
+async loadRoom(){
+  const images=await this.roomImages();
+  [this.roomTexture,this.reflections]=images.map(image=>this.texture(image));
 }
 drawRoom(){
   if(!this.roomTexture)return;

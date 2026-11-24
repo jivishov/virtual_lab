@@ -7,6 +7,7 @@ This is a standalone 3D edition of the [Blue #1 calibration lab](../spectrophoto
 ## At the bench
 
 - Choose **Classic** for warm, light controls or **SciFi** for the dark instrument display. The switch in the header and in **Settings** remembers your choice on this device. Both themes work in the standard and immersive views.
+- In the local studio, **Settings → Bench appearance** switches the room, equipment finish and instrument displays together. **Refined** opens the daylight lab. **Original** restores the previous bench immediately. Your readings, camera angle and equipment positions carry across the switch, and the browser remembers your choice.
 - **Procedure voice** reads the current step after your first lab interaction. It pronounces volumes, tube ratios and wavelengths and follows the dilution you choose in the notebook. **Replay step** repeats the instruction. **Voice off** mutes automatic narration and is remembered on this device. The British English clips were generated locally with the George voice. [Kokoro voice model](https://huggingface.co/hexgrad/Kokoro-82M)
 - **Immerse** adds a live procedure strip, a pipette volume dial and brackets around the targeted equipment. The wavelength scale beneath the bench views shows the instrument setting. The speaker and replay controls are also available at the top of this view.
 - **Bench**, **Solutions** and **Instrument** frame each workstation. Left-drag empty space to orbit left or right and tilt up or down. Right-drag to pan the bench vertically or sideways. **Show target** centers the next action. **Inspect** brings an individual object close enough to read its markings. **Follow step** frames the tools for the current transfer and starts enabled on phones and tablets.
@@ -42,7 +43,9 @@ Using **5 mL drink and 5 mL water** gives approximately 62.45%T and 0.2045 A. Wi
 
 ## Scene and sources
 
-The worktop, cabinetry, instrument, hinged sample chamber, rack, labeled glassware, three pipettes and liquid surfaces are rendered in 3D. The distant room is a generated panoramic image of a clean laboratory. A roughness-filtered reflection atlas baked from that image supplies the windows and room reflections on the equipment. The glass and dye use real-time transmission approximations. Camera mode composites the virtual island over the video image in screen coordinates.
+The worktop, cabinetry, instrument, hinged sample chamber, rack, labeled glassware, three pipettes and liquid surfaces are rendered in 3D. Each finish has a panoramic room and a matching roughness-filtered reflection atlas. Original uses the existing clean-lab image. Refined uses a Blender Cycles render of a courtyard laboratory with a sink, tiled reagent shelves and daylight through birch trees. The glass and dye use real-time transmission approximations. Camera mode composites the virtual island over the video image in screen coordinates.
+
+The [editable Blender study](authoring/refined-bench.blend) contains the **Daylight lab** and **Console finish** scenes. Run `blender -b --factory-startup --python authoring/refined_bench.py` from the studio directory to rebuild the scenes and export the button caps, lettering and chamber marks into `assets/refined`. Render **Daylight lab** as a PNG, then run `python authoring/bake_room.py path/to/panorama.png --output-dir assets/refined` to regenerate its panorama and reflections. [Compare the two finishes](preview/bench-appearance-comparison.jpg).
 
 The runtime loads the finished geometry from `assets/`. The [Blender source](authoring/instrument-details.blend) and [authoring script](authoring/instrument.py) contain the new console, fasteners, ventilation and power lead. To rebuild the geometry with the original v2 apparatus mesh, run Blender with `--factory-startup --python authoring/instrument.py`, then pass the original unindexed `equipment.json` to `python authoring/pack_equipment.py path/to/equipment.json`. To rebuild the lighting atlas, run `python authoring/bake_room.py authoring/clean-lab.png`. These offline authoring scripts use NumPy, Pillow and OpenCV.
 
@@ -57,6 +60,10 @@ Real mouse input completed all 95 steps in Bench and Follow step views. The comp
 With Playwright available and `STUDIO_URL` pointing to the running app, `node tests/browser-visor-panels.cjs` checks the three toolbar rows, wavelength scale, panel controls and wrapped HUD text at desktop and phone widths. `node tests/browser-camera-framing.cjs` compares the preview frames with the size of a known marker in the rendered webcam image and checks that the Camera button releases the shared video track.
 
 `node tests/browser-spatial-hud.cjs` checks pinch selection, adjacent buttons, sliders, the keypad, tracking loss and camera mirroring. It checks access to the glassware and controls in all three bench views at 11 tablet, laptop and desktop sizes. `node tests/browser-spatial-readings.cjs` runs the full procedure, operates ZERO and all eight READ acquisitions by pinch, checks the optical signal and both fitted chart scales, and enters the dilution and concentration report with the keypad.
+
+`node tests/browser-bench-finish.cjs` checks pixel restoration, stable controls and camera pose, saved preferences and recovery from unavailable or delayed assets. Set `ORIGINAL_STUDIO_URL` to a running copy of the earlier release to compare its instrument rendering with the Original setting.
+
+Refined finish in immersive Hands mode at [tablet](preview/refined-hud-tablet.jpg), [laptop](preview/refined-hud-laptop.jpg) and [desktop](preview/refined-hud-desktop.jpg) sizes.
 
 [Tablet HUD](preview/hands-hud-tablet.jpg) · [Laptop HUD](preview/hands-hud.jpg) · [Desktop HUD](preview/hands-hud-desktop.jpg) · [Completed notebook](preview/notebook.jpg)
 

@@ -136,6 +136,11 @@ async function run() {
     assert.ok(Number(await $('#handCameraSize').inputValue())<70,'Camera scale follows a pinch even while framing is recalibrated');
     await click('#handClose');
     await click('#labMenu summary');
+    for (const [finish,option] of [['original','last-child'],['refined','first-child']]) {
+      await click('#benchFinish');
+      await click('.hand-choice .choices button:'+option);
+      await page.waitForFunction(value=>lab.renderInfo.finish===value,finish);
+    }
     const range = await $('#wavelengthSlider').boundingBox(), y = range.y + range.height / 2;
     const left = [range.x + range.width * .25,y], right = [range.x + range.width - 1,y];
     await pose(left,'open'); await pose(left,'pinch'); await pose(right,'pinch'); await pose(right,'open');

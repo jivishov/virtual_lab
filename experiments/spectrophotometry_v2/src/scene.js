@@ -1,6 +1,7 @@
 import {beginCarry,carryPosition} from './tool-carry.js';
 import {PIPETTES,pipetteIds,isPipette,pipetteLevel} from './pipettes.js';
-import {instrumentDisplay} from './model.js';
+import {instrumentDisplay,STOCK_CONCENTRATION} from './model.js';
+import {BenchFinish,drawFrontDisplay,drawTransmissionDisplay} from './bench-finish.js';
 /* Classroom and rendering helpers adapted from the supplied ELISA scene.
    All spectrophotometry apparatus meshes are evaluated exports from Blender. */
 import {fitCamera} from './camera-fit.js';
@@ -10,7 +11,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const LABELS={tube_dilution:'10 mL dilution cylinder',stockBottle:'Blue #1 stock',waterBottle:'Distilled water',unknownBottle:'Unknown drink',tube_10_0:'Standard · 10 / 0',tube_8_2:'Standard · 8 / 2',tube_6_4:'Standard · 6 / 4',tube_4_6:'Standard · 4 / 6',tube_2_8:'Standard · 2 / 8',tube_0_10:'Water blank · 0 / 10',cuvette:'Optical cuvette',spec20:'Spectrophotometer',wasteBeaker:'Liquid waste',pipette:'10 mL pipette',notebook:'Lab notebook'};
 const TUBE_IDS=['tube_10_0','tube_8_2','tube_6_4','tube_4_6','tube_2_8','tube_0_10'];
 export class LabScene{
- constructor(renderer){this.r=renderer;this.objects={};this.targets={};this.liquids={};this.labels=[];this.home={};this.homeYaw={};this.equipmentBounds={};this.rackSlots=Object.fromEntries(TUBE_IDS.map((id,i)=>[id,i]));this.animation=null;this.labelsVisible=true;this.buildRoom();}
+ constructor(renderer){this.r=renderer;this.appearance=new BenchFinish(this);this.objects={};this.targets={};this.liquids={};this.labels=[];this.home={};this.homeYaw={};this.equipmentBounds={};this.rackSlots=Object.fromEntries(TUBE_IDS.map((id,i)=>[id,i]));this.animation=null;this.labelsVisible=true;this.buildRoom();}
  mat(color,opts={}){return this.r.material(color,opts)}
  box(w,h,d,m,p=[0,0,0],parent,rad){return this.r.mesh(G.bevelBox(w,h,d,rad),m,parent).set(...p)}
  cyl(rad,h,m,p=[0,0,0],parent,top=rad){return this.r.mesh(G.cylinder(rad,h,64,top),m,parent).set(...p)}
@@ -20,9 +21,9 @@ export class LabScene{
  retext(n,str){if(n.text===str)return;n.text=str;const c=n.canvas,ctx=c.getContext('2d'),o=n.options||{};ctx.clearRect(0,0,c.width,c.height);if(o.bg){ctx.fillStyle=o.bg;ctx.fillRect(0,0,c.width,c.height)}ctx.fillStyle=o.ink||'#263f39';ctx.textAlign='center';ctx.textBaseline='middle';const lines=str.split('\n');let sz=Math.min(c.height/(lines.length*1.3),c.width/(Math.max(...lines.map(s=>s.length),1)*.57));ctx.font=`600 ${sz}px "Segoe UI",Arial,sans-serif`;const widest=Math.max(...lines.map(s=>ctx.measureText(s).width),1);if(widest>c.width*.92){sz*=c.width*.92/widest;ctx.font=`600 ${sz}px "Segoe UI",Arial,sans-serif`}lines.forEach((s,i)=>ctx.fillText(s,c.width/2,c.height*(i+.5)/lines.length));this.r.texture(c,n.mat.map)}
  flat(str,w,h,p,parent,opts={}){const n=this.text(str,w,h,p,parent,opts);n.rot[0]=-Math.PI/2;return n}
  buildRoom(){
-  const resin=this.mat('#5c6462',{rough:.69,pattern:1});
-  const edge=this.mat('#303634',{rough:.48,pattern:10});
-  const cabinet=this.mat('#85918b',{rough:.49,pattern:10});
+  const resin=this.appearance.surface('Worktop',this.mat('#5c6462',{rough:.69,pattern:1}));
+  const edge=this.appearance.surface('Bench edge',this.mat('#303634',{rough:.48,pattern:10}));
+  const cabinet=this.appearance.surface('Cabinet doors',this.mat('#85918b',{rough:.49,pattern:10}));
   const steel=this.mat('#b3b9b4',{rough:.27,metal:.86});
   this.box(15,.20,10,resin,[0,-.103,0],undefined,.065);
   this.box(14.96,.045,9.96,edge,[0,-.210,0],undefined,.018);
@@ -60,6 +61,7 @@ export class LabScene{
     else if(bulb||mesh.name==='Front enclosure')Object.assign(properties,{rough:bulb?.58:.35,pattern:10});
     else if(mesh.name.startsWith('Full frosted side'))Object.assign(properties,{rough:.74,pattern:3});
     const node=this.r.mesh(vertices,this.mat(bulb?PIPETTES[name].color:(enamel[mesh.name]||color),properties),group,indices);
+    this.appearance.surface(mesh.name,node.mat);
     // Keep the grip above the last graduation so the entire measuring bore is visible.
     if(bulb)node.pos[1]=.125;
     else if(isPipette(name)&&/sleeve|grasp band/i.test(mesh.name)){
@@ -92,10 +94,11 @@ export class LabScene{
     tissueBox:[1.27,.02,-1.50], clipboard:[-.61,.02,-1.38]
   };
   for(const[name,pos]of Object.entries(placements)){if(!this.objects[name])throw Error(`Missing Blender group: ${name}`);this.objects[name].set(...pos);this.home[name]=[...pos]}
-  for(const [id,title,detail,stripe] of [
-    ['waterBottle','Distilled water','Blank & rinse','#34766e'],
-    ['stockBottle','Blue #1','2.31 µM stock','#34648c'],
-    ['unknownBottle','Unknown drink','Original sample','#906b39']
+  const stockStrength=STOCK_CONCENTRATION+' µM';
+  for(const [id,title,detail,stripe,role,description] of [
+    ['waterBottle','Distilled water','Blank & rinse','#34766e','WATER','Distilled water'],
+    ['stockBottle','Blue #1',stockStrength+' stock','#34648c','STOCK','Blue #1 · '+stockStrength],
+    ['unknownBottle','Unknown drink','Original sample','#906b39','UNKNOWN','Original drink']
   ]){
     const label=this.canvas(512,288),ctx=label.getContext('2d');
     ctx.fillStyle='#f2efe4';ctx.fillRect(0,0,512,288);
@@ -103,7 +106,8 @@ export class LabScene{
     ctx.fillStyle='#273a39';ctx.textAlign='center';ctx.font='600 50px Segoe UI';ctx.fillText(title,256,128,395);
     ctx.fillStyle='#475852';ctx.font='39px Segoe UI';ctx.fillText(detail,256,191,385);
     ctx.fillStyle='#c6cabe';ctx.fillRect(54,222,404,2);
-    this.wrapLabel(this.objects[id],label,.81,.447,.370,id==='unknownBottle'?.63:.72);
+    const wrapped=this.wrapLabel(this.objects[id],label,.81,.447,.370,id==='unknownBottle'?.63:.72);
+    this.appearance.reagent(wrapped,role,description,stripe);
   }
   for(const [i,id] of TUBE_IDS.entries()){
     const label=this.canvas(256,144),ctx=label.getContext('2d');
@@ -163,6 +167,9 @@ export class LabScene{
   if(this.displayedTransmission===signal)return;
   this.displayedTransmission=signal;
   const plate=this.opticsPlate,c=plate.canvas,ctx=c.getContext('2d');
+  if(this.appearance.active==='refined'){
+    drawTransmissionDisplay(c,reading);this.r.texture(c,plate.mat.map);return;
+  }
   const surface=ctx.createLinearGradient(0,0,0,c.height);
   surface.addColorStop(0,'#263533');surface.addColorStop(1,'#152421');
   ctx.fillStyle=surface;ctx.fillRect(0,0,c.width,c.height);
@@ -186,7 +193,11 @@ export class LabScene{
   this.updateTransmission(measured);
   const key=[measured?.absorbance,measured?.percentT,state.wavelength,caption].join('|');
   if(this.lcdValue===key)return;this.lcdValue=key;
-  const c=this.screen.canvas,ctx=c.getContext('2d'),wash=ctx.createLinearGradient(0,0,0,c.height);
+  const c=this.screen.canvas,ctx=c.getContext('2d');
+  if(this.appearance.active==='refined'){
+    drawFrontDisplay(c,state.wavelength,caption,measured);this.r.texture(c,this.screen.mat.map);return;
+  }
+  const wash=ctx.createLinearGradient(0,0,0,c.height);
   wash.addColorStop(0,'#a3b3a4');wash.addColorStop(.23,'#c2cfbf');wash.addColorStop(1,'#b1bfae');
   ctx.fillStyle=wash;ctx.fillRect(0,0,c.width,c.height);
   ctx.fillStyle='#44594e';ctx.font='600 31px Consolas,monospace';ctx.fillText('λ  '+state.wavelength+' nm',25,46);

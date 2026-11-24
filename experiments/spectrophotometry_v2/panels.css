@@ -143,6 +143,9 @@
 }
 
 /* Panel geometry and instrument controls are shared by both themes. */
+.bench-finish-setting {display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
+.settings-popover .bench-finish-setting select {width:auto;min-width:100px;min-height:44px}
+#benchFinishStatus[hidden] {display:none}
 .wavelength-setting {
   display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 8px;padding:6px 10px 10px;
 }

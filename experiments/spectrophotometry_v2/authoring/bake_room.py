@@ -1,15 +1,20 @@
 """Bake the clean studio panorama and a matching roughness-filtered reflection atlas."""
-import sys
+import argparse
 from pathlib import Path
 
 import cv2
 import numpy as np
 from PIL import Image
 
-out = Path(__file__).resolve().parents[1] / "assets"
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("panorama", type=Path)
+parser.add_argument("--output-dir", type=Path, default=Path(__file__).resolve().parents[1] / "assets")
+options = parser.parse_args()
+out = options.output_dir
+out.mkdir(parents=True, exist_ok=True)
 # Invert the display transform before integrating reflected light. Window and lamp
 # highlights are an artistic exposure estimate from the supplied image.
-photo = np.asarray(Image.open(sys.argv[1]).convert("RGB"),dtype=np.float32)/255
+photo = np.asarray(Image.open(options.panorama).convert("RGB"),dtype=np.float32)/255
 # Match both ends of the equirectangular texture for a continuous rear orbit.
 band = max(16, round(photo.shape[1]*.035))
 u = np.linspace(0,1,band,dtype=np.float32)[None,:,None]
