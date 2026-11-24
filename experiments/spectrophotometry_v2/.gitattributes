@@ -2,3 +2,4 @@
 vendor/mediapipe/vision_bundle.mjs -text whitespace=cr-at-eol
 vendor/mediapipe/wasm/*.js -text whitespace=cr-at-eol
 assets/refined/*.bin binary
+assets/cinematic/*.bin binary

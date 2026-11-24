@@ -136,7 +136,7 @@ async function run() {
     assert.ok(Number(await $('#handCameraSize').inputValue())<70,'Camera scale follows a pinch even while framing is recalibrated');
     await click('#handClose');
     await click('#labMenu summary');
-    for (const [finish,option] of [['original','last-child'],['refined','first-child']]) {
+    for (const [finish,option] of [['original','last-child'],['refined','nth-child(2)'],['cinematic','first-child']]) {
       await click('#benchFinish');
       await click('.hand-choice .choices button:'+option);
       await page.waitForFunction(value=>lab.renderInfo.finish===value,finish);

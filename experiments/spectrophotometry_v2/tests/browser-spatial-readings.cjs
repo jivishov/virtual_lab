@@ -116,7 +116,7 @@ async function run() {
           assert.equal(await $('#hudVolume').textContent(),state.reading.percentT.toFixed(1)+' %T');
           await preview('laptop');
           const camera=await page.evaluate(()=>lab.camera);
-          for (const [value,label] of [['original','Original'],['refined','Refined']]) {
+          for (const [value,label] of [['original','Original'],['refined','Refined'],['cinematic','Cinematic']]) {
             await pinch($('#labMenu summary'));
             await pinch($('#benchFinish'));
             await pinch($('.hand-choice').getByRole('button',{name:label,exact:true}));

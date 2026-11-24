@@ -60,7 +60,10 @@ export class LabScene{
     if(mesh.name==='Rack base')Object.assign(properties,{rough:.38,pattern:8});
     else if(bulb||mesh.name==='Front enclosure')Object.assign(properties,{rough:bulb?.58:.35,pattern:10});
     else if(mesh.name.startsWith('Full frosted side'))Object.assign(properties,{rough:.74,pattern:3});
-    const node=this.r.mesh(vertices,this.mat(bulb?PIPETTES[name].color:(enamel[mesh.name]||color),properties),group,indices);
+    const material=this.mat(bulb?PIPETTES[name].color:(enamel[mesh.name]||color),properties);
+    const node=name==='instrument'&&mesh.name==='Dial index'
+      ?this.appearance.instrumentPrint(vertices,indices,material,group)
+      :this.r.mesh(vertices,material,group,indices);
     this.appearance.surface(mesh.name,node.mat);
     // Keep the grip above the last graduation so the entire measuring bore is visible.
     if(bulb)node.pos[1]=.125;
@@ -117,6 +120,13 @@ export class LabScene{
     ctx.fillText((10-2*i)+'/'+(2*i),128,99);
     this.wrapLabel(this.objects[id],label,.272,.162,.1575,1.079);
   }
+  const wastePaper=this.canvas(512,204),ink=wastePaper.getContext('2d');
+  ink.fillStyle='#ede9dc';ink.fillRect(0,0,512,204);
+  ink.fillStyle='#a87940';ink.fillRect(0,0,512,17);
+  ink.fillStyle='#273338';ink.textAlign='center';ink.font='700 68px "Segoe UI",sans-serif';
+  ink.fillText('WASTE',256,104);ink.font='500 41px "Segoe UI",sans-serif';ink.fillText('250 mL',256,165);
+  const wasteLabel=this.wrapLabel(this.objects.wasteBeaker,wastePaper,.85,.34,.506,.485);
+  wasteLabel.visible=false;this.appearance.cinematicDetails.push(wasteLabel);
   this.text('CALIBRATION STANDARDS',2.25,.233,[0,.328,.511],this.objects.rack,{bg:'#eeebe0',ink:'#263b3c'});
   this.objects.clipboard.rot[1]=-.08;
   TUBE_IDS.forEach((id,i)=>{const node=this.objects[id];if(!node)throw Error(`Missing sample tube: ${id}`);node.set(placements.rack[0]+(i-2.5)*.5,placements.rack[1]+.163,placements.rack[2]);this.home[id]=[...node.pos];this.targets[id]={id,group:node,offset:[0,.72,0],radius:.2};this.addLiquid(id,.134,.82,node,.08);});
@@ -127,6 +137,7 @@ export class LabScene{
   this.buildTransmissionDisplay();
   this.flat('LIGHT PATH  ↕',.85,.13,[.85,1.304,.55],this.objects.instrument,{ink:'#23484e'});
   this.screen=this.decal(1.19,.33,this.canvas(660,184),[-.65,.84,1.222],this.objects.instrument,{rough:.27,emission:.11});
+  this.appearance.surface('Instrument display',this.screen.mat);
   this.lid=this.objects.instrument_lid;if(this.lid){this.r.root.children=this.r.root.children.filter(n=>n!==this.lid);this.objects.instrument.add(this.lid);this.lid.set(.85,1.25,-.38)}
   this.pipetteStand=this.objects.pipetteStand;
   for(const id of pipetteIds){
@@ -160,6 +171,7 @@ export class LabScene{
   const sheet=this.canvas(640,340), instrument=this.objects.instrument;
   const z=-.047;
   this.opticsPlate=this.decal(1.64,1.015,sheet,[-.585,1.423-.15*z,z],instrument,{rough:.29});
+  this.appearance.surface('Instrument display',this.opticsPlate.mat);
   this.opticsPlate.rot[0]=-Math.PI/2+Math.atan(.15);
  }
  updateTransmission(reading){
@@ -167,7 +179,7 @@ export class LabScene{
   if(this.displayedTransmission===signal)return;
   this.displayedTransmission=signal;
   const plate=this.opticsPlate,c=plate.canvas,ctx=c.getContext('2d');
-  if(this.appearance.active==='refined'){
+  if(this.appearance.active!=='original'){
     drawTransmissionDisplay(c,reading);this.r.texture(c,plate.mat.map);return;
   }
   const surface=ctx.createLinearGradient(0,0,0,c.height);
@@ -194,7 +206,8 @@ export class LabScene{
   const key=[measured?.absorbance,measured?.percentT,state.wavelength,caption].join('|');
   if(this.lcdValue===key)return;this.lcdValue=key;
   const c=this.screen.canvas,ctx=c.getContext('2d');
-  if(this.appearance.active==='refined'){
+  if(this.appearance.dial) this.appearance.dial.rot[2]=(550-state.wavelength)*Math.PI/200;
+  if(this.appearance.active!=='original'){
     drawFrontDisplay(c,state.wavelength,caption,measured);this.r.texture(c,this.screen.mat.map);return;
   }
   const wash=ctx.createLinearGradient(0,0,0,c.height);
@@ -319,7 +332,15 @@ export class LabScene{
     const profile=[[radius*.82,0],[radius*.92,.001],[radius*.975,.004],[radius,.009]];
     meniscus=this.r.mesh(G.lathe(profile,64),material,parent);meniscus.noShadow=true;
   }
-  this.liquids[id]={node,height,base,square,meniscus};
+  let caustic=null;
+  if(['stockBottle','waterBottle','unknownBottle','wasteBeaker'].includes(id)){
+    const transmitted=this.mat('#ffffff',{pattern:14,thickness:radius,opacity:.42});
+    caustic=this.r.mesh(G.plane(radius*7,radius*7),transmitted,parent);
+    caustic.set(0,.004-parent.pos[1],0);caustic.rot[0]=-Math.PI/2;
+    caustic.noShadow=true;caustic.visible=false;
+    this.appearance.cinematicDetails.push(caustic);
+  }
+  this.liquids[id]={node,height,base,square,meniscus,caustic};
  }
  fill(id,fraction,concentration){
   const liquid=this.liquids[id];if(!liquid)return;
@@ -327,6 +348,10 @@ export class LabScene{
   liquid.node.visible=level>.001;liquid.node.scale[1]=height;
   if(liquid.square)liquid.node.pos[1]=liquid.base+height*.5;
   liquid.node.mat.dye=clamp(concentration/2.31,0,1.5);
+  if(liquid.caustic){
+    liquid.caustic.mat.level=level;
+    liquid.caustic.mat.dye=liquid.node.mat.dye;
+  }
   if(liquid.meniscus){liquid.meniscus.visible=liquid.node.visible;liquid.meniscus.pos[1]=liquid.base+height}
  }
  syncLiquids(state){

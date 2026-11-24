@@ -66,11 +66,12 @@ async function run() {
     const page = await browser.newPage(size);
     const errors = [], requests = [];
     page.on('pageerror', e => errors.push(e.message));
-    page.on('request', r => { if (r.url().includes('/assets/refined/')) requests.push(r.url()); });
+    page.on('request', r => { if (/\/assets\/(refined|cinematic)\//.test(r.url())) requests.push(r.url()); });
     await openLab(page);
-    assert.equal(await page.evaluate(() => lab.renderInfo.finish),'refined');
-    assert.equal(new Set(requests).size,4);
+    assert.equal(await page.evaluate(() => lab.renderInfo.finish),'cinematic');
+    assert.equal(new Set(requests).size,6);
     await instrument(page);
+    const cinema = await frame(page);
     await selectFinish(page,'original');
     const original = await frame(page);
     const before = await snapshot(page);
@@ -78,11 +79,15 @@ async function run() {
     const refined = await frame(page);
     assert.deepEqual(await snapshot(page),before);
     assert.ok(await difference(page,original,refined)>.15,'Visibly different instrument and room');
+    assert.ok(await difference(page,refined,cinema)>.22,'Cinematic lighting, materials and room are visible');
+    await selectFinish(page,'cinematic');
+    assert.deepEqual(await snapshot(page),before);
+    assert.ok(await difference(page,cinema,await frame(page))<.001,'Cinematic round trip');
     await selectFinish(page,'original');
     const restored = await frame(page);
     assert.deepEqual(await snapshot(page),before);
     assert.ok(await difference(page,original,restored)<.001,'Original pixels restored');
-    assert.equal(requests.length,4,'Cached assets on repeat selection');
+    assert.equal(requests.length,8,'Shared console and both rooms cached on repeat selection');
     if (process.env.ORIGINAL_STUDIO_URL) {
       const baseline = await browser.newPage(size);
       await openLab(baseline,process.env.ORIGINAL_STUDIO_URL);
@@ -91,6 +96,13 @@ async function run() {
       const diff = await difference(page,original,published);
       console.log('Original pixels differing from the release by more than 6/255:',(100*diff).toFixed(4)+'%');
       assert.ok(diff<.001,'Original reproduces the existing release');
+      await baseline.close();
+    }
+    if (process.env.REFINED_STUDIO_URL) {
+      const baseline=await browser.newPage(size);
+      await openLab(baseline,process.env.REFINED_STUDIO_URL);
+      await instrument(baseline);
+      assert.ok(await difference(page,refined,await frame(baseline))<.001,'Refined reproduces the previous trial');
       await baseline.close();
     }
     requests.length = 0;
@@ -129,6 +141,29 @@ async function run() {
     await page.locator('#benchFinish').selectOption('refined');
     await page.waitForFunction(() => lab.renderInfo.finish==='refined');
     assert.ok(await page.locator('#benchFinishStatus').isHidden());
+    await page.locator('#labMenu summary').click();
+    await openLab(page); // saved Refined loads its own room and shared console
+    await page.route('**/assets/cinematic/dial.json',route=>route.abort());
+    await page.locator('#labMenu summary').click();
+    await page.locator('#benchFinish').selectOption('cinematic');
+    await page.locator('#benchFinishStatus').waitFor({state:'visible'});
+    assert.equal(await page.locator('#benchFinish').inputValue(),'refined');
+    assert.equal(await page.evaluate(()=>lab.renderInfo.finish),'refined');
+    await page.unroute('**/assets/cinematic/dial.json');
+    await page.locator('#benchFinish').selectOption('cinematic');
+    await page.waitForFunction(()=>lab.renderInfo.finish==='cinematic');
+    await openLab(page);
+    assert.equal(await page.evaluate(()=>lab.renderInfo.finish),'cinematic');
+    const levels=new Set();
+    await page.locator('#labMenu summary').click();
+    for(let i=0;i<3;i++){
+      await page.locator('#qualityButton').click();
+      const info=await page.evaluate(()=>lab.renderInfo);
+      assert.equal(info.finish,'cinematic');
+      levels.add(info.quality);
+      await frame(page);
+    }
+    assert.deepEqual(levels,new Set(['low','balanced','high']));
     assert.deepEqual(errors,[]);
     console.log('Finish selection, camera and hit targets, pixel restoration, persistence, delayed selection, fallback and retry passed.');
   } finally {

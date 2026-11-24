@@ -7,7 +7,7 @@ This is a standalone 3D edition of the [Blue #1 calibration lab](../spectrophoto
 ## At the bench
 
 - Choose **Classic** for warm, light controls or **SciFi** for the dark instrument display. The switch in the header and in **Settings** remembers your choice on this device. Both themes work in the standard and immersive views.
-- In the local studio, **Settings → Bench appearance** switches the room, equipment finish and instrument displays together. **Refined** opens the daylight lab. **Original** restores the previous bench immediately. Your readings, camera angle and equipment positions carry across the switch, and the browser remembers your choice.
+- **Settings → Bench appearance** switches the room, equipment finish and instrument displays together. A first visit opens **Cinematic**, a late-afternoon lab. Choose **Refined** for the daylight lab or **Original** for the earlier bench. You can switch during a measurement. The studio keeps your readings, camera angle and equipment positions and remembers your choice.
 - **Procedure voice** reads the current step after your first lab interaction. It pronounces volumes, tube ratios and wavelengths and follows the dilution you choose in the notebook. **Replay step** repeats the instruction. **Voice off** mutes automatic narration and is remembered on this device. The British English clips were generated locally with the George voice. [Kokoro voice model](https://huggingface.co/hexgrad/Kokoro-82M)
 - **Immerse** adds a live procedure strip, a pipette volume dial and brackets around the targeted equipment. The wavelength scale beneath the bench views shows the instrument setting. The speaker and replay controls are also available at the top of this view.
 - **Bench**, **Solutions** and **Instrument** frame each workstation. Left-drag empty space to orbit left or right and tilt up or down. Right-drag to pan the bench vertically or sideways. **Show target** centers the next action. **Inspect** brings an individual object close enough to read its markings. **Follow step** frames the tools for the current transfer and starts enabled on phones and tablets.
@@ -43,7 +43,9 @@ Using **5 mL drink and 5 mL water** gives approximately 62.45%T and 0.2045 A. Wi
 
 ## Scene and sources
 
-The worktop, cabinetry, instrument, hinged sample chamber, rack, labeled glassware, three pipettes and liquid surfaces are rendered in 3D. Each finish has a panoramic room and a matching roughness-filtered reflection atlas. Original uses the existing clean-lab image. Refined uses a Blender Cycles render of a courtyard laboratory with a sink, tiled reagent shelves and daylight through birch trees. The glass and dye use real-time transmission approximations. Camera mode composites the virtual island over the video image in screen coordinates.
+The bench and equipment are interactive 3D geometry. Each finish has a panoramic room and reflections baked from that room. Original uses the existing clean-lab image. Refined uses a Blender Cycles render of a courtyard laboratory. Cinematic uses a generated photorealistic panorama based on that render. Window light falls across the worktop and the glass picks up the room color. As liquid moves, its level and the light it casts on the bench change together. Camera mode composites the virtual bench over the live video.
+
+The cinematic instrument has a fluted dial that turns with the wavelength setting. Its two displays show the simulated acquisition. The Blender file contains editable dial parts, the fitted enclosure, a packed room panorama and two cameras. From the studio directory, run `blender -b --factory-startup --python authoring/cinematic_bench.py` to rebuild the Blender scene and export the dial. [Editable cinematic instrument](authoring/cinematic-bench.blend) · [Instrument after a reading](preview/cinematic-instrument.jpg)
 
 The [editable Blender study](authoring/refined-bench.blend) contains the **Daylight lab** and **Console finish** scenes. Run `blender -b --factory-startup --python authoring/refined_bench.py` from the studio directory to rebuild the scenes and export the button caps, lettering and chamber marks into `assets/refined`. Render **Daylight lab** as a PNG, then run `python authoring/bake_room.py path/to/panorama.png --output-dir assets/refined` to regenerate its panorama and reflections. [Compare the two finishes](preview/bench-appearance-comparison.jpg).
 
@@ -61,7 +63,9 @@ With Playwright available and `STUDIO_URL` pointing to the running app, `node te
 
 `node tests/browser-spatial-hud.cjs` checks pinch selection, adjacent buttons, sliders, the keypad, tracking loss and camera mirroring. It checks access to the glassware and controls in all three bench views at 11 tablet, laptop and desktop sizes. `node tests/browser-spatial-readings.cjs` runs the full procedure, operates ZERO and all eight READ acquisitions by pinch, checks the optical signal and both fitted chart scales, and enters the dilution and concentration report with the keypad.
 
-`node tests/browser-bench-finish.cjs` checks pixel restoration, stable controls and camera pose, saved preferences and recovery from unavailable or delayed assets. Set `ORIGINAL_STUDIO_URL` to a running copy of the earlier release to compare its instrument rendering with the Original setting.
+`node tests/browser-bench-finish.cjs` checks all three appearances, rendering quality levels, pixel restoration, saved preferences and recovery from unavailable or delayed assets. Set `ORIGINAL_STUDIO_URL` and `REFINED_STUDIO_URL` to running copies of their respective earlier releases to compare pixels against those builds.
+
+Cinematic in immersive Hands mode. [Tablet](preview/cinematic-tablet.jpg) · [15-inch laptop layout](preview/cinematic-laptop.jpg) · [Desktop](preview/cinematic-desktop.jpg) · [Angled bench view](preview/cinematic-bench.jpg)
 
 Refined finish in immersive Hands mode at [tablet](preview/refined-hud-tablet.jpg), [laptop](preview/refined-hud-laptop.jpg) and [desktop](preview/refined-hud-desktop.jpg) sizes.
 

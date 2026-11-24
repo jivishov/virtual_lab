@@ -10,11 +10,14 @@ import random
 
 import bpy
 from mathutils import Vector
-import numpy as np
+import sys
 
 ROOT = Path(STUDIO_ROOT) if "STUDIO_ROOT" in globals() else Path(__file__).resolve().parents[1]
 OUT = ROOT / "assets" / "refined"
 OUT.mkdir(parents=True, exist_ok=True)
+sys.path.insert(0, str(ROOT / "authoring"))
+from export_finish import export_meshes
+
 PI = math.pi
 
 
@@ -113,33 +116,7 @@ for side in (-1,1):
         instrument_block("Chamber corner",.85+side*.303,1.300,.10+end*.287,.025,.009,.106,trim,.003)
         instrument_block("Chamber corner",.85+side*.263,1.300,.10+end*.329,.101,.009,.023,trim,.003)
 
-bpy.context.view_layer.update()
-deps=bpy.context.evaluated_depsgraph_get()
-batches={}
-for obj in console.objects:
-    evaluated=obj.evaluated_get(deps)
-    mesh=evaluated.to_mesh()
-    mesh.calc_loop_triangles()
-    material=obj.data.materials[0]
-    verts=batches.setdefault(material.name,[])
-    world=evaluated.matrix_world
-    normal=world.to_3x3().inverted().transposed()
-    for tri in mesh.loop_triangles:
-        for i in tri.loops:
-            v=world @ mesh.vertices[mesh.loops[i].vertex_index].co
-            n=(normal @ mesh.corner_normals[i].vector).normalized()
-            verts.append((v.x,v.z,-v.y,n.x,n.z,-n.y,v.x,v.z))
-    evaluated.to_mesh_clear()
-
-manifest=[]
-with (OUT/"console.bin").open("wb") as stream:
-    for name,values in batches.items():
-        vertices,indices=np.unique(np.round(values,6).astype("<f4"),axis=0,return_inverse=True)
-        manifest.append(dict(name=name,material=json.loads(bpy.data.materials[name]["runtime"]),
-                             offset=stream.tell(),vertexCount=len(vertices),indexCount=indices.size))
-        stream.write(vertices.tobytes())
-        stream.write(indices.astype("<u4").tobytes())
-(OUT/"console.json").write_text(json.dumps(manifest,separators=(",",":")),encoding="utf-8")
+export_meshes(console.objects, OUT, "console")
 
 room=bpy.data.scenes.new("Daylight lab")
 bpy.context.window.scene=scene=room

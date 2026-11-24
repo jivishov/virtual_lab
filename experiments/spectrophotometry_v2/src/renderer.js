@@ -30,10 +30,12 @@ ${hdr?'#define HDR 1':''}
 in vec3 vPos,vNormal;in vec2 vUV;in vec4 vShadow;in float vLocalY;
 uniform vec2 uPipette; // liquid height in the shaft and relative dye concentration
 uniform vec3 uColor,uCamera,uFluor;
+uniform mat4 uModel;
 uniform float uRough,uMetal,uGlass,uOpacity,uTexture,uPattern,uEmission,uThickness,uShadowSize,uExposure;
 uniform sampler2D uMap,uShadow,uBackground,uReflections;uniform vec2 uResolution;
 uniform vec3 uKeyDir,uKeyColor,uFillDir,uFillColor,uSky,uGround,uUVPos,uUVDir,uUVColor,uUVAxis;
 uniform float uEnvScale,uUV;
+uniform vec2 uFilm; // cinematic materials, simulated window light
 out vec4 outColor;const float PI=3.14159265359;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
@@ -48,6 +50,27 @@ vec3 env(vec3 ray,float rough){
   float level=clamp(rough*5.,0.,5.);
   vec2 uv=roomUV(ray);
   return 1.65*uEnvScale*mix(reflectionLevel(uv,floor(level)),reflectionLevel(uv,ceil(level)),fract(level));
+}
+// Project the sun through the room's side glazing. The penumbra widens with
+// distance from the window and stays attached to the bench while the camera orbits.
+float throughWindow(vec3 p,vec3 lightDir){
+  float distanceToGlass=(-10.5-p.x)/lightDir.x;
+  vec2 pane=p.zy+lightDir.zy*distanceToGlass;
+  float soft=.12+.021*distanceToGlass;
+  float opening=smoothstep(.80-soft,.80+soft,pane.y)*(1.-smoothstep(7.4-soft,7.4+soft,pane.y));
+  float frame=abs(fract((pane.x+.40)/3.15)-.5)*3.15;
+  float uprights=smoothstep(.01,.095+soft,frame);
+  float rail=smoothstep(.015,.12+soft,abs(pane.y-4.1));
+  float leaves=fbm(pane*vec2(.88,1.31));
+  return opening*mix(.19,1.,uprights*rail)*mix(.75,1.,smoothstep(.33,.68,leaves));
+}
+float reflectedWindow(vec3 ray,float rough){
+  vec2 pane=ray.zy/max(.01,-ray.x);
+  float blur=.065+rough*.44;
+  float width=1.-smoothstep(.78-blur,.78+blur,abs(pane.x+.08));
+  float height=1.-smoothstep(.25-blur,.25+blur,abs(pane.y-.31));
+  float frame=smoothstep(.01,.035+blur,abs(fract((pane.x+.2)/.54)-.5)*.54);
+  return step(ray.x,0.)*width*height*mix(.45,1.,frame);
 }
 float shadow(vec3 n,vec3 l){vec3 p=vShadow.xyz/vShadow.w*.5+.5;if(p.z>1.||p.x<0.||p.x>1.||p.y<0.||p.y>1.)return 1.;float s=0.;float bias=max(.0009*(1.-dot(n,l)),.0002);float t=1.5/uShadowSize;for(int x=-2;x<=2;x++)for(int y=-2;y<=2;y++){vec2 o=vec2(x,y)+vec2(hash(gl_FragCoord.xy+vec2(x,y))-.5)*.8;s+=(p.z-bias<=texture(uShadow,p.xy+o*t).r?1.:.22);}return s/25.;}
 // The lamp is a tube: light comes from the nearest point on its axis.
@@ -64,6 +87,24 @@ return vec4(pow(tonemap(c*uExposure),vec3(1./2.2)),a);
 #endif
 }
 void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(uCamera-vPos),r;vec4 tex=uTexture>.5?texture(uMap,vUV):vec4(1.);if(tex.a<.02)discard;
+  if(uPattern==14.){
+    if(uFilm.y<.5)discard;
+    vec2 away=-normalize(uKeyDir.xz),p=(vPos.xz-uModel[3].xz)/uThickness;
+    float along=dot(p,away),across=dot(p,vec2(-away.y,away.x));
+    float fill=clamp(uPipette.x,0.,1.),dye=clamp(uPipette.y,0.,1.)*fill;
+    float radius=length(vec2((along-.98)/1.43,across/.81));
+    float shade=(1.-smoothstep(.59,1.1,radius))*(.11+.18*dye);
+    float edge=length(vec2((along-.83-.17*fill)/.94,across/.66));
+    float angle=atan(across,along-.83);
+    float edgeDistance=(edge-1.)/.14;
+    float glint=exp(-edgeDistance*edgeDistance)*smoothstep(.70,1.76,along)*(.07+.16*fill);
+    glint*=.76+.24*cos(4.*angle+.3)*cos(2.*angle-.5);
+    glint*=throughWindow(vPos,normalize(uKeyDir));
+    float alpha=shade+glint;
+    if(alpha<.002)discard;
+    vec3 light=mix(vec3(.57,.42,.24),vec3(.07,.25,.58),dye);
+    outColor=finish(mix(vec3(.005,.013,.022),light,glint/alpha),alpha);return;
+  }
   if(uPattern==4.){float rr=length((vUV-.5)*2.);float a=exp(-rr*rr*4.)*(1.-smoothstep(.65,1.,rr))*uOpacity;outColor=vec4(0.,0.,0.,a*(1.-uUV*.35));return;}
   if(uPattern==5.){outColor=finish(uColor*pow(tex.rgb,vec3(2.2))*uEmission,uOpacity*tex.a);return;}
   if(uPattern==9.){float rr=length((vUV-.5)*2.);float a=exp(-rr*rr*3.2)*(1.-smoothstep(.72,1.,rr));outColor=vec4(uColor*uEmission*a*lampIrradiance(lampVector()),1.);return;}
@@ -85,13 +126,30 @@ void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(u
     float stipple=noise((vPos.xy+vPos.yz*.81)*142.);
     base*=.96+.07*stipple;rough=clamp(rough+(stipple-.5)*.13,.18,.86);
   }
+  if(uPattern==12.){
+    vec2 uv=vPos.xz;
+    float patches=fbm(uv*1.6);
+    float grit=noise(uv*160.);
+    float detail=1.-smoothstep(.004,.025,max(fwidth(uv.x),fwidth(uv.y)));
+    base*=.85+.25*patches;
+    base+=vec3(.018,.017,.014)*smoothstep(.75,.94,grit)*detail;
+    rough=clamp(rough+.11*(patches-.5)+.10*(grit-.5)*detail,.28,.61);
+    n=normalize(n+.014*detail*vec3(grit-.5,0.,noise(uv*161.+17.)-.5));
+  }
   r=reflect(-v,n);float nv=clamp(dot(n,v),0.,1.); // >1 by rounding would make pow() NaN and bloom spreads it
+  if(uPattern==13.){
+    vec3 display=pow(tex.rgb,vec3(2.2))*.83;
+    vec3 cover=env(r,.26)*(.014+.06*pow(1.-nv,3.));
+    outColor=finish(display+min(cover,vec3(.13)),alpha);return;
+  }
   vec3 L=normalize(uKeyDir);
   // Ground occlusion darkens the lower sides of objects standing on the bench.
   float occl=(uPattern==1.||uPattern==6.)?1.:mix(1.,mix(.55,1.,smoothstep(0.,.34,vPos.y)),1.-abs(n.y));
   vec3 f=fresnel(nv,mix(vec3(.04),base,uMetal));
+  float keyFalloff=mix(1.16,.81,smoothstep(-6.,6.,vPos.x+.12*vPos.z));
+  if(uFilm.y>.5) keyFalloff=.23+1.04*throughWindow(vPos,L);
   vec3 c=base*mix(uGround,uSky,n.y*.5+.5)*(1.-uMetal*.7)*occl
-    +direct(n,v,L,uKeyColor,base,rough,uMetal)*shadow(n,L)*mix(1.16,.81,smoothstep(-6.,6.,vPos.x+.12*vPos.z))
+    +direct(n,v,L,uKeyColor,base,rough,uMetal)*shadow(n,L)*keyFalloff
     +direct(n,v,normalize(uFillDir),uFillColor,base,rough,uMetal)*occl
     +env(r,rough)*f*(1.-rough*.6)*occl;
   // Long-wave UV lamp: a little visible violet light plus excitation of fluorescent materials.
@@ -104,8 +162,19 @@ void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(u
     vec2 uv=clamp(gl_FragCoord.xy/uResolution,vec2(.001),vec2(.999));
     vec3 behind=texture(uBackground,uv).rgb;
     float path=uThickness*mix(.30,1.,nv);
-    vec3 absorb=exp(-path*(vec3(.018,.008,.004)+uPipette.y*vec3(1.55,.59,.036)));
+    vec3 dye=mix(vec3(1.55,.59,.036),vec3(2.25,.76,.038),uFilm.x);
+    vec3 absorb=exp(-path*(vec3(.018,.008,.004)+uPipette.y*dye));
     float surface=.022+.62*pow(1.-nv,5.);
+    if(uFilm.x>.5){
+      vec3 bent=refract(-v,n,.75);
+      vec3 transmitted=mix(env(bent,.28),uSky,.40);
+      float weight=.34*clamp(path/1.75,.25,1.)*(.63+.37*max(dot(n,L),0.));
+#ifdef HDR
+      behind=mix(behind,transmitted,weight);
+#else
+      behind=mix(behind,finish(transmitted,1.).rgb,weight);
+#endif
+    }
 #ifdef HDR
     vec3 column=mix(behind*absorb,env(r,.09),surface);
 #else
@@ -114,15 +183,21 @@ void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(u
     outColor=vec4(column,uOpacity);return;
   }
   if(uGlass>.5){vec2 uv=gl_FragCoord.xy/uResolution;vec2 offset=vec2(dot(n,normalize(cross(v,vec3(0.,1.,0.)))),n.y)*.032*uThickness;vec3 bg=texture(uBackground,clamp(uv+offset,vec2(.002),vec2(.998))).rgb;float F=.04+.96*pow(1.-nv,5.);float reflectance=clamp(.028+.10*uOpacity+F*.93,.055,.97);
+    vec3 reflected=env(r,rough);
+    if(uFilm.x>.5){
+      reflectance=.043+.94*pow(1.-nv,4.);
+      reflected+=vec3(1.40,1.21,.96)*reflectedWindow(r,rough)*uFilm.y;
+      reflected+=vec3(.63,.82,1.08)*reflectedWindow(vec3(-r.x,r.y,-r.z),rough)*uFilm.y;
+    }
 #ifdef HDR
-    vec3 reflection=env(r,rough)*1.05+direct(n,v,L,uKeyColor,vec3(1.),rough,0.)*.15+uUVColor*irr*.25;vec3 tint=mix(vec3(1.),max(uColor,vec3(.001)),uOpacity);
+    vec3 reflection=reflected*1.05+direct(n,v,L,uKeyColor,vec3(1.),rough,0.)*.15+uUVColor*irr*.25;vec3 tint=mix(vec3(1.),max(uColor,vec3(.001)),uOpacity);
     vec3 result=mix(bg*tint,reflection,reflectance);result=mix(result,result*.55,edge*.42);
 #else
-    vec3 reflection=pow(tonemap(env(r,rough)*1.05),vec3(1./2.2));vec3 tint=mix(vec3(1.),pow(max(uColor,vec3(.001)),vec3(1./2.2)),uOpacity);
+    vec3 reflection=pow(tonemap(reflected*1.05),vec3(1./2.2));vec3 tint=mix(vec3(1.),pow(max(uColor,vec3(.001)),vec3(1./2.2)),uOpacity);
     vec3 result=mix(bg*tint,reflection,reflectance);result=mix(result,vec3(.43,.55,.58)*uEnvScale,edge*.40);
 #endif
     if(uGlass>1.5){
-      result=mix(result,vec3(.81,.91,.93),.41);
+      result=mix(result,vec3(.81,.91,.93),mix(.41,.18,uFilm.x));
       // The narrow bore magnifies its contents. Shade them at the shaft surface
       // so refraction cannot sample past a two-pixel-wide column in a bench view.
       if(uPipette.x>0.){
@@ -206,7 +281,9 @@ void main(){vec3 c=texture(uScene,vUV).rgb;if(uUseBloom>.5)c+=texture(uBloom,vUV
 c=pow(c,vec3(1./2.2));o=vec4(c,1.);}`
 };
 const QUALITY={high:{dpr:2,scale:1.5,maxPixels:8000000,samples:4,shadow:2048,bloom:false,hdr:true},balanced:{dpr:1.5,scale:1.25,maxPixels:5000000,samples:4,shadow:1536,bloom:false,hdr:true},low:{dpr:1,scale:1,maxPixels:2500000,samples:0,shadow:1024,bloom:false,hdr:false}};
-const UNIFORMS=['uReflections','uModel','uVP','uLightVP','uNormal','uPipette','uColor','uCamera','uFluor','uRough','uMetal','uGlass','uOpacity','uTexture','uPattern','uEmission','uThickness','uShadowSize','uExposure','uMap','uShadow','uBackground','uResolution','uKeyDir','uKeyColor','uFillDir','uFillColor','uSky','uGround','uUVPos','uUVDir','uUVColor','uUVAxis','uEnvScale','uUV'];
+const UNIFORMS=['uReflections','uModel','uVP','uLightVP','uNormal','uPipette','uColor','uCamera','uFluor','uRough','uMetal','uGlass','uOpacity','uTexture','uPattern','uEmission','uThickness','uShadowSize','uExposure','uMap','uShadow','uBackground','uResolution','uKeyDir','uKeyColor','uFillDir','uFillColor','uSky','uGround','uUVPos','uUVDir','uUVColor','uUVAxis','uEnvScale','uUV','uFilm'];
+const DAYLIGHT={key:[-6,9,3.5],sun:[2.90,2.73,2.49],fill:[6,4,-2],bounce:[.55,.66,.82],sky:[.31,.35,.40],ground:[.11,.10,.09],environment:1};
+const LATE_WINDOW={key:[-8.2,4.,-3.2],sun:[5.1,3.48,2.05],fill:[3,5,8],bounce:[.83,.98,1.21],sky:[.27,.32,.39],ground:[.14,.122,.104],environment:1.07};
 function rgb(hex){if(Array.isArray(hex))return hex;let h=hex.replace('#','');return[0,2,4].map(i=>Math.pow(parseInt(h.slice(i,i+2),16)/255,2.2))}
 class Renderer{
 constructor(canvas,level='balanced'){this.canvas=canvas;this.gl=canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true,powerPreference:'high-performance'});if(!this.gl)throw Error('WebGL 2 could not start. Open the studio in a WebGL 2 browser with hardware acceleration enabled.');const gl=this.gl;
@@ -217,7 +294,7 @@ constructor(canvas,level='balanced'){this.canvas=canvas;this.gl=canvas.getContex
   this.programs={};this.shadowProgram=this.programOf(SHADOWVS,SHADOWFS);this.su={model:gl.getUniformLocation(this.shadowProgram,'uModel'),vp:gl.getUniformLocation(this.shadowProgram,'uLightVP')};
   this.post={};for(const[k,src]of Object.entries(POST)){const p=this.programOf(QUADVS,src);this.post[k]={p,u:Object.fromEntries(['uSrc','uTexel','uThreshold','uKnee','uScene','uBloom','uBloomStrength','uExposure','uUseBloom'].map(n=>[n,gl.getUniformLocation(p,n)]))}}
   this.quad=gl.createVertexArray();gl.bindVertexArray(this.quad);const qb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);gl.bindVertexArray(null);
-  this.lightVP=M.mul(M.ortho(-10.5,10.5,-8.5,8.5,.1,45),M.look([-12,18,7],[0,0,-.5])); // matches uKeyDir
+  this.setCinematic(false);
   this.bg=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,this.bg);this.textureParams();this.white=this.texture(document.createElement('canvas'));gl.enable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);
   this.roomProgram=this.programOf(QUADVS,ROOM_FS);
   this.roomUniforms=Object.fromEntries(['uRoom','uVideo','uInverse','uEye','uVideoRect','uLive','uMirror','uHDR','uExposure'].map(k=>[k,gl.getUniformLocation(this.roomProgram,k)]));
@@ -234,6 +311,14 @@ async roomImages(folder=''){
 async loadRoom(){
   const images=await this.roomImages();
   [this.roomTexture,this.reflections]=images.map(image=>this.texture(image));
+}
+setCinematic(enabled){
+  this.cinematic=enabled;
+  this.rig=enabled?LATE_WINDOW:DAYLIGHT;
+  const projection=M.ortho(-10.5,10.5,-8.5,8.5,.1,45);
+  const target=enabled?[0,0,0]:[0,0,-.5];
+  this.lightVP=M.mul(projection,M.look(V.mul(this.rig.key,2),target));
+  this.dirtyShadow=true;
 }
 drawRoom(){
   if(!this.roomTexture)return;
@@ -288,13 +373,15 @@ onPlane(x,y,height=0){let r=this.ray(x,y);if(Math.abs(r.dir[1])<.001)return null
 lighting(){
   // Daylight fades to a dim room while the UV lamp is on; the lamp itself is modeled separately.
   const uv=this.light.uv,day=1-.95*uv,k=a=>a.map(v=>v*day);const g=this.gl,u=this.u;
-  g.uniform3fv(u.uKeyDir,[-6,9,3.5]);g.uniform3fv(u.uKeyColor,k([2.90,2.73,2.49]));g.uniform3fv(u.uFillDir,[6,4,-2]);g.uniform3fv(u.uFillColor,k([.55,.66,.82]));
-  g.uniform3fv(u.uSky,k([.31,.35,.40]));g.uniform3fv(u.uGround,k([.11,.10,.09]));g.uniform1f(u.uEnvScale,.05+.95*day);
+  const rig=this.rig;
+  g.uniform3fv(u.uKeyDir,rig.key);g.uniform3fv(u.uKeyColor,k(rig.sun));g.uniform3fv(u.uFillDir,rig.fill);g.uniform3fv(u.uFillColor,k(rig.bounce));
+  g.uniform3fv(u.uSky,k(rig.sky));g.uniform3fv(u.uGround,k(rig.ground));g.uniform1f(u.uEnvScale,(.05+.95*day)*rig.environment);
+  g.uniform2f(u.uFilm,this.cinematic?1:0,this.cinematic && !(this.roomVideo?.readyState>=2)?1:0);
   g.uniform1f(u.uUV,uv);g.uniform3fv(u.uUVPos,this.light.uvPos);g.uniform3fv(u.uUVDir,this.light.uvDir);g.uniform3fv(u.uUVAxis,this.light.uvAxis);g.uniform3fv(u.uUVColor,[.1,.045,.32]); // long-wave lamps emit little visible light; most of the glow is fluorescence
   g.uniform1f(u.uExposure,this.light.exposure);g.uniform1f(u.uShadowSize,this.shadowSize);
 }
 drawGeometry(n){const gl=this.gl;gl.bindVertexArray(n.vao);if(n.indexBuffer)gl.drawElements(gl.TRIANGLES,n.count,gl.UNSIGNED_INT,0);else gl.drawArrays(gl.TRIANGLES,0,n.count);}
-drawMesh(n,shadow=false,opacity=n.mat.opacity){let g=this.gl;if(!n.shown)return;if(shadow){if(n.mat.glass||n.mat.opacity<.99||n.noShadow)return;g.uniformMatrix4fv(this.su.model,false,n.world);this.drawGeometry(n);return}let m=n.mat,u=this.u,inv=M.inverse(n.world);g.uniformMatrix4fv(u.uModel,false,n.world);g.uniformMatrix3fv(u.uNormal,false,new Float32Array([inv[0],inv[4],inv[8],inv[1],inv[5],inv[9],inv[2],inv[6],inv[10]]));g.uniform3fv(u.uColor,m.color);g.uniform3fv(u.uFluor,m.fluor);g.uniform1f(u.uRough,m.rough);g.uniform1f(u.uMetal,m.metal);g.uniform1f(u.uGlass,m.glass);if(m.glass===2||m.pattern===11)g.uniform2f(u.uPipette,m.level||0,m.dye||0);g.uniform1f(u.uOpacity,opacity);g.uniform1f(u.uPattern,m.pattern);g.uniform1f(u.uEmission,m.emission);g.uniform1f(u.uThickness,m.thickness);g.uniform1f(u.uTexture,m.map?1:0);g.activeTexture(g.TEXTURE0);g.bindTexture(g.TEXTURE_2D,m.map||this.white);if(n.additive)g.blendFunc(g.ONE,g.ONE);this.drawGeometry(n);if(n.additive)g.blendFuncSeparate(g.SRC_ALPHA,g.ONE_MINUS_SRC_ALPHA,g.ONE,g.ONE_MINUS_SRC_ALPHA)}
+drawMesh(n,shadow=false,opacity=n.mat.opacity){let g=this.gl;if(!n.shown)return;if(shadow){if(n.mat.glass||n.mat.opacity<.99||n.noShadow)return;g.uniformMatrix4fv(this.su.model,false,n.world);this.drawGeometry(n);return}let m=n.mat,u=this.u,inv=M.inverse(n.world);g.uniformMatrix4fv(u.uModel,false,n.world);g.uniformMatrix3fv(u.uNormal,false,new Float32Array([inv[0],inv[4],inv[8],inv[1],inv[5],inv[9],inv[2],inv[6],inv[10]]));g.uniform3fv(u.uColor,m.color);g.uniform3fv(u.uFluor,m.fluor);g.uniform1f(u.uRough,m.rough);g.uniform1f(u.uMetal,m.metal);g.uniform1f(u.uGlass,m.glass);if(m.glass===2||m.pattern===11||m.pattern===14)g.uniform2f(u.uPipette,m.level||0,m.dye||0);g.uniform1f(u.uOpacity,opacity);g.uniform1f(u.uPattern,m.pattern);g.uniform1f(u.uEmission,m.emission);g.uniform1f(u.uThickness,m.thickness);g.uniform1f(u.uTexture,m.map?1:0);g.activeTexture(g.TEXTURE0);g.bindTexture(g.TEXTURE_2D,m.map||this.white);if(n.additive)g.blendFunc(g.ONE,g.ONE);this.drawGeometry(n);if(n.additive)g.blendFuncSeparate(g.SRC_ALPHA,g.ONE_MINUS_SRC_ALPHA,g.ONE,g.ONE_MINUS_SRC_ALPHA)}
 quadPass(name,src,dst,setup){const g=this.gl,pp=this.post[name];g.bindFramebuffer(g.FRAMEBUFFER,dst?dst.fb:null);g.viewport(0,0,dst?dst.w:this.canvas.width,dst?dst.h:this.canvas.height);g.useProgram(pp.p);g.activeTexture(g.TEXTURE0);g.bindTexture(g.TEXTURE_2D,src.t);g.uniform1i(pp.u.uSrc,0);g.uniform2f(pp.u.uTexel,1/src.w,1/src.h);setup?.(pp.u);g.bindVertexArray(this.quad);g.drawArrays(g.TRIANGLES,0,3)}
 render(){let g=this.gl;this.root.update();this.resize();g.enable(g.DEPTH_TEST);
   if(this.dirtyShadow){g.bindFramebuffer(g.FRAMEBUFFER,this.sf);g.viewport(0,0,this.shadowSize,this.shadowSize);g.clear(g.DEPTH_BUFFER_BIT);g.useProgram(this.shadowProgram);g.uniformMatrix4fv(this.su.vp,false,this.lightVP);g.enable(g.POLYGON_OFFSET_FILL);g.polygonOffset(2,2);for(let n of this.meshes)this.drawMesh(n,true);g.disable(g.POLYGON_OFFSET_FILL);this.dirtyShadow=false}

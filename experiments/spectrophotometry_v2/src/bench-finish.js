@@ -11,6 +11,22 @@ const finishes = {
   'Rack base inset': ['#253e43',.56,.08,10],
 };
 
+const cinematic = {
+  'Worktop': ['#343c3b',.42,.05,12],
+  'Bench edge': ['#252e2e',.36,.21,7],
+  'Cabinet doors': ['#435653',.45,.14,10],
+  'Front enclosure': ['#bfc7c0',.43,.06,10],
+  'Teal front fascia': ['#23383c',.40,.09,0],
+  'Sample chamber lid': ['#26373a',.40,.10,0],
+  'Graphite moulded ABS': ['#1e2c30',.39,.04,10],
+  'Anodised instrument trim': ['#bbc7c5',.25,.83,7],
+  'Brushed stainless fastener': ['#bbc1bf',.29,.91,7],
+  'Rack base': ['#475b5e',.38,.49,7],
+  'Rack base inset': ['#303d3f',.51,.15,10],
+  'Instrument display': ['#ffffff',.16,0,13],
+  'Tube graduation 1': ['#d4d9cd',.57,0,0],
+};
+
 function reagentTexture(canvas, name, description, stripe) {
   const ctx=canvas.getContext('2d');
   ctx.fillStyle='#f3f1e8';ctx.fillRect(0,0,512,288);
@@ -28,17 +44,18 @@ export class BenchFinish {
     this.renderer=scene.r;
     this.surfaces=[];
     this.labels=[];
+    this.cinematicDetails=[];
     this.active='original';
     this.revision=0;
+    this.assets=new Map();
   }
 
   surface(name, material) {
-    const spec=finishes[name];
-    if (!spec) return material;
-    const [color,rough,metal,pattern]=spec;
+    if (!finishes[name] && !cinematic[name]) return material;
     const original={color:material.color,rough:material.rough,metal:material.metal,pattern:material.pattern};
-    const refined={color:this.renderer.material(color).color,rough,metal,pattern};
-    this.surfaces.push({material,original,refined});
+    const finish=([color,rough,metal,pattern])=>({color:this.renderer.material(color).color,rough,metal,pattern});
+    const refined=finishes[name]?finish(finishes[name]):original;
+    this.surfaces.push({material,original,refined,cinematic:cinematic[name]?finish(cinematic[name]):refined});
     return material;
   }
 
@@ -46,52 +63,87 @@ export class BenchFinish {
     this.labels.push({node,name,description,stripe,original:node.mat.map});
   }
 
-  async prepare() {
+  instrumentPrint(vertices,indices,material,parent) {
+    // The source batches all faceplate lettering and the dial index into one material.
+    // The model name is the top inscription, just above the raised display bezel.
+    const lettering=[], fixed=[];
+    for (const index of indices) {
+      const batch=vertices[index*8+1]>1.05?lettering:fixed;
+      batch.push(index);
+    }
+    this.modelName=this.renderer.mesh(vertices,material,parent,new Uint32Array(lettering));
+    return this.renderer.mesh(vertices,material,parent,new Uint32Array(fixed));
+  }
+
+  once(key,build) {
+    if (!this.assets.has(key)) {
+      this.assets.set(key,build().catch(error=>{this.assets.delete(key);throw error;}));
+    }
+    return this.assets.get(key);
+  }
+
+  async meshGroup(folder,stem) {
     const fetchAsset=async (name,type)=>{
-      const response=await fetch(new URL('../assets/refined/'+name,import.meta.url));
+      const response=await fetch(new URL('../assets/'+folder+'/'+name,import.meta.url));
       if (!response.ok) throw Error('Could not load '+name);
       return response[type]();
     };
-    const [images,meshes,buffer]=await Promise.all([this.renderer.roomImages('refined/'),
-      fetchAsset('console.json','json'),fetchAsset('console.bin','arrayBuffer')]);
+    const [meshes,buffer]=await Promise.all([fetchAsset(stem+'.json','json'),fetchAsset(stem+'.bin','arrayBuffer')]);
     const geometry=meshes.map(mesh=>{
       const vertices=new Float32Array(buffer,mesh.offset,mesh.vertexCount*8);
       const indices=new Uint32Array(buffer,mesh.offset+vertices.byteLength,mesh.indexCount);
       return {vertices,indices,material:mesh.material};
     });
-    this.originalRoom=[this.renderer.roomTexture,this.renderer.reflections];
-    this.refinedRoom=images.map(image=>this.renderer.texture(image));
-    const consoleGroup=this.renderer.group(this.scene.objects.instrument);
-    consoleGroup.visible=false;
+    const group=this.renderer.group(this.scene.objects.instrument);
+    group.visible=false;
     for (const {vertices,indices,material} of geometry) {
       const {color,...finish}=material;
-      this.renderer.mesh(vertices,this.renderer.material(color,finish),consoleGroup,indices);
+      this.renderer.mesh(vertices,this.renderer.material(color,finish),group,indices);
     }
+    return group;
+  }
+
+  async consoleFinish() {
+    const group=await this.meshGroup('refined','console');
     for (const label of this.labels) {
       const c=this.scene.canvas(512,288);
       reagentTexture(c,label.name,label.description,label.stripe);
       label.refined=this.renderer.texture(c);
     }
-    this.console=consoleGroup;
+    this.console=group;
   }
 
   async select(value) {
-    if (value!=='original' && value!=='refined') throw RangeError('Unknown bench appearance');
+    if (!['original','refined','cinematic'].includes(value)) throw RangeError('Unknown bench appearance');
     const revision=++this.revision;
-    if (value==='refined' && !this.console) {
-      if (!this.loading) this.loading=this.prepare().finally(()=>{this.loading=null;});
-      try { await this.loading; } catch (error) {
+    this.originalRoom??=[this.renderer.roomTexture,this.renderer.reflections];
+    let room=this.originalRoom;
+    if (value!=='original') {
+      try {
+        [room]=await Promise.all([
+          this.once(value,async ()=>(await this.renderer.roomImages(value+'/')).map(img=>this.renderer.texture(img))),
+          this.once('console',()=>this.consoleFinish()),
+          value==='cinematic' && this.once('dial',async ()=>{
+            this.dial=await this.meshGroup('cinematic','dial');
+            this.dial.set(1.24,.73,1.212);
+          }),
+        ]);
+      } catch (error) {
         if (revision!==this.revision) return false;
         throw error;
       }
     }
     if (revision!==this.revision) return false;
     if (value===this.active) return true;
-    const refined=value==='refined';
+    const refined=value!=='original';
     for (const item of this.surfaces) Object.assign(item.material,item[value]);
-    for (const label of this.labels) label.node.mat.map=label[value];
-    [this.renderer.roomTexture,this.renderer.reflections]=refined?this.refinedRoom:this.originalRoom;
-    this.console.visible=refined;
+    for (const label of this.labels) label.node.mat.map=refined?label.refined:label.original;
+    [this.renderer.roomTexture,this.renderer.reflections]=room;
+    if (this.console) this.console.visible=refined;
+    if (this.dial) this.dial.visible=value==='cinematic';
+    this.modelName.pos[1]=value==='cinematic'?.032:0;
+    for (const detail of this.cinematicDetails) detail.visible=value==='cinematic';
+    this.renderer.setCinematic(value==='cinematic');
     this.active=value;
     this.scene.lcdValue=null;
     this.scene.displayedTransmission=undefined;

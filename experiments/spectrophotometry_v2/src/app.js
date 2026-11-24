@@ -67,7 +67,8 @@ async function selectBenchFinish(value,save=false){
   if(save){try{localStorage.setItem(benchFinishKey,value)}catch{}}
  }catch{
   select.value=scene.appearance.active;
-  status.textContent='Showing the original bench. Choose Refined to retry loading the daylight lab.';
+  const requested=Array.from(select.options).find(option=>option.value===value);
+  status.textContent='Showing '+select.selectedOptions[0].text+'. Choose '+requested.text+' again to retry.';
   status.hidden=false;
  }
  changed();
@@ -317,8 +318,8 @@ async function start(){try{
    if(!$('targetsMenu').open&&studio.spatial.active&&interaction.owner==='keyboard')suspendInput('Targets closed. Regrasp the marked tool to continue.');
  });
  setupCamera();setupControls();setView(canvas.clientWidth<=760?'prepare':'overview');$('followStep').checked=useTabletFraming();
- let initialFinish='refined';
- try{if(localStorage.getItem(benchFinishKey)==='original')initialFinish='original'}catch{}
+ let initialFinish='cinematic';
+ try{const saved=localStorage.getItem(benchFinishKey);if(['original','refined','cinematic'].includes(saved))initialFinish=saved}catch{}
  await selectBenchFinish(initialFinish);
  $('loading').hidden=true;clearNotice();updateUI();renderer.render();requestAnimationFrame(animate);
  globalThis.lab={get state(){return structuredClone(state)},get step(){return {...getStep(state)}},get busy(){return interaction.flow},control,get camera(){return structuredClone(renderer.cam)},get layout(){return scene.layoutData()},get layoutActive(){return layout.active},get equipmentPositions(){return Object.fromEntries(scene.layoutItems.map(({id})=>[id,[...scene.objects[id].pos]]))},get chamber(){return [...scene.chamber]},get poses(){return {pipette:[...scene.objects.pipette.pos],cuvette:[...scene.objects.cuvette.pos],cuvetteRotation:[...scene.objects.cuvette.rot],lid:scene.lid.rot[0]}},get manipulation(){return structuredClone(interaction.state)},get atomicHistory(){return structuredClone(interaction.history)},get targeting(){return {next:interaction.nextTarget(),hover:interaction.hoverTarget||interaction.hoverRegion,locked:interaction.contact?.target||null,settle:interaction.aimSettler.progress,label:null,rings:{next:overlay.guides.beacon.id,focus:overlay.guides.focus.id},targets:Object.fromEntries([...new Set([...interaction.candidates(),...pipetteIds.map(id=>id+'-grip'),...['cuvette-grip','lid','zero','read','clipboard']])].map(id=>[id,geometry.screenTarget(id)]))}},get affordances(){return readAffordances()},hand:{frame:f=>hands.frame(f),packet:p=>hands.packet(p),lost:()=>hands.lost(),get state(){return {active:hands.camera.running,backend:hands.camera.backend,armed:hands.gate.armed,holding:interaction.owner==='hand'?interaction.tool:hands.held?.id||null}}},get studio(){return {immersive:studio.immersive,handMode:studio.mode,liveRoom:!!renderer.roomVideo,cameraUsers:[...source.owners],mirrored:source.mirrored}},get renderInfo(){return {finish:scene.appearance.active,frameTime:lastBenchFrame,quality:renderer.level,resolution:[canvas.width,canvas.height],css:[canvas.clientWidth,canvas.clientHeight],bloom:renderer.bloomOn,meshes:renderer.meshes.length}},get assetMeta(){return scene.assetMeta}};
