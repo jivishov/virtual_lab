@@ -12,7 +12,7 @@ const source=process.env.HAND_VIDEO||process.argv[2];
   const context=await browser.newContext({viewport:{width:1440,height:900},permissions:['camera']});
   const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');await page.waitForFunction(()=>!!window.lab);
-  await page.evaluate(async()=>{const {HandControls}=await import('./src/hand-controls.js'),packet=HandControls.prototype.packet;HandControls.prototype.packet=function(value){window.lastCameraPacket=value;return packet.call(this,value)}});
+  await page.evaluate(async()=>{const {HandControls}=await import('./src/hand-controls.js?v=4'),packet=HandControls.prototype.packet;HandControls.prototype.packet=function(value){window.lastCameraPacket=value;return packet.call(this,value)}});
   // Calibrate the automatically started tracker in the regular classroom view.
   await page.waitForFunction(()=>lab.hand.state.backend,null,{timeout:45000});
   await page.locator('#exitImmersive').click();await page.locator('#handButton').click();

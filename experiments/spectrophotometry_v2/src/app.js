@@ -1,4 +1,4 @@
-import {StudioExperience} from './studio.js?v=3';
+import {StudioExperience} from './studio.js?v=4';
 import {StudioCamera} from './studio-camera.js?v=3';
 import {ProcedureVoice} from './procedure-voice.js';
 import {renderNotebook,bindNotebook,readingsCsv} from './notebook.js';
@@ -10,7 +10,7 @@ import {SceneInteraction} from './scene-interaction.js';
 import {Manipulation} from './manipulation.js';
 import {MouseInput} from './mouse-input.js';
 import {InteractionOverlay} from './interaction-overlay.js';
-import {HandControls} from './hand-controls.js';
+import {HandControls} from './hand-controls.js?v=4';
 const $=id=>document.getElementById(id),canvas=$('labCanvas');
 function setText(id,text){
  const el=$(id);

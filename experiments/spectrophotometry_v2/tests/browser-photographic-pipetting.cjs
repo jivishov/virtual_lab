@@ -55,7 +55,7 @@ async function verify(page){
  // Capture diagnostics only when the controller actually drops a held tool.
  // This leaves the detector and the timing of every ordinary packet untouched.
  await page.evaluate(async()=>{
-  const {HandControls}=await import('./src/hand-controls.js'),lost=HandControls.prototype.lost;
+  const {HandControls}=await import('./src/hand-controls.js?v=4'),lost=HandControls.prototype.lost;
   window.replayLosses=[];
   HandControls.prototype.lost=function(){
    if(this.interaction.owner==='hand')window.replayLosses.push({
@@ -153,6 +153,9 @@ async function verify(page){
    await awaitState(key=>lab.targeting.hover===key&&document.querySelector('#hudTargetLabel').textContent==='Palm target'&&
     document.querySelector('#hudTarget').textContent.toLowerCase().includes(key.startsWith('water')?'water':'stock'),grip);
    assert.match(await page.locator('#hudTarget').textContent(),id==='pipette'?/Stock/i:/water/i);
+   assert.ok(await page.locator('#panelPointer').isHidden(),'The palm owns the cursor at the grip');
+   if(previewDir&&id==='pipette'&&!dips.length)
+    await page.screenshot({path:path.join(previewDir,'stock-palm-registration.jpg'),quality:93});
   }
   await page.evaluate(()=>photoHand.pose='fist');
   await awaitState(tool=>lab.manipulation.owner==='hand'&&lab.manipulation.tool===tool,id);

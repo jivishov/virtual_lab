@@ -1,9 +1,11 @@
-import {HandGestures} from './view-gestures.js';
+import {HandGestures} from './view-gestures.js?v=4';
 
 const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 const controlSelector = 'button,summary,input,select,textarea,a[href],label,#handPreview';
 const blocked = el => el?.matches(':disabled,[aria-disabled="true"]') || el?.closest('[inert]');
 const fire = (el, type) => el.dispatchEvent(new Event(type, {bubbles: true}));
+const OPEN_PINCH = .53;
+const palmGrasp = event => event.curled[0] && event.closure >= .65;
 
 function scrollParent(el) {
   for (let p = el; p && p !== document.body; p = p.parentElement) {
@@ -153,6 +155,10 @@ export class PanelPointer {
   cancel() {
     this.tracker.reset();
     this.owner = null;
+    this.clearAim();
+  }
+
+  clearAim() {
     this.aim = null;
     this.benchTarget = null;
     this.press = null;
@@ -179,38 +185,32 @@ export class PanelPointer {
     else el.dispatchEvent(new MouseEvent('click', init));
   }
 
-  // Camera images use the calibrated reach rectangle. Landmark-only replays use
-  // normalized viewport coordinates. Neither depends on the webcam picture size.
-  update(packet, {aspect, mirrored, reach, preference, canvas, benchEnabled}) {
-    const stamp = packet.stamp;
-    const events = this.tracker.update(packet, stamp, aspect, mirrored);
+  track(packet, aspect, mirrored, preference) {
+    const events = this.tracker.update(packet, packet.stamp, aspect, mirrored);
     const allowed = e => e.points && (preference === 'Auto' || e.label === preference);
     const prior = events.find(e => e.id === this.owner);
     const event = prior && allowed(prior) ? prior : events.find(allowed);
     if (!event || event.id !== this.owner) {
-      this.press = null;
-      this.aim = this.benchTarget = null;
-      this.captured = false;
-      this.ready = false;
-      this.cursor.hidden = true;
-      this.highlight(null, false);
+      this.clearAim();
       this.owner = event?.id;
     }
-    if (!event) return null;
-    const bounds = this.press?.reach || reach;
-    const open = event.pinch > .53;
-    // At release use this exposure's index. A smoothed cursor can still be on
-    // the other side of a button boundary after the hand has reopened.
-    const tip = this.press && open ? event.indexTip : event.points[8];
-    const x = clamp((tip.x - bounds.left) / bounds.width, 0, 1) * (innerWidth - 1);
-    const y = clamp((tip.y - bounds.top) / bounds.height, 0, 1) * (innerHeight - 1);
+    return event;
+  }
+
+  frameByTip(event) {
+    return !palmGrasp(event) && (this.press?.tipFramed ??
+      (event.pointing || (event.pinch <= OPEN_PINCH && !!this.aim?.tipFramed)));
+  }
+
+  update(event, {x, y, stamp, tipFramed, canvas, benchEnabled, preferPalm}) {
+    const open = event.pinch > OPEN_PINCH;
     const hit = document.elementFromPoint(x, y);
     const modal = document.querySelector('dialog.hand-choice[open]') || document.querySelector('dialog[open]');
     const el = controlAt(hit);
     const outsideMenu = hit === canvas && document.querySelector('.dock-entry[open]');
     const panel = hit && hit !== canvas && hit.closest('#spatialHud,#spatialNav,.visor-panel,.bench-dock');
     const overUI = !!(modal || panel || el);
-    const grip = event.curled[0] && event.closure >= .65;
+    const grip = palmGrasp(event);
     const pinched = event.pinch < .32 && !grip;
     const pointing = event.pointing;
     const pressed = this.press;
@@ -219,6 +219,11 @@ export class PanelPointer {
     const pickBench = benchEnabled && hit === canvas && !outsideMenu &&
       (pointing || pressed?.region || (!open && this.aim?.region));
     const region = pickBench ? this.pickBenchControl(x, y) : null;
+    const palmCanTakeOver = grip || (!pressed && !pointing && !region && !(pinched && this.ready && this.aim?.el));
+    if (palmCanTakeOver && preferPalm(el)) {
+      this.clearAim();
+      return false;
+    }
 
     if (pressed) {
       if (pressed.modal !== modal || (pressed.region && !benchEnabled) ||
@@ -261,31 +266,33 @@ export class PanelPointer {
       if (aim?.modal === modal && (sameTarget || nearAim) && (overUI || outsideMenu || region || aim.region)) {
         const scroll = scrollParent(hit);
         const box = modal?.getBoundingClientRect();
-        this.press = {el:aim.el, region:aim.region, modal, reach, x, y, since: stamp, range:aim.el?.type === 'range', initial:aim.el?.value,
+        this.press = {el:aim.el, region:aim.region, modal, tipFramed, x, y, since: stamp, range:aim.el?.type === 'range', initial:aim.el?.value,
           scroll, left: scroll?.scrollLeft, top: scroll?.scrollTop, menu: outsideMenu,
           backdrop: hit === modal && box && (x < box.left || x > box.right || y < box.top || y > box.bottom)};
       }
     }
+    // A control can reset tracking synchronously, for example when mirroring
+    // the picture. The next observation owns the cursor in the new view.
+    if (this.owner !== event.id) return true;
     if (open && !grip) {
       this.ready = true;
-      this.aim = {el, region, x, y, modal};
+      this.aim = {el, region, x, y, modal, tipFramed};
     }
     if (grip) { this.ready = false; this.aim = null; }
     this.captured = !!(this.press || pressed);
-    const consume = overUI || !!region || this.captured;
+    const consume = overUI || outsideMenu || region || this.captured || (benchEnabled && pointing);
+    if (!consume) { this.clearAim(); return false; }
     // Actions can synchronously dismiss dialogs, switch modes or turn off the camera.
-    if (!document.body.classList.contains('hand-console')) { this.cancel(); return event; }
+    if (!document.body.classList.contains('hand-console')) { this.cancel(); return true; }
     const layer = document.querySelector('dialog.hand-choice[open]') || document.querySelector('dialog[open]') || document.body;
     if (this.cursor.parentNode !== layer) layer.append(this.cursor);
     this.benchTarget = this.press?.region || region;
-    this.cursor.hidden = !consume && !(benchEnabled && pointing);
-    if (!this.cursor.hidden) {
-      this.cursor.style.transform = 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%)';
-      this.cursor.dataset.down = String(!!this.press);
-      this.cursor.dataset.aim = el || this.benchTarget || this.press ? 'target' : 'free';
-    }
+    this.cursor.hidden = false;
+    this.cursor.style.transform = 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%)';
+    this.cursor.dataset.down = String(!!this.press);
+    this.cursor.dataset.aim = el || this.benchTarget || this.press ? 'target' : 'free';
     const hovered = this.press ? (this.press.el === el ? el : null) : el;
     this.highlight(hovered?.isConnected ? hovered : null, !!this.press);
-    return consume ? event : null;
+    return true;
   }
 }

@@ -7,17 +7,17 @@ async function installReplay(page) {
   await page.evaluate(async () => {
     const {b06Packet} = await import('./tests/b06-landmark-fixtures.js');
     const {HandCamera} = await import('./src/hand-camera.js');
+    const {cameraRect} = await import('./src/camera-framing.js');
     let camera;
     HandCamera.prototype.startWorker = async function() {
       camera = this; this.backend = 'Landmark replay'; this.worker = {terminate() {}};
     };
     HandCamera.prototype.schedule = HandCamera.prototype.checkHealth = function() {};
-    window.hudPose = async (x, y, pose) => {
-      const frame = document.getElementById('handPlayerFrame').style;
-      const rect = Object.fromEntries(['left','top','width','height'].map(k => [k, parseFloat(frame[k]) / 100]));
+    window.hudPose = async (x, y, pose, frames = 6) => {
       const mirror = lab.studio.mirrored;
       const video = document.getElementById('handVideo');
-      const packet = b06Packet(pose.startsWith('point') ? 'point' : 'open', {x:320,y:240}, {width:video.videoWidth,height:video.videoHeight,mirrored:mirror});
+      const shape = pose.startsWith('point') ? 'point' : pose === 'grip' ? 'grip' : 'open';
+      const packet = b06Packet(shape, {x:320,y:240}, {width:video.videoWidth,height:video.videoHeight,mirrored:mirror});
       delete packet.stamp;
       const points = packet.landmarks[0], world = packet.worldLandmarks[0];
       if (pose === 'pinch' || pose === 'point-pinch') {
@@ -30,14 +30,33 @@ async function installReplay(page) {
           joints[4][axis] = joints[8][axis];
         }
       }
-      const tipX = rect.left + x / (innerWidth - 1) * rect.width;
-      const dx = (mirror ? 1 - tipX : tipX) - points[8].x;
-      const dy = rect.top + y / (innerHeight - 1) * rect.height - points[8].y;
-      points.forEach(p => { p.x += dx; p.y += dy; });
+      const palm = [0,5,9,13,17].reduce((sum,i) => ({x:sum.x+points[i].x/5,y:sum.y+points[i].y/5}),{x:0,y:0});
+      const anchor = shape === 'point' ? points[8] : palm;
+      const contact = pose === 'palm' || pose === 'grip' ? palm : points[8];
+      const offsets = points.map(p => ({x:(p.x-anchor.x)*.6,y:(p.y-anchor.y)*.6}));
+      const dx = (contact.x-anchor.x)*(mirror?-1:1)*.6, dy=(contact.y-anchor.y)*.6;
       if (pose === 'lost') { packet.landmarks = []; packet.worldLandmarks = []; packet.handedness = []; }
-      for (let frame = 0; frame < 6 && camera.running; frame++) {
+      for (let frame = 0; frame < frames && camera.running; frame++) {
+        const box = document.getElementById('labCanvas').getBoundingClientRect();
+        const style = document.getElementById('handPlayerFrame').style;
+        const area = Object.fromEntries(['left','top','width','height'].map(k => [k,parseFloat(style[k])/100]));
+        const scale = Number(document.getElementById('handCameraSize').value)/100;
+        // Move the simulated hand in sensor space to place its joint on the target.
+        const lo={x:0,y:0}, hi={x:1,y:1};
+        for(let i=0;i<20;i++){
+          const a={x:(lo.x+hi.x)/2,y:(lo.y+hi.y)/2};
+          const r=cameraRect(video.videoWidth/video.videoHeight,box.width/box.height,scale,area,a);
+          if(box.left+(r.left+(a.x+dx)*r.width)*box.width<x)lo.x=a.x;else hi.x=a.x;
+          if(box.top+(r.top+(a.y+dy)*r.height)*box.height<y)lo.y=a.y;else hi.y=a.y;
+        }
+        points.forEach((p,i)=>{p.x=(mirror?1-lo.x:lo.x)+offsets[i].x;p.y=lo.y+offsets[i].y});
+        window.hudLandmarks=packet.landmarks[0];
         const stamp = performance.now();
-        camera.accept({...packet,stamp,exposure:camera.frameSource(video,stamp)},camera.generation);
+        const exposure=camera.frameSource(video,stamp), crop=exposure.crop;
+        const landmarks=crop?packet.landmarks.map(hand=>hand.map(p=>({
+          x:(p.x-crop.left)/crop.width,y:(p.y-crop.top)/crop.height,z:p.z/crop.width
+        }))):packet.landmarks;
+        camera.accept({...packet,landmarks,stamp,exposure},camera.generation);
         await new Promise(resolve => setTimeout(resolve,42));
       }
     };
@@ -69,7 +88,7 @@ async function run() {
       return [b.x + b.width / 2, b.y + b.height / 2];
     }
     const pose = (at, kind) => page.evaluate(([x,y,kind]) => window.hudPose(x,y,kind), [...at,kind]);
-    async function click(selector, hand='open') {
+    async function click(selector, hand='point') {
       const at = await center(selector);
       await pose(at, hand);
       await page.waitForFunction(s => document.querySelector(s)?.matches('[data-hand-hover],:has([data-hand-hover])'),selector,{timeout:3500})

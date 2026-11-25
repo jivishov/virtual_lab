@@ -1,9 +1,9 @@
-import {HandGestures,steadyHandMotion,playerFrame} from './view-gestures.js';
+import {HandGestures,steadyHandMotion,playerFrame} from './view-gestures.js?v=4';
 import {createHandOutliner} from './palm-outline.js';
 import {cameraRect,CAMERA_SIZE_KEY,DEFAULT_CAMERA_SIZE,savedCameraSize,heldHandCrop} from './camera-framing.js';
 import {PIPETTES} from './pipettes.js';
 import {SpatialHud} from './spatial-hud.js?v=2';
-import {PanelPointer} from './panel-pointer.js';
+import {PanelPointer} from './panel-pointer.js?v=4';
 import {PersonCamera} from './person-camera.js';
 
 const $=id=>document.getElementById(id);
@@ -16,7 +16,7 @@ export class StudioExperience {
     this.navigationAnchor=null;this.zoomSpan=null;this.frameCenter={x:.5,y:.5};this.frameWidth=.8;this.frameRevision=0;
     this.cameraSize=DEFAULT_CAMERA_SIZE;
     try{this.cameraSize=savedCameraSize(localStorage.getItem(CAMERA_SIZE_KEY))}catch{}
-    this.framingPalm=null;this.framingHand=null;
+    this.framingPoint=null;this.framingHand=null;
     this.inputCanvas=document.createElement('canvas');
     this.detailCanvas=document.createElement('canvas');
     this.cameraFrame=document.createElement('canvas');this.cameraFrame.readyState=0;this.cameraFrame.currentTime=-1;
@@ -81,7 +81,7 @@ export class StudioExperience {
     $('photoRoom').onclick=()=>{this.showPerson=false;this.roomRequest++;source.release('room');this.syncCamera()};
     $('liveRoom').onclick=()=>this.activateRoom();
     $('mirrorCamera').onchange=e=>{
-      hands.lost();this.frameRevision++;hands.lastRaw=null;this.framingPalm=null;
+      hands.lost();this.frameRevision++;hands.lastRaw=null;this.framingPoint=null;
       source.mirror(e.target.checked);this.drawPlayerFrame();
     };
     $('switchCamera').onclick=async()=>{
@@ -219,7 +219,7 @@ export class StudioExperience {
     if(this.lastVideo!==video){
       this.lastVideo=video;this.deviceCount=0;$('switchCamera').hidden=true;
       this.cameraFrame.readyState=0;this.renderer.videoTime=-1;
-      this.frameCenter={x:.5,y:.5};this.framingPalm=this.framingHand=null;this.frameRevision++;this.hands.lastRaw=null;this.clearHands();
+      this.frameCenter={x:.5,y:.5};this.framingPoint=this.framingHand=null;this.frameRevision++;this.hands.lastRaw=null;this.clearHands();
       if(video)feed.inputs().then(list=>{if(feed.video===video){this.deviceCount=list.length;$('switchCamera').hidden=list.length<2}});
     }
     this.personCamera.setVideo(this.showPerson?video:null);
@@ -284,7 +284,7 @@ export class StudioExperience {
   positionFrame(x,y){
     const f=this.region();
     this.frameCenter={x:clamp(x,f.width/2,1-f.width/2),y:clamp(y,f.height/2,1-f.height/2)};
-    this.frameRevision++;this.framingPalm=null;this.hands.lost();this.drawPlayerFrame();
+    this.frameRevision++;this.framingPoint=null;this.hands.lost();this.drawPlayerFrame();
   }
   centerOnHand(){
     const p=this.hands.lastRaw;if(!p)return;
@@ -300,7 +300,7 @@ export class StudioExperience {
     const area=this.region();
     if(this.source.mirrored)area.left=1-area.left-area.width;
     const tracking=this.hands.camera.running;
-    const rect=cameraRect(this.videoAspect,this.benchAspect,this.cameraSize,tracking?area:undefined,tracking?this.framingPalm:null);
+    const rect=cameraRect(this.videoAspect,this.benchAspect,this.cameraSize,tracking?area:undefined,tracking?this.framingPoint:null);
     const prev=this.renderer.roomVideoRect;
     if(this.cameraPlane.style.width&&prev&&rect.left===prev.left&&rect.top===prev.top&&rect.width===prev.width&&rect.height===prev.height)return;
     this.renderer.roomVideoRect=rect;
@@ -350,11 +350,15 @@ export class StudioExperience {
     const x=rect?rect.left+event.x*rect.width:event.x,y=rect?rect.top+event.y*rect.height:event.y;
     return {x:x*this.canvas.clientWidth,y:y*this.canvas.clientHeight};
   }
+  frameHand(packet,hand,point=hand?.palm){
+    if(!packet.frame||!point)return;
+    this.framingPoint=point;this.framingHand=hand.id;
+    this.placeCamera();
+  }
   paint(packet,anchor){
     const frame=packet.frame;if(!frame)return;
     if(packet.frameRevision!==undefined&&packet.frameRevision!==this.frameRevision)return;
-    if(anchor?.palm){this.framingPalm=anchor.palm;this.framingHand=anchor.id}
-    this.placeCamera();
+    this.frameHand(packet,anchor);
     // The cutout, outline and grip share this placement in sensor coordinates.
     const benchScale=this.immersive?this.renderer.roomVideoRect.width*this.canvas.clientWidth/frame.width:null;
     this.trace(this.traceCanvas,frame,packet,benchScale);
@@ -464,29 +468,33 @@ export class StudioExperience {
       if(pointer.owner!=null)pointer.cancel();
       return false;
     }
-    const reach=packet.frame?this.region():{left:0,top:0,width:1,height:1};
-    if(this.source.mirrored)reach.left=1-reach.left-reach.width;
     const aspect=packet.frame?packet.frame.width/packet.frame.height:this.benchAspect;
+    const event=pointer.track(packet,aspect,this.source.mirrored,$('handSide').value);
+    if(!event){this.usingPanel=false;return false}
+    // A pointing fingertip can reach the edge controls at any webcam scale.
+    // Keep its framing choice during the pinch so closing the thumb cannot switch the projection.
+    const tipFramed=pointer.frameByTip(event);
+    this.frameHand(packet,event,tipFramed?event.indexTip:event.palm);
+    const tip=this.mapHand(event.indexTip,packet),bounds=this.canvas.getBoundingClientRect();
     const onBench=h.getState().status==='running'&&h.panel.hidden&&$('cameraPanel').hidden&&
       !h.layout.active&&!document.body.classList.contains('protocol-open')&&!document.querySelector('dialog[open],.dock-entry[open]');
     const benchEnabled=onBench&&this.mode==='work'&&!h.interaction.tool;
-    const event=pointer.update(packet,{aspect,mirrored:this.source.mirrored,reach,preference:$('handSide').value,canvas:this.canvas,benchEnabled});
-    if(!event){this.usingPanel=false;return false}
-    if(!this.spatial.active)return true;
-    // A relaxed index can cross the top glass while the palm is aiming at a
-    // pipette. Only a UI pinch or the palm entering the panel takes the bench.
-    const aimedControl=pointer.benchTarget||event.pointing&&pointer.hover;
-    if(onBench&&!pointer.captured&&!aimedControl){
+    const preferPalm=el=>{
+      if(!onBench)return false;
       const palm=this.mapHand(event.palm,packet);
-      if(this.targetAt(palm)===this.canvas){
-        const work=pointer.hover&&this.mode==='work'?h.pickWorkTarget(palm.x,palm.y):null;
-        if(!pointer.hover||work?.tool||work?.region||event.curled[0]){this.usingPanel=false;return false}
-      }
+      if(this.targetAt(palm)!==this.canvas)return false;
+      if(!el||event.curled[0])return true;
+      const work=this.mode==='work'&&h.pickWorkTarget(palm.x,palm.y);
+      return !!(work?.tool||work?.region);
+    };
+    if(!pointer.update(event,{x:bounds.left+tip.x,y:bounds.top+tip.y,stamp:packet.stamp,tipFramed,canvas:this.canvas,benchEnabled,preferPalm})){
+      this.usingPanel=false;return false;
     }
+    if(!this.spatial.active)return true;
     h.lastSeen=performance.now();h.lastRaw={...event.palm};
     h.previewPose=(event.label?event.label+' · ':'')+(pointer.press?'Pinch':
       event.closure>=.65?'Grasp':event.openness>=.7?'Open palm':'Hand in view');
-    this.paint(packet,event);
+    this.paint(packet);
     h.cursor.hidden=true;
     if(!this.usingPanel){
       h.primary=null;h.workCommand=h.pendingTool=null;

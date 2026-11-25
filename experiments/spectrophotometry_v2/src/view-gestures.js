@@ -162,8 +162,11 @@ export class HandGestures {
         }
         h.candidate=null;
       }
-      const palm = palmCenter(points);
-      const aim = (grip||intent)==='pinch' ? points[8] : palm;
+      const aim = (grip||intent)==='pinch' ? points[8] : palmCenter(points);
+      // The contour is drawn from this exposure. Keep its observed palm and
+      // fingertip available alongside the filtered points used for navigation.
+      const palm = palmCenter(s.points);
+      if (mirrored) palm.x = 1 - palm.x;
       const pointing = !s.curled[0] && s.curled[1] && s.curled[2] && s.curled[3];
       next.push(h);
       events.push({id:h.id,x:clamp(aim.x),y:clamp(aim.y),phase,armed:h.armed,

@@ -1,7 +1,7 @@
 import {pipetteIds} from './pipettes.js';
 /* B06 camera events adapted to the shared laboratory manipulation controller. */
 import {bulbPressure,GraspGate} from './grasp-core.js';
-import {HandGestures,steadyHandMotion} from './view-gestures.js';
+import {HandGestures} from './view-gestures.js?v=4';
 import {HandCamera,HELD_FRAME_LIMIT_MS} from './hand-camera.js';
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),wrap=v=>Math.atan2(Math.sin(v),Math.cos(v));
 
@@ -63,9 +63,9 @@ export class HandControls {
   document.getElementById('bulbHelp').textContent=mode==='guided'?'Dip slightly and hold to move liquid.':'Pinch to squeeze. Spread to draw.';
   this.resetInput();this.refresh();
  }
- resetInput(){this.studio?.clearHands();this.gestures.reset();this.missedCarry=this.pausedStroke=this.delayedGrip=null;this.aimAnchor=this.openAim=null;this.previewPose='';this.primary=null;this.workCommand=null;this.pendingTool=null;this.gate.reset();this.dwell=null;this.pointLatched=false;this.press={band:null,since:0,down:false,armed:false};this.cursor.style.setProperty('--dwell','0deg');this.interaction.clearAim();this.onChange()}
+ resetInput(){this.studio?.clearHands();this.gestures.reset();this.missedCarry=this.pausedStroke=this.delayedGrip=null;this.openAim=null;this.previewPose='';this.primary=null;this.workCommand=null;this.pendingTool=null;this.gate.reset();this.dwell=null;this.pointLatched=false;this.press={band:null,since:0,down:false,armed:false};this.cursor.style.setProperty('--dwell','0deg');this.interaction.clearAim();this.onChange()}
  interruptEvidence(bridge=false){
-  this.gate.interruptEvidence();this.dwell=null;this.aimAnchor=this.openAim=null;this.press={band:null,since:0,down:false,armed:false};
+  this.gate.interruptEvidence();this.dwell=null;this.openAim=null;this.press={band:null,since:0,down:false,armed:false};
   this.cursor.style.setProperty('--dwell','0deg');const c=this.interaction;c.clearAim();
   if(c.owner==='hand'){
    this.pausedStroke=bridge&&c.flow&&this.bulbMode==='guided'&&c.contact?.depth===1&&c.contact.handStroke?.started
@@ -195,11 +195,8 @@ export class HandControls {
   const tracked=this.gestures.hands.find(h=>h.id===event.id),index=p.landmarks.findIndex(points=>points[0]===tracked?.wrist);
   const lm=p.landmarks[index],pressure=this.bulbMode==='manual'?bulbPressure(lm,p.worldLandmarks?.[index],aspect):null;
   const roll=lm?Math.atan2((mirror?-1:1)*(lm[9].x-lm[0].x)*aspect,-(lm[9].y-lm[0].y)):0;
-  let cursor=this.studio?this.studio.mapHand(event,p):{x:event.x*this.canvas.clientWidth,y:event.y*this.canvas.clientHeight};
-  if(!this.interaction.owner&&!this.held){
-   cursor=steadyHandMotion(this.aimAnchor?.id===event.id?this.aimAnchor:null,cursor,2);
-   this.aimAnchor={id:event.id,x:cursor.x,y:cursor.y};
-  }else this.aimAnchor=null;
+  const contact=(event.grip||event.intent)==='pinch'?event.indexTip:event.palm;
+  const cursor=this.studio?this.studio.mapHand(contact,p):{x:event.x*this.canvas.clientWidth,y:event.y*this.canvas.clientHeight};
   const {x,y}=cursor,pose=event.openness*100>=this.gestures.settings.open?'open':event.grip||event.intent?'grip':'neutral';
   this.gate.armed=event.armed;this.gate.holding=!!event.grip;
   if(this.studio){
