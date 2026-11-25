@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const {mkdir} = require('node:fs/promises');
 const path = require('node:path');
 const {chromium} = require('playwright');
-const {installReplay} = require('./browser-spatial-hud.cjs');
+const {openReplayLab} = require('./browser-spatial-hud.cjs');
 
 async function run() {
   const {STEPS, SAMPLES, DRINK_SAMPLES, fitCalibration} = await import('../src/model.js');
@@ -15,9 +15,7 @@ async function run() {
     const page = await browser.newPage({viewport:{width:1366,height:768}});
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.goto(process.env.STUDIO_URL || 'http://127.0.0.1:8774/');
-    await page.waitForFunction(() => !!window.lab);
-    await installReplay(page);
+    await openReplayLab(page);
     const $ = s => page.locator(s);
     async function pinch(locator) {
       await locator.evaluate(el => { if (el.closest('#notebookDialog')) el.scrollIntoView({block:'center'}); });
@@ -89,8 +87,7 @@ async function run() {
       await mkdir(process.env.HUD_REVIEW_DIR,{recursive:true});
       await page.screenshot({path:path.join(process.env.HUD_REVIEW_DIR,name+'.jpg'),quality:91});
     }
-    await $('#followStep').check(); await $('#immerseButton').click();
-    await $('#handButton').click(); await $('#handStart').click(); await $('#handBegin').click();
+    await $('#immersiveProtocol').click(); await $('#followStep').check(); await $('#spatialProtocolClose').click();
     let lidChecked = false;
     for (const decision of ['fit','plan','report']) {
       const goal = STEPS.find(s => s.action===decision).index;

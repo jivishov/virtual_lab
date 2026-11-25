@@ -1,5 +1,5 @@
 /* Local MediaPipe inference transport, adapted from the supplied ELISA camera lifecycle.
- * No gesture classification, frame storage, uploads or automatic camera start. */
+ * The studio requests a video-only stream and processes its frames on this device. */
 const FRAME_INTERVAL_MS=32,STALE_MS=600,WORKER_TIMEOUT_MS=18000,FRAME_TIMEOUT_MS=8000;
 const FIRST_FRAME_TIMEOUT_MS=30000;
 const SLOW_FRAME_MS=260;

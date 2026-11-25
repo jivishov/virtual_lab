@@ -1,12 +1,13 @@
 const assert = require('node:assert/strict');
 const {chromium} = require('playwright');
+const {useStandardBench} = require('./browser-modes.cjs');
 
 const studio = process.env.STUDIO_URL || 'http://127.0.0.1:8774/';
-const preference = 'spectrophotometry-v2-bench-finish';
 
 async function openLab(page, url = studio) {
   await page.goto(url);
   await page.waitForFunction(() => !!window.lab);
+  await useStandardBench(page);
 }
 
 async function frame(page) {
@@ -107,13 +108,13 @@ async function run() {
     }
     requests.length = 0;
     await openLab(page);
-    assert.equal(await page.evaluate(() => lab.renderInfo.finish),'original');
-    assert.equal(requests.length,0,'Original starts independently of the trial assets');
+    assert.equal(await page.evaluate(() => lab.renderInfo.finish),'cinematic');
+    assert.equal(new Set(requests).size,6,'A new visit opens the cinematic room and instrument');
 
     let cancelLoad, manifestRequested;
     const hold = new Promise(resolve => { cancelLoad = resolve; });
     const requestSeen = new Promise(resolve => { manifestRequested = resolve; });
-    await page.route('**/assets/refined/console.json',async route => {
+    await page.route('**/assets/refined/clean-lab.webp',async route => {
       manifestRequested();
       await hold;
       await route.continue();
@@ -125,12 +126,12 @@ async function run() {
     cancelLoad();
     await page.waitForLoadState('networkidle');
     assert.equal(await page.evaluate(() => lab.renderInfo.finish),'original');
-    assert.equal(await page.evaluate(key => localStorage.getItem(key),preference),'original');
-    await page.unroute('**/assets/refined/console.json');
+    assert.equal(await page.locator('#benchFinish').inputValue(),'original');
+    await page.unroute('**/assets/refined/clean-lab.webp');
     await page.locator('#labMenu summary').click();
     await selectFinish(page,'refined');
     await openLab(page);
-    assert.equal(await page.evaluate(() => lab.renderInfo.finish),'refined');
+    assert.equal(await page.evaluate(() => lab.renderInfo.finish),'cinematic');
 
     await page.route('**/assets/refined/**',route => route.abort());
     await openLab(page);
@@ -142,8 +143,11 @@ async function run() {
     await page.waitForFunction(() => lab.renderInfo.finish==='refined');
     assert.ok(await page.locator('#benchFinishStatus').isHidden());
     await page.locator('#labMenu summary').click();
-    await openLab(page); // saved Refined loads its own room and shared console
     await page.route('**/assets/cinematic/dial.json',route=>route.abort());
+    await openLab(page);
+    assert.equal(await page.evaluate(()=>lab.renderInfo.finish),'original');
+    assert.match(await page.locator('#benchStyleHint').textContent(),/Cinematic could not load/);
+    await selectFinish(page,'refined');
     await page.locator('#labMenu summary').click();
     await page.locator('#benchFinish').selectOption('cinematic');
     await page.locator('#benchFinishStatus').waitFor({state:'visible'});
@@ -152,8 +156,9 @@ async function run() {
     await page.unroute('**/assets/cinematic/dial.json');
     await page.locator('#benchFinish').selectOption('cinematic');
     await page.waitForFunction(()=>lab.renderInfo.finish==='cinematic');
+    await page.route('**/assets/cinematic/dial.json',route=>route.abort(),{times:1});
     await openLab(page);
-    assert.equal(await page.evaluate(()=>lab.renderInfo.finish),'cinematic');
+    assert.equal(await page.evaluate(()=>lab.renderInfo.finish),'cinematic','Startup retries a transient asset failure');
     const levels=new Set();
     await page.locator('#labMenu summary').click();
     for(let i=0;i<3;i++){
@@ -165,7 +170,7 @@ async function run() {
     }
     assert.deepEqual(levels,new Set(['low','balanced','high']));
     assert.deepEqual(errors,[]);
-    console.log('Finish selection, camera and hit targets, pixel restoration, persistence, delayed selection, fallback and retry passed.');
+    console.log('Finish selection, camera and hit targets, pixel restoration, cinematic startup, delayed selection, fallback and retry passed.');
   } finally {
     await browser.close();
   }

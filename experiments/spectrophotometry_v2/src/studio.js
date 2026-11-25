@@ -2,7 +2,7 @@ import {HandGestures,steadyHandMotion,playerFrame} from './view-gestures.js';
 import {createHandOutliner} from './palm-outline.js';
 import {cameraRect,CAMERA_SIZE_KEY,DEFAULT_CAMERA_SIZE,savedCameraSize,heldHandCrop} from './camera-framing.js';
 import {PIPETTES} from './pipettes.js';
-import {SpatialHud} from './spatial-hud.js';
+import {SpatialHud} from './spatial-hud.js?v=2';
 import {PanelPointer} from './panel-pointer.js';
 
 const $=id=>document.getElementById(id);
@@ -19,7 +19,7 @@ export class StudioExperience {
     this.inputCanvas=document.createElement('canvas');
     this.detailCanvas=document.createElement('canvas');
     this.cameraFrame=document.createElement('canvas');this.cameraFrame.readyState=0;this.cameraFrame.currentTime=-1;
-    this.immersive=false;this.roomRequest=0;this.deviceCount=0;
+    this.immersive=false;this.handHudRequested=false;this.roomRequest=0;this.deviceCount=0;
     this.traceCanvas=$('palmTrace');this.workHelp=$('modeHelp').textContent;
     this.cameraPlane=$('benchCameraFrame');this.roomMapFrame=$('roomImageFrame');
     this.hud=$('handHud');
@@ -92,7 +92,8 @@ export class StudioExperience {
       if(!hands.camera.running&&hands.panel.hidden)$('handButton').click();
     });
     $('handStart').onclick=async()=>{
-      if(hands.camera.running){hands.stop();return}
+      if(hands.camera.running){this.handHudRequested=false;hands.stop();return}
+      this.handHudRequested=true;
       if(await hands.camera.start()&&hands.camera.modelReady&&!hands.panel.hidden){
         $('handBegin').hidden=false;this.drawPlayerFrame();
         hands.hint='Show an open palm.';
@@ -104,7 +105,7 @@ export class StudioExperience {
       document.querySelector('[data-quick-mode][aria-pressed=true]').focus({preventScroll:true});
     };
     source.addEventListener('change',()=>this.syncCamera());
-    document.addEventListener('visibilitychange',()=>{if(document.hidden)this.stop()});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)this.stop(true)});
     window.addEventListener('pagehide',()=>this.stop());
     document.addEventListener('keydown',e=>{
       if(e.key!=='Escape'||document.querySelector('dialog[open]')||e.defaultPrevented)return;
@@ -135,15 +136,51 @@ export class StudioExperience {
     if(show){this.suspendForPanel();this.cameraPanel(false);this.hands.panel.hidden=true;$('handButton').setAttribute('aria-expanded','false')}
     this.changed();
   }
-  immerse(on){
+  openDefault(){
+    this.handHudRequested=true;
+    this.immerse(true,false);
+    const start=()=>{
+      if(document.hidden||!this.immersive||!this.handHudRequested)return;
+      this.showBenchStyleHint();
+      void this.hands.camera.start();
+    };
+    if(document.hidden)document.addEventListener('visibilitychange',start,{once:true});
+    else start();
+  }
+  showBenchStyleHint(){
+    const hint=$('benchStyleHint'),menu=$('labMenu'),summary=menu.querySelector('summary');
+    if(!$('benchFinishStatus').hidden)hint.textContent='Cinematic could not load. Open Settings and choose Cinematic under Bench appearance to retry.';
+    hint.hidden=false;
+    summary.setAttribute('aria-describedby',hint.id);
+    const dismiss=()=>{
+      hint.hidden=true;
+      summary.removeAttribute('aria-describedby');
+      clearTimeout(timer);
+      menu.removeEventListener('toggle',onToggle);
+    };
+    const onToggle=()=>{
+      if(!menu.open)return;
+      dismiss();
+      const select=$('benchFinish');
+      select.classList.add('hint-target');
+      setTimeout(()=>select.classList.remove('hint-target'),2900);
+    };
+    const timer=setTimeout(dismiss,14000);
+    menu.addEventListener('toggle',onToggle);
+  }
+  immerse(on,moveFocus=true){
     if(this.immersive===on)return;
+    if(!on){
+      this.handHudRequested=false;
+      if(this.hands.camera.running&&!this.hands.camera.modelReady)this.hands.stop();
+    }
     this.suspend('View changed. Regrasp a carried tool to continue.');
     this.hands.lost();this.immersive=on;this.protocol(false);
     document.body.classList.toggle('studio-immersive',on);
     $('immerseButton').setAttribute('aria-pressed',String(on));
     $('exitImmersive').hidden=$('immersiveActions').hidden=!on;
     this.renderer.resize();this.scene.refitView();this.syncCamera();
-    $(on?'exitImmersive':'immerseButton').focus({preventScroll:true});
+    if(moveFocus)$(on?'exitImmersive':'immerseButton').focus({preventScroll:true});
   }
   async activateRoom(){
     const request=++this.roomRequest;
@@ -161,7 +198,7 @@ export class StudioExperience {
   syncCamera(){
     const feed=this.source,video=feed.video,room=!!video&&feed.owners.has('room');
     const tracking=this.hands.camera.running;
-    const useHud=this.immersive&&tracking;
+    const useHud=this.immersive&&(this.handHudRequested||tracking);
     document.body.classList.toggle('hand-console',useHud);
     if(this.spatial.active&&!useHud){this.panelPointer.releaseLayer();this.usingPanel=false}
     const switching=this.spatial.active!==useHud;
@@ -193,7 +230,8 @@ export class StudioExperience {
     const backdrop=showFrame?this.cameraFrame:room?this.source.video:null;
     if(this.renderer.roomVideo!==backdrop){this.renderer.roomVideo=backdrop;this.renderer.videoTime=-1}
   }
-  stop(){
+  stop(keepHud=false){
+    if(!keepHud)this.handHudRequested=false;
     this.roomRequest++;this.hands.stop();this.source.stopAll();this.clearHands();this.syncCamera();
   }
   setMode(mode){

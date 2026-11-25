@@ -44,6 +44,16 @@ async function installReplay(page) {
   });
 }
 
+async function openReplayLab(page) {
+  // Install the detector fixture before the application requests its startup camera.
+  await page.route('**/src/app.js*', async route => {
+    await installReplay(page);
+    await route.continue();
+  }, {times:1});
+  await page.goto(process.env.STUDIO_URL || 'http://127.0.0.1:8774/');
+  await page.waitForFunction(() => window.lab?.hand.state.backend === 'Landmark replay');
+}
+
 async function run() {
   const browser = await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE || undefined,
     args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--enable-unsafe-swiftshader']});
@@ -51,9 +61,7 @@ async function run() {
     const page = await browser.newPage({viewport:{width:1440,height:900}});
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
-    await page.goto(process.env.STUDIO_URL || 'http://127.0.0.1:8774/');
-    await page.waitForFunction(() => !!window.lab);
-    await installReplay(page);
+    await openReplayLab(page);
     const $ = s => page.locator(s);
     async function center(selector) {
       const b = await $(selector).boundingBox();
@@ -72,9 +80,9 @@ async function run() {
       await pose(at, hand==='point'?'point-pinch':'pinch');
       await pose(at, hand);
     }
-    await $('#immerseButton').click();
-    assert.ok(!await $('#spatialHud').isVisible());
-    await $('#handButton').click(); await $('#handStart').click(); await $('#handBegin').waitFor({state:'visible'});
+    assert.ok(await $('#spatialHud').isVisible());
+    assert.ok(await $('#handPanel').isHidden());
+    await click('#handButton'); await $('#handBegin').waitFor({state:'visible'});
     await click('#handBegin');
     await $('#handPanel').waitFor({state:'hidden',timeout:3000});
     assert.ok(await $('#spatialHud').isVisible());
@@ -226,5 +234,5 @@ async function run() {
     console.log('Pinch clicks, numeric entry, tracking loss and modal scrolling passed. HUD controls and apparatus were reachable in all three bench views at 11 tablet, laptop and desktop sizes.');
   } finally { await browser.close(); }
 }
-module.exports = {installReplay};
+module.exports = {installReplay,openReplayLab};
 if (require.main === module) run().catch(e => {console.error(e);process.exitCode=1;});

@@ -183,6 +183,38 @@
 #spatialModes {grid-area:modes}
 #spatialNav>div:not(.flight-input),.hand-console .bench-dock {pointer-events:auto}
 .hand-console .bench-dock {grid-area:dock}
+#benchStyleHint {
+  --hint-paper:var(--flight-well,var(--dock-paper));
+  --hint-edge:var(--flight-edge,#658b91);
+  position:absolute;inset:auto 0 calc(100% + 11px) auto;z-index:1;pointer-events:none;
+  width:max-content;max-width:min(258px,calc(100vw - 36px));margin:0;padding:10px 14px;
+  border:1px solid var(--hint-edge);border-radius:5px;background:var(--hint-paper);
+  color:var(--flight-muted,var(--ink));box-shadow:0 5px 18px #03131d38;
+  font:500 14px/1.4 var(--body-font,system-ui,sans-serif);text-align:left;
+}
+#benchStyleHint strong {display:inline-block;max-width:100%;font-weight:650;color:var(--flight-text,var(--ink))}
+#benchStyleHint::after {
+  content:"";position:absolute;right:22px;bottom:-5px;width:8px;height:8px;
+  transform:rotate(45deg);background:var(--hint-paper);
+  border-right:1px solid var(--hint-edge);border-bottom:1px solid var(--hint-edge);
+}
+#benchStyleHint[hidden],.bench-dock:has(.dock-entry[open]) #benchStyleHint {display:none}
+#labMenu>summary[aria-describedby="benchStyleHint"],#benchFinish.hint-target {
+  outline:1px solid var(--flight-warm,#9b692c);outline-offset:-2px;
+  animation:bench-settings-pulse 1.45s ease-in-out 3;
+}
+#benchFinish.hint-target {animation-iteration-count:2}
+@keyframes bench-settings-pulse {
+  0%,100% {box-shadow:inset 0 0 0 1px transparent}
+  50% {box-shadow:inset 0 0 0 2px var(--flight-warm,#9b692c),0 0 9px #e9b85f75}
+}
+@media(prefers-reduced-motion:reduce) {
+  #labMenu>summary[aria-describedby="benchStyleHint"],#benchFinish.hint-target {animation:none}
+}
+@media(max-width:1199px) {
+  /* The view controls stack above the dock. Anchor the hint above both rows. */
+  .hand-console .bench-dock:has(#benchStyleHint:not([hidden])):not(:has(.dock-entry[open])) {position:static}
+}
 .hand-console .bench-dock>button,.hand-console .bench-dock .dock-entry>summary {min-height:46px;min-width:51px;font-size:11px;gap:3px}
 .hand-console .station-views {flex-wrap:nowrap;gap:0}
 .hand-console .station-views button,.hand-console #liveHandModes button {min-height:44px;padding:5px 8px;font-size:12px}

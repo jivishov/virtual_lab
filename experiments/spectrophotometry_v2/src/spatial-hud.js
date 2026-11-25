@@ -84,11 +84,14 @@ export class SpatialHud {
   update(state, hands, panelOpen) {
     if (!this.active) return;
     this.shell.classList.toggle('panels-open', panelOpen);
-    const tracked = hands.camera.modelReady && performance.now() - hands.lastSeen < 450;
-    const link = tracked ? 'Tracking' : hands.camera.modelReady ? 'Show your hand' : 'Starting tracker';
+    const camera = hands.camera;
+    const tracked = camera.modelReady && performance.now() - hands.lastSeen < 450;
+    const link = camera.modelReady ? (tracked ? 'Tracking' : 'Show your hand') :
+      camera.running ? (camera.stream ? 'Starting tracker' : 'Opening camera') : 'Camera off';
     this.nav.dataset.tracked = String(tracked);
     setText(byId('handLinkState'), link);
-    const gestureHint = hands.held || hands.interaction.owner === 'hand' ? 'Release for panels' : 'Pinch to click';
+    const gestureHint = !camera.modelReady ? 'Click or tap' :
+      hands.held || hands.interaction.owner === 'hand' ? 'Release for panels' : 'Pinch to click';
     for (const hint of this.gestureHints) setText(hint, gestureHint);
     this.updateOptics(state);
     if (this.state !== state || this.plotStep !== state.step || this.fitted !== state.analysis.fitted) this.drawPlot(state);

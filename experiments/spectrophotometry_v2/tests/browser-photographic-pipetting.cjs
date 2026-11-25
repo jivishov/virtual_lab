@@ -1,6 +1,7 @@
 // Input to the real camera/worker pipeline is a video of translated hand
 // photographs. The test moves the pictures and observes the normal bench UI.
 const {chromium}=require('playwright');
+const {useStandardBench}=require('./browser-modes.cjs');
 const fs=require('node:fs/promises'),assert=require('node:assert/strict');
 const path=require('node:path');
 const standards=[10,8,6,4,2,0].map(stock=>({id:`tube_${stock}_${10-stock}`,stock,water:10-stock}));
@@ -50,6 +51,7 @@ async function installCamera(page,openFile,fistFile){
 async function verify(page){
  await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');
  await page.waitForFunction(()=>!!window.lab);
+ await useStandardBench(page);
  // Capture diagnostics only when the controller actually drops a held tool.
  // This leaves the detector and the timing of every ordinary packet untouched.
  await page.evaluate(async()=>{

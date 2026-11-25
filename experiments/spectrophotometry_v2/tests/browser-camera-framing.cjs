@@ -68,7 +68,8 @@ async function run(){
  try{
   const page=await browser.newPage({viewport:{width:1856,height:866}}),results=[];
   await installCalibrationCamera(page);await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');
-  await page.waitForFunction(()=>!!window.lab);await page.locator('#immerseButton').click();
+  await page.waitForFunction(()=>!!window.lab);
+  await page.locator('#cameraButton').click(); // Calibrate with the startup camera switched off.
   await page.locator('#handButton').click();
   const slider=page.locator('#handCameraSize');
   const initial=await checkSetup(page,80);

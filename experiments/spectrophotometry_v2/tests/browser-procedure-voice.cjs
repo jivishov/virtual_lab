@@ -26,9 +26,10 @@ async function main(){
   };
   const toggle=page.locator('.procedure-audio [data-voice-toggle]'),replay=page.locator('.procedure-audio [data-voice-replay]');
   await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');await loaded();
-  for(const name of ['Classic','SciFi'])await page.locator('#headerTheme').getByRole('radio',{name}).check();
   assert.equal(await page.locator('#procedureAudio').getAttribute('src'),null);
-  await expectNextPlay(()=>page.locator('#followStep').check());
+  await expectNextPlay(()=>page.locator('#exitImmersive').click());
+  for(const name of ['Classic','SciFi'])await page.locator('#headerTheme').getByRole('radio',{name}).check();
+  await page.locator('#followStep').check();
   await expectClip(await page.evaluate(()=>lab.step));
   const first=await plays();
   await page.locator('#labMenu summary').click();await page.locator('#qualityButton').click();await page.locator('#labMenu summary').click();
@@ -40,6 +41,7 @@ async function main(){
   await expectNextPlay(()=>page.locator('#runButton').click());
   await toggle.click();assert.equal(await toggle.getAttribute('aria-pressed'),'false');
   await page.reload();await loaded();
+  await page.locator('#exitImmersive').click();
   assert.equal(await toggle.getAttribute('aria-pressed'),'false','Mute persists across visits');
   await page.locator('#followStep').check();
   assert.equal(await plays(),0);

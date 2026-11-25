@@ -1,9 +1,11 @@
 // Run with a Playwright page on the studio. Chromium's fake video device exercises
 // the real browser stream and local detector. Generated landmarks test palm intent.
 import assert from 'node:assert/strict';
+import {useStandardBench} from './browser-modes.cjs';
 
 export async function runStudioChecks(page,onOutline=async()=>{}){
   await page.waitForFunction(()=>!!window.lab);
+  await useStandardBench(page);
   assert.deepEqual(await page.evaluate(()=>lab.studio.cameraUsers),[]);
   await page.locator('#handButton').click();
   await page.locator('[data-hand-mode="view"]').click();

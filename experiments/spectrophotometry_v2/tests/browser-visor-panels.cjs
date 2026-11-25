@@ -1,6 +1,7 @@
 // Measure the rendered copy at each breakpoint, then exercise each panel through its controls.
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
+const {useStandardBench} = require('./browser-modes.cjs');
 
 async function checkCopy(page, protocol) {
   const result = await page.evaluate(async protocol => {
@@ -152,6 +153,7 @@ async function main() {
     page.on('pageerror', e => errors.push(e.message));
     await page.goto(process.env.STUDIO_URL || 'http://127.0.0.1:8774/');
     await page.waitForFunction(() => !!window.lab);
+    await useStandardBench(page);
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'scifi');
     const header = page.locator('#headerTheme');
@@ -159,7 +161,8 @@ async function main() {
     await page.keyboard.press('ArrowLeft');
     assert.ok(await header.getByRole('radio', { name: 'Classic' }).isChecked());
     await page.reload(); await page.waitForFunction(() => !!window.lab);
-    assert.equal(await page.locator('html').getAttribute('data-theme'), 'classic');
+    await useStandardBench(page);
+    assert.equal(await page.locator('html').getAttribute('data-theme'), 'scifi');
     for (const [width, height] of [[1440, 900], [768, 600], [740, 380], [390, 844], [320, 568]]) {
       await page.setViewportSize({ width, height });
       await checkCopy(page, true);

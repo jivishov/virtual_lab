@@ -13,7 +13,9 @@ const source=process.env.HAND_VIDEO||process.argv[2];
   const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');await page.waitForFunction(()=>!!window.lab);
   await page.evaluate(async()=>{const {HandControls}=await import('./src/hand-controls.js'),packet=HandControls.prototype.packet;HandControls.prototype.packet=function(value){window.lastCameraPacket=value;return packet.call(this,value)}});
-  await page.locator('#handButton').click();await page.locator('#handStart').click();
+  // Calibrate the automatically started tracker in the regular classroom view.
+  await page.waitForFunction(()=>lab.hand.state.backend,null,{timeout:45000});
+  await page.locator('#exitImmersive').click();await page.locator('#handButton').click();
   await page.locator('#handBegin').waitFor({state:'visible',timeout:30000});
   await page.waitForFunction(()=>window.lastCameraPacket?.landmarks?.length>0,null,{timeout:30000}).catch(async error=>{console.error(await page.evaluate(()=>({hand:lab.hand.state,status:document.getElementById('handStatus').textContent,video:[document.getElementById('handVideo').videoWidth,document.getElementById('handVideo').videoHeight],frame:window.lastCameraPacket?.frame?[lastCameraPacket.frame.width,lastCameraPacket.frame.height]:null,landmarks:window.lastCameraPacket?.landmarks.length})));throw error});
   await page.screenshot({path:path.join(out,'player-frame.png')});

@@ -1,9 +1,6 @@
-// Apply the saved appearance before styles or the bench are painted.
+// Each visit starts in SciFi. Both theme switches control the current page.
 (() => {
-  const key = 'spectrophotometry-v2-theme';
   const root = document.documentElement;
-  const resolve = value => value === 'classic' ? 'classic' : 'scifi';
-  try { root.dataset.theme = resolve(localStorage.getItem(key)); } catch {}
 
   document.addEventListener('DOMContentLoaded', () => {
     const header = document.getElementById('headerTheme');
@@ -14,18 +11,12 @@
 
     const choices = document.querySelectorAll('.theme-switch input');
     function select(value) {
-      root.dataset.theme = resolve(value);
+      root.dataset.theme = value;
       for (const input of choices) input.checked = input.value === root.dataset.theme;
     }
-    select(root.dataset.theme);
+    select('scifi');
     for (const input of choices) {
-      input.addEventListener('change', () => {
-        select(input.value);
-        try { localStorage.setItem(key, root.dataset.theme); } catch {}
-      });
+      input.addEventListener('change', () => select(input.value));
     }
-    window.addEventListener('storage', event => {
-      if (event.key === key || event.key === null) select(event.newValue);
-    });
   });
 })();
