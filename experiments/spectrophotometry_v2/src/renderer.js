@@ -35,7 +35,7 @@ uniform float uRough,uMetal,uGlass,uOpacity,uTexture,uPattern,uEmission,uThickne
 uniform sampler2D uMap,uShadow,uBackground,uReflections;uniform vec2 uResolution;
 uniform vec3 uKeyDir,uKeyColor,uFillDir,uFillColor,uSky,uGround,uUVPos,uUVDir,uUVColor,uUVAxis;
 uniform float uEnvScale,uUV;
-uniform vec2 uFilm; // cinematic materials, simulated window light
+uniform float uFilm; // Cinematic finish and its simulated window light.
 out vec4 outColor;const float PI=3.14159265359;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
@@ -88,7 +88,7 @@ return vec4(pow(tonemap(c*uExposure),vec3(1./2.2)),a);
 }
 void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(uCamera-vPos),r;vec4 tex=uTexture>.5?texture(uMap,vUV):vec4(1.);if(tex.a<.02)discard;
   if(uPattern==14.){
-    if(uFilm.y<.5)discard;
+    if(uFilm<.5)discard;
     vec2 away=-normalize(uKeyDir.xz),p=(vPos.xz-uModel[3].xz)/uThickness;
     float along=dot(p,away),across=dot(p,vec2(-away.y,away.x));
     float fill=clamp(uPipette.x,0.,1.),dye=clamp(uPipette.y,0.,1.)*fill;
@@ -147,7 +147,7 @@ void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(u
   float occl=(uPattern==1.||uPattern==6.)?1.:mix(1.,mix(.55,1.,smoothstep(0.,.34,vPos.y)),1.-abs(n.y));
   vec3 f=fresnel(nv,mix(vec3(.04),base,uMetal));
   float keyFalloff=mix(1.16,.81,smoothstep(-6.,6.,vPos.x+.12*vPos.z));
-  if(uFilm.y>.5) keyFalloff=.23+1.04*throughWindow(vPos,L);
+  if(uFilm>.5) keyFalloff=.23+1.04*throughWindow(vPos,L);
   vec3 c=base*mix(uGround,uSky,n.y*.5+.5)*(1.-uMetal*.7)*occl
     +direct(n,v,L,uKeyColor,base,rough,uMetal)*shadow(n,L)*keyFalloff
     +direct(n,v,normalize(uFillDir),uFillColor,base,rough,uMetal)*occl
@@ -162,10 +162,10 @@ void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(u
     vec2 uv=clamp(gl_FragCoord.xy/uResolution,vec2(.001),vec2(.999));
     vec3 behind=texture(uBackground,uv).rgb;
     float path=uThickness*mix(.30,1.,nv);
-    vec3 dye=mix(vec3(1.55,.59,.036),vec3(2.25,.76,.038),uFilm.x);
+    vec3 dye=mix(vec3(1.55,.59,.036),vec3(2.25,.76,.038),uFilm);
     vec3 absorb=exp(-path*(vec3(.018,.008,.004)+uPipette.y*dye));
     float surface=.022+.62*pow(1.-nv,5.);
-    if(uFilm.x>.5){
+    if(uFilm>.5){
       vec3 bent=refract(-v,n,.75);
       vec3 transmitted=mix(env(bent,.28),uSky,.40);
       float weight=.34*clamp(path/1.75,.25,1.)*(.63+.37*max(dot(n,L),0.));
@@ -184,10 +184,10 @@ void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(u
   }
   if(uGlass>.5){vec2 uv=gl_FragCoord.xy/uResolution;vec2 offset=vec2(dot(n,normalize(cross(v,vec3(0.,1.,0.)))),n.y)*.032*uThickness;vec3 bg=texture(uBackground,clamp(uv+offset,vec2(.002),vec2(.998))).rgb;float F=.04+.96*pow(1.-nv,5.);float reflectance=clamp(.028+.10*uOpacity+F*.93,.055,.97);
     vec3 reflected=env(r,rough);
-    if(uFilm.x>.5){
+    if(uFilm>.5){
       reflectance=.043+.94*pow(1.-nv,4.);
-      reflected+=vec3(1.40,1.21,.96)*reflectedWindow(r,rough)*uFilm.y;
-      reflected+=vec3(.63,.82,1.08)*reflectedWindow(vec3(-r.x,r.y,-r.z),rough)*uFilm.y;
+      reflected+=vec3(1.40,1.21,.96)*reflectedWindow(r,rough);
+      reflected+=vec3(.63,.82,1.08)*reflectedWindow(vec3(-r.x,r.y,-r.z),rough);
     }
 #ifdef HDR
     vec3 reflection=reflected*1.05+direct(n,v,L,uKeyColor,vec3(1.),rough,0.)*.15+uUVColor*irr*.25;vec3 tint=mix(vec3(1.),max(uColor,vec3(.001)),uOpacity);
@@ -197,7 +197,7 @@ void main(){vec3 n=normalize(vNormal);if(!gl_FrontFacing)n=-n;vec3 v=normalize(u
     vec3 result=mix(bg*tint,reflection,reflectance);result=mix(result,vec3(.43,.55,.58)*uEnvScale,edge*.40);
 #endif
     if(uGlass>1.5){
-      result=mix(result,vec3(.81,.91,.93),mix(.41,.18,uFilm.x));
+      result=mix(result,vec3(.81,.91,.93),mix(.41,.18,uFilm));
       // The narrow bore magnifies its contents. Shade them at the shaft surface
       // so refraction cannot sample past a two-pixel-wide column in a bench view.
       if(uPipette.x>0.){
@@ -239,20 +239,19 @@ ${ROOM_LIGHT}
 void main(){
   vec2 uv=(vec2(vUV.x,1.-vUV.y)-uVideoRect.xy)/uVideoRect.zw;
   vec2 edge=min(uv,1.-uv);
-  float live=uLive*smoothstep(0.,.016,min(edge.x,edge.y));
-  vec3 color=vec3(0.);
-  if(live<1.){
+  float coverage=uLive*smoothstep(0.,.012,min(edge.x,edge.y));
+  if(uMirror>.5)uv.x=1.-uv.x;
+  vec4 person=coverage>0.?texture(uVideo,uv):vec4(0.);
+  float alpha=coverage*person.a;
+  vec3 color=person.rgb*coverage;
+  if(alpha<1.){
     vec4 farPoint=uInverse*vec4(vUV*2.-1.,1.,1.);
     vec3 ray=normalize(farPoint.xyz/farPoint.w-uEye);
     vec3 start=uEye-vec3(0.,3.1,0.);
     float b=dot(start,ray);
     float t=-b+sqrt(max(0.,b*b-dot(start,start)+36.*36.));
     vec3 dir=normalize(start+max(t,1.)*ray);
-    color=texture(uRoom,roomUV(dir)).rgb;
-  }
-  if(live>0.){
-    if(uMirror>.5)uv.x=1.-uv.x;
-    color=mix(color,texture(uVideo,uv).rgb,live);
+    color+=texture(uRoom,roomUV(dir)).rgb*(1.-alpha);
   }
   if(uHDR<.5){outColor=vec4(color,1.);return;}
   // Invert the composite curve so both backgrounds retain their exposure.
@@ -331,8 +330,12 @@ drawRoom(){
   gl.uniform4f(u.uVideoRect,rect?.left??0,rect?.top??0,rect?.width??1,rect?.height??1);
   gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.roomTexture);gl.uniform1i(u.uRoom,0);
   gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,live?this.cameraTexture:this.white);gl.uniform1i(u.uVideo,1);
-  if(live){
-    if(this.videoTime!==video.currentTime){gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,video);this.videoTime=video.currentTime;}
+  if(live && this.videoTime!==video.currentTime){
+    // Linear filtering should blend edge pixels in premultiplied colour.
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,true);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,video);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);
+    this.videoTime=video.currentTime;
   }
   gl.bindVertexArray(this.quad);gl.drawArrays(gl.TRIANGLES,0,3);gl.depthMask(true);gl.enable(gl.DEPTH_TEST);
 }
@@ -376,7 +379,7 @@ lighting(){
   const rig=this.rig;
   g.uniform3fv(u.uKeyDir,rig.key);g.uniform3fv(u.uKeyColor,k(rig.sun));g.uniform3fv(u.uFillDir,rig.fill);g.uniform3fv(u.uFillColor,k(rig.bounce));
   g.uniform3fv(u.uSky,k(rig.sky));g.uniform3fv(u.uGround,k(rig.ground));g.uniform1f(u.uEnvScale,(.05+.95*day)*rig.environment);
-  g.uniform2f(u.uFilm,this.cinematic?1:0,this.cinematic && !(this.roomVideo?.readyState>=2)?1:0);
+  g.uniform1f(u.uFilm,this.cinematic?1:0);
   g.uniform1f(u.uUV,uv);g.uniform3fv(u.uUVPos,this.light.uvPos);g.uniform3fv(u.uUVDir,this.light.uvDir);g.uniform3fv(u.uUVAxis,this.light.uvAxis);g.uniform3fv(u.uUVColor,[.1,.045,.32]); // long-wave lamps emit little visible light; most of the glow is fluorescence
   g.uniform1f(u.uExposure,this.light.exposure);g.uniform1f(u.uShadowSize,this.shadowSize);
 }

@@ -199,7 +199,7 @@ async function verify(page){
    const targetName=target==='stockBottle'?'Blue #1 stock':target==='waterBottle'?'Distilled water':target.slice(5).split('_').join(' / ');
    assert.ok((await page.locator('#hudTarget').textContent()).includes(targetName));
    assert.ok(await page.evaluate(()=>document.querySelector('#hudVolume').textContent===document.querySelector('#meniscusGuide span').textContent));
-   assert.equal(await page.evaluate(()=>lab.studio.liveRoom),false);
+   assert.equal(await page.evaluate(()=>lab.studio.liveRoom),true);
    const hudFits=await page.locator('#handHud').evaluate(el=>{
     const r=el.getBoundingClientRect(),dock=document.querySelector('.bench-dock').getBoundingClientRect();
     return r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&(r.right<=dock.left||r.bottom<=dock.top);

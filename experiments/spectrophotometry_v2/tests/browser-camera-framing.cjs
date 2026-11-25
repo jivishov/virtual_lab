@@ -1,31 +1,13 @@
-// A known-size magenta square in a camera exposure measures the actual WebGL
-// backdrop independently of the tracking and overlay coordinate calculations.
+// A marker inside a segmented portrait measures the actual WebGL camera framing.
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
 
-async function installCalibrationCamera(page){
- await page.addInitScript(()=>{
-  Object.defineProperty(navigator.mediaDevices,'getUserMedia',{value:async()=>{
-   if(window.denyNextCamera){window.denyNextCamera=false;throw new DOMException('Camera permission denied','NotAllowedError')}
-   if(window.cameraGate)await window.cameraGate;
-   const image=document.createElement('canvas');image.width=960;image.height=720;
-   const ctx=image.getContext('2d');
-   const paint=()=>{
-    ctx.fillStyle='#50504a';ctx.fillRect(0,0,960,720);
-    ctx.fillStyle='#fb0bf6';ctx.fillRect(290,85,60,60);
-   };
-   paint();const stream=image.captureStream(10);
-   const track=window.calibrationTrack=stream.getVideoTracks()[0];
-   const timer=setInterval(()=>track.readyState==='ended'?clearInterval(timer):paint(),100);
-   return stream;
-  }});
- });
-}
+const {installCalibrationCamera}=require('./person-camera-fixture.cjs');
 
 async function measure(page,size,mirrored){
  const canvas=page.locator('#labCanvas'),s=await canvas.boundingBox();
  const scale=Math.min(s.width/960,s.height/720)*size;
- const expected={width:60*scale,height:60*scale,x:s.width/2+(mirrored?160:-160)*scale,y:s.height/2+(115-360)*scale};
+ const expected={width:30*scale,height:22*scale,x:s.width/2+(mirrored?135:-135)*scale,y:s.height/2+(131-360)*scale};
  const screenshot=await canvas.screenshot();
  const actual=await page.evaluate(async data=>{
   const image=new Image();image.src='data:image/png;base64,'+data;await image.decode();
@@ -67,7 +49,7 @@ async function run(){
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE||undefined,args:['--enable-unsafe-swiftshader']});
  try{
   const page=await browser.newPage({viewport:{width:1856,height:866}}),results=[];
-  await installCalibrationCamera(page);await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');
+  await installCalibrationCamera(page,true);await page.goto(process.env.STUDIO_URL||'http://127.0.0.1:8774/');
   await page.waitForFunction(()=>!!window.lab);
   await page.locator('#cameraButton').click(); // Calibrate with the startup camera switched off.
   await page.locator('#handButton').click();
@@ -90,7 +72,7 @@ async function run(){
   await slider.fill('80');await page.locator('#handClose').click();
   assert.deepEqual(await page.evaluate(()=>lab.studio.cameraUsers),[],'Preview calibration needs no camera permission');
   await page.locator('#cameraSettingsButton').click();await page.locator('#liveRoom').click();
-  await page.waitForFunction(()=>lab.studio.liveRoom);await checkRoomMap(page);await page.locator('#cameraClose').click();
+  await page.waitForFunction(()=>lab.studio.liveRoom);await checkRoomMap(page);await page.locator('#mirrorCamera').uncheck();await page.locator('#cameraClose').click();
   results.push(await measure(page,.8,false));
   await page.locator('#handButton').click();await page.locator('#handCameraSize').fill('50');await page.locator('#handClose').click();
   await page.locator('#cameraSettingsButton').click();assert.equal(await page.locator('#roomCameraSize').inputValue(),'50');
@@ -142,7 +124,7 @@ async function run(){
   assert.deepEqual(await page.evaluate(()=>[lab.studio.cameraUsers,calibrationTrack.readyState,lab.hand.state.active]),[[],'ended',false]);
   await page.reload();await page.waitForFunction(()=>!!window.lab);await page.locator('#handButton').click();
   assert.equal(await page.locator('#handCameraSize').inputValue(),'100');
-  assert.equal(await page.evaluate(()=>lab.studio.liveRoom),false);console.log(JSON.stringify(results));
+  await page.waitForFunction(()=>lab.studio.liveRoom);console.log(JSON.stringify(results));
  }finally{await browser.close()}
 }
 run().catch(e=>{console.error(e);process.exitCode=1});

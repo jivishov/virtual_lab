@@ -27,7 +27,7 @@ test('room and hands share a pending request, and the last owner releases the de
   const room=source.use('room'),hands=source.use('hands');
   assert.equal(devices.calls.length,1);
   assert.equal(devices.calls[0].audio,false);
-  assert.equal(devices.calls[0].video.facingMode.ideal,'environment');
+  assert.equal(devices.calls[0].video.facingMode.ideal,'user');
   const {track}=connect('rear');assert.equal(await room,await hands);
   assert.equal(source.mirrored,false);
   source.release('hands');assert.equal(track.stops,0);

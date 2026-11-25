@@ -44,7 +44,7 @@ export class StudioCamera extends EventTarget {
     this.owners.add(owner);
     this.notify();
     try {
-      if(!this.video)await (this.pending||this.opening('',owner==='room'?'environment':'user'));
+      if(!this.video)await (this.pending||this.opening('','user'));
       if(token!==this.generation||!this.owners.has(owner)||!this.video)throw new DOMException('Camera request ended','AbortError');
       this.notify();return this.video;
     } catch(error){if(token===this.generation){this.owners.delete(owner);this.notify()}throw error}

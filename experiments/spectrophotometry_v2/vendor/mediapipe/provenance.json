@@ -28,6 +28,14 @@
       "origin": "unchanged copy of supplied ELISA vendor asset"
     },
     {
+      "path": "models/selfie_segmenter_landscape.tflite",
+      "bytes": 250177,
+      "sha256": "490e9ea734313e0de10fa0cd9e3c6133e36ea4db2b7a49bde9ef019f72796b8e",
+      "origin": "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter_landscape/float16/1/selfie_segmenter_landscape.tflite",
+      "modelCard": "https://huggingface.co/litert-community/MediaPipe-ImageSegmenter-Selfie-Landscape",
+      "license": "Apache-2.0"
+    },
+    {
       "path": "wasm/vision_wasm_nosimd_internal.js",
       "bytes": 203672,
       "sha256": "4e8d07dcf8cbb55b343cd76b7fc30d4303220f049d5529d6412f6f93296726a8",

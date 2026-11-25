@@ -1,5 +1,5 @@
-import {StudioExperience} from './studio.js?v=2';
-import {StudioCamera} from './studio-camera.js';
+import {StudioExperience} from './studio.js?v=3';
+import {StudioCamera} from './studio-camera.js?v=3';
 import {ProcedureVoice} from './procedure-voice.js';
 import {renderNotebook,bindNotebook,readingsCsv} from './notebook.js';
 import {PIPETTES,pipetteIds} from './pipettes.js';
@@ -63,6 +63,7 @@ async function selectBenchFinish(value){
  try{
   if(!await scene.appearance.select(value))return;
   select.value=value;
+  document.body.dataset.benchFinish=value;
  }catch{
   select.value=scene.appearance.active;
   const requested=Array.from(select.options).find(option=>option.value===value);
@@ -145,6 +146,7 @@ function updateUI(){
 }
 function control(status){suspendInput(status==='running'?'Regrasp the marked tool to continue.':status==='paused'?'Paused. All partial volumes and poses are preserved.':'Stopped. Partial volumes are preserved; choose Run and regrasp.');if(status==='stopped')studio?.stop();else hands?.resetInput();setStatus(state,status);changed();updateUI()}
 function animate(now){
+ studio?.updatePerson(now);
  // Leave GPU time for camera inference while continuously rendering a dose.
  // Liquid advances by elapsed time; gesture evidence uses sensor timestamps.
  if(!hands?.camera.running||now-lastBenchFrame>=1000/30-1){

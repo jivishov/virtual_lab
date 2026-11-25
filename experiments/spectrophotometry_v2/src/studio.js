@@ -4,6 +4,7 @@ import {cameraRect,CAMERA_SIZE_KEY,DEFAULT_CAMERA_SIZE,savedCameraSize,heldHandC
 import {PIPETTES} from './pipettes.js';
 import {SpatialHud} from './spatial-hud.js?v=2';
 import {PanelPointer} from './panel-pointer.js';
+import {PersonCamera} from './person-camera.js';
 
 const $=id=>document.getElementById(id);
 const clamp=(v,lo=0,hi=1)=>Math.max(lo,Math.min(hi,v));
@@ -22,6 +23,8 @@ export class StudioExperience {
     this.immersive=false;this.handHudRequested=false;this.roomRequest=0;this.deviceCount=0;
     this.traceCanvas=$('palmTrace');this.workHelp=$('modeHelp').textContent;
     this.cameraPlane=$('benchCameraFrame');this.roomMapFrame=$('roomImageFrame');
+    this.showPerson=true;
+    this.personCamera=new PersonCamera($('handForeground'),()=>this.updateCameraView());
     this.hud=$('handHud');
     this.lock=$('hudLock');
     this.spatial=new SpatialHud(locateTarget);
@@ -75,7 +78,7 @@ export class StudioExperience {
       hands.resetInput();
       this.cameraPanel(false);this.protocol(false);
     });
-    $('photoRoom').onclick=()=>{this.roomRequest++;source.release('room');this.syncCamera()};
+    $('photoRoom').onclick=()=>{this.showPerson=false;this.roomRequest++;source.release('room');this.syncCamera()};
     $('liveRoom').onclick=()=>this.activateRoom();
     $('mirrorCamera').onchange=e=>{
       hands.lost();this.frameRevision++;hands.lastRaw=null;this.framingPalm=null;
@@ -184,6 +187,8 @@ export class StudioExperience {
   }
   async activateRoom(){
     const request=++this.roomRequest;
+    this.showPerson=true;
+    if(this.personCamera.state==='error')this.personCamera.setVideo(this.source.video,true);
     $('roomStatus').textContent='Opening camera…';$('liveRoom').disabled=true;
     try{await this.source.use('room');if(request===this.roomRequest)this.syncCamera()}
     catch(error){
@@ -196,7 +201,7 @@ export class StudioExperience {
     }finally{if(request===this.roomRequest)$('liveRoom').disabled=this.source.owners.has('room')}
   }
   syncCamera(){
-    const feed=this.source,video=feed.video,room=!!video&&feed.owners.has('room');
+    const feed=this.source,video=feed.video;
     const tracking=this.hands.camera.running;
     const useHud=this.immersive&&(this.handHudRequested||tracking);
     document.body.classList.toggle('hand-console',useHud);
@@ -205,30 +210,41 @@ export class StudioExperience {
     this.spatial.enable(useHud);
     if(switching&&!this.hands.busy)this.scene.refitView();
     this.renderer.mirrored=feed.mirrored;
-    $('photoRoom').setAttribute('aria-pressed',String(!room));$('liveRoom').setAttribute('aria-pressed',String(room));
-    $('liveRoom').disabled=room||(!video&&feed.owners.has('room'));
     const powered=tracking||feed.owners.size>0;
     $('cameraButton').classList.toggle('camera-on',powered);
     $('cameraButton').setAttribute('aria-pressed',String(powered));
-    $('cameraButton').title=powered?'Turn off camera and hand tracking':'Turn on room camera';
+    $('cameraButton').title=powered?'Turn off camera and hand tracking':'Show yourself in the lab';
     $('deviceTools').hidden=!video;$('mirrorCamera').checked=feed.mirrored;
-    this.hands.video.style.transform=feed.mirrored?'scaleX(-1)':'none';
     $('liveHandModes').hidden=!this.immersive&&!tracking;
-    $('roomStatus').textContent=!video&&feed.owners.has('room')?'Opening camera…':room?'Live room background on.':tracking&&this.immersive?'Lab interior with palm outline.':tracking?'Hands camera active.':'The lab interior is active.';
     if(this.lastVideo!==video){
       this.lastVideo=video;this.deviceCount=0;$('switchCamera').hidden=true;
       this.cameraFrame.readyState=0;this.renderer.videoTime=-1;
       this.frameCenter={x:.5,y:.5};this.framingPalm=this.framingHand=null;this.frameRevision++;this.hands.lastRaw=null;this.clearHands();
       if(video)feed.inputs().then(list=>{if(feed.video===video){this.deviceCount=list.length;$('switchCamera').hidden=list.length<2}});
     }
-    this.updateBackdrop();this.drawPlayerFrame();
+    this.personCamera.setVideo(this.showPerson?video:null);
+    this.updateCameraView();this.drawPlayerFrame();
     this.changed();
   }
-  updateBackdrop(){
-    const room=this.source.owners.has('room');
-    const showFrame=this.hands.camera.running&&(!this.immersive||room)&&this.cameraFrame.readyState>=2;
-    const backdrop=showFrame?this.cameraFrame:room?this.source.video:null;
+  updateCameraView(){
+    const state=this.personCamera.state, opening=!this.source.video&&this.source.owners.has('room');
+    const selected=this.showPerson&&!!this.source.video;
+    $('photoRoom').setAttribute('aria-pressed',String(!selected));
+    $('liveRoom').setAttribute('aria-pressed',String(selected));
+    $('liveRoom').disabled=opening||(selected&&state!=='error');
+    const status=opening?'Opening camera…':state==='loading'?'Preparing your cutout…':
+      state==='ready'?'Person in lab. Your background is hidden.':
+      state==='error'?'Your cutout could not load. Select Person in lab to retry.':
+      this.hands.camera.running?'Lab interior with hand controls.':'The lab interior is active.';
+    if($('roomStatus').textContent!==status)$('roomStatus').textContent=status;
+    const backdrop=state==='ready'?this.personCamera.output:null;
     if(this.renderer.roomVideo!==backdrop){this.renderer.roomVideo=backdrop;this.renderer.videoTime=-1}
+    this.changed();
+  }
+  updatePerson(now){
+    const fresh=now-this.cameraFrame.currentTime*1000<160;
+    const exposure=this.hands.camera.running&&this.cameraFrame.readyState>=2&&fresh?this.cameraFrame:null;
+    this.personCamera.update(exposure,now);
   }
   stop(keepHud=false){
     if(!keepHud)this.handHudRequested=false;
@@ -300,7 +316,7 @@ export class StudioExperience {
     const left=this.source.mirrored?1-f.left-f.width:f.left;
     const style={left:left*100+'%',top:f.top*100+'%',width:f.width*100+'%',height:f.height*100+'%'};
     Object.assign(box.style,style);
-    this.hands.overlay.style.transform=this.traceCanvas.style.transform=this.source.mirrored?'scaleX(-1)':'none';
+    this.personCamera.output.style.transform=this.hands.overlay.style.transform=this.traceCanvas.style.transform=this.source.mirrored?'scaleX(-1)':'none';
     $('handGain').value=String(Math.round(this.frameWidth*100));$('handGainValue').textContent=Math.round(this.frameWidth*100)+'%';
     const percent=Math.round(this.cameraSize*100);
     preview.style.setProperty('--webcam-scale',percent+'%');
@@ -339,7 +355,7 @@ export class StudioExperience {
     if(packet.frameRevision!==undefined&&packet.frameRevision!==this.frameRevision)return;
     if(anchor?.palm){this.framingPalm=anchor.palm;this.framingHand=anchor.id}
     this.placeCamera();
-    // The outline, displayed webcam exposure and grip share this one placement.
+    // The cutout, outline and grip share this placement in sensor coordinates.
     const benchScale=this.immersive?this.renderer.roomVideoRect.width*this.canvas.clientWidth/frame.width:null;
     this.trace(this.traceCanvas,frame,packet,benchScale);
     // Keep the accepted exposure for WebGL while the detector reads the next one.
@@ -355,9 +371,9 @@ export class StudioExperience {
     if(!this.hands.panel.hidden){
       const preview=this.hands.overlay,width=Math.min(480,picture.width),height=Math.round(width*picture.height/picture.width);
       if(preview.width!==width||preview.height!==height){preview.width=width;preview.height=height}
-      const small=preview.getContext('2d');small.drawImage(picture,0,0,width,height);small.drawImage(this.traceCanvas,0,0,width,height);
+      const small=preview.getContext('2d');small.clearRect(0,0,width,height);small.drawImage(this.traceCanvas,0,0,width,height);
     }
-    if(this.hands.camera.running){this.updateBackdrop();this.trackingChanged()}
+    if(this.hands.camera.running)this.trackingChanged();
   }
   updateHud(step,focus){
     const h=this.hands,c=h.interaction,tracking=h.camera.running,view=tracking&&this.mode==='view';

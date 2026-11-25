@@ -33,14 +33,17 @@
     linear-gradient(var(--corner),var(--corner)) left bottom/1px var(--arm),
     linear-gradient(var(--corner),var(--corner)) right bottom/var(--arm) 1px,
     linear-gradient(var(--corner),var(--corner)) right bottom/1px var(--arm);background-repeat:no-repeat}
-#handPreview video,#handPreview #handOverlay {position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
-#handPanel:not(.camera-on) :is(#handVideo,#handOverlay,#handHeld),.camera-on .preview-idle,.camera-on .preview-off {visibility:hidden}
+#handPreview video,#handPreview #handOverlay,#handPreview #handForeground {position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+#handPanel:not(.camera-on) :is(#handForeground,#handOverlay,#handHeld),.camera-on .preview-idle,.camera-on .preview-off {visibility:hidden}
 .hand-player-frame {position:absolute;outline:1.5px solid #a9ffea;box-shadow:0 0 0 1000px #09282e50;pointer-events:none}
 .preview-pose {position:absolute;left:9px;bottom:9px;padding:3px 8px;background:#122b30e8;color:#c5ffe9;border-radius:3px;font-size:12px;pointer-events:none}
 .preview-pose:empty {display:none}
 #handImageFrame {position:absolute;left:50%;top:50%;width:var(--webcam-scale,80%);height:var(--webcam-scale,80%);
   transform:translate(-50%,-50%);overflow:hidden;background:#122c32}
 #handImageFrame::after {content:"";position:absolute;inset:0;border:2px solid var(--visor-cyan);pointer-events:none}
+#handPanel.camera-on #handImageFrame {background-image:var(--preview-room,url('assets/clean-lab.webp'));background-size:255% auto;background-position:50% 50%}
+[data-bench-finish="cinematic"] {--preview-room:url('assets/cinematic/clean-lab.webp')}
+[data-bench-finish="refined"] {--preview-room:url('assets/refined/clean-lab.webp')}
 #handPreview {background-color:#091c28;background-image:linear-gradient(#69aab414 1px,transparent 1px),linear-gradient(90deg,#69aab414 1px,transparent 1px);background-size:18px 18px}
 #handPreview .hand-player-frame {border:2px dashed var(--visor-amber);outline:1px solid #19303d;box-shadow:inset 0 0 0 1px #19303d,0 0 0 500px #071b273b}
 .frame-key {display:flex;align-items:center;gap:9px;flex-wrap:wrap}
