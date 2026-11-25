@@ -155,11 +155,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     let immWhyOpen = false;
     let immStepsBuiltMode = null;
 
-    const syncAetherMode = () => {
+    let isBootingAutoMode = false;
+    const syncAetherMode = (withSound = true) => {
         const shouldBeAether = immersiveActive && gesturesActive;
         const wasAether = document.body.classList.contains('aether-mode');
         document.body.classList.toggle('aether-mode', shouldBeAether);
-        if (shouldBeAether && !wasAether) {
+        if (shouldBeAether && !wasAether && withSound && !isBootingAutoMode) {
             audio.playLabSound('themeSwitch');
         }
     };
@@ -545,8 +546,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     try {
-        // 1. Initialize State & Morphing Theme-Aware Calibration Graph
+        // 1. Initialize State, Default Immersive Boot & Morphing Theme-Aware Calibration Graph
         state.initializeState(undoButton);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoStartImmersive = urlParams.get('immersive') !== '0';
+        const autoStartHands = urlParams.get('hands') !== '0';
+        if (autoStartImmersive) {
+            setImmersiveMode(true, false);
+        } else {
+            document.body.classList.remove('immersive-mode');
+        }
         graph.initGraph(graphCanvas, {
             tooltipEl: getEl('graph-tooltip'),
             r2BadgeEl: getEl('graph-r2-badge'),
@@ -1050,6 +1060,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (loadingEl) {
             loadingEl.classList.add('loading-overlay--done');
             setTimeout(() => loadingEl.remove(), 350);
+        }
+
+        // 9. Auto-start Hand Gesture Control (AETHER Spatial Mode) on Page Load!
+        if (autoStartHands) {
+            isBootingAutoMode = true;
+            startHandGestures().finally(() => {
+                isBootingAutoMode = false;
+            });
         }
 
         // Clean inspection hook for automated verification
