@@ -1,4 +1,4 @@
-import { LabScene } from '../../spectrophotometry_v2/src/scene.js';
+import { LabScene } from '../../spectrophotometry_v2/src/scene.js?v=2';
 import { fitCamera } from '../../spectrophotometry_v2/src/camera-fit.js';
 import { CUVETTE } from '../../spectrophotometry_v2/assets/cuvette-dimensions.js';
 import { pipetteLevel } from '../../spectrophotometry_v2/src/pipettes.js';
