@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en" data-theme="scifi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Weigh brass, prepare its solution and determine percent copper with a calibrated spectrophotometer in a 3D laboratory."
+    />
+    <title>Copper in Brass · 3D Virtual Lab</title>
+    <link rel="stylesheet" href="../spectrophotometry_v2/spatial-hud.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="../spectrophotometry_v2/src/renderer.js"></script>
+  </head>
+  <body class="hand-console">
+    <main id="stage" class="stage" aria-label="3D laboratory">
+      <canvas
+        id="bench"
+        tabindex="0"
+        aria-label="Interactive three-dimensional laboratory bench"
+      ></canvas>
+      <div class="hud">
+        <header class="identity glass">
+          <span class="element" aria-hidden="true">Cu</span>
+          <div>
+            <h1 data-word="title">Copper in brass</h1>
+            <span data-word="method">Spectrophotometry</span>
+          </div>
+        </header>
+        <section class="guide glass" aria-labelledby="direction">
+          <div class="guide-main">
+            <div class="eyeline"><span id="phase"></span><span id="progress"></span></div>
+            <h2 id="direction" aria-live="polite"></h2>
+            <div
+              id="progressTrack"
+              role="progressbar"
+              aria-label="Procedure"
+              aria-valuemin="0"
+              aria-valuemax="60"
+            >
+              <i></i>
+            </div>
+          </div>
+          <button id="protocolBtn" data-word="protocol">Protocol</button>
+        </section>
+        <details class="sample-wing flight-wing" open>
+          <summary data-word="sampleData">Sample data</summary>
+          <div class="wing-body">
+            <dl>
+              <div>
+                <dt data-word="mass">Brass mass</dt>
+                <dd id="mass">—</dd>
+              </div>
+              <div>
+                <dt data-word="condition">Condition</dt>
+                <dd id="condition">—</dd>
+              </div>
+            </dl>
+            <img class="optics" src="assets/optical-path.svg" width="256" height="58" alt="" />
+            <div class="meter">
+              <span data-word="abs">Absorbance</span><output id="reading">—</output>
+            </div>
+          </div>
+        </details>
+        <details class="cal-wing flight-wing" open>
+          <summary data-word="calibration">Calibration</summary>
+          <div class="wing-body">
+            <svg
+              id="hudPlotCopper"
+              class="plot"
+              viewBox="0 0 300 150"
+              role="img"
+              aria-label="Absorbance versus molar concentration"
+            ></svg>
+            <div class="meter">
+              <span data-word="standards">Standards</span><span id="standardCount">0 / 3</span>
+            </div>
+            <button class="inside" id="wingNotebook" data-word="notebook">Notebook</button>
+          </div>
+        </details>
+      </div>
+      <div id="marker" hidden><span></span></div>
+      <div id="handCursor" hidden></div>
+      <div class="toolbar">
+        <div id="tip" class="glass" role="status"></div>
+        <nav class="views glass" aria-label="Camera views">
+          <button data-view="bench" data-word="bench">Bench</button
+          ><button data-view="prep" data-word="prep">Preparation</button>
+          <button data-view="optics" data-word="instrument">Instrument</button
+          ><button id="focusBtn" data-word="focus">Focus step</button>
+        </nav>
+        <nav class="tools glass" aria-label="Lab tools">
+          <button id="equipmentBtn" data-word="gear">Equipment</button
+          ><button id="notebookBtn" data-word="notebook">Notebook</button>
+          <button id="settingsBtn" data-word="settings">Settings</button>
+        </nav>
+      </div>
+      <div id="loading" class="glass" role="status">
+        <strong data-word="loading">Opening the lab…</strong>
+        <p id="loadError" hidden></p>
+        <a id="fallback" href="../copperinbrass/" hidden>Open the 2D experiment</a>
+      </div>
+      <noscript><p class="glass">Enable JavaScript to use this laboratory.</p></noscript>
+    </main>
+    <dialog id="protocolPanel">
+      <header>
+        <h2 data-word="protocol">Protocol</h2>
+        <button class="x" data-close aria-label="Close">×</button>
+      </header>
+      <div class="sheet">
+        <p data-word="aim"></p>
+        <ol id="stepList"></ol>
+      </div>
+    </dialog>
+    <dialog id="equipmentPanel">
+      <header>
+        <h2 data-word="gear">Equipment</h2>
+        <button class="x" data-close aria-label="Close">×</button>
+      </header>
+      <div class="sheet">
+        <p id="pickPrompt"></p>
+        <div id="gearList" class="gear-grid"></div>
+      </div>
+    </dialog>
+    <dialog id="settingsPanel">
+      <header>
+        <h2 data-word="settings">Settings</h2>
+        <button class="x" data-close aria-label="Close">×</button>
+      </header>
+      <div class="sheet settings">
+        <label
+          ><span data-word="language">Language</span
+          ><select id="language">
+            <option value="en">English</option>
+            <option value="az">Azərbaycanca</option>
+            <option value="tr">Türkçe</option>
+            <option value="de">Deutsch</option>
+          </select></label
+        >
+        <label
+          ><span data-word="finish">Bench finish</span
+          ><select id="finish">
+            <option value="cinematic">Cinematic</option>
+            <option value="refined">Refined</option>
+            <option value="original">Original</option>
+          </select></label
+        >
+        <label
+          ><span data-word="quality">Graphics</span
+          ><select id="quality">
+            <option value="low" data-word="low">Low</option>
+            <option value="balanced" selected data-word="balanced">Balanced</option>
+            <option value="high" data-word="high">High</option>
+          </select></label
+        >
+        <label
+          ><span data-word="follow">Follow current step</span><input id="followStep" type="checkbox"
+        /></label>
+        <label
+          ><span data-word="target">Show next target</span
+          ><input id="guideTargets" type="checkbox" checked
+        /></label>
+        <label><span data-word="hands">Hand control</span><input id="useHands" type="checkbox" /></label>
+        <label
+          ><span data-word="person">Show me in the lab</span><input id="usePerson" type="checkbox"
+        /></label>
+        <p id="cameraStatus" role="status"></p>
+        <p data-word="navigation"></p>
+        <div class="actions">
+          <button id="undo" data-word="undo">Undo step</button
+          ><button id="reset" data-word="restart">Restart</button
+          ><a href="../copperinbrass/" data-word="version2d">2D lab</a>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="resetPanel">
+      <header>
+        <h2 data-word="restart">Restart</h2>
+        <button class="x" data-close aria-label="Close">×</button>
+      </header>
+      <div class="sheet">
+        <p data-word="restartMessage"></p>
+        <div class="actions">
+          <button data-close data-word="cancel">Cancel</button
+          ><button id="confirmReset" class="primary" data-word="restart">Restart</button>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="notebookPanel" class="notebook">
+      <header>
+        <h2 data-word="notebook">Lab notebook</h2>
+        <button class="x" data-close aria-label="Close">×</button>
+      </header>
+      <div class="sheet">
+        <div class="notebook-meta">
+          <div><span data-word="mass">Brass mass</span><strong id="bookMass">—</strong></div>
+          <div><span data-word="finalVolume">Final volume</span><strong id="bookVolume">—</strong></div>
+          <div><span data-word="reported">Reported Cu</span><strong id="bookAnswer">—</strong></div>
+        </div>
+        <div class="analysis-grid">
+          <section>
+            <h3 data-word="readings">Readings</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th data-word="sample">Sample</th>
+                  <th>mol/L</th>
+                  <th data-word="abs">Absorbance</th>
+                </tr>
+              </thead>
+              <tbody id="readings"></tbody>
+            </table>
+          </section>
+          <section>
+            <h3 data-word="calibration">Calibration</h3>
+            <svg
+              id="bookPlot"
+              class="plot"
+              viewBox="0 0 300 150"
+              role="img"
+              aria-label="Absorbance versus molar concentration"
+            ></svg>
+            <p id="fit"></p>
+          </section>
+        </div>
+        <details id="hints">
+          <summary data-word="hint">Calculation hint</summary>
+          <p><span data-word="reference">Worksheet reference</span> <b>A = 2.426c − 0.00538</b></p>
+          <p>
+            <i>m</i><sub>Cu</sub> = <i>c</i> × 0.100 L × 63.55 g/mol<br />% Cu = 100 × <i>m</i
+            ><sub>Cu</sub> / <i>m</i><sub>brass</sub>
+          </p>
+        </details>
+        <fieldset id="cleanupBox" disabled>
+          <legend data-word="cleanup">Cleanup</legend>
+          <div id="checks"></div>
+          <button id="completeCleanup" data-word="confirmCleanup">Record cleanup</button>
+        </fieldset>
+        <form id="calcForm">
+          <label for="answer" data-word="massPercent">Mass percent copper</label>
+          <div class="actions">
+            <input
+              id="answer"
+              name="answer"
+              inputmode="decimal"
+              type="number"
+              step="any"
+              min="0"
+              max="100"
+              placeholder="% Cu"
+            /><button class="primary" id="checkAnswer" type="submit" data-word="check">Check</button>
+          </div>
+        </form>
+        <p id="bookStatus" role="status"></p>
+        <button id="download" data-word="export">Export CSV</button>
+      </div>
+    </dialog>
+    <video id="cameraVideo" playsinline muted hidden></video>
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

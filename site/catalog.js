@@ -30,7 +30,13 @@ window.VL_CATALOG = [
             { label: 'buttons.launchV1', link: 'experiments/dnamicroarray/' }
         ]
     },
-    { key: 'copperinbrass', sym: 'Cu', type: 'lab', family: 'chem', link: 'experiments/copperinbrass/' },
+    {
+        key: 'copperinbrass', sym: 'Cu', type: 'lab', family: 'chem', badge: '3D', tableVersions: true,
+        versions: [
+            { label: 'site.buttons.v2d', link: 'experiments/copperinbrass/' },
+            { label: 'site.buttons.v3d', link: 'experiments/copperinbrass_v2/' }
+        ]
+    },
     { key: 'labstudio', sym: 'Ls', type: 'lab', family: 'chem', link: 'experiments/lab-studio/' },
     {
         key: 'elisaassay', sym: 'El', type: 'lab', family: 'life', badge: '3D', tableVersions: true,

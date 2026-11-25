@@ -285,7 +285,7 @@ const DAYLIGHT={key:[-6,9,3.5],sun:[2.90,2.73,2.49],fill:[6,4,-2],bounce:[.55,.6
 const LATE_WINDOW={key:[-8.2,4.,-3.2],sun:[5.1,3.48,2.05],fill:[3,5,8],bounce:[.83,.98,1.21],sky:[.27,.32,.39],ground:[.14,.122,.104],environment:1.07};
 function rgb(hex){if(Array.isArray(hex))return hex;let h=hex.replace('#','');return[0,2,4].map(i=>Math.pow(parseInt(h.slice(i,i+2),16)/255,2.2))}
 class Renderer{
-constructor(canvas,level='balanced'){this.canvas=canvas;this.gl=canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true,powerPreference:'high-performance'});if(!this.gl)throw Error('WebGL 2 could not start. Open the studio in a WebGL 2 browser with hardware acceleration enabled.');const gl=this.gl;
+constructor(canvas,level='balanced',roomAssetRoot=new URL('assets/',document.baseURI)){this.roomAssetRoot=roomAssetRoot;this.canvas=canvas;this.gl=canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true,powerPreference:'high-performance'});if(!this.gl)throw Error('WebGL 2 could not start. Open the studio in a WebGL 2 browser with hardware acceleration enabled.');const gl=this.gl;
   this.root=new Node();this.meshes=[];this.cam={at:[0,.35,.65],yaw:0,pitch:.72,roll:0,distance:11.2,fov:42};this.dirtyShadow=true;
   this.floatTargets=!!gl.getExtension('EXT_color_buffer_float');
   // Lighting state; scene.js moves uv between 0 (daylight) and 1 (dimmed room, lamp on).
@@ -302,7 +302,7 @@ constructor(canvas,level='balanced'){this.canvas=canvas;this.gl=canvas.getContex
 }
 async roomImages(folder=''){
   const load=async name=>{
-    const image=new Image();image.src=new URL('assets/'+folder+name,document.baseURI).href;await image.decode();
+    const image=new Image();image.src=new URL(folder+name,this.roomAssetRoot).href;await image.decode();
     return image;
   };
   return Promise.all([load('clean-lab.webp'),load('room-reflections.webp')]);

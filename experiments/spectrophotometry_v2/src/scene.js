@@ -37,7 +37,7 @@ export class LabScene{
     }
   }
  }
- async load(){
+ async loadApparatus(selectGroups=null,includeMesh=null){
   const read=async path=>{
     const response=await fetch(new URL('../assets/'+path,import.meta.url));
     if(!response.ok)throw new Error('The apparatus could not be loaded. Open the studio from its local server.');
@@ -50,9 +50,11 @@ export class LabScene{
   const groups={...data.groups};
   const enamel={'Front enclosure':'#dddcd0','Teal front fascia':'#234148','Sample chamber lid':'#344849','Rack base':'#a57852','Rack base inset':'#4a382a'};
   for(const id of pipetteIds.slice(1)){groups[id]=data.groups.pipette;groups[PIPETTES[id].stand]=data.groups.pipetteStand;}
-  for(const [name,spec] of Object.entries(groups)){
+  const selected=selectGroups?selectGroups(groups):groups;
+  for(const [name,spec] of Object.entries(selected)){
    const group=this.r.group(),min=[Infinity,Infinity,Infinity],max=[-Infinity,-Infinity,-Infinity];
    for(const mesh of spec.meshes){
+    if(includeMesh&&!includeMesh(name,mesh.name))continue;
     const {color,...properties}=mesh.material;
     const bulb=isPipette(name)&&mesh.name.startsWith('Bulb ');
     const vertices=new Float32Array(buffer,mesh.offset,mesh.vertexCount*8);
@@ -87,6 +89,9 @@ export class LabScene{
    }
    this.objects[name]=group; this.equipmentBounds[name]={min,max};
   }
+ }
+ async load(){
+  await this.loadApparatus();
   this.buildDilutionCylinder();
   // Front is +Z. Park tall tools behind the gaps between reagent bottles.
   const placements={
@@ -134,11 +139,7 @@ export class LabScene{
   this.cuvetteDock=this.objects.cuvetteDock.set(placements.cuvette[0],0,placements.cuvette[2]);
   this.addLiquid('cuvette',CUVETTE.liquidHalfWidth,CUVETTE.liquidHeight,this.objects.cuvette,CUVETTE.base,true);this.addLiquid('wasteBeaker',.44,.88,this.objects.wasteBeaker,.07);
   this.targets.cuvette={id:'cuvette',group:this.objects.cuvette,offset:[0,CUVETTE.height*.52,0],radius:CUVETTE.width*.65};this.targets.spec20={id:'spec20',group:this.objects.instrument,offset:[0,.75,.6],radius:1.05};this.targets.wasteBeaker={id:'wasteBeaker',group:this.objects.wasteBeaker,offset:[0,.6,0],radius:.5};this.targets.pipette={id:'pipette',group:this.objects.pipette,offset:[0,1,0],radius:.3};
-  this.buildTransmissionDisplay();
-  this.flat('LIGHT PATH  ↕',.85,.13,[.85,1.304,.55],this.objects.instrument,{ink:'#23484e'});
-  this.screen=this.decal(1.19,.33,this.canvas(660,184),[-.65,.84,1.222],this.objects.instrument,{rough:.27,emission:.11});
-  this.appearance.surface('Instrument display',this.screen.mat);
-  this.lid=this.objects.instrument_lid;if(this.lid){this.r.root.children=this.r.root.children.filter(n=>n!==this.lid);this.objects.instrument.add(this.lid);this.lid.set(.85,1.25,-.38)}
+  this.buildInstrument();
   this.pipetteStand=this.objects.pipetteStand;
   for(const id of pipetteIds){
    const cfg=PIPETTES[id],h=this.home[id],stand=this.objects[cfg.stand];stand.set(h[0],0,h[2]);
@@ -155,6 +156,13 @@ export class LabScene{
   const ring=this.r.mesh(G.torus(.34,.018,40),this.mat('#e7b76c',{emission:.15,rough:.5}));ring.noShadow=true;this.marker=ring;
   this.layoutItems=Object.keys(this.home).map(id=>({id,label:PIPETTES[id]?.name||({instrument:'Spectrophotometer',rack:'Rack & its tubes',pipette:'Pipette & stand',tissueBox:'Tissue box',clipboard:'Protocol clipboard'})[id]||LABELS[id]||id}));
   for(const {id} of this.layoutItems)this.homeYaw[id]=this.objects[id].rot[1];this.defaultLayout=this.layoutData();this.setView('overview');this.r.root.update();
+ }
+ buildInstrument(){
+  this.buildTransmissionDisplay();
+  this.flat('LIGHT PATH  ↕',.85,.13,[.85,1.304,.55],this.objects.instrument,{ink:'#23484e'});
+  this.screen=this.decal(1.19,.33,this.canvas(660,184),[-.65,.84,1.222],this.objects.instrument,{rough:.27,emission:.11});
+  this.appearance.surface('Instrument display',this.screen.mat);
+  this.lid=this.objects.instrument_lid;if(this.lid){this.r.root.children=this.r.root.children.filter(n=>n!==this.lid);this.objects.instrument.add(this.lid);this.lid.set(.85,1.25,-.38)}
  }
  wrapLabel(group,canvas,width,height,radius,y){
   const paper=[],segments=24;

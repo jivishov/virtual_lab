@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="58" viewBox="0 0 256 58">
+<title>Light passing through a copper solution to the detector</title>
+<defs>
+  <linearGradient id="beam" gradientUnits="userSpaceOnUse" x1="48" x2="205"><stop stop-color="#ffd39c"/><stop offset=".52" stop-color="#ffac78"/><stop offset="1" stop-color="#ca7963"/></linearGradient>
+  <linearGradient id="solution" x2="1" y2=".30"><stop stop-color="#3b829d"/><stop offset=".52" stop-color="#8bdddf"/><stop offset="1" stop-color="#337394"/></linearGradient>
+</defs>
+<g fill="none" stroke="#95d4de" stroke-width="1.8" stroke-linejoin="round">
+  <path d="M10 48h35m-24-1 2-7h10l2 7M28 7c-10 0-15 10-11 18 2 4 6 7 6 12h10c0-5 4-8 6-12 4-8-1-18-11-18Z"/>
+  <path d="m23 23 5 5 5-5m-5 5v8" stroke="#ffd7a5"/>
+  <path d="M48 25h61m36 0h58" stroke="url(#beam)" stroke-width="3"/>
+  <path d="M113 5h27v43h-27z" fill="#173d4a"/>
+  <path d="M116 22q5-2 10 0t11 0v22h-21z" stroke="none" fill="url(#solution)"/>
+  <path d="M117 8v9m-7 34h33M209 17h15v23h-15zm15 6h9v11h-9m-14 11h24m-17-5v5"/>
+</g>
+</svg>

@@ -1,0 +1,294 @@
+{
+  "balance": [
+    {
+      "name": "Balance display glass",
+      "material": {
+        "color": "#182e30",
+        "rough": 0.17,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 0,
+      "vertexCount": 384,
+      "indexCount": 564
+    },
+    {
+      "name": "Warm grey enamel",
+      "material": {
+        "color": "#c9cfc6",
+        "rough": 0.42,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 14544,
+      "vertexCount": 384,
+      "indexCount": 564
+    },
+    {
+      "name": "Dark teal moulding",
+      "material": {
+        "color": "#294449",
+        "rough": 0.35,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 29088,
+      "vertexCount": 768,
+      "indexCount": 1128
+    },
+    {
+      "name": "Charcoal rubber",
+      "material": {
+        "color": "#222b2c",
+        "rough": 0.67,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 58176,
+      "vertexCount": 1920,
+      "indexCount": 2820
+    },
+    {
+      "name": "Ochre control",
+      "material": {
+        "color": "#dba35a",
+        "rough": 0.45,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 130896,
+      "vertexCount": 384,
+      "indexCount": 564
+    },
+    {
+      "name": "Brushed stainless steel",
+      "material": {
+        "color": "#c6cdca",
+        "rough": 0.27,
+        "metal": 0.86,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 145440,
+      "vertexCount": 512,
+      "indexCount": 2688
+    }
+  ],
+  "brass": [
+    {
+      "name": "Machined brass face",
+      "material": {
+        "color": "#d5a346",
+        "rough": 0.29,
+        "metal": 0.83,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 172576,
+      "vertexCount": 1068,
+      "indexCount": 1602
+    },
+    {
+      "name": "Alloy cut edges",
+      "material": {
+        "color": "#b78532",
+        "rough": 0.39,
+        "metal": 0.73,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 213160,
+      "vertexCount": 1068,
+      "indexCount": 1602
+    }
+  ],
+  "beaker": [
+    {
+      "name": "Borosilicate",
+      "material": {
+        "color": "#cee5e6",
+        "rough": 0.11,
+        "metal": 0,
+        "glass": 1,
+        "opacity": 0.19,
+        "thickness": 0.03
+      },
+      "offset": 253744,
+      "vertexCount": 768,
+      "indexCount": 4224
+    },
+    {
+      "name": "Cream enamel markings",
+      "material": {
+        "color": "#e8e6d6",
+        "rough": 0.42,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 295216,
+      "vertexCount": 1920,
+      "indexCount": 2820
+    }
+  ],
+  "flask": [
+    {
+      "name": "Flask calibration red",
+      "material": {
+        "color": "#a83934",
+        "rough": 0.48,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 367936,
+      "vertexCount": 256,
+      "indexCount": 1152
+    },
+    {
+      "name": "Borosilicate",
+      "material": {
+        "color": "#cee5e6",
+        "rough": 0.11,
+        "metal": 0,
+        "glass": 1,
+        "opacity": 0.19,
+        "thickness": 0.03
+      },
+      "offset": 380736,
+      "vertexCount": 1472,
+      "indexCount": 8448
+    }
+  ],
+  "rack": [
+    {
+      "name": "Dark teal moulding",
+      "material": {
+        "color": "#294449",
+        "rough": 0.35,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 461632,
+      "vertexCount": 5760,
+      "indexCount": 8460
+    },
+    {
+      "name": "Brushed stainless steel",
+      "material": {
+        "color": "#c6cdca",
+        "rough": 0.27,
+        "metal": 0.86,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 679792,
+      "vertexCount": 1536,
+      "indexCount": 2256
+    },
+    {
+      "name": "Cream enamel markings",
+      "material": {
+        "color": "#e8e6d6",
+        "rough": 0.42,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 737968,
+      "vertexCount": 384,
+      "indexCount": 564
+    }
+  ],
+  "hood": [
+    {
+      "name": "Charcoal rubber",
+      "material": {
+        "color": "#222b2c",
+        "rough": 0.67,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 752512,
+      "vertexCount": 1536,
+      "indexCount": 2256
+    },
+    {
+      "name": "Warm grey enamel",
+      "material": {
+        "color": "#c9cfc6",
+        "rough": 0.42,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 810688,
+      "vertexCount": 384,
+      "indexCount": 564
+    },
+    {
+      "name": "Dark teal moulding",
+      "material": {
+        "color": "#294449",
+        "rough": 0.35,
+        "metal": 0,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 825232,
+      "vertexCount": 768,
+      "indexCount": 1128
+    },
+    {
+      "name": "Borosilicate",
+      "material": {
+        "color": "#cee5e6",
+        "rough": 0.11,
+        "metal": 0,
+        "glass": 1,
+        "opacity": 0.19,
+        "thickness": 0.03
+      },
+      "offset": 854320,
+      "vertexCount": 1152,
+      "indexCount": 1692
+    },
+    {
+      "name": "Brushed stainless steel",
+      "material": {
+        "color": "#c6cdca",
+        "rough": 0.27,
+        "metal": 0.86,
+        "glass": 0,
+        "opacity": 1,
+        "thickness": 0.2
+      },
+      "offset": 897952,
+      "vertexCount": 1152,
+      "indexCount": 1692
+    }
+  ]
+}
