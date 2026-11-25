@@ -1,24 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AP Chemistry — 3D Photorealistic Spectrophotometry (Beer's Law)</title>
-    <meta name="description" content="Interactive photorealistic 3D Beer's Law Spectrophotometry virtual lab built with Blender 5.2 and Three.js, featuring dedicated pipettes per liquid type and a live Spectronic 20D+.">
+    <meta name="description" content="Interactive photorealistic 3D Beer's Law Spectrophotometry virtual lab built with Blender 5.2 and Three.js, featuring dedicated pipettes per liquid type, live 630 nm quantum optical visualizer, dual Light/Dark themes, and a Spectronic 20D+.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://virtuallab.az/experiments/spectro_neon/">
     <meta property="og:title" content="3D Photorealistic Spectrophotometry Lab (Beer's Law)">
-    <meta property="og:description" content="Interactive 83-step AP Chemistry spectrophotometry lab modeled in Blender 5.2 with PBR borosilicate glassware, Cycles HDRI lighting, separate dedicated pipettes, and a live Spectronic 20D+.">
+    <meta property="og:description" content="Interactive 83-step AP Chemistry spectrophotometry lab modeled in Blender 5.2 with PBR borosilicate glassware, live 630 nm Beer-Lambert quantum optical visualizer, separate dedicated pipettes, and a live Spectronic 20D+.">
     <meta property="og:image" content="https://virtuallab.az/experiments/spectro_neon/assets/og-preview.jpg?v=3">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="3D Photorealistic Spectrophotometry Lab (Beer's Law)">
-    <meta name="twitter:description" content="Interactive 83-step AP Chemistry spectrophotometry lab built with Blender 5.2 + Three.js, separate pipettes, and live Beer-Lambert curve plotting.">
+    <meta name="twitter:description" content="Interactive 83-step AP Chemistry spectrophotometry lab built with Blender 5.2 + Three.js, live 630 nm quantum optics, separate pipettes, and Beer-Lambert curve plotting.">
     <meta name="twitter:image" content="https://virtuallab.az/experiments/spectro_neon/assets/og-preview.jpg?v=3">
 
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/simulation.css?v=3">
+    <!-- Zero-flash initial theme resolution (saved preference -> OS color scheme) -->
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('spectro-theme');
+                if (saved === 'light' || saved === 'dark') {
+                    document.documentElement.dataset.theme = saved;
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.dataset.theme = 'dark';
+                } else {
+                    document.documentElement.dataset.theme = 'light';
+                }
+            } catch (e) {}
+        })();
+    </script>
+
+    <link rel="stylesheet" href="vendor/fonts/fonts.css?v=1">
+    <link rel="stylesheet" href="css/base.css?v=11">
+    <link rel="stylesheet" href="css/layout.css?v=11">
+    <link rel="stylesheet" href="css/components.css?v=11">
+    <link rel="stylesheet" href="css/simulation.css?v=16">
 
     <script type="importmap">
     {
@@ -30,80 +47,414 @@
     </script>
 </head>
 <body>
+    <!-- Refined Precision Scientific Studio Header -->
     <header class="app-header">
-        <div class="app-header__title-group">
-            <span class="app-header__badge">3D BLENDER LAB</span>
-            <h1 class="app-header__title">Spectrophotometry Simulation <span class="app-header__sub">(Beer's Law • 630 nm)</span></h1>
+        <div class="app-header__brand">
+            <div class="app-header__emblem" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9.5 3h5"></path>
+                    <path d="M10.5 3v5.4L5.2 17.8A2 2 0 0 0 6.9 20.8h10.2a2 2 0 0 0 1.7-3l-5.3-9.4V3"></path>
+                    <path d="M7.8 14.8h8.4" stroke-opacity="0.75"></path>
+                    <line x1="2.5" y1="12.5" x2="7.5" y2="12.5" stroke="#f97316" stroke-width="2"></line>
+                    <line x1="16.5" y1="12.5" x2="21.5" y2="12.5" stroke="#f97316" stroke-width="1.6" stroke-dasharray="2 2"></line>
+                </svg>
+            </div>
+            <div class="app-header__title-stack">
+                <h1 class="app-header__title">Spectrophotometry Lab</h1>
+                <span class="app-header__tag">
+                    <span class="app-header__tag-dot" aria-hidden="true"></span>
+                    <span>λ = 630 nm<span class="app-header__tag-ext"> · Beer-Lambert</span></span>
+                </span>
+            </div>
         </div>
-        <div class="app-header__meta">
-            <div class="pipette-legend" aria-label="Dedicated Pipettes by Liquid Type">
-                <button id="chip-pipette-stock" class="pipette-chip pipette-chip--stock" type="button" title="Select Blue #1 Pipette (Stock & Dilutions)">
-                    <span class="pipette-chip__dot"></span>
-                    <span class="pipette-chip__name">Blue #1</span>
-                    <span class="pipette-chip__vol">Empty</span>
+
+        <!-- Connected 5-Phase Analytical Journey Stepper -->
+        <nav class="phase-ribbon" aria-label="Experiment Phases">
+            <button id="phase-prep" class="phase-pill phase-pill--active" type="button">
+                <span class="phase-pill__num">1</span><span>Dilutions</span>
+            </button>
+            <span class="phase-ribbon__link" aria-hidden="true"></span>
+            <button id="phase-zero" class="phase-pill" type="button">
+                <span class="phase-pill__num">2</span><span>Blank</span>
+            </button>
+            <span class="phase-ribbon__link" aria-hidden="true"></span>
+            <button id="phase-standards" class="phase-pill" type="button">
+                <span class="phase-pill__num">3</span><span>Standards</span>
+            </button>
+            <span class="phase-ribbon__link" aria-hidden="true"></span>
+            <button id="phase-calibration" class="phase-pill" type="button">
+                <span class="phase-pill__num">4</span><span>Curve</span>
+            </button>
+            <span class="phase-ribbon__link" aria-hidden="true"></span>
+            <button id="phase-unknown" class="phase-pill" type="button">
+                <span class="phase-pill__num">5</span><span>Unknown</span>
+            </button>
+        </nav>
+
+        <!-- Minimal Right Controls: Precision Streak, Scaffold Level, Light/Dark Theme, Sound & Help -->
+        <div class="app-header__controls">
+            <span id="precision-pill" class="precision-pill precision-pill--hidden" title="Consecutive error-free analytical steps — zero cross-contamination!">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                <span id="precision-pill-text">Streak 0</span>
+            </span>
+
+            <div class="seg-switch" role="group" aria-label="Scaffolding Level">
+                <button id="scaffold-guided-btn" class="seg-switch__btn seg-switch__btn--active" type="button" title="Guided Mode: Full step-by-step instructions &amp; science hints">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                    <span>Guided</span>
                 </button>
-                <button id="chip-pipette-water" class="pipette-chip pipette-chip--water" type="button" title="Select Water (H₂O) Pipette (Distilled Water & Blank)">
-                    <span class="pipette-chip__dot"></span>
-                    <span class="pipette-chip__name">H₂O</span>
-                    <span class="pipette-chip__vol">Empty</span>
+                <button id="scaffold-challenge-btn" class="seg-switch__btn" type="button" title="Challenge Mode: Hide hints &amp; test your lab technique with a precision streak">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                    <span>Challenge</span>
                 </button>
-                <button id="chip-pipette-unknown" class="pipette-chip pipette-chip--unknown" type="button" title="Select Unknown Pipette (Unknown Drink)">
-                    <span class="pipette-chip__dot"></span>
-                    <span class="pipette-chip__name">Unknown</span>
-                    <span class="pipette-chip__vol">Empty</span>
+            </div>
+
+            <div class="seg-switch" role="group" aria-label="Color Theme">
+                <button id="theme-light-btn" class="seg-switch__btn" type="button" title="Switch to Sunlit Light Lab Theme (Key: D)" aria-label="Light theme">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+                    <span class="seg-switch__label">Light</span>
+                </button>
+                <button id="theme-dark-btn" class="seg-switch__btn" type="button" title="Switch to Obsidian Dark Studio Theme (Key: D)" aria-label="Dark theme">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+                    <span class="seg-switch__label">Dark</span>
+                </button>
+            </div>
+
+            <div class="icon-cluster" role="group" aria-label="Lab Preferences">
+                <button id="sound-toggle-btn" class="icon-btn icon-btn--active" type="button" title="Toggle tactile lab soundscape (Key: M)" aria-label="Toggle sound" aria-pressed="true">
+                    <svg id="sound-icon-on" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                    <svg id="sound-icon-off" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="22" y1="9" x2="16" y2="15"></line><line x1="16" y1="9" x2="22" y2="15"></line></svg>
+                </button>
+                <button id="help-toggle-btn" class="icon-btn" type="button" title="Quick Lab Guide &amp; Keyboard Shortcuts (Key: ?)" aria-label="Quick lab guide and shortcuts">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 </button>
             </div>
         </div>
     </header>
 
     <main id="main-container">
-        <!-- Procedural Instructions & Controls Strip -->
+        <!-- Scaffolded Single-Line Mission Strip + Collapsible "Why?" Chemistry Drawer -->
         <section id="instructions-panel" class="panel instructions-bar">
             <div class="instructions-bar__top">
                 <div class="instructions-bar__step-wrap">
-                    <span id="step-badge" class="step-badge">Step 1 / 83</span>
+                    <div class="step-meta">
+                        <span id="step-badge" class="step-badge">Step 1 / 83</span>
+                        <span id="progress-pct" class="step-pct-pill">0%</span>
+                    </div>
                     <p id="instruction-text" class="instruction-text">Loading 3D laboratory...</p>
                 </div>
+
                 <div class="instructions-bar__actions">
-                    <button id="undo-button" class="button button--secondary" type="button" disabled>Undo Last Step</button>
-                    <button id="reset-button" class="button button--ghost" type="button">Reset Lab</button>
+                    <button id="why-toggle-btn" class="button button--accent" type="button" aria-expanded="false" aria-controls="insight-drawer" title="Show why this chemistry step matters + live equation">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+                        <span>Why?</span>
+                    </button>
+                    <button id="demo-step-btn" class="button button--primary" type="button" title="Watch the 3D lab demonstrate the current step live">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4.75a1.25 1.25 0 0 1 1.9-1.07l11.6 7.25a1.25 1.25 0 0 1 0 2.14L7.9 20.32A1.25 1.25 0 0 1 6 19.25V4.75Z"></path></svg>
+                        <span>Show Me</span>
+                    </button>
+                    <div class="icon-cluster" role="group" aria-label="Step Utilities">
+                        <button id="focus-step-btn" class="icon-btn" type="button" title="Focus 3D camera &amp; trace spatial laser guide for current step (Key: Space)" aria-label="Focus camera and show guide arc">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></svg>
+                        </button>
+                        <button id="undo-button" class="icon-btn" type="button" disabled title="Undo last step (Ctrl+Z)" aria-label="Undo last step">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+                        </button>
+                        <button id="reset-button" class="icon-btn icon-btn--danger" type="button" title="Reset entire lab bench to Step 1" aria-label="Reset lab">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <!-- Collapsible Progressive-Disclosure Chemistry Insight Drawer -->
+            <div id="insight-drawer" class="insight-drawer">
+                <div class="insight-drawer__inner">
+                    <div class="coach-insight" aria-live="polite">
+                        <span id="coach-tag" class="coach-insight__tag">Serial Dilution</span>
+                        <span id="coach-tip">Dedicated Blue #1 &amp; H₂O pipettes prevent cross-contamination while building 10/0 Stock.</span>
+                        <span id="coach-formula" class="coach-insight__formula">M₂ = 2.31 × (10/10) = 2.310 µM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flush Integrated Progress Rail -->
             <div class="progress-track" aria-hidden="true">
                 <div id="progress-fill" class="progress-track__fill" style="width: 0%;"></div>
             </div>
-            <div class="feedback feedback--info">Welcome! Follow the instructions.</div>
         </section>
 
-        <!-- Photorealistic 3D Interactive Lab Stage -->
+        <!-- Hero Photorealistic 3D Interactive Lab Stage (Untouched Blender 5.2 + Three.js Scene + Minimal Frosted HUD) -->
         <section id="simulation-area" class="viewport-stage">
             <div id="viewport-3d" class="viewport-3d" aria-label="Interactive 3D Spectrophotometry Lab Bench"></div>
             <div id="labels-overlay" class="labels-overlay labels-overlay--hidden"></div>
+            <canvas id="fx-canvas" class="fx-canvas" aria-hidden="true"></canvas>
 
-            <!-- Floating Camera Presets (Top Left) -->
+            <!-- AETHER Holographic Spatial Perimeter Frame (Active in Immersive + Hand Gesture Mode) -->
+            <div id="aether-hud-frame" class="aether-frame" aria-hidden="true">
+                <span class="aether-frame__corner aether-frame__corner--tl"></span>
+                <span class="aether-frame__corner aether-frame__corner--tr"></span>
+                <span class="aether-frame__corner aether-frame__corner--bl"></span>
+                <span class="aether-frame__corner aether-frame__corner--br"></span>
+                <span class="aether-frame__ruler aether-frame__ruler--l"></span>
+                <span class="aether-frame__ruler aether-frame__ruler--r"></span>
+                <div class="aether-frame__header">
+                    <span class="aether-frame__pulse"></span>
+                    <span>AETHER // SPATIAL OPTICS</span>
+                    <span class="aether-frame__sep">·</span>
+                    <span>λ 630 nm</span>
+                </div>
+            </div>
+
+            <!-- Ambient Non-Blocking Live Feedback Pill -->
+            <div id="stage-feedback" class="stage-feedback feedback feedback--info" role="status" aria-live="polite">
+                Welcome! Drag or click a dedicated pipette to begin.
+            </div>
+
+            <!-- Non-Blocking Phase Milestone Achievement Toast with Quick Action CTA -->
+            <div id="milestone-toast" class="milestone-toast" role="status" aria-live="polite">
+                <span class="milestone-toast__badge" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </span>
+                <div class="milestone-toast__body">
+                    <div id="milestone-title" class="milestone-toast__title">Phase Complete</div>
+                    <div id="milestone-detail" class="milestone-toast__detail"></div>
+                </div>
+                <button id="milestone-cta" class="milestone-toast__cta" type="button" hidden>Inspect →</button>
+                <button id="milestone-close-btn" class="milestone-toast__close" type="button" aria-label="Dismiss milestone notification" title="Dismiss">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <!-- Floating Camera Preset Dock (Top Left) -->
             <div class="hud-bar hud-bar--top-left" role="toolbar" aria-label="Camera Presets">
-                <button class="cam-btn cam-btn--active" data-preset="overview" type="button">1. Bench Overview</button>
-                <button class="cam-btn" data-preset="reagents" type="button">2. Reagents &amp; Pipettes</button>
-                <button class="cam-btn" data-preset="rack" type="button">3. Dilution Rack</button>
-                <button class="cam-btn" data-preset="spec20" type="button">4. Spec 20D+</button>
+                <div class="hud-dock">
+                    <button class="cam-btn cam-btn--active" data-preset="overview" type="button"><kbd class="cam-btn__key">1</kbd><span>Overview</span></button>
+                    <button class="cam-btn" data-preset="reagents" type="button"><kbd class="cam-btn__key">2</kbd><span>Reagents</span></button>
+                    <button class="cam-btn" data-preset="rack" type="button"><kbd class="cam-btn__key">3</kbd><span>Rack</span></button>
+                    <button class="cam-btn" data-preset="spec20" type="button"><kbd class="cam-btn__key">4</kbd><span>Spec 20D+</span></button>
+                </div>
             </div>
 
-            <!-- Floating Quick Readout & Labels Toggle (Top Right) -->
+            <!-- Floating Spec 20D+ Instrument Telemetry + Whisper-Quiet View, Hand Gesture & Immersive Toggles (Top Right) -->
             <div class="hud-bar hud-bar--top-right">
-                <span id="spec-quick-readout" class="hud-readout">-- %T • 630 nm</span>
-                <button id="labels-toggle-btn" class="hud-pill" type="button">Labels: OFF</button>
+                <div class="hud-telemetry" title="Live Spectronic 20D+ Instrument Readout">
+                    <span class="hud-telemetry__pulse" aria-hidden="true"></span>
+                    <span id="spec-quick-readout" class="hud-readout">-- %T • 630 nm</span>
+                    <span class="hud-led-group">
+                        <span id="spec-led-zero" class="hud-led">ZERO</span>
+                        <span id="spec-led-cuv" class="hud-led">CUV</span>
+                    </span>
+                </div>
+                <div class="hud-icon-group">
+                    <button id="xray-toggle-btn" class="hud-icon-btn" type="button" title="Toggle live 630 nm X-Ray PiP beam window (Key: X — auto-appears when cuvette is filled)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h4l2.5-5.5L13 17.5l2.5-5.5H22"></path></svg>
+                        <span class="hud-icon-btn__txt hud-icon-btn__txt--opt">X-Ray</span>
+                    </button>
+                    <button id="labels-toggle-btn" class="hud-icon-btn" type="button" title="Toggle 3D floating apparatus labels (Key: L)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor"></circle></svg>
+                        <span class="hud-icon-btn__txt hud-icon-btn__txt--opt">Labels</span>
+                    </button>
+                    <button id="theater-toggle-btn" class="hud-icon-btn" type="button" title="Expand or compact 3D bench height (Key: T)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                        <span class="hud-icon-btn__txt hud-icon-btn__txt--opt">Expand</span>
+                    </button>
+                    <span class="hud-icon-group__sep" aria-hidden="true"></span>
+                    <button id="gesture-toggle-btn" class="hud-icon-btn" type="button" aria-pressed="false" title="Toggle On-Device Webcam Hand Gesture Control (Key: G)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2"></path><path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"></path><path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg>
+                        <span class="hud-icon-btn__txt">Hands</span>
+                    </button>
+                    <button id="immersive-toggle-btn" class="hud-icon-btn hud-icon-btn--immersive" type="button" aria-pressed="false" title="Enter Full-Screen Immersive Mode (Key: F)">
+                        <svg id="imm-icon-enter" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+                        <svg id="imm-icon-exit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden><path d="M4 14h6v6"></path><path d="M20 10h-6V4"></path><path d="M14 10l7-7"></path><path d="M3 21l7-7"></path></svg>
+                        <span id="immersive-toggle-label" class="hud-icon-btn__txt">Immersive</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Floating Live Hover Inspector (Bottom Left) -->
-            <div class="hud-bar hud-bar--bottom-left">
-                <span id="hover-info" class="hover-info">Drag (or click) a dedicated pipette or cuvette to interact • Drag empty space to orbit</span>
+            <!-- Ergonomic Floating Immersive Procedure Pill (Dockable in Upper Wall Safe Zone — Zero Glassware Obstruction!) -->
+            <div id="immersive-procedure-hud" class="imm-proc" aria-label="Immersive Procedure Steps">
+                <div class="imm-proc__bar">
+                    <div class="imm-proc__meta">
+                        <span id="imm-phase-badge" class="imm-proc__phase">
+                            <span class="imm-proc__phase-dot" aria-hidden="true"></span>
+                            <span id="imm-phase-label">1 · Dilutions</span>
+                        </span>
+                        <span id="imm-step-badge" class="imm-proc__step">Step 1 / 83</span>
+                    </div>
+                    <p id="imm-instruction-text" class="imm-proc__text">Loading 3D laboratory…</p>
+                    <div class="imm-proc__actions">
+                        <button id="imm-speak-btn" class="imm-proc__icon-btn" type="button" aria-pressed="false" title="Read current procedure step aloud in natural voice (Key: R)" aria-label="Read step aloud">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                        </button>
+                        <button id="imm-mic-btn" class="imm-proc__icon-btn" type="button" aria-pressed="false" title="Voice Assistant Mic — say &quot;Why?&quot; to hear the chemistry explanation, or &quot;Read step&quot; (Key: H)" aria-label="Toggle voice assistant microphone">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+                        </button>
+                        <button id="imm-why-btn" class="imm-proc__btn" type="button" aria-expanded="false" aria-controls="imm-why-strip" title="Toggle chemistry rationale &amp; equation (or say &quot;Why?&quot; / press Q to hear it)">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+                            <span>Why?</span>
+                        </button>
+                        <button id="imm-steps-btn" class="imm-proc__btn" type="button" aria-expanded="false" aria-controls="imm-steps-drawer" title="Open side procedure checklist &amp; live data table">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                            <span>Steps</span>
+                        </button>
+                        <button id="imm-demo-btn" class="imm-proc__icon-btn imm-proc__icon-btn--primary" type="button" title="Show Me: Demonstrate current step live" aria-label="Show Me current step">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4.75a1.25 1.25 0 0 1 1.9-1.07l11.6 7.25a1.25 1.25 0 0 1 0 2.14L7.9 20.32A1.25 1.25 0 0 1 6 19.25V4.75Z"></path></svg>
+                        </button>
+                        <button id="imm-focus-btn" class="imm-proc__icon-btn" type="button" title="Focus camera &amp; trace laser guide arc (Key: Space or Peace sign ✌️)" aria-label="Focus camera on active step">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></svg>
+                        </button>
+                        <button id="imm-undo-btn" class="imm-proc__icon-btn" type="button" disabled title="Undo last step (Ctrl+Z)" aria-label="Undo last step">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+                        </button>
+                        <button id="imm-minimize-btn" class="imm-proc__icon-btn" type="button" aria-expanded="true" title="Minimize procedure bar for pure view" aria-label="Minimize procedure bar">
+                            <svg id="imm-min-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="imm-proc__progress" aria-hidden="true">
+                        <div id="imm-progress-fill" class="imm-proc__progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div id="imm-why-strip" class="imm-proc__why" hidden>
+                    <span id="imm-coach-tag" class="imm-proc__why-tag">Serial Dilution</span>
+                    <span id="imm-coach-tip" class="imm-proc__why-tip">Dedicated pipettes prevent cross-contamination.</span>
+                    <span id="imm-coach-formula" class="imm-proc__why-eq">M₂ = 2.310 µM</span>
+                    <button id="imm-why-speak-btn" class="imm-proc__why-listen" type="button" title="Hear this chemistry explanation aloud (Key: Q or say &quot;Why?&quot;)">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <span>Listen</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Collapsible Far-Right Translucent Procedure & Live Data Drawer (Immersive Mode) -->
+            <aside id="imm-steps-drawer" class="imm-drawer" aria-label="Procedure Checklist &amp; Live Data" aria-hidden="true">
+                <div class="imm-drawer__header">
+                    <div class="imm-drawer__tabs" role="tablist">
+                        <button id="imm-drawer-tab-steps" class="imm-drawer__tab imm-drawer__tab--active" role="tab" aria-selected="true" type="button">Procedure</button>
+                        <button id="imm-drawer-tab-data" class="imm-drawer__tab" role="tab" aria-selected="false" type="button">Live Data <span id="imm-data-count" class="imm-drawer__badge">0/7</span></button>
+                    </div>
+                    <button id="imm-drawer-close" class="imm-drawer__close" type="button" aria-label="Close side drawer" title="Close">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+
+                <div id="imm-drawer-steps-pane" class="imm-drawer__pane">
+                    <div id="imm-drawer-phases" class="imm-drawer__phases" aria-label="Experiment Phase Progress"></div>
+                    <ol id="imm-steps-list" class="imm-steps-list"></ol>
+                </div>
+
+                <div id="imm-drawer-data-pane" class="imm-drawer__pane" hidden>
+                    <table class="imm-data-table">
+                        <thead>
+                            <tr>
+                                <th>Sample</th>
+                                <th>µM</th>
+                                <th>%T</th>
+                                <th>Abs</th>
+                            </tr>
+                        </thead>
+                        <tbody id="imm-data-tbody"></tbody>
+                    </table>
+                    <div id="imm-data-summary" class="imm-data-summary">Measure standards in Spec 20D+ to see live slope &amp; unknown calculation here.</div>
+                </div>
+            </aside>
+
+            <!-- AETHER Holographic Spatial Hand Reticle (GPU-Accelerated, Pointer-Events None) -->
+            <div id="gesture-cursor" class="gesture-cursor" aria-hidden="true">
+                <svg class="gesture-cursor__aether-svg" width="60" height="60" viewBox="0 0 60 60">
+                    <circle class="gesture-cursor__arc-outer" cx="30" cy="30" r="26" stroke-dasharray="14 8 4 8"></circle>
+                    <circle class="gesture-cursor__arc-inner" cx="30" cy="30" r="20" stroke-dasharray="6 6"></circle>
+                    <line class="gesture-cursor__tick" x1="30" y1="2" x2="30" y2="7"></line>
+                    <line class="gesture-cursor__tick" x1="30" y1="53" x2="30" y2="58"></line>
+                    <line class="gesture-cursor__tick" x1="2" y1="30" x2="7" y2="30"></line>
+                    <line class="gesture-cursor__tick" x1="53" y1="30" x2="58" y2="30"></line>
+                </svg>
+                <div class="gesture-cursor__ring"></div>
+                <div id="gesture-pinch-arc" class="gesture-cursor__pinch-arc"></div>
+                <svg class="gesture-cursor__dwell-svg" width="44" height="44" viewBox="0 0 44 44">
+                    <circle id="gesture-dwell-ring" class="gesture-cursor__dwell-ring" cx="22" cy="22" r="18"></circle>
+                </svg>
+                <div class="gesture-cursor__dot"></div>
+                <span id="gesture-cursor-tag" class="gesture-cursor__tag"></span>
+            </div>
+
+            <!-- Unified Bottom Bench Tray (3 Dedicated Pipettes + Live Hover Inspector) & Corner PiPs -->
+            <div class="hud-bar hud-bar--bottom">
+                <div class="bench-tray">
+                    <div class="pipette-legend" aria-label="Dedicated Pipettes by Liquid Type">
+                        <button id="chip-pipette-stock" class="pipette-chip pipette-chip--stock" type="button" title="Select Blue #1 Pipette (Stock &amp; Dilutions)">
+                            <span class="pipette-chip__icon" aria-hidden="true">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 22 1-1h3l9-9"></path><path d="M3 21v-3l9-9"></path><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"></path></svg>
+                            </span>
+                            <span>Blue #1</span>
+                            <span class="pipette-chip__vol">0 mL</span>
+                            <span class="pipette-chip__meter" aria-hidden="true"><span class="pipette-chip__fill"></span></span>
+                        </button>
+                        <button id="chip-pipette-water" class="pipette-chip pipette-chip--water" type="button" title="Select Water (H₂O) Pipette (Distilled Water &amp; Blank)">
+                            <span class="pipette-chip__icon" aria-hidden="true">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 22 1-1h3l9-9"></path><path d="M3 21v-3l9-9"></path><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"></path></svg>
+                            </span>
+                            <span>H₂O</span>
+                            <span class="pipette-chip__vol">0 mL</span>
+                            <span class="pipette-chip__meter" aria-hidden="true"><span class="pipette-chip__fill"></span></span>
+                        </button>
+                        <button id="chip-pipette-unknown" class="pipette-chip pipette-chip--unknown" type="button" title="Select Unknown Pipette (Unknown Drink)">
+                            <span class="pipette-chip__icon" aria-hidden="true">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 22 1-1h3l9-9"></path><path d="M3 21v-3l9-9"></path><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"></path></svg>
+                            </span>
+                            <span>Unknown</span>
+                            <span class="pipette-chip__vol">0 mL</span>
+                            <span class="pipette-chip__meter" aria-hidden="true"><span class="pipette-chip__fill"></span></span>
+                        </button>
+                    </div>
+                    <span class="bench-tray__sep" aria-hidden="true"></span>
+                    <span id="hover-info" class="hover-info">Drag or click a pipette or cuvette • Drag bench to orbit</span>
+                </div>
+
+                <div class="hud-bottom-right">
+                    <!-- Smart Auto-Appearing 630 nm X-Ray Optical Beam Micro-HUD -->
+                    <div id="pip-optics-card" class="pip-optics pip-optics--hidden" role="button" tabindex="-1" aria-hidden="true" title="Click to open full 630 nm Quantum Photon Lab">
+                        <div class="pip-optics__header">
+                            <span>LIVE 630 nm X-RAY</span>
+                            <span id="pip-optics-reading" class="pip-optics__reading">Empty • 100%T</span>
+                        </div>
+                        <canvas id="pip-optics-canvas" width="244" height="54"></canvas>
+                    </div>
+
+                    <!-- Collapsible On-Device Hand Gesture Camera + 21-Joint Skeleton PiP -->
+                    <div id="gesture-pip" class="gesture-pip" aria-label="Hand Gesture Tracker">
+                        <div class="gesture-pip__header">
+                            <span id="gesture-pip-dot" class="gesture-pip__dot" aria-hidden="true"></span>
+                            <span id="gesture-pip-status" class="gesture-pip__status">Hands Off</span>
+                            <div class="gesture-pip__btns">
+                                <button id="gesture-mirror-btn" class="gesture-pip__mini-btn gesture-pip__mini-btn--active" type="button" title="Toggle mirrored camera view" aria-label="Mirror webcam">⇄</button>
+                                <button id="gesture-pip-collapse-btn" class="gesture-pip__mini-btn" type="button" aria-expanded="true" title="Minimize Hand Camera Preview" aria-label="Minimize hand preview">–</button>
+                                <button id="gesture-pip-close-btn" class="gesture-pip__mini-btn" type="button" title="Turn off Hand Gestures (Key: G)" aria-label="Turn off hand gestures">×</button>
+                            </div>
+                        </div>
+                        <div class="gesture-pip__body">
+                            <div class="gesture-pip__stage">
+                                <video id="gesture-video" class="gesture-pip__video gesture-pip__video--mirrored" playsinline muted></video>
+                                <canvas id="gesture-canvas" class="gesture-pip__canvas" width="208" height="120"></canvas>
+                            </div>
+                            <div id="gesture-error-box" class="gesture-pip__error" hidden>
+                                <p id="gesture-error-msg" class="gesture-pip__error-msg">Webcam unavailable.</p>
+                                <div class="gesture-pip__error-actions">
+                                    <button id="gesture-virtual-btn" class="gesture-pip__cta gesture-pip__cta--primary" type="button">Virtual Hand</button>
+                                    <button id="gesture-retry-btn" class="gesture-pip__cta" type="button">Retry Cam</button>
+                                </div>
+                            </div>
+                            <div class="gesture-pip__legend">✊ Pipettes · 🤏 Cuvette / Orbit · ✌️ Focus</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Loading Overlay -->
             <div id="loading-overlay" class="loading-overlay">
                 <div class="loading-card">
                     <div class="loading-spinner"></div>
-                    <p class="loading-title">Loading Photorealistic 3D Lab Assets...</p>
+                    <p class="loading-title">Preparing Photorealistic 3D Chemistry Bench…</p>
                     <div class="loading-bar">
                         <div id="loading-bar-fill" class="loading-bar__fill"></div>
                     </div>
@@ -112,44 +463,405 @@
             </div>
         </section>
 
-        <!-- Lab Notebook: Data Table + Beer's Law Graph -->
-        <section class="notebook-grid">
-            <div id="data-panel" class="panel">
-                <div class="panel__header">
-                    <h4>Data Table &amp; Results</h4>
-                    <span class="panel__sub">FD&amp;C Blue #1 Standard Curve (λ = 630 nm)</span>
+        <!-- Scaffolded Educational Studio Dock -->
+        <section id="studio-dock" class="studio-dock" aria-label="Analytical Chemistry Educational Studio">
+            <div class="studio-tabs-bar" role="tablist" aria-label="Studio Modules">
+                <div class="studio-tabs">
+                    <button id="tab-btn-data" class="studio-tab studio-tab--active" role="tab" aria-selected="true" aria-controls="pane-data" data-tab="data" type="button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                        <span>Notebook &amp; Curve</span>
+                        <span id="data-tab-badge" class="studio-tab__badge">0/7</span>
+                    </button>
+                    <button id="tab-btn-optics" class="studio-tab" role="tab" aria-selected="false" aria-controls="pane-optics" data-tab="optics" type="button">
+                        <span id="tab-beam-dot" class="studio-tab__dot" aria-hidden="true"></span>
+                        <span>Photon Optics Lab</span>
+                        <span id="tab-beam-label" class="studio-tab__badge">630 nm</span>
+                    </button>
+                    <button id="tab-btn-manual" class="studio-tab" role="tab" aria-selected="false" aria-controls="pane-manual" data-tab="manual" type="button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+                        <span>Equations &amp; Mastery</span>
+                        <span id="quiz-score-badge" class="studio-tab__badge">0/4</span>
+                    </button>
                 </div>
-                <div class="table-wrap">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th class="data-table__header data-table__cell">Solution</th>
-                                <th class="data-table__header data-table__cell">Dilution (Stock/Water)</th>
-                                <th class="data-table__header data-table__cell">Concentration (µM)</th>
-                                <th class="data-table__header data-table__cell">Measured %T</th>
-                                <th class="data-table__header data-table__cell">T (Decimal)</th>
-                                <th class="data-table__header data-table__cell">Absorbance (-log T)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="results-tbody"></tbody>
-                    </table>
-                </div>
-                <div class="results-summary">
-                    <p id="slope-display" class="result-callout result-callout--slope" hidden></p>
-                    <p id="unknown-result" class="result-callout result-callout--unknown" hidden></p>
+
+                <div class="studio-tabs-meta">
+                    <button id="open-report-btn" class="button button--accent button--small" type="button" title="Preview &amp; Print Formal AP Chemistry Lab Report">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        <span>Lab Report</span>
+                    </button>
+                    <button id="quick-export-csv-btn" class="button button--secondary button--small" type="button" title="Download current lab table as CSV">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>CSV</span>
+                    </button>
+                    <button id="studio-collapse-btn" class="button button--ghost button--small" type="button" aria-expanded="true" title="Collapse or expand educational panels to focus purely on the 3D bench">
+                        <span id="studio-collapse-label">Hide Panels</span>
+                        <svg id="studio-collapse-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                    </button>
                 </div>
             </div>
 
-            <div id="graph-panel" class="panel">
-                <div class="panel__header">
-                    <h4>Graph: Absorbance vs. Concentration</h4>
-                    <span class="panel__sub">Beer-Lambert Calibration Plot</span>
+            <div class="studio-panes-wrap">
+                <!-- PANE 1: Data Table & Morphing Beer-Lambert Calibration Curve -->
+                <div id="pane-data" class="studio-pane studio-pane--active" role="tabpanel" aria-labelledby="tab-btn-data">
+                    <div class="notebook-grid">
+                        <div id="data-panel" class="panel">
+                            <div class="panel__header">
+                                <div class="panel__title-wrap">
+                                    <span class="panel__icon" aria-hidden="true">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M9 21V9"></path></svg>
+                                    </span>
+                                    <h4>Lab Data Table</h4>
+                                </div>
+                                <span class="panel__sub">FD&amp;C Blue #1 Standards · λ = 630 nm</span>
+                            </div>
+                            <div class="table-wrap">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="data-table__header data-table__cell data-table__cell--label">Solution</th>
+                                            <th class="data-table__header data-table__cell">Dilution</th>
+                                            <th class="data-table__header data-table__cell">Conc (µM)</th>
+                                            <th class="data-table__header data-table__cell">Measured %T</th>
+                                            <th class="data-table__header data-table__cell">T (Dec)</th>
+                                            <th class="data-table__header data-table__cell">Abs (−log T)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="results-tbody"></tbody>
+                                </table>
+                            </div>
+                            <div class="results-summary">
+                                <p id="slope-display" class="result-callout result-callout--slope" hidden></p>
+                                <p id="unknown-result" class="result-callout result-callout--unknown" hidden></p>
+                            </div>
+                        </div>
+
+                        <div id="graph-panel" class="panel">
+                            <div class="panel__header">
+                                <div class="panel__title-wrap">
+                                    <span class="panel__icon" aria-hidden="true">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                                    </span>
+                                    <h4>Calibration Curve Explorer</h4>
+                                </div>
+                                <div class="mode-switch" role="group" aria-label="Calibration Y-Axis Mode">
+                                    <button id="graph-mode-abs" class="mode-switch__btn mode-switch__btn--active" type="button" title="Plot Absorbance vs. Concentration (Linear Beer-Lambert Law)">A vs. c (Linear)</button>
+                                    <button id="graph-mode-pct" class="mode-switch__btn" type="button" title="Morph into %Transmittance vs. Concentration (Exponential Decay)">%T vs. c (Curved)</button>
+                                </div>
+                            </div>
+                            <div class="graph-stage">
+                                <canvas id="graph-canvas" width="440" height="266"></canvas>
+                                <div id="graph-tooltip" class="graph-tooltip" role="tooltip"></div>
+                            </div>
+                            <div class="graph-metrics-row">
+                                <span id="graph-eq-badge" class="metric-chip">Model: <strong>A = ε·b·c</strong></span>
+                                <span id="graph-r2-badge" class="metric-chip">Standards: <strong>0 / 6</strong></span>
+                                <button id="graph-predict-btn" class="metric-chip predict-chip" type="button" title="Preview where unmeasured standards are predicted to land along Beer-Lambert Law">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z"></path></svg>
+                                    <span>Predict Next</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <canvas id="graph-canvas" width="380" height="240"></canvas>
+
+                <!-- PANE 2: Quantum 630 nm Photon Cutaway, Auto-Scan Spectrum & Eye-vs-Spec Perception -->
+                <div id="pane-optics" class="studio-pane" role="tabpanel" aria-labelledby="tab-btn-optics">
+                    <div class="optics-grid">
+                        <div class="panel">
+                            <div class="panel__header">
+                                <div class="panel__title-wrap">
+                                    <span class="panel__icon" aria-hidden="true">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+                                    </span>
+                                    <h4>Inside the Spectronic 20D+ — Quantum Photon Cutaway</h4>
+                                </div>
+                                <div class="optics-toolbar">
+                                    <button id="optics-scan-btn" class="button button--accent button--small" type="button" title="Sweep the monochromator automatically from 400 nm to 700 nm and lock onto λmax = 630 nm!">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c2.5-6 5.5-6 8 0s5.5 6 8 0c1-2.4 2.4-3.6 4-3.6"></path></svg>
+                                        <span>Scan 400→700 nm</span>
+                                    </button>
+                                    <div class="mode-switch" role="group" aria-label="Optical Visualizer Mode">
+                                        <button id="optics-mode-live" class="mode-switch__btn mode-switch__btn--active" type="button">Live Bench</button>
+                                        <button id="optics-mode-sandbox" class="mode-switch__btn" type="button">What-If</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="optics-canvas-wrap">
+                                <canvas id="optics-canvas" width="580" height="232"></canvas>
+                            </div>
+
+                            <div class="photon-tally" aria-live="polite">
+                                <span>Photon Budget per 100 Incident Quanta:</span>
+                                <span class="photon-tally__flow">
+                                    <span id="photon-tally-sent" class="photon-tally__sent">100 Sent</span>
+                                    <span>→</span>
+                                    <span id="photon-tally-abs" class="photon-tally__abs">0 Absorbed</span>
+                                    <span>→</span>
+                                    <span id="photon-tally-det" class="photon-tally__det">100 Detected</span>
+                                </span>
+                            </div>
+
+                            <div class="sandbox-presets" aria-label="Quick Optical Presets">
+                                <span class="sandbox-presets__label">Try Sample:</span>
+                                <button class="sandbox-preset" data-conc="0" data-wl="630" type="button">Blank (0 µM)</button>
+                                <button class="sandbox-preset" data-conc="0.462" data-wl="630" type="button">2/8 Dilute</button>
+                                <button class="sandbox-preset" data-conc="1.386" data-wl="630" type="button">6/4 Mid</button>
+                                <button class="sandbox-preset" data-conc="2.31" data-wl="630" type="button">10/0 Stock</button>
+                                <button class="sandbox-preset" data-conc="3.011" data-wl="630" type="button">Unknown Drink</button>
+                                <button class="sandbox-preset" data-conc="2.31" data-wl="470" type="button">Why Not 470 nm?</button>
+                            </div>
+
+                            <div id="sandbox-controls" class="sandbox-controls sandbox-controls--locked">
+                                <label class="slider-field">
+                                    <span class="slider-field__top">
+                                        <span>Concentration (c)</span>
+                                        <span id="sandbox-conc-val" class="slider-field__val">1.39 µM</span>
+                                    </span>
+                                    <input id="sandbox-conc-slider" class="studio-slider" type="range" min="0" max="3.5" step="0.05" value="1.39" disabled>
+                                </label>
+                                <label class="slider-field">
+                                    <span class="slider-field__top">
+                                        <span>Monochromator Wavelength (λ)</span>
+                                        <span id="sandbox-wl-val" class="slider-field__val">630 nm</span>
+                                    </span>
+                                    <input id="sandbox-wl-slider" class="studio-slider" type="range" min="400" max="700" step="2" value="630" disabled>
+                                </label>
+                            </div>
+
+                            <div class="optics-readout-strip">
+                                <div class="optics-stat">
+                                    <span class="optics-stat__label">Incident I₀</span>
+                                    <span id="optics-stat-i0" class="optics-stat__value">100.0%</span>
+                                </div>
+                                <div class="optics-stat">
+                                    <span class="optics-stat__label">Transmitted %T</span>
+                                    <span id="optics-stat-t" class="optics-stat__value">100.0 %T</span>
+                                </div>
+                                <div class="optics-stat">
+                                    <span class="optics-stat__label">Absorbance A</span>
+                                    <span id="optics-stat-abs" class="optics-stat__value">0.0000 Abs</span>
+                                </div>
+                                <div class="optics-stat">
+                                    <span class="optics-stat__label">Cuvette Conc.</span>
+                                    <span id="optics-stat-conc" class="optics-stat__value">Empty</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel__header">
+                                <div class="panel__title-wrap">
+                                    <span class="panel__icon" aria-hidden="true">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 12c3-7 6-7 9 0s6 7 11 0"></path></svg>
+                                    </span>
+                                    <h4>FD&amp;C Blue #1 Absorption Spectrum</h4>
+                                </div>
+                                <span class="panel__sub">Drag curve to tune λ</span>
+                            </div>
+
+                            <div class="optics-canvas-wrap spectrum-canvas-wrap">
+                                <canvas id="spectrum-canvas" width="420" height="212"></canvas>
+                            </div>
+
+                            <div id="spectrum-callout" class="spectrum-callout">
+                                <span>Blue #1 transmits blue light (~470 nm) and maximally absorbs complementary red-orange light at 630 nm.</span>
+                            </div>
+
+                            <!-- Interactive Complementary Color Wheel + Live Eye-vs-Spec Vial -->
+                            <div class="color-wheel-card">
+                                <svg class="color-wheel-svg" viewBox="0 0 80 80" aria-label="Complementary Color Wheel">
+                                    <path d="M40 6 A34 34 0 0 1 69.4 23 L54.7 31.5 A17 17 0 0 0 40 23 Z" fill="#ef4444"/>
+                                    <path d="M69.4 23 A34 34 0 0 1 69.4 57 L54.7 48.5 A17 17 0 0 0 54.7 31.5 Z" fill="#f97316"/>
+                                    <path d="M69.4 57 A34 34 0 0 1 40 74 L40 57 A17 17 0 0 0 54.7 48.5 Z" fill="#eab308"/>
+                                    <path d="M40 74 A34 34 0 0 1 10.6 57 L25.3 48.5 A17 17 0 0 0 40 57 Z" fill="#22c55e"/>
+                                    <path d="M10.6 57 A34 34 0 0 1 10.6 23 L25.3 31.5 A17 17 0 0 0 25.3 48.5 Z" fill="#2563eb"/>
+                                    <path d="M10.6 23 A34 34 0 0 1 40 6 L40 23 A17 17 0 0 0 25.3 31.5 Z" fill="#8b5cf6"/>
+                                    <circle class="color-wheel-hub" cx="40" cy="40" r="15" stroke-width="1"/>
+                                    <g id="wheel-needle-group" transform="rotate(65 40 40)">
+                                        <line id="wheel-needle-line" x1="40" y1="40" x2="40" y2="10" stroke="#f97316" stroke-width="2.4" stroke-linecap="round"/>
+                                        <circle id="wheel-needle-tip" cx="40" cy="11" r="3.4" fill="#f97316" stroke="#ffffff" stroke-width="1.2"/>
+                                        <line id="wheel-comp-line" x1="40" y1="40" x2="40" y2="70" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="3 2"/>
+                                        <circle id="wheel-comp-tip" cx="40" cy="69" r="3.2" fill="#38bdf8" stroke="#ffffff" stroke-width="1"/>
+                                    </g>
+                                    <circle cx="40" cy="40" r="3.4" fill="#0284c7"/>
+                                </svg>
+                                <div class="color-wheel-info">
+                                    <div><strong id="wheel-abs-label">Beam λ: 630 nm (Red-Orange) — Peak λmax!</strong></div>
+                                    <div id="wheel-trans-label">Blue #1 absorbs 100% here · Eye sees Brilliant Blue</div>
+                                    <div class="molecule-strip">Brilliant Blue FCF · C₃₇H₃₄N₂Na₂O₉S₃ · 792.85 g/mol</div>
+                                </div>
+                                <div class="eye-vs-spec" title="What your eye sees vs. the monochromatic beam passing through">
+                                    <div class="eye-vs-spec__vial">
+                                        <div id="eye-vial-liquid" class="eye-vs-spec__liquid"></div>
+                                        <div id="eye-vial-beam" class="eye-vs-spec__beam"></div>
+                                    </div>
+                                    <span id="eye-vial-lbl" class="eye-vs-spec__lbl">630 nm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANE 3: Live Equations, Unknown Solver Challenge & AP Chemistry Concept Check -->
+                <div id="pane-manual" class="studio-pane" role="tabpanel" aria-labelledby="tab-btn-manual">
+                    <div class="manual-grid">
+                        <div class="panel">
+                            <div class="panel__header">
+                                <div class="panel__title-wrap">
+                                    <span class="panel__icon" aria-hidden="true">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+                                    </span>
+                                    <h4>Live Equations &amp; Unknown Solver</h4>
+                                </div>
+                                <span class="panel__sub">Auto-synced to your bench</span>
+                            </div>
+
+                            <div class="formula-cards">
+                                <div class="formula-card">
+                                    <span class="formula-card__title">1. Serial Dilution</span>
+                                    <span class="formula-card__eq">M₁ · V₁ = M₂ · V₂</span>
+                                    <p class="formula-card__desc">Dilutes 2.31 µM stock Blue #1 into 10.0 mL standards using dedicated pipettes.</p>
+                                    <span id="live-eq-dilution" class="formula-card__live">M₂ = 2.31 × (10/10) = 2.310 µM</span>
+                                </div>
+                                <div class="formula-card">
+                                    <span class="formula-card__title">2. Transmittance → Absorbance</span>
+                                    <span class="formula-card__eq">A = −log<sub>10</sub>(T)</span>
+                                    <p class="formula-card__desc">Linearizes exponential light decay T = %T / 100 into proportional absorbance.</p>
+                                    <span id="live-eq-abs" class="formula-card__live">Awaiting first Spec 20D+ reading</span>
+                                </div>
+                                <div class="formula-card">
+                                    <span class="formula-card__title">3. Beer-Lambert Law</span>
+                                    <span class="formula-card__eq">A = ε · b · c = m · c</span>
+                                    <p class="formula-card__desc">With b = 1.0 cm at 630 nm, A vs. c is a straight line with slope m = ε · b.</p>
+                                    <span id="live-eq-beer" class="formula-card__live">Target slope m = 0.1358 Abs/µM</span>
+                                </div>
+                                <div class="formula-card">
+                                    <span class="formula-card__title">4. Unknown Quantification</span>
+                                    <span class="formula-card__eq">c<sub>unk</sub> = A<sub>unk</sub> / m</span>
+                                    <p class="formula-card__desc">Measures Unknown Drink at 630 nm and decodes both µM and real-world mg/L dye.</p>
+                                    <span id="live-eq-unknown" class="formula-card__live">Measure Unknown Drink (Steps 78–82)</span>
+                                </div>
+                            </div>
+
+                            <div id="solver-card" class="solver-card">
+                                <div class="solver-card__top">
+                                    <span class="solver-card__title">Unknown Drink Solver Challenge</span>
+                                    <span class="solver-card__hint">A = 0.4089 Abs · m = 0.1358 Abs/µM</span>
+                                </div>
+                                <div class="solver-form">
+                                    <input id="solver-input" class="solver-input" type="number" step="0.001" placeholder="e.g. 3.011" aria-label="Calculated Unknown Concentration in micromolar">
+                                    <button id="solver-check-btn" class="button button--primary button--small" type="button">Verify (µM)</button>
+                                </div>
+                                <div id="solver-feedback" class="solver-feedback" aria-live="polite"></div>
+                            </div>
+
+                            <div class="export-bar">
+                                <div class="instructions-bar__actions">
+                                    <button id="export-csv-btn" class="button button--accent" type="button">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                        <span>Download CSV</span>
+                                    </button>
+                                    <button id="copy-report-btn" class="button button--secondary" type="button">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                        <span>Copy Markdown</span>
+                                    </button>
+                                </div>
+                                <span id="export-status" class="export-bar__status" aria-live="polite"></span>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel__header">
+                                <div class="panel__title-wrap">
+                                    <span class="panel__icon" aria-hidden="true">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                    </span>
+                                    <h4>AP Chemistry Concept Check</h4>
+                                </div>
+                                <span class="panel__sub">Instant formative explanations</span>
+                            </div>
+                            <div id="quiz-list" class="quiz-list"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <script type="module" src="js/main.js?v=3"></script>
+    <!-- Formal Printable AP Chemistry Lab Report Modal -->
+    <div id="report-modal" class="report-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title" hidden>
+        <div class="report-dialog">
+            <div class="report-dialog__header">
+                <div class="panel__title-wrap">
+                    <span class="panel__icon" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    </span>
+                    <h3 id="report-modal-title">AP Chemistry Lab Report — Beer-Lambert Spectrophotometry</h3>
+                </div>
+                <button id="close-report-btn" class="button button--ghost button--small" type="button" aria-label="Close Lab Report">Close</button>
+            </div>
+            <div id="report-body" class="report-dialog__body"></div>
+            <div class="report-dialog__footer">
+                <button id="report-copy-btn" class="button button--secondary" type="button">Copy Markdown</button>
+                <button id="report-csv-btn" class="button button--secondary" type="button">Download CSV</button>
+                <button id="report-print-btn" class="button button--primary" type="button">Print / Save PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Lab Guide & Keyboard Shortcuts Modal (Keeps the 3D Stage Spotless!) -->
+    <div id="help-modal" class="report-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title" hidden>
+        <div class="report-dialog report-dialog--compact">
+            <div class="report-dialog__header">
+                <div class="panel__title-wrap">
+                    <span class="panel__icon" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path></svg>
+                    </span>
+                    <h3 id="help-modal-title">Lab Quick Guide &amp; Keyboard Shortcuts</h3>
+                </div>
+                <button id="close-help-btn" class="button button--ghost button--small" type="button" aria-label="Close Quick Guide">Close</button>
+            </div>
+            <div class="report-dialog__body">
+                <div class="help-grid">
+                    <div class="help-card">
+                        <h5>Interacting in 3D</h5>
+                        Drag a pipette or cuvette directly onto a bottle, test tube, Spec 20D+, or Waste Beaker — OR click once to pick up and click the target! Drag empty bench space to orbit; scroll to zoom.
+                    </div>
+                    <div class="help-card">
+                        <h5>3 Dedicated Pipettes</h5>
+                        <strong>Blue #1</strong> (Stock &amp; standards), <strong>H₂O</strong> (Distilled Water &amp; Blank), and <strong>Unknown</strong> (Mystery Drink). Mixing pipettes triggers a cross-contamination lab safety catch!
+                    </div>
+                </div>
+                <div class="help-card" style="margin-bottom:10px;">
+                    <h5>Immersive AETHER Mode, Hand Gestures &amp; Natural Voice</h5>
+                    Press <strong>F</strong> (or click <strong>Immersive</strong>) for a full-screen 3D bench, and click <strong>Hands</strong> (or press <strong>G</strong>) to activate the holographic <strong>AETHER</strong> spatial interface: <strong>Open Palm</strong> to aim smoothly (zero accidental orbit), <strong>Closed Palm (✊)</strong> to grab &amp; drag pipettes and general objects, <strong>Index + Thumb Pinch (🤏)</strong> to delicately grip the Cuvette, click buttons/HUD, or drag empty space to orbit, <strong>Two-Hand Pinch</strong> to zoom, and hold <strong>✌️ Peace</strong> to focus the active step. In Immersive Mode, click the <strong>Speaker</strong> icon (or press <strong>R</strong>) to voice the procedure on demand, or toggle the <strong>Mic</strong> icon (key <strong>H</strong>) and say <strong>"Why?"</strong> to hear the chemistry explanation aloud!
+                </div>
+                <div class="help-card">
+                    <h5>Keyboard Shortcuts</h5>
+                    <div class="kbd-list">
+                        <div class="kbd-item"><span class="kbd">F</span> <span>Full-Screen Immersive Mode</span></div>
+                        <div class="kbd-item"><span class="kbd">G</span> <span>Toggle Hand Gesture Control (AETHER)</span></div>
+                        <div class="kbd-item"><span class="kbd">R</span> <span>Voice Current Step Aloud (Immersive)</span></div>
+                        <div class="kbd-item"><span class="kbd">Q</span> <span>Voice "Why?" Explanation (Immersive)</span></div>
+                        <div class="kbd-item"><span class="kbd">H</span> <span>Toggle Hands-Free Voice Mic ("Why?")</span></div>
+                        <div class="kbd-item"><span class="kbd">1–4</span> <span>Switch 3D Camera Views</span></div>
+                        <div class="kbd-item"><span class="kbd">Space</span> <span>Focus Camera &amp; Laser Guide Arc</span></div>
+                        <div class="kbd-item"><span class="kbd">D</span> <span>Toggle Light / Dark Theme</span></div>
+                        <div class="kbd-item"><span class="kbd">X</span> <span>Toggle Live 630 nm X-Ray PiP</span></div>
+                        <div class="kbd-item"><span class="kbd">L</span> <span>Toggle 3D Floating Labels</span></div>
+                        <div class="kbd-item"><span class="kbd">T</span> <span>Expand / Compact 3D Stage</span></div>
+                        <div class="kbd-item"><span class="kbd">M</span> <span>Mute / Unmute Lab Sound</span></div>
+                        <div class="kbd-item"><span class="kbd">Ctrl+Z</span> <span>Undo Last Lab Action</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="report-dialog__footer">
+                <button id="help-done-btn" class="button button--primary button--small" type="button">Got It — Back to Bench</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js?v=22"></script>
 </body>
 </html>

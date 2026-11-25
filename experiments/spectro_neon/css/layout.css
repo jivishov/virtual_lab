@@ -1,99 +1,617 @@
-/* layout.css - Application Header, Stage & Lab Notebook Grid */
+/* layout.css - Clean Architectural Header, Connected 5-Phase Rail, Main Container & Studio Grids */
 
 .app-header {
-    max-width: 1640px;
+    max-width: 1580px;
     width: 100%;
     margin: 0 auto;
-    padding: 10px 18px 6px;
+    padding: 10px 20px 6px;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.app-header__title-group {
+.app-header__brand {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
 }
 
-.app-header__badge {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    padding: 3px 8px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(6, 182, 212, 0.25));
-    border: 1px solid rgba(56, 189, 248, 0.4);
-    color: #7dd3fc;
+.app-header__emblem {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: linear-gradient(145deg, var(--accent-primary-soft), rgba(37, 99, 235, 0.15));
+    border: 1px solid var(--accent-primary-border);
+    color: var(--accent-primary);
+    box-shadow: var(--shadow-pill);
+}
+
+.app-header__title-stack {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+    min-width: 0;
 }
 
 .app-header__title {
-    font-size: 19px;
+    font-family: var(--font-display);
+    font-size: 16.5px;
     font-weight: 700;
+    letter-spacing: -0.028em;
+    color: var(--text-strong);
+    line-height: 1.15;
+}
+
+.app-header__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2.5px 8.5px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
     letter-spacing: -0.01em;
-    color: #f8fafc;
+    color: var(--accent-primary-text);
+    background: var(--accent-primary-soft);
+    border: 1px solid var(--accent-primary-border);
+    white-space: nowrap;
 }
 
-.app-header__sub {
-    font-weight: 400;
+.app-header__tag-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-beam);
+    box-shadow: 0 0 7px var(--accent-beam);
+}
+
+/* Connected Minimal 5-Phase Journey Rail */
+.phase-ribbon {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3.5px 5px;
+    border-radius: 999px;
+    background: var(--bg-track);
+    border: 1px solid var(--border-subtle);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.phase-ribbon__link {
+    width: 6px;
+    height: 1.5px;
+    border-radius: 2px;
+    background: var(--border-medium);
+    opacity: 0.65;
+    flex-shrink: 0;
+}
+
+.phase-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8.5px;
+    border-radius: 999px;
+    font-size: 11.25px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    white-space: nowrap;
+}
+
+.phase-pill:hover {
+    color: var(--text-primary);
+    background: var(--bg-surface-hover);
+}
+
+.phase-pill__num {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    background: var(--bg-surface-solid);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.phase-pill--active {
+    background: var(--bg-seg-active);
+    color: var(--text-strong);
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-pill);
+}
+
+.phase-pill--active .phase-pill__num {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.34);
+}
+
+.phase-pill--done {
+    color: var(--accent-green-text);
+}
+
+.phase-pill--done .phase-pill__num {
+    background: var(--accent-green-soft);
+    border-color: var(--accent-green-border);
+    color: var(--accent-green);
+}
+
+/* Right Header Utility Cluster (Calm, Minimal) */
+.app-header__controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Precision Streak Chip (Subtle, only glows when student builds momentum) */
+.precision-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4.5px;
+    padding: 4px 8.5px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--accent-green-text);
+    background: var(--accent-green-soft);
+    border: 1px solid var(--accent-green-border);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.precision-pill--hidden {
+    display: none;
+}
+
+.precision-pill--pop {
+    animation: gentlePop 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes gentlePop {
+    0% { transform: scale(0.92); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+/* Segmented Controls (Scaffold Mode & Light/Dark Theme Switch) */
+.seg-switch {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    border-radius: 10px;
+    background: var(--bg-track);
+    border: 1px solid var(--border-subtle);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+    gap: 2px;
+}
+
+.seg-switch__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4.5px;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 11.25px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition: all 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+    white-space: nowrap;
 }
 
+.seg-switch__btn:hover {
+    color: var(--text-strong);
+}
+
+.seg-switch__btn--active {
+    background: var(--bg-seg-active);
+    color: var(--text-strong);
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-pill);
+}
+
+.seg-switch__btn--active svg {
+    color: var(--accent-primary);
+}
+
+/* Cohesive Grouped Icon Utility Cluster */
+.icon-cluster {
+    display: inline-flex;
+    align-items: center;
+    padding: 2.5px;
+    gap: 2px;
+    border-radius: 10px;
+    background: var(--bg-track);
+    border: 1px solid var(--border-subtle);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.icon-btn {
+    width: 29px;
+    height: 29px;
+    border-radius: 7.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+    flex-shrink: 0;
+}
+
+.icon-btn:hover:not(:disabled) {
+    color: var(--text-strong);
+    border-color: var(--border-subtle);
+    background: var(--bg-seg-active);
+    box-shadow: var(--shadow-pill);
+}
+
+.icon-btn--active {
+    color: var(--accent-primary);
+    border-color: var(--border-subtle);
+    background: var(--bg-seg-active);
+    box-shadow: var(--shadow-pill);
+}
+
+.icon-btn--danger:hover:not(:disabled) {
+    color: var(--accent-red);
+    border-color: var(--accent-red-border);
+    background: var(--accent-red-soft);
+    box-shadow: none;
+}
+
+.icon-btn:disabled {
+    opacity: 0.34;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Main App Container */
 #main-container {
-    max-width: 1640px;
+    max-width: 1580px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 18px 14px;
+    padding: 0 20px 24px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
+/* Elevated Scientific Studio Panels */
 .panel {
-    background: rgba(17, 24, 39, 0.92);
+    background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
-    border-radius: 10px;
-    padding: 12px 15px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-panel);
+    backdrop-filter: blur(14px);
+    min-width: 0;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.25s ease;
 }
 
 .panel--highlight {
-    border-color: rgba(245, 158, 11, 0.85);
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25), 0 8px 24px rgba(0, 0, 0, 0.35);
+    border-color: rgba(245, 158, 11, 0.65);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.16), var(--shadow-panel);
 }
 
 .panel__header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 11px;
+    flex-wrap: wrap;
+}
+
+.panel__title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8.5px;
+}
+
+.panel__icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 7.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-primary-soft);
+    border: 1px solid var(--accent-primary-border);
+    color: var(--accent-primary);
+    flex-shrink: 0;
 }
 
 .panel__header h4 {
+    font-family: var(--font-display);
     font-size: 14px;
     font-weight: 700;
-    color: #f1f5f9;
+    letter-spacing: -0.02em;
+    color: var(--text-strong);
 }
 
 .panel__sub {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
+    font-family: var(--font-mono);
 }
 
+/* Scaffolded Educational Studio Dock */
+.studio-dock {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.studio-tabs-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 5px 8px;
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-panel);
+    backdrop-filter: blur(14px);
+}
+
+.studio-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px;
+    border-radius: 11px;
+    background: var(--bg-track);
+    border: 1px solid var(--border-subtle);
+    flex-wrap: wrap;
+}
+
+.studio-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    cursor: pointer;
+    transition: all 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.studio-tab:hover {
+    color: var(--text-strong);
+}
+
+.studio-tab--active {
+    color: var(--text-strong);
+    background: var(--bg-seg-active);
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-pill);
+}
+
+.studio-tab--active svg {
+    color: var(--accent-primary);
+}
+
+.studio-tab__badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1.5px 6.5px;
+    border-radius: 999px;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.studio-tab__badge--pulse {
+    animation: gentlePop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.studio-tab--active .studio-tab__badge {
+    background: var(--accent-primary-soft);
+    border-color: var(--accent-primary-border);
+    color: var(--accent-primary-text);
+}
+
+.studio-tab__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-beam);
+    box-shadow: 0 0 8px var(--accent-beam);
+}
+
+.studio-tabs-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.studio-panes-wrap {
+    transition: opacity 0.22s ease;
+}
+
+.studio-dock--collapsed .studio-panes-wrap {
+    display: none;
+}
+
+.studio-pane {
+    display: none;
+}
+
+.studio-pane--active {
+    display: block;
+    animation: fadeSlideUp 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Grids inside Studio Panes */
 .notebook-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr);
-    gap: 12px;
+    grid-template-columns: minmax(0, 1.42fr) minmax(360px, 1fr);
+    gap: 14px;
     align-items: stretch;
 }
 
+.optics-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.36fr) minmax(330px, 1fr);
+    gap: 14px;
+    align-items: stretch;
+}
+
+.manual-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.04fr) minmax(340px, 1.14fr);
+    gap: 14px;
+    align-items: stretch;
+}
+
+@media (max-width: 1420px) {
+    .app-header {
+        padding: 9px 14px 6px;
+        gap: 8px;
+    }
+
+    .app-header__tag-ext {
+        display: none;
+    }
+
+    .phase-pill {
+        padding: 3.5px 7px;
+        font-size: 11px;
+        gap: 4.5px;
+    }
+
+    .phase-ribbon__link {
+        width: 4px;
+    }
+}
+
+@media (max-width: 1350px) {
+    .app-header__title {
+        font-size: 15.5px;
+    }
+
+    .seg-switch__label {
+        display: none;
+    }
+
+    .seg-switch__btn {
+        padding: 4px 7px;
+        font-size: 11px;
+    }
+
+    .precision-pill {
+        padding: 3.5px 7.5px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 1160px) {
+    .phase-ribbon {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        overflow-x: auto;
+    }
+}
+
 @media (max-width: 980px) {
-    .notebook-grid {
-        grid-template-columns: 1fr;
+    .notebook-grid,
+    .optics-grid,
+    .manual-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 680px) {
+    .app-header {
+        padding: 9px 10px 6px;
+        gap: 7px;
+    }
+
+    #main-container {
+        padding: 0 10px 20px;
+    }
+
+    .app-header__tag,
+    .precision-pill {
+        display: none;
+    }
+
+    .seg-switch__label {
+        display: none;
+    }
+
+    /* Fit all 5 phases cleanly on 390px phones with zero horizontal clipping! */
+    .phase-ribbon {
+        padding: 3px 3.5px;
+        gap: 1px;
+        justify-content: space-between;
+    }
+
+    .phase-ribbon__link {
+        display: none;
+    }
+
+    .phase-pill {
+        padding: 3.5px 5px;
+        font-size: 10px;
+        gap: 3px;
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
+    .phase-pill__num {
+        width: 14px;
+        height: 14px;
+        font-size: 9px;
     }
 }

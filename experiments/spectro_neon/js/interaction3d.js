@@ -8,28 +8,54 @@ import {
     restoreState,
     initializeState,
 } from './state.js';
-import { updateUI, showFeedback } from './ui.js';
-import { drawGraph } from './graph.js';
+import { updateUI, showFeedback } from './ui.js?v=11';
+import { drawGraph } from './graph.js?v=11';
 import {
     getCamera,
     getControls,
     getDomElement,
     getPickTargets,
     getWorldMouthPosition,
+    getScreenPoint,
     setDragVisualState,
     setCameraPreset,
+    setHoveredLabelId,
     syncSceneFromState,
-} from './scene3d.js?v=3';
+} from './scene3d.js?v=16';
 
 let actions = {};
 let hoverInfoEl = null;
 let undoButton = null;
 let resetButton = null;
+let onResetCallback = null;
+let onUndoCallback = null;
 
 const raycaster = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
-const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.22);
+const dragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
 const planeIntersect = new THREE.Vector3();
+const _camForward = new THREE.Vector3();
+const _dragPlaneAnchor = new THREE.Vector3(0, 0.14, 0.02);
+
+// Screen-space magnetic proximity assist (makes hand-gesture grabbing & dropping feel effortless!)
+function findNearestScreenTarget(clientX, clientY, candidateIds, maxRadiusPx = 56, preferredIds = []) {
+    let bestId = null;
+    let bestScore = Infinity;
+    for (const id of candidateIds) {
+        const pt = getScreenPoint(id);
+        if (!pt || !Number.isFinite(pt.x) || !Number.isFinite(pt.y)) continue;
+        const d = Math.hypot(clientX - pt.x, clientY - pt.y);
+        if (d <= maxRadiusPx) {
+            const bonus = preferredIds.includes(id) ? -14 : 0;
+            const score = d + bonus;
+            if (score < bestScore) {
+                bestScore = score;
+                bestId = id;
+            }
+        }
+    }
+    return bestId;
+}
 
 // Pointer tracking state
 let pointerDown = false;
@@ -70,6 +96,23 @@ function raycastScene(excludeId = null, preferButtons = true) {
         }
     }
 
+    // When the cuvette is seated inside Spec 20D+, prioritize grabbing/selecting it even though
+    // the ray crosses the outer Spec 20D+ drop-target collider box first!
+    if (!excludeId) {
+        const cuvObj = findObjectById('cuvette');
+        if (cuvObj?.isInSpec) {
+            for (const h of hits) {
+                if (h.object.userData?.interactId === 'cuvette') {
+                    return {
+                        interactId: 'cuvette',
+                        specButton: null,
+                        point: h.point,
+                    };
+                }
+            }
+        }
+    }
+
     for (const h of hits) {
         const id = h.object.userData?.interactId;
         if (!id) continue;
@@ -100,7 +143,7 @@ function isValidDropCandidate(actorObj, targetObj) {
 }
 
 function describeObjectForHud(hit, activeActorId = null) {
-    if (!hit) return 'Drag (or click) a dedicated pipette or cuvette to interact • Drag empty space to orbit';
+    if (!hit) return 'Drag or click a pipette or cuvette • Drag bench to orbit';
 
     if (hit.specButton) {
         const labels = {
@@ -298,37 +341,61 @@ function onPointerMove(e) {
 
             const actor = findObjectById(activeDragId);
             const hoverHit = raycastScene(activeDragId, false);
-            const hoverObj = hoverHit ? findObjectById(hoverHit.interactId) : null;
-            const validDrop = hoverObj && isValidDropCandidate(actor, hoverObj);
+            let hoverObj = hoverHit ? findObjectById(hoverHit.interactId) : null;
+            let validDrop = Boolean(hoverObj && isValidDropCandidate(actor, hoverObj));
+
+            // Magnetic screen-space drop assist when using spatial hand gestures (or near a valid vessel mouth!)
+            if (!validDrop && e.isVirtualHand) {
+                const validIds = state.labObjects
+                    .filter((o) => o.id !== activeDragId && isValidDropCandidate(actor, o))
+                    .map((o) => o.id);
+                const snapId = findNearestScreenTarget(e.clientX, e.clientY, validIds, 68, state.highlights || []);
+                if (snapId) {
+                    hoverObj = findObjectById(snapId);
+                    validDrop = Boolean(hoverObj);
+                }
+            }
 
             currentDropHoverId = validDrop ? hoverObj.id : null;
 
-            // Compute smooth 3D world drag coordinate (magnetically aligns over valid targets!)
+            // Compute 1:1 cursor-locked 3D drag position (magnetically aligns over valid targets,
+            // or glides on a camera-facing vertical plane anchored at the apparatus bench line so the
+            // pipette/cuvette NEVER drifts away from the glowing cursor at any screen elevation!)
             const targetPos = new THREE.Vector3();
             if (validDrop) {
                 const mouth = getWorldMouthPosition(hoverObj.id);
                 targetPos.copy(mouth);
-                targetPos.y += actor.type === 'pipette' ? 0.045 : 0.065;
+                targetPos.y += actor.type === 'pipette' ? 0.040 : 0.060;
             } else {
-                const planeY = actor.type === 'pipette' ? 0.14 : 0.15;
-                dragPlane.constant = -planeY;
-                raycaster.setFromCamera(ndc, getCamera());
-                if (raycaster.ray.intersectPlane(dragPlane, planeIntersect)) {
-                    targetPos.copy(planeIntersect);
-                    // Clamp neatly above the lab bench bounds
-                    targetPos.x = Math.max(-0.68, Math.min(0.66, targetPos.x));
-                    targetPos.z = Math.max(-0.28, Math.min(0.28, targetPos.z));
+                const cam = getCamera();
+                if (cam) {
+                    cam.getWorldDirection(_camForward);
+                    _camForward.y = 0;
+                    if (_camForward.lengthSq() < 1e-4) _camForward.set(0, 0, -1);
+                    _camForward.normalize();
+                    _dragPlaneAnchor.set(0, 0.14, actor.type === 'cuvette' ? 0.06 : -0.02);
+                    dragPlane.setFromNormalAndCoplanarPoint(_camForward, _dragPlaneAnchor);
+                    raycaster.setFromCamera(ndc, cam);
+                    if (raycaster.ray.intersectPlane(dragPlane, planeIntersect)) {
+                        targetPos.copy(planeIntersect);
+                        // Subtract object grip-center height so the middle of the pipette/cuvette sits DEAD-CENTER under the cursor!
+                        const gripOffsetY = actor.type === 'pipette' ? 0.135 : 0.038;
+                        targetPos.y = Math.max(0.03, Math.min(0.32, targetPos.y - gripOffsetY));
+                        targetPos.x = Math.max(-0.68, Math.min(0.66, targetPos.x));
+                        targetPos.z = Math.max(-0.26, Math.min(0.26, targetPos.z));
+                    }
                 }
             }
 
             setDragVisualState(activeDragId, targetPos, currentDropHoverId);
-            updateHoverHud(describeObjectForHud(hoverHit, activeDragId));
+            updateHoverHud(describeObjectForHud(validDrop ? { interactId: hoverObj.id } : hoverHit, activeDragId));
             return;
         }
     }
 
-    // Standard hover feedback (cursor + inspector HUD)
+    // Standard hover feedback (cursor + inspector HUD + smart 3D callout elevation)
     const hit = raycastScene(null, true);
+    setHoveredLabelId(hit?.interactId || null);
     updateHoverHud(describeObjectForHud(hit, state.selectedObjectId));
 
     if (dom) {
@@ -384,21 +451,28 @@ function onPointerUp(e) {
     }
     // Case 3: Click-to-select a draggable (pipette or cuvette) without dragging
     else if (pressedObjId && !pointerMoved) {
-        const newSel = state.selectedObjectId === pressedObjId ? null : pressedObjId;
+        const clickedObj = findObjectById(pressedObjId);
+        // If user clicks an already-loaded, already-selected pipette out of habit, keep it ready in hand instead of dropping it!
+        const keepLoadedSelected =
+            state.selectedObjectId === pressedObjId &&
+            clickedObj?.type === 'pipette' &&
+            clickedObj.currentVolume > 0;
+        const newSel = keepLoadedSelected
+            ? pressedObjId
+            : state.selectedObjectId === pressedObjId
+            ? null
+            : pressedObjId;
         setStateVariable('selectedObjectId', newSel);
-        if (newSel) {
-            const obj = findObjectById(newSel);
-            if (obj) {
-                const hint =
-                    obj.type === 'pipette'
-                        ? obj.currentVolume > 0
-                            ? `${obj.label} selected (${obj.currentVolume} mL) — click destination tube or cuvette to dispense.`
-                            : `${obj.label} selected — click a source bottle or test tube to fill.`
-                        : obj.isInSpec
-                        ? 'Cuvette selected in Spec 20 — click Waste Beaker to empty, or click empty bench to remove.'
-                        : 'Cuvette selected — click Spec 20 to insert or Waste Beaker to empty.';
-                showFeedback(hint, 'info');
-            }
+        if (newSel && clickedObj) {
+            const hint =
+                clickedObj.type === 'pipette'
+                    ? clickedObj.currentVolume > 0
+                        ? `${clickedObj.label} ready (${clickedObj.currentVolume} mL) — click or drag directly to destination tube or cuvette.`
+                        : `${clickedObj.label} selected — click a source bottle or test tube to fill.`
+                    : clickedObj.isInSpec
+                    ? 'Cuvette selected in Spec 20 — click Waste Beaker to empty, or click empty bench to remove.'
+                    : 'Cuvette selected — click Spec 20 to insert or Waste Beaker to empty.';
+            showFeedback(hint, 'info');
         }
         updateUI();
     }
@@ -425,6 +499,7 @@ function onPointerUp(e) {
     activeDragId = null;
     currentDropHoverId = null;
     setDragVisualState(null, null, null);
+    updateHoverHud(describeObjectForHud(raycastScene(null, true), getState().selectedObjectId));
 }
 
 // ---------------------------------------------------------------------------
@@ -435,6 +510,14 @@ export function handleUndoClick() {
     const prevState = popHistory();
     if (prevState) {
         restoreState(prevState);
+        // If undo returns to a step right after aspirating, keep the loaded pipette ready in hand!
+        const loadedPip = getState().labObjects.find((o) => o.type === 'pipette' && o.currentVolume > 0);
+        if (loadedPip) {
+            setStateVariable('selectedObjectId', loadedPip.id);
+        }
+        if (typeof onUndoCallback === 'function') {
+            onUndoCallback(getState().currentStep);
+        }
         syncSceneFromState(true);
         updateUI();
         drawGraph();
@@ -444,10 +527,16 @@ export function handleUndoClick() {
 
 export function handleResetClick() {
     initializeState(undoButton);
+    if (typeof onResetCallback === 'function') {
+        onResetCallback();
+    }
     syncSceneFromState(true);
     updateUI();
     drawGraph();
     setCameraPreset('overview');
+    document.querySelectorAll('.cam-btn').forEach((b) => {
+        b.classList.toggle('cam-btn--active', b.dataset.preset === 'overview');
+    });
     showFeedback('Lab bench reset to Step 1. Ready to begin!', 'info');
 }
 
@@ -461,6 +550,8 @@ function onKeyDown(e) {
         e.preventDefault();
         handleUndoClick();
     } else if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tag = (e.target && e.target.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
         const presetKeys = ['overview', 'reagents', 'rack', 'spec20'];
         const idx = parseInt(e.key, 10) - 1;
         if (idx >= 0 && idx < presetKeys.length) {
@@ -472,11 +563,13 @@ function onKeyDown(e) {
     }
 }
 
-export function initInteraction3D({ undoBtn, resetBtn, hoverEl, actionFunctions }) {
+export function initInteraction3D({ undoBtn, resetBtn, hoverEl, actionFunctions, onReset = null, onUndo = null }) {
     undoButton = undoBtn;
     resetButton = resetBtn;
     hoverInfoEl = hoverEl;
     actions = actionFunctions;
+    onResetCallback = onReset;
+    onUndoCallback = onUndo;
 
     const dom = getDomElement();
     if (!dom) {
@@ -491,4 +584,193 @@ export function initInteraction3D({ undoBtn, resetBtn, hoverEl, actionFunctions 
 
     if (undoButton) undoButton.addEventListener('click', handleUndoClick);
     if (resetButton) resetButton.addEventListener('click', handleResetClick);
+}
+
+// ---------------------------------------------------------------------------
+// Virtual Spatial Hand Gesture Pointer & Camera Control Hooks
+// ---------------------------------------------------------------------------
+// Reuses the exact 3D raycaster, magnetic drop snapping, direct pipette flow,
+// Spec 20D+ button priority, and cuvette extraction logic as native mouse input.
+
+function setNdcFromClient(clientX, clientY) {
+    const dom = getDomElement();
+    if (!dom) return false;
+    const rect = dom.getBoundingClientRect();
+    if (!rect.width || !rect.height) return false;
+    ndc.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    ndc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+    return true;
+}
+
+export function inspectAtClientPoint(clientX, clientY) {
+    if (!setNdcFromClient(clientX, clientY)) return null;
+    const state = getState();
+    let hit = raycastScene(activeDragId || null, !activeDragId);
+
+    // Gentle screen-space proximity assist for spatial hand hovering (makes aiming at thin pipettes/cuvette effortless!)
+    if (!hit) {
+        const candidates = activeDragId
+            ? state.labObjects
+                  .filter((o) => o.id !== activeDragId && isValidDropCandidate(findObjectById(activeDragId), o))
+                  .map((o) => o.id)
+            : ['pipette_stock', 'pipette_water', 'pipette_unknown', 'cuvette', 'btn_zero', 'btn_measure', 'btn_mode'];
+        const nearId = findNearestScreenTarget(clientX, clientY, candidates, activeDragId ? 66 : 44, state.highlights || []);
+        if (nearId) {
+            hit = nearId.startsWith('btn_')
+                ? { interactId: nearId, specButton: nearId.replace('btn_', '') }
+                : { interactId: nearId };
+        }
+    }
+
+    if (!hit) {
+        return {
+            hitId: null,
+            label: '',
+            role: 'empty',
+            objectType: null,
+            isCuvette: false,
+            isDraggable: false,
+            isDropTarget: false,
+            isValidDrop: false,
+            isHighlighted: false,
+            isButton: false,
+            selectedObjectId: state.selectedObjectId || null,
+            activeDragId: activeDragId || null,
+        };
+    }
+
+    if (hit.specButton) {
+        const btnNames = { zero: 'ZERO (100%T)', measure: 'MEASURE', mode: '%T / ABS' };
+        return {
+            hitId: hit.interactId,
+            label: btnNames[hit.specButton] || 'Spec 20D+ Button',
+            role: 'button',
+            objectType: 'button',
+            isCuvette: false,
+            isDraggable: false,
+            isDropTarget: false,
+            isValidDrop: false,
+            isHighlighted: (state.highlights || []).includes(hit.interactId),
+            isButton: true,
+            selectedObjectId: state.selectedObjectId || null,
+            activeDragId: activeDragId || null,
+        };
+    }
+
+    const obj = findObjectById(hit.interactId);
+    const activeActorId = activeDragId || state.selectedObjectId;
+    const actor = activeActorId ? findObjectById(activeActorId) : null;
+    const validDrop = Boolean(actor && obj && isValidDropCandidate(actor, obj));
+
+    return {
+        hitId: hit.interactId,
+        label: obj?.label || hit.interactId,
+        role: validDrop ? 'drop' : obj?.isDraggable ? 'draggable' : 'target',
+        objectType: obj?.type || null,
+        isCuvette: hit.interactId === 'cuvette',
+        isDraggable: Boolean(obj?.isDraggable),
+        isDropTarget: Boolean(obj?.isDropTarget),
+        isValidDrop: validDrop,
+        isHighlighted: (state.highlights || []).includes(hit.interactId),
+        isButton: false,
+        selectedObjectId: state.selectedObjectId || null,
+        activeDragId: activeDragId || null,
+    };
+}
+
+export function handleVirtualPointerDown(clientX, clientY) {
+    let targetX = clientX;
+    let targetY = clientY;
+    // If spatial cursor is within proximity of a draggable pipette/cuvette or Spec button, snap down onto its exact screen center!
+    if (setNdcFromClient(clientX, clientY) && !raycastScene(null, true)) {
+        const state = getState();
+        const candidates = ['pipette_stock', 'pipette_water', 'pipette_unknown', 'cuvette', 'btn_zero', 'btn_measure', 'btn_mode'];
+        const nearId = findNearestScreenTarget(clientX, clientY, candidates, 48, state.highlights || []);
+        if (nearId) {
+            const pt = getScreenPoint(nearId);
+            if (pt) {
+                targetX = pt.x;
+                targetY = pt.y;
+            }
+        }
+    }
+    onPointerDown({ button: 0, clientX: targetX, clientY: targetY, isVirtualHand: true });
+    return {
+        captured: Boolean(pressedObjId || pressedSpecButton || pressedTargetId),
+        pressedObjId,
+        pressedSpecButton,
+        pressedTargetId,
+    };
+}
+
+export function handleVirtualPointerMove(clientX, clientY) {
+    onPointerMove({ clientX, clientY, isVirtualHand: true });
+    return {
+        isDragging: Boolean(activeDragId),
+        activeDragId,
+        currentDropHoverId,
+        hoverInfo: inspectAtClientPoint(clientX, clientY),
+    };
+}
+
+export function handleVirtualPointerUp(clientX, clientY) {
+    onPointerUp({ button: 0, clientX, clientY, isVirtualHand: true });
+}
+
+export function cancelVirtualPointer() {
+    if (!pointerDown && !activeDragId) return;
+    const dom = getDomElement();
+    const controls = getControls();
+    if (controls) controls.enabled = true;
+    if (dom) {
+        dom.classList.remove('viewport--dragging');
+        dom.style.cursor = 'default';
+    }
+    pointerDown = false;
+    pointerMoved = false;
+    pressedObjId = null;
+    pressedSpecButton = null;
+    pressedTargetId = null;
+    activeDragId = null;
+    currentDropHoverId = null;
+    setDragVisualState(null, null, null);
+    setStateVariable('isDragging', false);
+    setStateVariable('draggedObject', null);
+}
+
+const _orbitOffset = new THREE.Vector3();
+const _orbitSpherical = new THREE.Spherical();
+
+export function orbitCameraByDelta(dxNorm, dyNorm) {
+    const cam = getCamera();
+    const controls = getControls();
+    if (!cam || !controls) return;
+    // Smooth, weighty, clamped angular rate (prevents jitter or abrupt camera whipping during hand-pinch orbit!)
+    const dTheta = Math.max(-0.045, Math.min(0.045, dxNorm * 1.28));
+    const dPhi = Math.max(-0.032, Math.min(0.032, dyNorm * 0.88));
+    _orbitOffset.copy(cam.position).sub(controls.target);
+    _orbitSpherical.setFromVector3(_orbitOffset);
+    _orbitSpherical.theta -= dTheta;
+    _orbitSpherical.phi = Math.max(
+        controls.minPolarAngle || 0.14,
+        Math.min(controls.maxPolarAngle || Math.PI * 0.47, _orbitSpherical.phi - dPhi)
+    );
+    _orbitOffset.setFromSpherical(_orbitSpherical);
+    cam.position.copy(controls.target).add(_orbitOffset);
+    cam.lookAt(controls.target);
+    controls.update();
+}
+
+export function zoomCameraByScale(scaleFactor) {
+    const cam = getCamera();
+    const controls = getControls();
+    if (!cam || !controls || !Number.isFinite(scaleFactor) || scaleFactor <= 0) return;
+    _orbitOffset.copy(cam.position).sub(controls.target);
+    const curDist = _orbitOffset.length();
+    const minD = controls.minDistance || 0.28;
+    const maxD = controls.maxDistance || 1.85;
+    const nextDist = Math.max(minD, Math.min(maxD, curDist * scaleFactor));
+    _orbitOffset.setLength(nextDist);
+    cam.position.copy(controls.target).add(_orbitOffset);
+    controls.update();
 }

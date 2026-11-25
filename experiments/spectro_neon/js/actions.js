@@ -10,8 +10,8 @@ import {
 } from './state.js';
 import * as config from './config.js';
 import instructions from './instructions.js';
-import { updateUI, showFeedback } from './ui.js';
-import { drawGraph } from './graph.js';
+import { updateUI, showFeedback } from './ui.js?v=11';
+import { drawGraph } from './graph.js?v=11';
 
 let actionEffectHandler = null;
 
@@ -184,8 +184,9 @@ export function tryFillPipette(pipetteId, sourceId) {
     updateLabObject(pipetteId, 'contentsConcentration', source.concentration);
     updateLabObject(sourceId, 'currentVolume', source.currentVolume - targetVolume);
     setStateVariable('currentStep', state.currentStep + 1);
-    setStateVariable('selectedObjectId', null);
-    showFeedback(`${pipette.label} filled with ${targetVolume} mL from ${source.label}.`, 'success');
+    // Keep aspirated pipette active in hand so user can go straight to target tube/cuvette without returning to stand!
+    setStateVariable('selectedObjectId', pipetteId);
+    showFeedback(`${pipette.label} filled with ${targetVolume} mL from ${source.label} — click or drag directly to target!`, 'success');
     emitEffect('fillPipette', {
         pipetteId,
         sourceId,

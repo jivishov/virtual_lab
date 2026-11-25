@@ -1,4 +1,4 @@
-// scene3d.js - Photorealistic Three.js WebGL Engine for Blender 5.2 GLB Lab Assets
+// scene3d.js - Photorealistic Three.js WebGL2 Native-MSAA PBR Engine for Blender 5.2 GLB Lab Assets
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -16,6 +16,12 @@ let camera = null;
 let controls = null;
 let clock = null;
 let rafId = null;
+
+// Cycles-baked grounded benchtop ambient occlusion uniform (clean satin Durcon epoxy, zero wet-mirror artifacts!)
+const opticalUniforms = {
+    uBenchAO: { value: null },
+    uHasBenchBake: { value: 0.0 },
+};
 
 // Grounded contact shadow, glass caustic & soft radial step-beacon textures
 const decalTextures = {
@@ -52,6 +58,8 @@ const animState = {
     beamFlash: 0,
     // Active choreographed action animation (dip/dispense/pour/insert)
     activeChoreo: null,
+    // Loaded pipette hover positions (poised right above source vessel so user goes straight to target without returning to stand!)
+    loadedHoldPos: new Map(),
     // Camera flight tween
     cameraFlight: null,
     // Active drag override
@@ -126,17 +134,18 @@ export function getLiquidOpticalStyle(concentration, isWaste = false, vesselThic
     const eff = Math.max(0, Math.min(concentration, config.STOCK_CONCENTRATION));
     const t = config.STOCK_CONCENTRATION > 0 ? eff / config.STOCK_CONCENTRATION : 0;
 
-    // Distilled H2O (0 µM) -> 100% crystal-clear transparent water with crisp glossy specular & refractive rim!
+    // Distilled H2O (0 µM) -> crystal-clear colorless water with luminous refractive sheen & crisp meniscus!
     if (t < 0.005) {
         return {
-            color: new THREE.Color(0x1f495c),
-            emissive: new THREE.Color(0x02070a),
-            emissiveIntensity: 0.02,
-            opacity: 0.045,
-            meniscusOpacity: 0.16,
-            roughness: 0.014,
+            color: new THREE.Color(0xe6f7ff),
+            emissive: new THREE.Color(0x1a3848),
+            emissiveIntensity: 0.22,
+            opacity: 0.14,
+            meniscusOpacity: 0.44,
+            roughness: 0.010,
             metalness: 0.0,
-            envMapIntensity: 2.05,
+            envMapIntensity: 2.55,
+            isClearWater: true,
         };
     }
 
@@ -150,8 +159,8 @@ export function getLiquidOpticalStyle(concentration, isWaste = false, vesselThic
         ? diluteCol.clone().lerp(midCol, perceived / 0.5)
         : midCol.clone().lerp(stockCol, (perceived - 0.5) / 0.5);
 
-    const diluteGlow = new THREE.Color(0x062d48);
-    const stockGlow = new THREE.Color(0x01124c);
+    const diluteGlow = new THREE.Color(0x083454);
+    const stockGlow = new THREE.Color(0x02185c);
     const emissive = diluteGlow.clone().lerp(stockGlow, perceived);
 
     // Physical Beer-Lambert exponential absorption: alpha = 1 - 10^(-k * c * b)
@@ -161,12 +170,13 @@ export function getLiquidOpticalStyle(concentration, isWaste = false, vesselThic
     return {
         color: col,
         emissive,
-        emissiveIntensity: 0.12 + 0.18 * perceived,
+        emissiveIntensity: 0.16 + 0.20 * perceived,
         opacity: baseOpacity,
-        meniscusOpacity: Math.min(0.72, 0.20 + baseOpacity * 0.58),
-        roughness: 0.016,
+        meniscusOpacity: Math.min(0.74, 0.24 + baseOpacity * 0.58),
+        roughness: 0.015,
         metalness: 0.0,
-        envMapIntensity: 1.70,
+        envMapIntensity: 1.80,
+        isClearWater: false,
     };
 }
 
@@ -202,196 +212,308 @@ function findExactOrDotNode(root, baseName) {
     return found;
 }
 
-// Helper to inject linear-HDR premultiplied optical shading BEFORE AgX tone-mapping & sRGB output
-function patchPremultipliedOpticalShader(mat, cacheKey, glslBody) {
-    mat.premultipliedAlpha = true;
+// Helper to inject calibrated optical shading into MeshPhysicalMaterial (native 4x MSAA + AgX tonemapping!)
+function patchLinearOpticalShader(mat, cacheKey, extraUniformDecl, glslBody, extraUniforms = {}) {
     mat.onBeforeCompile = (shader) => {
-        shader.fragmentShader = shader.fragmentShader
-            .replace('#include <opaque_fragment>', glslBody)
-            .replace('#include <tonemapping_fragment>', '')
-            .replace('#include <colorspace_fragment>', '')
-            .replace('#include <premultiplied_alpha_fragment>', '');
+        Object.assign(shader.uniforms, extraUniforms);
+        if (extraUniformDecl) {
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <common>',
+                `#include <common>\n${extraUniformDecl}`
+            );
+        }
+        shader.fragmentShader = shader.fragmentShader.replace('#include <opaque_fragment>', glslBody);
     };
     mat.customProgramCacheKey = () => cacheKey;
     return mat;
 }
 
+// Patch BenchTop (`Mat_EpoxyBench`) with authentic velvety matte-satin Durcon phenolic resin & deep Cycles contact AO
+// (Eliminates washed-out glossy mirror glare so glassware & solid instruments look grounded and photorealistic!)
+function patchBenchPhotorealShader(mat) {
+    mat.onBeforeCompile = (shader) => {
+        shader.uniforms.uBenchAO = opticalUniforms.uBenchAO;
+        shader.uniforms.uHasBenchBake = opticalUniforms.uHasBenchBake;
+
+        shader.vertexShader = shader.vertexShader
+            .replace('#include <common>', '#include <common>\nvarying vec3 vBenchWorldPos;')
+            .replace(
+                '#include <worldpos_vertex>',
+                '#include <worldpos_vertex>\nvec4 benchWp = modelMatrix * vec4(transformed, 1.0);\nvBenchWorldPos = benchWp.xyz;'
+            );
+
+        shader.fragmentShader = shader.fragmentShader
+            .replace(
+                '#include <common>',
+                `#include <common>
+                varying vec3 vBenchWorldPos;
+                uniform sampler2D uBenchAO;
+                uniform float uHasBenchBake;`
+            )
+            .replace(
+                '#include <roughnessmap_fragment>',
+                `#include <roughnessmap_fragment>
+                // Authentic matte-satin Durcon phenolic laboratory tabletop (kills broad glossy mirror glare!)
+                roughnessFactor = clamp(mix(roughnessFactor, 0.87, 0.72), 0.74, 0.96);`
+            )
+            .replace(
+                '#include <lights_fragment_end>',
+                `#include <lights_fragment_end>
+                if (uHasBenchBake > 0.5 && vBenchWorldPos.y > -0.012) {
+                    vec2 bUV = vec2((vBenchWorldPos.x + 1.25) / 2.50, (-vBenchWorldPos.z + 0.48) / 1.03);
+                    // Taper cleanly before rear cove lip so no hard dark stripe appears along backsplash join
+                    float bMask = smoothstep(0.0, 0.05, bUV.x) * smoothstep(1.0, 0.95, bUV.x)
+                                * smoothstep(0.0, 0.05, bUV.y) * smoothstep(0.985, 0.89, bUV.y);
+                    vec2 bUVc = clamp(bUV, 0.001, 0.999);
+                    float rawAO = texture2D(uBenchAO, bUVc).r;
+                    float benchAO = mix(1.0, pow(max(clamp(rawAO, 0.0, 1.0), 0.0001), 1.26), bMask);
+
+                    // Subtle physical horizon occlusion from rear wall/shelf for grounded laboratory depth
+                    float rearWallShade = 1.0 - smoothstep(0.50, 0.96, bUV.y) * 0.34;
+
+                    // Rich velvety Durcon matte-charcoal phenolic resin with deep contact shadows & restrained satin specular
+                    reflectedLight.indirectDiffuse *= mix(0.06, 1.0, benchAO) * rearWallShade;
+                    reflectedLight.indirectSpecular *= 0.32 * mix(0.08, 1.0, benchAO) * mix(0.70, 1.0, rearWallShade);
+                    reflectedLight.directDiffuse *= mix(0.16, 1.0, benchAO);
+                    reflectedLight.directSpecular *= 0.22 * mix(0.10, 1.0, benchAO);
+                }`
+            );
+    };
+    mat.customProgramCacheKey = () => 'epoxy_bench_matte_durcon_v9';
+    return mat;
+}
+
+// Patch Subway Tile Backsplash (`Mat_LabSubwayTile`) with natural architectural porcelain glaze & shelf shadow depth
+function patchTileBacksplashGIShader(mat) {
+    mat.onBeforeCompile = (shader) => {
+        shader.vertexShader = shader.vertexShader
+            .replace('#include <common>', '#include <common>\nvarying vec3 vTileWorldPos;')
+            .replace(
+                '#include <worldpos_vertex>',
+                '#include <worldpos_vertex>\nvec4 tileWp = modelMatrix * vec4(transformed, 1.0);\nvTileWorldPos = tileWp.xyz;'
+            );
+
+        shader.fragmentShader = shader.fragmentShader
+            .replace(
+                '#include <common>',
+                `#include <common>
+                varying vec3 vTileWorldPos;`
+            )
+            .replace(
+                '#include <lights_fragment_end>',
+                `#include <lights_fragment_end>
+                {
+                    // Natural porcelain ceramic luminance falloff without blowing out whites
+                    float yNorm = clamp((vTileWorldPos.y - 0.085) / 0.295, 0.0, 1.0);
+                    float underShelfGlow = smoothstep(0.46, 0.98, yNorm);
+                    float topLipShadow = 1.0 - smoothstep(0.95, 1.0, yNorm) * 0.18;
+                    float racewayUnderAO = 1.0 - exp(-pow((vTileWorldPos.y - 0.168) / 0.022, 2.0)) * 0.15;
+                    vec3 warmWash = mix(vec3(0.98, 0.99, 1.01), vec3(1.09, 1.07, 1.03), underShelfGlow);
+                    float archMod = topLipShadow * racewayUnderAO;
+                    reflectedLight.indirectDiffuse *= warmWash * archMod;
+                    reflectedLight.directDiffuse *= mix(vec3(0.98), warmWash, 0.60) * archMod;
+                }`
+            );
+    };
+    mat.customProgramCacheKey = () => 'subway_tile_architectural_v8';
+    return mat;
+}
+
 function makeBorosilicateGlassMat(variant = 'clear') {
-    if (variant === 'frosted') {
+    if (variant === 'displayGlass') {
+        // Ultra-clear anti-reflective optical cover glass over Spectronic 20D+ recessed 7-segment LCD
         const mat = new THREE.MeshPhysicalMaterial({
-            color: 0xdce8f0,
+            color: 0xf4fbf8,
             transparent: true,
-            opacity: 0.34,
-            roughness: 0.44,
+            opacity: 0.04,
+            roughness: 0.018,
             metalness: 0.0,
-            ior: 1.49,
-            specularIntensity: 0.95,
-            clearcoat: 0.22,
-            clearcoatRoughness: 0.38,
-            envMapIntensity: 1.45,
+            ior: 1.51,
+            specularIntensity: 0.72,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.016,
+            envMapIntensity: 0.85,
             depthWrite: false,
             side: THREE.FrontSide,
         });
-        return patchPremultipliedOpticalShader(
+        return patchLinearOpticalShader(
             mat,
-            'borosilicate_frosted_v5',
+            'spec20_display_cover_glass_v7',
+            '',
+            `
+            float dNdv = saturate(abs(dot(geometryNormal, geometryViewDir)));
+            float dFres = 0.02 + 0.98 * pow(max(1.0 - dNdv, 0.0001), 4.8);
+            vec3 dSpec = totalSpecular;
+            #ifdef USE_CLEARCOAT
+                dSpec += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
+            #endif
+            dSpec = clamp(dSpec, 0.0, 4.0);
+            float dPeak = max(dSpec.r, max(dSpec.g, dSpec.b));
+            float dAlpha = clamp(0.008 + dFres * 0.13 + dPeak * 0.09, 0.008, 0.22);
+            gl_FragColor = vec4(dSpec * (0.22 + 0.45 * dFres) / max(dAlpha, 0.30), dAlpha);
+            `
+        );
+    }
+
+    if (variant === 'frosted') {
+        // Ground-glass lab stopper / frosted glass surface (native MSAA, soft translucent quartz diffusion!)
+        const mat = new THREE.MeshPhysicalMaterial({
+            color: 0xeaf2f7,
+            transparent: true,
+            opacity: 0.56,
+            roughness: 0.40,
+            metalness: 0.0,
+            ior: 1.49,
+            specularIntensity: 0.90,
+            clearcoat: 0.15,
+            clearcoatRoughness: 0.36,
+            envMapIntensity: 1.15,
+            depthWrite: false,
+            side: THREE.FrontSide,
+        });
+        return patchLinearOpticalShader(
+            mat,
+            'borosilicate_frosted_msaa_v6',
+            '',
             `
             float fNdv = saturate(abs(dot(geometryNormal, geometryViewDir)));
-            float fRim = pow(1.0 - fNdv, 2.8);
-            vec3 fBodyLin = totalDiffuse * 0.65 + diffuseColor.rgb * 0.08;
-            vec3 fSpecLin = totalSpecular;
+            float fRim = pow(max(1.0 - fNdv, 0.0001), 2.4);
+            vec3 fSpec = totalSpecular;
             #ifdef USE_CLEARCOAT
-                fSpecLin += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
+                fSpec += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
             #endif
-            #if defined( TONE_MAPPING )
-                fBodyLin = toneMapping(fBodyLin);
-                fSpecLin = toneMapping(fSpecLin);
-            #endif
-            vec3 fBodySrgb = linearToOutputTexel(vec4(fBodyLin, 1.0)).rgb;
-            vec3 fSpecSrgb = linearToOutputTexel(vec4(fSpecLin, 1.0)).rgb;
-            float fBodyA = clamp(0.24 + fRim * 0.36, 0.20, 0.68);
-            float fSpecL = max(fSpecSrgb.r, max(fSpecSrgb.g, fSpecSrgb.b));
-            gl_FragColor = vec4(clamp(fBodySrgb * fBodyA + fSpecSrgb * 0.80, 0.0, 1.0), clamp(fBodyA + fSpecL * 0.30, 0.20, 0.86));
+            fSpec = clamp(fSpec, 0.0, 6.0);
+            float fAlpha = clamp(0.42 + fRim * 0.34, 0.36, 0.84);
+            vec3 fBody = totalDiffuse * 0.72 + vec3(0.14, 0.17, 0.20) * (0.35 + 0.55 * fRim);
+            gl_FragColor = vec4(clamp(fBody + fSpec * 0.55, 0.0, 6.0), fAlpha);
             `
         );
     }
 
     if (variant === 'acrylic') {
+        // Laser-cut crystal-clear PMMA acrylic pipette stand (crisp beveled silver-aqua edges, full MSAA!)
         const mat = new THREE.MeshPhysicalMaterial({
-            color: 0xe8f6fb,
+            color: 0xf0f9fc,
             transparent: true,
-            opacity: 0.14,
-            roughness: 0.032,
+            opacity: 0.20,
+            roughness: 0.028,
             metalness: 0.0,
             ior: 1.49,
             specularIntensity: 1.0,
             clearcoat: 1.0,
-            clearcoatRoughness: 0.025,
-            envMapIntensity: 2.05,
+            clearcoatRoughness: 0.02,
+            envMapIntensity: 1.65,
             depthWrite: false,
             side: THREE.FrontSide,
         });
-        return patchPremultipliedOpticalShader(
+        return patchLinearOpticalShader(
             mat,
-            'pmma_acrylic_v5',
+            'pmma_acrylic_msaa_v6',
+            '',
             `
             float aNdv = saturate(abs(dot(geometryNormal, geometryViewDir)));
-            float aFres = pow(1.0 - aNdv, 3.0);
-            float aEdge = pow(1.0 - aNdv, 5.5);
-            vec3 aBodyLin = mix(vec3(0.06, 0.10, 0.12), vec3(0.22, 0.34, 0.38), aEdge);
-            vec3 aSpecLin = totalSpecular;
+            float aFres = 0.04 + 0.96 * pow(max(1.0 - aNdv, 0.0001), 3.2);
+            float aEdge = pow(max(1.0 - aNdv, 0.0001), 4.2);
+            vec3 aSpec = totalSpecular;
             #ifdef USE_CLEARCOAT
-                aSpecLin += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
+                aSpec += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
             #endif
-            aSpecLin *= (0.85 + 0.55 * aFres);
-            #if defined( TONE_MAPPING )
-                aBodyLin = toneMapping(aBodyLin);
-                aSpecLin = toneMapping(aSpecLin);
-            #endif
-            vec3 aBodySrgb = linearToOutputTexel(vec4(aBodyLin, 1.0)).rgb;
-            vec3 aSpecSrgb = linearToOutputTexel(vec4(aSpecLin, 1.0)).rgb;
-            float aBodyA = clamp(0.055 + aFres * 0.28 + aEdge * 0.28, 0.05, 0.62);
-            float aSpecL = max(aSpecSrgb.r, max(aSpecSrgb.g, aSpecSrgb.b));
-            gl_FragColor = vec4(clamp(aBodySrgb * aBodyA + aSpecSrgb * 0.88, 0.0, 1.0), clamp(aBodyA + aSpecL * 0.38, 0.05, 0.90));
+            aSpec = clamp(aSpec, 0.0, 6.0);
+            float aPeak = max(aSpec.r, max(aSpec.g, aSpec.b));
+            float aAlpha = clamp(0.10 + aFres * 0.36 + aEdge * 0.26 + aPeak * 0.36, 0.10, 0.86);
+            vec3 aTint = vec3(0.68, 0.84, 0.90) * (0.14 + 0.42 * aEdge);
+            vec3 aFinal = aTint + aSpec * (0.58 + 0.75 * aFres) / max(aAlpha, 0.24);
+            gl_FragColor = vec4(clamp(aFinal, 0.0, 8.0), aAlpha);
             `
         );
     }
 
     if (variant === 'amber') {
+        // Authentic borosilicate amber reagent bottles on upper lab shelf (rich translucent honey-amber glass)
         const mat = new THREE.MeshPhysicalMaterial({
             color: 0x8a3406,
-            emissive: new THREE.Color(0x280c01),
-            emissiveIntensity: 0.22,
+            emissive: new THREE.Color(0x280c02),
+            emissiveIntensity: 0.20,
             transparent: true,
-            opacity: 0.86,
-            roughness: 0.032,
+            opacity: 0.88,
+            roughness: 0.030,
             metalness: 0.0,
             ior: 1.50,
             specularIntensity: 1.0,
             clearcoat: 1.0,
             clearcoatRoughness: 0.02,
-            envMapIntensity: 1.85,
+            envMapIntensity: 1.55,
             depthWrite: true,
             side: THREE.FrontSide,
         });
-        return patchPremultipliedOpticalShader(
+        return patchLinearOpticalShader(
             mat,
-            'borosilicate_amber_v5',
+            'borosilicate_amber_v6',
+            '',
             `
             float amNdv = saturate(abs(dot(geometryNormal, geometryViewDir)));
-            float amEdge = pow(1.0 - amNdv, 2.2);
-            vec3 amBodyLin = mix(diffuseColor.rgb * 0.95 + totalEmissiveRadiance, diffuseColor.rgb * 0.22, amEdge * 0.78);
-            vec3 amSpecLin = totalSpecular;
+            float amEdge = pow(max(1.0 - amNdv, 0.0001), 2.2);
+            vec3 amBody = mix(diffuseColor.rgb * 0.92 + totalEmissiveRadiance, diffuseColor.rgb * 0.22, amEdge * 0.76);
+            vec3 amSpec = totalSpecular;
             #ifdef USE_CLEARCOAT
-                amSpecLin += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
+                amSpec += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
             #endif
-            #if defined( TONE_MAPPING )
-                amBodyLin = toneMapping(amBodyLin);
-                amSpecLin = toneMapping(amSpecLin);
-            #endif
-            vec3 amBodySrgb = linearToOutputTexel(vec4(amBodyLin, 1.0)).rgb;
-            vec3 amSpecSrgb = linearToOutputTexel(vec4(amSpecLin, 1.0)).rgb;
-            float amBodyA = clamp(0.80 + amEdge * 0.18, 0.78, 0.98);
-            gl_FragColor = vec4(clamp(amBodySrgb * amBodyA + amSpecSrgb * 0.90, 0.0, 1.0), amBodyA);
+            gl_FragColor = vec4(clamp(amBody + amSpec * 0.78, 0.0, 8.0), clamp(0.84 + amEdge * 0.14, 0.82, 0.98));
             `
         );
     }
 
-    // Clear Schott / Pyrex 3.3 laboratory borosilicate glass:
-    // Crystal-clear center (98% transparent!), razor-sharp studio specular reflections & Pyrex sea-green rim contour!
+    // Crystal-Clear Schott / Pyrex 3.3 Borosilicate Laboratory Glass (Native 4x Hardware MSAA!)
+    // Preserves crisp multi-layer glass transparency (bottles, 6 test tubes, beaker, pipettes, cuvette)
+    // with luminous studio window reflections, delicate Schott sea-green rim contour & ZERO blackening!
     const mat = new THREE.MeshPhysicalMaterial({
-        color: 0xf4fbfa,
+        color: 0xf4fbfc,
         transparent: true,
-        opacity: 0.06,
-        roughness: 0.022,
+        opacity: 0.08,
+        roughness: 0.014,
         metalness: 0.0,
         ior: 1.47,
         specularIntensity: 1.0,
         specularColor: new THREE.Color(0xffffff),
-        clearcoat: 0.30,
-        clearcoatRoughness: 0.02,
-        envMapIntensity: 1.85,
+        clearcoat: 0.80,
+        clearcoatRoughness: 0.010,
+        envMapIntensity: 2.25,
         depthWrite: false,
         side: THREE.FrontSide,
     });
-    return patchPremultipliedOpticalShader(
+    return patchLinearOpticalShader(
         mat,
-        'borosilicate_clear_v6',
+        'borosilicate_clear_msaa_v8',
+        '',
         `
         float bNdv = saturate(abs(dot(geometryNormal, geometryViewDir)));
-        float bFres = pow(1.0 - bNdv, 3.2);
-        float bThinWall = pow(1.0 - bNdv, 6.0);
-        // Dark-field Schott/Pyrex 3.3 sea-green glass wall contour (zero milky haze!)
-        vec3 bBodyLin = mix(vec3(0.016, 0.044, 0.042), vec3(0.004, 0.014, 0.016), bThinWall);
-        vec3 bSpecLin = totalSpecular;
+        float bFres = 0.042 + 0.958 * pow(max(1.0 - bNdv, 0.0001), 3.1);
+        float bRim = pow(max(1.0 - bNdv, 0.0001), 4.0);
+        vec3 bSpec = totalSpecular;
         #ifdef USE_CLEARCOAT
-            bSpecLin += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
+            bSpec += (clearcoatSpecularDirect + clearcoatSpecularIndirect) * material.clearcoat;
         #endif
-        // Physical Schlick Fresnel weighting so flat bottoms don't blow out white while curved walls gleam!
-        bSpecLin *= (0.32 + 1.05 * bFres);
-        #if defined( TONE_MAPPING )
-            bBodyLin = toneMapping(bBodyLin);
-            bSpecLin = toneMapping(bSpecLin);
-        #endif
-        vec3 bBodySrgb = linearToOutputTexel(vec4(bBodyLin, 1.0)).rgb;
-        vec3 bSpecSrgb = linearToOutputTexel(vec4(bSpecLin, 1.0)).rgb;
-        float bBodyA = clamp(0.014 + bFres * 0.24 + bThinWall * 0.38, 0.012, 0.64);
-        float bSpecL = max(bSpecSrgb.r, max(bSpecSrgb.g, bSpecSrgb.b));
-        float bOutA = clamp(bBodyA + bSpecL * 0.36, 0.012, 0.92);
-        vec3 bOutRgb = clamp(bBodySrgb * bBodyA + bSpecSrgb * (0.86 - 0.14 * bBodyA), 0.0, 1.0);
-        gl_FragColor = vec4(bOutRgb, bOutA);
+        bSpec = clamp(bSpec, 0.0, 9.5);
+        float specPeak = max(bSpec.r, max(bSpec.g, bSpec.b));
+
+        // Crystal clear interior -> crisp silvery Pyrex wall edges & sparkling studio windowpane glints!
+        float bAlpha = clamp(0.052 + bFres * 0.42 + bRim * 0.30 + specPeak * 0.48, 0.052, 0.93);
+        vec3 pyrexWall = mix(vec3(0.90, 0.96, 0.98), vec3(0.68, 0.84, 0.86), bRim) * (0.09 + 0.30 * bFres + 0.22 * bRim);
+        vec3 specContrib = bSpec * (0.68 + 0.92 * bFres) / max(bAlpha, 0.22);
+        gl_FragColor = vec4(clamp(pyrexWall + specContrib, 0.0, 9.5), bAlpha);
         `
     );
 }
 
 function makeDynamicLiquidMat(style) {
+    const clearUniform = { value: style.isClearWater ? 1.0 : 0.0 };
     const mat = new THREE.MeshPhysicalMaterial({
         color: style.color.clone(),
         emissive: style.emissive.clone(),
-        emissiveIntensity: style.emissiveIntensity ?? 0.16,
+        emissiveIntensity: style.emissiveIntensity ?? 0.14,
         transparent: true,
         opacity: style.opacity ?? 0.60,
-        roughness: style.roughness ?? 0.018,
+        roughness: style.roughness ?? 0.016,
         metalness: 0.0,
         ior: 1.333,
         specularIntensity: 1.0,
@@ -400,76 +522,82 @@ function makeDynamicLiquidMat(style) {
         depthWrite: false,
         side: THREE.FrontSide,
     });
-    // Volumetric cylindrical Beer-Lambert optical transmission + deep grazing absorption + crisp specular!
-    return patchPremultipliedOpticalShader(
+    mat.userData.uIsClearWater = clearUniform;
+    // Pure Linear-HDR Volumetric Beer-Lambert Liquid Shader + Luminous Clear-Water Cylindrical Refraction!
+    return patchLinearOpticalShader(
         mat,
-        'beer_lambert_liquid_v6',
+        'beer_lambert_liquid_hdr_v6',
+        'uniform float uIsClearWater;',
         `
         float lNdv = saturate(abs(dot(geometryNormal, geometryViewDir)));
-        float lEdge = pow(1.0 - lNdv, 2.2);
-        float lRim = pow(1.0 - lNdv, 4.6);
-        // Smooth studio directional modulation (no chalky white Lambertian milk wash!)
-        float lBaseLum = max(0.004, dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722)));
-        float lDiffLum = dot(totalDiffuse, vec3(0.2126, 0.7152, 0.0722));
-        float lStudioMod = clamp(lDiffLum / lBaseLum, 0.38, 1.08);
-        vec3 lCenterLin = diffuseColor.rgb * (0.68 + 0.34 * lStudioMod) + totalEmissiveRadiance;
-        vec3 lEdgeLin = diffuseColor.rgb * 0.24;
-        vec3 lBodyLin = mix(lCenterLin, lEdgeLin, lEdge * 0.74);
-        vec3 lSpecLin = totalSpecular * (0.28 + 0.72 * lEdge);
-        #if defined( TONE_MAPPING )
-            lBodyLin = toneMapping(lBodyLin);
-            lSpecLin = toneMapping(lSpecLin);
-        #endif
-        vec3 lBodySrgb = linearToOutputTexel(vec4(lBodyLin, 1.0)).rgb;
-        vec3 lSpecSrgb = linearToOutputTexel(vec4(lSpecLin, 1.0)).rgb;
-        float lBodyA = clamp(diffuseColor.a * (0.94 + 0.28 * lEdge) + lRim * 0.14, 0.025, 0.93);
-        float lSpecL = max(lSpecSrgb.r, max(lSpecSrgb.g, lSpecSrgb.b));
-        float lOutA = clamp(lBodyA + lSpecL * 0.32, 0.025, 0.96);
-        vec3 lOutRgb = clamp(lBodySrgb * lBodyA + lSpecSrgb * 0.65, 0.0, 1.0);
-        gl_FragColor = vec4(lOutRgb, lOutA);
-        `
+        float lEdge = pow(max(1.0 - lNdv, 0.0001), 2.1);
+        float lRim = pow(max(1.0 - lNdv, 0.0001), 4.2);
+        vec3 lSpec = clamp(totalSpecular, 0.0, 8.5);
+
+        if (uIsClearWater > 0.5) {
+            // Distilled H2O (0 uM): zero Beer-Lambert dye absorption -> bright studio tile/sky cylindrical refraction!
+            // Prevents dark rear cove from turning clear water bottle into smoky charcoal gray!
+            float wRefr = pow(max(1.0 - lNdv, 0.0001), 1.65);
+            float wCore = 0.26 + 0.56 * lNdv;
+            vec3 wTileBounce = vec3(0.76, 0.86, 0.91) * (0.28 * wCore + 0.62 * wRefr);
+            vec3 wCausticRim = vec3(0.92, 0.98, 1.0) * (0.48 * lRim);
+            float wAlpha = clamp(0.18 + 0.34 * wRefr + 0.26 * lRim + max(lSpec.r, max(lSpec.g, lSpec.b)) * 0.20, 0.16, 0.78);
+            vec3 wColor = wTileBounce + wCausticRim + lSpec * (0.42 + 0.65 * lEdge) / max(wAlpha, 0.32);
+            gl_FragColor = vec4(clamp(wColor, 0.0, 8.5), wAlpha);
+        } else {
+            float lBaseLum = max(0.004, dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722)));
+            float lDiffLum = dot(totalDiffuse, vec3(0.2126, 0.7152, 0.0722));
+            float lStudioMod = clamp(lDiffLum / lBaseLum, 0.35, 1.05);
+            vec3 lCenter = diffuseColor.rgb * (0.64 + 0.34 * lStudioMod) + totalEmissiveRadiance * 0.85;
+            vec3 lEdgeCol = diffuseColor.rgb * 0.24;
+            vec3 lBody = mix(lCenter, lEdgeCol, lEdge * 0.72);
+            float lAlpha = clamp(diffuseColor.a * (0.94 + 0.28 * lEdge) + lRim * 0.10, 0.018, 0.94);
+            gl_FragColor = vec4(clamp(lBody + lSpec * (0.22 + 0.78 * lEdge) / max(lAlpha, 0.28) * 0.32, 0.0, 8.0), lAlpha);
+        }
+        `,
+        { uIsClearWater: clearUniform }
     );
 }
 
 function makeMeniscusMat(style) {
-    // Concave capillary air-liquid meniscus: physically-calibrated water Fresnel (IOR 1.333 -> F0=0.02!)
-    // Transparent liquid interior from every elevation angle + razor-crisp curved capillary rim glint!
+    const clearUniform = { value: style.isClearWater ? 1.0 : 0.0 };
+    // Concave capillary air-liquid meniscus: linear HDR with realistic IOR 1.333 grazing highlight!
     const mat = new THREE.MeshPhysicalMaterial({
         color: style.color.clone(),
         emissive: style.emissive.clone(),
-        emissiveIntensity: (style.emissiveIntensity ?? 0.12) * 0.55,
+        emissiveIntensity: (style.emissiveIntensity ?? 0.10) * 0.50,
         transparent: true,
-        opacity: style.meniscusOpacity ?? 0.38,
-        roughness: 0.024,
+        opacity: style.meniscusOpacity ?? 0.36,
+        roughness: 0.018,
         metalness: 0.0,
         ior: 1.333,
-        specularIntensity: 0.90,
+        specularIntensity: 1.0,
         clearcoat: 0.0,
-        envMapIntensity: 1.15,
+        envMapIntensity: 1.55,
         depthWrite: false,
         side: THREE.DoubleSide,
     });
-    return patchPremultipliedOpticalShader(
+    mat.userData.uIsClearWater = clearUniform;
+    return patchLinearOpticalShader(
         mat,
-        'beer_lambert_meniscus_v6',
+        'beer_lambert_meniscus_hdr_v6',
+        'uniform float uIsClearWater;',
         `
         float mNdv = saturate(abs(dot(geometryNormal, geometryViewDir)));
-        float mRim = pow(1.0 - mNdv, 2.8);
-        // Deep transparent liquid interior + crisp physical Schlick water Fresnel (zero overhead white blowout!)
-        vec3 mBodyLin = diffuseColor.rgb * (0.48 + 0.16 * mRim) + totalEmissiveRadiance * 0.45;
-        vec3 mSpecLin = totalSpecular * (0.14 + 0.86 * mRim);
-        #if defined( TONE_MAPPING )
-            mBodyLin = toneMapping(mBodyLin);
-            mSpecLin = toneMapping(mSpecLin);
-        #endif
-        vec3 mBodySrgb = linearToOutputTexel(vec4(mBodyLin, 1.0)).rgb;
-        vec3 mSpecSrgb = linearToOutputTexel(vec4(mSpecLin, 1.0)).rgb;
-        float mBodyA = clamp(diffuseColor.a * 0.48 + mRim * 0.24, 0.04, 0.72);
-        float mSpecL = max(mSpecSrgb.r, max(mSpecSrgb.g, mSpecSrgb.b));
-        float mOutA = clamp(mBodyA + mSpecL * 0.34, 0.04, 0.88);
-        vec3 mOutRgb = clamp(mBodySrgb * mBodyA + mSpecSrgb * 0.62, 0.0, 1.0);
-        gl_FragColor = vec4(mOutRgb, mOutA);
-        `
+        float mRim = pow(max(1.0 - mNdv, 0.0001), 2.5);
+        vec3 mSpec = clamp(totalSpecular, 0.0, 8.0) * (0.18 + 0.82 * mRim);
+        if (uIsClearWater > 0.5) {
+            // Sparkling bright capillary silver-aqua water surface meniscus (clearly visible in Blank 0/10 tube & H2O bottle!)
+            vec3 mWater = vec3(0.84, 0.94, 0.98) * (0.42 + 0.52 * mRim);
+            float mWAlpha = clamp(0.28 + mRim * 0.44, 0.22, 0.80);
+            gl_FragColor = vec4(clamp(mWater + mSpec * 0.72, 0.0, 8.5), mWAlpha);
+        } else {
+            vec3 mBody = diffuseColor.rgb * (0.44 + 0.18 * mRim) + totalEmissiveRadiance * 0.40;
+            float mAlpha = clamp(diffuseColor.a * 0.46 + mRim * 0.26, 0.030, 0.74);
+            gl_FragColor = vec4(clamp(mBody + mSpec * 0.55, 0.0, 8.0), mAlpha);
+        }
+        `,
+        { uIsClearWater: clearUniform }
     );
 }
 
@@ -484,6 +612,43 @@ function applyMaxAnisotropy(mat) {
     }
 }
 
+function sanitizeMeshGeometry(geo) {
+    if (!geo || !geo.attributes) return;
+    // Strip or repair any NaN/Inf/zero-length tangents or normals (prevents ANGLE/D3D11 NaN bloom corruption!)
+    const tan = geo.attributes.tangent;
+    if (tan && tan.array) {
+        const arr = tan.array;
+        let hasBad = false;
+        for (let i = 0; i < arr.length; i += 4) {
+            const x = arr[i], y = arr[i + 1], z = arr[i + 2];
+            const lenSq = x * x + y * y + z * z;
+            if (!Number.isFinite(lenSq) || lenSq < 1e-6) {
+                hasBad = true;
+                break;
+            }
+        }
+        if (hasBad) {
+            geo.deleteAttribute('tangent');
+        }
+    }
+    const norm = geo.attributes.normal;
+    if (norm && norm.array) {
+        const arr = norm.array;
+        let fixed = false;
+        for (let i = 0; i < arr.length; i += 3) {
+            const x = arr[i], y = arr[i + 1], z = arr[i + 2];
+            const lenSq = x * x + y * y + z * z;
+            if (!Number.isFinite(lenSq) || lenSq < 1e-6) {
+                arr[i] = 0;
+                arr[i + 1] = 1;
+                arr[i + 2] = 0;
+                fixed = true;
+            }
+        }
+        if (fixed) norm.needsUpdate = true;
+    }
+}
+
 function enhanceLoadedAssetMaterials(root, options = {}) {
     const vesselThickness = options.vesselThickness ?? 0.032;
     const liquidStyle = options.liquidStyle || getLiquidOpticalStyle(0, false, vesselThickness);
@@ -492,11 +657,13 @@ function enhanceLoadedAssetMaterials(root, options = {}) {
     const clearGlassMat = makeBorosilicateGlassMat('clear');
     const frostedGlassMat = makeBorosilicateGlassMat('frosted');
     const acrylicGlassMat = makeBorosilicateGlassMat('acrylic');
+    const displayGlassMat = makeBorosilicateGlassMat('displayGlass');
     const amberGlassMat = makeBorosilicateGlassMat('amber');
     const trackedTransMeshes = [];
 
     root.traverse((obj) => {
         if (!obj.isMesh) return;
+        sanitizeMeshGeometry(obj.geometry);
         const name = obj.name || '';
         const matName = Array.isArray(obj.material)
             ? obj.material.map((m) => m?.name || '').join(' ')
@@ -505,7 +672,16 @@ function enhanceLoadedAssetMaterials(root, options = {}) {
         obj.castShadow = true;
         obj.receiveShadow = true;
 
-        // 1. Dynamic Liquid Meshes (Premultiplied Linear-HDR Beer-Lambert Optics!)
+        // 0. Spectronic 20D+ Anti-Glare Optical Display Cover Glass Pane!
+        if (name.startsWith('DetailV4_DisplayGlass') || matName.includes('DisplayGlass')) {
+            obj.material = displayGlassMat;
+            obj.renderOrder = 22;
+            obj.castShadow = false;
+            obj.receiveShadow = false;
+            return;
+        }
+
+        // 1. Dynamic Liquid Meshes (Linear-HDR Beer-Lambert Optics)
         if (
             sharedLiquidMat &&
             (name.startsWith('LiquidBody') ||
@@ -529,7 +705,7 @@ function enhanceLoadedAssetMaterials(root, options = {}) {
             obj.material = makeDynamicLiquidMat({
                 color: new THREE.Color(0x058074),
                 emissive: new THREE.Color(0x012624),
-                emissiveIntensity: 0.16,
+                emissiveIntensity: 0.14,
                 opacity: 0.64,
                 roughness: 0.02,
                 envMapIntensity: 1.65,
@@ -545,10 +721,10 @@ function enhanceLoadedAssetMaterials(root, options = {}) {
             obj.material = makeDynamicLiquidMat({
                 color: new THREE.Color(0x0284c7),
                 emissive: new THREE.Color(0x012642),
-                emissiveIntensity: 0.12,
+                emissiveIntensity: 0.10,
                 opacity: 0.28,
                 roughness: 0.05,
-                envMapIntensity: 1.60,
+                envMapIntensity: 1.55,
             });
             obj.renderOrder = 13;
             obj.visible = false;
@@ -558,43 +734,68 @@ function enhanceLoadedAssetMaterials(root, options = {}) {
             return;
         }
 
-        // 4. Printed Paper Labels, Kimwipes Box & Spec Dial Scale (MUST run BEFORE amber/glass checks!)
+        // 4. Printed Paper Labels, Kimwipes Box, Calibration Sticker, Sharpie Barrel & Spec Dial Scale
         if (
             name.startsWith('BottleLabel') ||
             name.includes('DialScale') ||
             name.includes('AmberLabel') ||
             name.includes('WashBottleLabel') ||
-            name.includes('KimwipesBox')
+            name.includes('KimwipesBox') ||
+            name.startsWith('DetailV4_CalSticker') ||
+            name.includes('SharpieBarrel')
         ) {
             const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
             mats.forEach((m) => {
                 if (!m) return;
                 m.transparent = false;
                 if (!m.roughnessMap) {
-                    m.roughness = name.includes('DialScale') ? 0.30 : 0.56;
+                    m.roughness = name.includes('DialScale') ? 0.34 : (name.includes('SharpieBarrel') ? 0.42 : 0.68);
                 }
-                m.metalness = name.includes('DialScale') ? 0.28 : 0.0;
-                m.envMapIntensity = 0.78;
+                m.metalness = name.includes('DialScale') ? 0.24 : 0.0;
+                m.envMapIntensity = 0.38;
+                // Keep ink print rich & crisp under AgX instead of washed-out paper white
+                if (m.color) m.color.multiplyScalar(0.84);
                 applyMaxAnisotropy(m);
             });
             return;
         }
 
-        // 5. Fired Ceramic Enamel Graduations on Pipettes, Waste Beaker, Reagent Bottles & Graduated Cylinder
+        // 5. Fired Ceramic Enamel Graduations & Pyrex Test Tube Marking Patches (render crisply OVER refracted glass!)
         if (
             name.startsWith('BeakerGraduations') ||
             name.startsWith('PipetteGraduations') ||
             name.startsWith('DetailV3_BottleScale') ||
+            name.startsWith('DetailV4_TubeFrost') ||
             name.includes('GradCylScale')
         ) {
             if (obj.material) {
                 obj.material.transparent = true;
                 obj.material.depthWrite = false;
                 obj.material.alphaTest = 0.04;
-                obj.material.roughness = 0.34;
+                obj.material.roughness = name.startsWith('DetailV4_TubeFrost') ? 0.56 : 0.34;
+                if (name.startsWith('DetailV4_TubeFrost')) {
+                    obj.material.opacity = 0.24;
+                }
                 obj.material.side = THREE.FrontSide;
                 applyMaxAnisotropy(obj.material);
             }
+            obj.renderOrder = 13;
+            obj.castShadow = false;
+            obj.receiveShadow = false;
+            trackedTransMeshes.push({ mesh: obj, layer: 3 });
+            return;
+        }
+
+        // 5b. Delicate Etched Ceramic 10 mL Calibration Ring on Test Tubes (subtle frosted glass etch!)
+        if (name.startsWith('CalibrationMark')) {
+            obj.material = new THREE.MeshStandardMaterial({
+                color: 0xe6edf4,
+                transparent: true,
+                opacity: 0.56,
+                roughness: 0.52,
+                metalness: 0.0,
+                depthWrite: false,
+            });
             obj.renderOrder = 13;
             obj.castShadow = false;
             obj.receiveShadow = false;
@@ -609,22 +810,24 @@ function enhanceLoadedAssetMaterials(root, options = {}) {
             return;
         }
 
-        // 7. Borosilicate Glassware & Laser-Cut PMMA Acrylic (renders cleanly OVER liquids!)
+        // 7. Borosilicate Glassware, Frosted Ground Stoppers & Laser-Cut PMMA Acrylic (Native 4x MSAA!)
         if (
             name.includes('GlassBody') ||
             name.startsWith('CuvetteGlass') ||
             name.includes('ShelfFlask') ||
+            name.includes('VolFlaskStopper') ||
             name.includes('GradCylBase') ||
             name.includes('GradCylTube') ||
             name.startsWith('DetailV2_Thread') ||
             matName.includes('Glass') ||
-            matName.includes('Acrylic')
+            matName.includes('Acrylic') ||
+            matName.includes('FrostedStopper')
         ) {
             if (Array.isArray(obj.material)) {
                 obj.material = obj.material.map((m) =>
                     (m.name || '').includes('Frosted') ? frostedGlassMat : clearGlassMat
                 );
-            } else if (matName.includes('Frosted')) {
+            } else if (matName.includes('Frosted') || name.includes('VolFlaskStopper')) {
                 obj.material = frostedGlassMat;
             } else if (matName.includes('Acrylic')) {
                 obj.material = acrylicGlassMat;
@@ -638,34 +841,72 @@ function enhanceLoadedAssetMaterials(root, options = {}) {
             return;
         }
 
-        // 8. Preserve Blender 5.2 PBR Maps & Tune Per-Surface Optical Response!
+        // 8. Preserve Blender 5.2 PBR Maps, Wire Matte-Satin Durcon Bench + Rich Non-Pale Solid Materials (Glass Intact!)
         if (obj.material && !Array.isArray(obj.material)) {
             const m = obj.material;
             applyMaxAnisotropy(m);
 
+            const enrichSolidColor = (satMul, lumMul) => {
+                if (!m.color) return;
+                if (m.map) {
+                    m.color.multiplyScalar(lumMul);
+                } else {
+                    const hsl = { h: 0, s: 0, l: 0 };
+                    m.color.getHSL(hsl);
+                    m.color.setHSL(
+                        hsl.h,
+                        Math.min(1.0, hsl.s * satMul),
+                        Math.max(0.03, Math.min(0.95, hsl.l * lumMul))
+                    );
+                }
+            };
+
             if (matName.includes('EpoxyBench')) {
-                m.envMapIntensity = 0.86;
-                if (m.normalScale) m.normalScale.set(0.85, 0.85);
+                // Deep velvety Durcon matte-satin phenolic resin (ZERO glossy plastic glare!)
+                m.color.setRGB(0.24, 0.26, 0.29);
+                m.roughness = 0.90;
+                m.envMapIntensity = 0.20;
+                if ('clearcoat' in m) {
+                    m.clearcoat = 0.0;
+                    m.clearcoatRoughness = 0.85;
+                }
+                if (m.normalScale) m.normalScale.set(0.98, 0.98);
+                if (name === 'BenchTop') {
+                    patchBenchPhotorealShader(m);
+                }
             } else if (matName.includes('LabSubwayTile') || name.includes('TileBacksplash')) {
-                m.envMapIntensity = 1.00;
-                if (m.normalScale) m.normalScale.set(0.88, 0.88);
+                m.envMapIntensity = 0.68;
+                if (m.normalScale) m.normalScale.set(0.96, 0.96);
+                patchTileBacksplashGIShader(m);
             } else if (matName.includes('white_plaster') || name.includes('LabBackWall') || name.includes('SideWall')) {
-                m.envMapIntensity = 0.45;
-            } else if (name.includes('KimwipeTissue')) {
-                m.envMapIntensity = 0.48;
-            } else if (matName.includes('SpecShell') || name.includes('SpecUpperShell')) {
-                m.envMapIntensity = 0.88;
-                if (m.normalScale) m.normalScale.set(0.52, 0.52);
-            } else if (matName.includes('Rubber') || name.includes('Bulb') || name.includes('Foot') || name.includes('Gasket') || name.includes('PowerCord')) {
-                m.envMapIntensity = 0.50;
+                m.envMapIntensity = 0.30;
+                enrichSolidColor(1.04, 0.90);
+            } else if (name.includes('KimwipeTissue') || name.includes('FoldedKimwipe')) {
+                m.envMapIntensity = 0.30;
+                enrichSolidColor(1.0, 0.92);
                 if (m.normalScale) m.normalScale.set(0.65, 0.65);
-            } else if (matName.includes('CapBody') || matName.includes('Bottle') || matName.includes('SpecChassis')) {
-                m.envMapIntensity = 0.84;
-                if (m.normalScale) m.normalScale.set(0.55, 0.55);
+            } else if (matName.includes('SpecShell') || name.includes('SpecUpperShell')) {
+                m.envMapIntensity = 0.48;
+                enrichSolidColor(1.12, 0.84);
+                if (m.normalScale) m.normalScale.set(0.66, 0.66);
+            } else if (matName.includes('Rubber') || name.includes('Bulb') || name.includes('Foot') || name.includes('Gasket') || name.includes('PowerCord')) {
+                // Deep rich silicone/rubber pipette bulbs & gaskets (eliminates chalky pale pastel wash!)
+                m.envMapIntensity = 0.30;
+                if (!m.roughnessMap) m.roughness = Math.max(m.roughness ?? 0.56, 0.56);
+                enrichSolidColor(1.30, 0.74);
+                if (m.normalScale) m.normalScale.set(0.76, 0.76);
+            } else if (matName.includes('CapBody') || matName.includes('Bottle') || matName.includes('SpecChassis') || name.includes('SharpieCap')) {
+                // Saturated injection-molded polymer bottle caps & instrument chassis
+                m.envMapIntensity = 0.46;
+                enrichSolidColor(1.24, 0.80);
+                if (m.normalScale) m.normalScale.set(0.64, 0.64);
             } else if (m.metalness > 0.5 || matName.includes('Steel') || matName.includes('Aluminum') || matName.includes('Raceway') || matName.includes('Chrome')) {
-                m.envMapIntensity = 1.32;
+                m.envMapIntensity = 1.08;
+                enrichSolidColor(1.04, 0.90);
             } else {
-                m.envMapIntensity = 0.86;
+                // Test tube rack, pipette stand, cuvette holder & solid bench accessories
+                m.envMapIntensity = 0.44;
+                enrichSolidColor(1.12, 0.84);
             }
         }
     });
@@ -1005,6 +1246,12 @@ function updateSpecDisplayTexture(specState, force = false) {
 // Floating 3D-Projected Labels Overlay
 // ---------------------------------------------------------------------------
 
+let hoveredLabelId = null;
+
+export function setHoveredLabelId(id) {
+    hoveredLabelId = id || null;
+}
+
 function registerLabel(id, anchorPos, getText, accentColor = null) {
     if (!labelsOverlayEl) return;
     const el = document.createElement('div');
@@ -1013,9 +1260,15 @@ function registerLabel(id, anchorPos, getText, accentColor = null) {
         el.style.setProperty('--label-accent', accentColor);
         el.classList.add('label-3d--accented');
     }
+    el.innerHTML = '<span class="label-3d__dot" aria-hidden="true"></span><span class="label-3d__txt"></span>';
     el.dataset.id = id;
     labelsOverlayEl.appendChild(el);
-    labelAnchors.set(id, { el, offset: anchorPos.clone(), getText });
+    labelAnchors.set(id, {
+        el,
+        txtEl: el.querySelector('.label-3d__txt'),
+        offset: anchorPos.clone(),
+        getText,
+    });
 }
 
 export function setLabelsVisible(visible) {
@@ -1038,10 +1291,24 @@ function updateProjectedLabels() {
 
     const state = getState();
     const tmp = new THREE.Vector3();
+    const camDist = controls ? camera.position.distanceTo(controls.target) : 1.0;
 
     for (const [id, info] of labelAnchors.entries()) {
         const entry = objects3D.get(id);
         if (!entry) continue;
+
+        const obj = findObjectById(id);
+        const isHighlighted = state.highlights.includes(id);
+        const isSelected = state.selectedObjectId === id || animState.draggedId === id;
+        const isDropHover = animState.dropHoverId === id;
+        const isHovered = hoveredLabelId === id;
+        const isActive = isHighlighted || isSelected || isDropHover || isHovered;
+
+        // Anti-clutter: Rack already displays engraved physical labels; in wide overview, show tube callouts ONLY when filled or active!
+        if (entry.type === 'testTube' && camDist > 0.72 && !isActive && (!obj || obj.currentVolume <= 0.01)) {
+            info.el.style.opacity = '0';
+            continue;
+        }
 
         entry.root.updateWorldMatrix(true, false);
         tmp.copy(info.offset).applyMatrix4(entry.root.matrixWorld);
@@ -1054,21 +1321,32 @@ function updateProjectedLabels() {
 
         const sx = (tmp.x * 0.5 + 0.5) * width;
         const sy = (-tmp.y * 0.5 + 0.5) * height;
-        info.el.style.transform = `translate(-50%, -100%) translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px)`;
-        info.el.style.opacity = '1';
+        // Cleanly hide labels that project off-screen or directly underneath floating HUD docks / immersive pill / side drawer
+        const isImmersive = document.body.classList.contains('immersive-mode');
+        const immMin = document.body.classList.contains('imm-proc-min');
+        const immDrawerOpen = isImmersive && document.getElementById('imm-steps-drawer')?.classList.contains('imm-drawer--open');
+        const outOfBounds = sx < 26 || sx > width - 26 || sy < 24 || sy > height - 48;
+        const underTopLeftHud = sy < 66 && sx < Math.min(370, width * 0.36);
+        const underTopRightHud = sy < 66 && sx > width - Math.min(540, width * 0.48);
+        const underImmProc = isImmersive && !immMin && sy < 118 && sx > width * 0.14 && sx < width * 0.86;
+        const underImmDrawer = immDrawerOpen && sx > width - 350 && sy > 52 && sy < height - 68;
+        if (outOfBounds || underTopLeftHud || underTopRightHud || underImmProc || underImmDrawer) {
+            info.el.style.opacity = '0';
+            continue;
+        }
+        info.el.style.transform = `translate(-50%, calc(-100% - 10px)) translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px)`;
+        info.el.style.opacity = isActive ? '1' : '0.68';
 
-        const obj = findObjectById(id);
         const text = info.getText(obj, state);
-        if (info.el.textContent !== text) {
-            info.el.textContent = text;
+        if (info.txtEl && info.txtEl.textContent !== text) {
+            info.txtEl.textContent = text;
         }
 
-        const isHighlighted = state.highlights.includes(id);
-        const isSelected = state.selectedObjectId === id || animState.draggedId === id;
-        const isDropHover = animState.dropHoverId === id;
         info.el.classList.toggle('label-3d--highlight', isHighlighted);
         info.el.classList.toggle('label-3d--selected', isSelected);
         info.el.classList.toggle('label-3d--drop', isDropHover);
+        info.el.classList.toggle('label-3d--hovered', isHovered);
+        info.el.classList.toggle('label-3d--ambient', !isActive);
     }
 }
 
@@ -1084,7 +1362,7 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     const initW = containerEl.clientWidth || 960;
     const initH = containerEl.clientHeight || 560;
 
-    // Renderer configured for photorealistic PBR + Blender 5.2 AgX tone mapping + crisp 4K soft shadows
+    // Renderer configured for linear-HDR MSAA PBR + Blender 5.2 AgX tone mapping + 4K soft shadows
     renderer = new THREE.WebGLRenderer({
         antialias: true,
         powerPreference: 'high-performance',
@@ -1093,18 +1371,26 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(initW, initH);
     renderer.toneMapping = THREE.AgXToneMapping ?? THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.02;
+    renderer.toneMappingExposure = 0.98;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.localClippingEnabled = false;
     containerEl.appendChild(renderer.domElement);
 
     // Scene & subtle laboratory atmosphere
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x8e96a0);
+    scene.background = new THREE.Color(0x88909a);
 
-    // Camera (ergonomic 35mm lab scientist perspective, gently adapts FOV on narrow/mobile viewports)
-    const calcResponsiveFov = (asp) => (asp < 1.25 ? Math.min(54, 38 + (1.25 - asp) * 20) : 38);
+    // Camera (ergonomic 35mm lab scientist perspective; preserves full bench horizontal span in taller Immersive / laptop / mobile viewports!)
+    const BASE_VFOV = 38;
+    const MIN_BENCH_ASPECT = 2.24; // Keeps all 3 dedicated pipettes (far left) through Spec 20D+ & Kimwipes (far right) completely in frame
+    const calcResponsiveFov = (asp) => {
+        if (asp >= MIN_BENCH_ASPECT) return BASE_VFOV;
+        const baseHalfTan = Math.tan(THREE.MathUtils.degToRad(BASE_VFOV * 0.5));
+        const neededHalfTan = baseHalfTan * (MIN_BENCH_ASPECT / Math.max(asp, 0.95));
+        return Math.min(54, Math.max(BASE_VFOV, THREE.MathUtils.radToDeg(2 * Math.atan(neededHalfTan))));
+    };
     const aspect = initW / initH;
     camera = new THREE.PerspectiveCamera(calcResponsiveFov(aspect), aspect, 0.04, 15.0);
     const ov = config.CAMERA_PRESETS.overview;
@@ -1122,11 +1408,11 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     controls.panSpeed = 0.65;
     controls.update();
 
-    // Bespoke Cycles-Rendered 2K Analytical Chemistry Lab Studio HDRI
+    // Bespoke Cycles-Rendered 3K University Analytical Chemistry Lab HDRI
     const pmrem = new THREE.PMREMGenerator(renderer);
     pmrem.compileEquirectangularShader();
 
-    const ASSET_VER = '?v=3';
+    const ASSET_VER = '?v=6';
     try {
         const rgbeLoader = new RGBELoader();
         rgbeLoader.setDataType(THREE.FloatType);
@@ -1135,14 +1421,14 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
             const d = hdrTex.image.data;
             for (let i = 0; i < d.length; i++) {
                 const v = d[i];
-                d[i] = Number.isFinite(v) ? Math.min(10.0, Math.max(0.0, v)) : 0.0;
+                d[i] = Number.isFinite(v) ? Math.min(12.0, Math.max(0.0, v)) : 0.0;
             }
             hdrTex.needsUpdate = true;
         }
         const envRT = pmrem.fromEquirectangular(hdrTex);
         scene.environment = envRT.texture;
         if (scene.environmentRotation) {
-            scene.environmentRotation.y = 0.0; // Studio-aligned Chemistry Lab HDRI
+            scene.environmentRotation.y = 0.0;
         }
         scene.environmentIntensity = 0.98;
         hdrTex.dispose();
@@ -1152,43 +1438,47 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     }
     pmrem.dispose();
 
-    // Studio Chemistry Lab Key + Cool Window Rim + Warm Accent Fill (calibrated to Cycles AgX!)
-    const hemi = new THREE.HemisphereLight(0xeef5ff, 0x0c1118, 0.18);
+    // Photographic Chemistry Lab Lighting: Rich Chiaroscuro Sculpting Key + Restrained Ambient Fill (Keeps Solids Dense & Glass Sparkling!)
+    const hemi = new THREE.HemisphereLight(0xf2f7ff, 0x0b1018, 0.11);
     scene.add(hemi);
 
     const shadowRes = renderer.capabilities.maxTextureSize >= 4096 ? 4096 : 2048;
-    const keyLight = new THREE.DirectionalLight(0xfcfdff, 1.24);
-    keyLight.position.set(-0.38, 1.56, 0.86);
+    const keyLight = new THREE.DirectionalLight(0xfcfdff, 1.42);
+    keyLight.position.set(-0.46, 1.54, 0.88);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.set(shadowRes, shadowRes);
     keyLight.shadow.camera.near = 0.2;
     keyLight.shadow.camera.far = 4.6;
-    // Wide frustum covers entire extended bench, Kimwipes, shelf & tile backsplash -> ZERO shadow box cutoff!
     keyLight.shadow.camera.left = -2.25;
     keyLight.shadow.camera.right = 2.25;
     keyLight.shadow.camera.top = 1.35;
     keyLight.shadow.camera.bottom = -1.10;
     keyLight.shadow.bias = -0.00014;
-    keyLight.shadow.normalBias = 0.0028;
-    keyLight.shadow.radius = 3.2;
+    keyLight.shadow.normalBias = 0.0026;
+    keyLight.shadow.radius = 2.8;
     scene.add(keyLight);
 
-    // Cool north-facing lab window rim fill from left (crisp glass & brushed metal separation)
-    const rimLight = new THREE.DirectionalLight(0xdbeafe, 0.52);
-    rimLight.position.set(-1.45, 0.76, -0.35);
+    // Cool north-facing multi-pane lab window rim fill from left (crisp glass & brushed metal separation)
+    const rimLight = new THREE.DirectionalLight(0xd8ecff, 0.44);
+    rimLight.position.set(-1.50, 0.78, -0.30);
     scene.add(rimLight);
 
-    // Subtle warm specular fill from right for warm-vs-cool glassware edge contrast
-    const warmFill = new THREE.DirectionalLight(0xfff3de, 0.30);
-    warmFill.position.set(1.30, 0.72, 0.60);
+    // Warm 4000K under-shelf laboratory task light bounce from upper-back
+    const taskLight = new THREE.DirectionalLight(0xffeed4, 0.30);
+    taskLight.position.set(0.15, 0.82, -0.85);
+    scene.add(taskLight);
+
+    // Subtle warm bounce from right side of lab
+    const warmFill = new THREE.DirectionalLight(0xfff1da, 0.16);
+    warmFill.position.set(1.35, 0.68, 0.65);
     scene.add(warmFill);
 
-    // Ultra-subtle low front bounce so dark Spec 20 chassis & rack undersides retain clean shadow detail
-    const frontBounce = new THREE.DirectionalLight(0xe6eef8, 0.08);
-    frontBounce.position.set(0.0, 0.28, 1.45);
+    // Whisper-subtle low front bounce so dark instrument undersides retain detail without lifting blacks
+    const frontBounce = new THREE.DirectionalLight(0xe4ecf6, 0.04);
+    frontBounce.position.set(0.0, 0.26, 1.45);
     scene.add(frontBounce);
 
-    // Reusable fluid delivery / pour stream cylinder (uses premultiplied optical Beer-Lambert shader!)
+    // Reusable fluid delivery / pour stream cylinder (Linear-HDR Beer-Lambert shader!)
     pourStreamMat = makeDynamicLiquidMat(getLiquidOpticalStyle(config.STOCK_CONCENTRATION, false, 0.008));
     const streamGeo = new THREE.CylinderGeometry(0.0013, 0.0009, 1.0, 14);
     streamGeo.translate(0, -0.5, 0); // origin at top spout/tip, extends down -Y
@@ -1199,15 +1489,18 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
 
     initSpecDisplayCanvas();
 
-    // Load Grounded Contact Shadow, Caustic & Soft Highlight Ring Decals in parallel with all 14 GLBs!
+    // Load Cycles-Baked Bench Contact AO, Decals & all 14 GLBs in parallel!
     const texLoader = new THREE.TextureLoader();
-    const loadDecalSafe = async (url) => {
+    const loadTexSafe = async (url, isLinear = false) => {
         try {
             const t = await texLoader.loadAsync(url);
-            t.colorSpace = THREE.SRGBColorSpace;
+            t.colorSpace = isLinear ? THREE.NoColorSpace : THREE.SRGBColorSpace;
+            t.minFilter = THREE.LinearFilter;
+            t.magFilter = THREE.LinearFilter;
+            t.generateMipmaps = false;
             return t;
         } catch (err) {
-            console.warn('Optional decal texture missing:', url, err);
+            console.warn('Optional texture missing:', url, err);
             return null;
         }
     };
@@ -1234,11 +1527,12 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     let loadedCount = 0;
     const loadedMap = {};
 
-    const [shadowRound, shadowRect, caustic, highlightRing] = await Promise.all([
-        loadDecalSafe(`./assets/textures/contact_shadow_round.png${ASSET_VER}`),
-        loadDecalSafe(`./assets/textures/contact_shadow_rect.png${ASSET_VER}`),
-        loadDecalSafe(`./assets/textures/glass_caustic.png${ASSET_VER}`),
-        loadDecalSafe(`./assets/textures/highlight_ring.png${ASSET_VER}`),
+    const [shadowRound, shadowRect, caustic, highlightRing, benchAO] = await Promise.all([
+        loadTexSafe(`./assets/textures/contact_shadow_round.png${ASSET_VER}`, false),
+        loadTexSafe(`./assets/textures/contact_shadow_rect.png${ASSET_VER}`, false),
+        loadTexSafe(`./assets/textures/glass_caustic.png${ASSET_VER}`, false),
+        loadTexSafe(`./assets/textures/highlight_ring.png${ASSET_VER}`, false),
+        loadTexSafe(`./assets/textures/bench_ao_v4.jpg${ASSET_VER}`, true),
         ...keys.map(async (k) => {
             const gltf = await gltfLoader.loadAsync(`${assetPaths[k]}${ASSET_VER}`);
             loadedMap[k] = gltf.scene;
@@ -1250,6 +1544,11 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     decalTextures.shadowRect = shadowRect;
     decalTextures.caustic = caustic;
     decalTextures.highlightRing = highlightRing;
+
+    if (benchAO) {
+        opticalUniforms.uBenchAO.value = benchAO;
+        opticalUniforms.uHasBenchBake.value = 1.0;
+    }
 
     // Mount all apparatus at exact LAYOUT_3D world coordinates
     mountBench(loadedMap.bench);
@@ -1282,7 +1581,7 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
     // Sync initial visual state immediately
     syncSceneFromState(true);
 
-    // Resize listener (adapts FOV smoothly for narrow/mobile viewports too)
+    // Resize listener + ResizeObserver (adapts FOV & renderer on the very first frame of Immersive / Theater / Fullscreen changes!)
     const onResize = () => {
         if (!containerEl || !renderer || !camera) return;
         const w = containerEl.clientWidth || 960;
@@ -1294,14 +1593,19 @@ export async function initScene3D(viewportEl, labelsEl, onProgress = null) {
         renderer.setSize(w, h);
     };
     window.addEventListener('resize', onResize);
+    if (typeof ResizeObserver !== 'undefined' && containerEl) {
+        const ro = new ResizeObserver(() => onResize());
+        ro.observe(containerEl);
+    }
 
-    // Start 60fps animation loop (direct hardware-MSAA AgX render + dynamic back-to-front glassware sort!)
+    // Start crisp 60fps native WebGL2 MSAA PBR render loop (zero multi-pass flicker or refraction blackouts!)
     const animate = () => {
         rafId = requestAnimationFrame(animate);
         const dt = Math.min(clock.getDelta(), 0.05);
         updateAnimations(dt);
         controls.update();
         updateTransparentSortOrder();
+
         renderer.render(scene, camera);
         updateProjectedLabels();
     };
@@ -1332,18 +1636,24 @@ function mountBench(gltfScene) {
                 o.name.startsWith('LabEnvV3_WashBottle') ||
                 o.name.startsWith('LabEnvV3_SpecPowerCord') ||
                 o.name.startsWith('LabEnvV3_WallPlug') ||
-                o.name.startsWith('LabEnvV3_OuterBracket') ||
-                o.name.startsWith('WallReagentShelf') ||
-                o.name.startsWith('ShelfBracket');
+                o.name.startsWith('LabEnvV4_Pilaster') ||
+                o.name.startsWith('LabEnvV4_Bracket') ||
+                o.name.startsWith('LabEnvV4_ShelfGuardRail') ||
+                o.name.startsWith('LabEnvV4_RailPost') ||
+                o.name.startsWith('LabEnvV4_FoldedKimwipe') ||
+                o.name.startsWith('LabEnvV4_Sharpie') ||
+                o.name.startsWith('WallReagentShelf');
             o.castShadow = isPropCaster;
             o.receiveShadow = true;
         }
     });
-    // Grounded contact shadow beneath the Kimwipes delicate task wiper box
-    const kimShadow = addGroundedDecal(gltfScene, 'rect', 0.165, 0.165, 0.72, 0.0007);
-    if (kimShadow) {
-        kimShadow.position.set(0.76, 0.0007, -0.14);
-        kimShadow.rotation.y = -0.28;
+    // Fallback contact decal ONLY if Cycles-baked bench_ao_v4.jpg failed to load
+    if (opticalUniforms.uHasBenchBake.value < 0.5) {
+        const kimShadow = addGroundedDecal(gltfScene, 'rect', 0.165, 0.165, 0.72, 0.0007);
+        if (kimShadow) {
+            kimShadow.position.set(0.76, 0.0007, -0.14);
+            kimShadow.rotation.y = -0.28;
+        }
     }
     scene.add(gltfScene);
 }
@@ -1356,7 +1666,7 @@ function mountStaticStand(id, gltfScene, posCfg, shadowDims = null) {
     });
     gltfScene.position.set(posCfg.x, posCfg.y, posCfg.z);
     gltfScene.rotation.y = posCfg.rotY || 0;
-    if (shadowDims) {
+    if (shadowDims && opticalUniforms.uHasBenchBake.value < 0.5) {
         addGroundedDecal(gltfScene, 'rect', shadowDims[0], shadowDims[1], shadowDims[2], 0.0007);
     }
     scene.add(gltfScene);
@@ -1385,12 +1695,14 @@ function mountBottle(id, gltfScene, posCfg, initialConc, beaconRadius, displayNa
     const liquidMaxHeight = metaNode.userData?.liquidMaxHeight ?? (isSmall ? 0.082 : 0.104);
     const neckTopY = metaNode.userData?.neckTopY ?? (isSmall ? 0.156 : 0.184);
 
-    // Grounded contact shadow + physically-tinted refractive glass caustic glow on dark phenolic bench
+    // Fallback contact shadow when Cycles-baked bench_ao_v4 is unavailable + subtle realistic liquid transmission caustic
     const shadowDia = isSmall ? 0.114 : 0.130;
-    addGroundedDecal(group, 'round', shadowDia, shadowDia, 0.66, 0.0007);
-    const causticTint = id === 'stockBottle' ? 0x0284c7 : id === 'unknownBottle' ? 0x9333ea : 0xe0f2fe;
-    const causticAlpha = id === 'waterBottle' ? 0.13 : 0.20;
-    addGroundedDecal(group, 'caustic', shadowDia * 1.15, shadowDia * 1.15, causticAlpha, 0.0009, causticTint, true);
+    if (opticalUniforms.uHasBenchBake.value < 0.5) {
+        addGroundedDecal(group, 'round', shadowDia, shadowDia, 0.66, 0.0007);
+    }
+    const causticTint = id === 'stockBottle' ? 0x0ea5e9 : id === 'unknownBottle' ? 0xa855f7 : 0xe0f2fe;
+    const causticAlpha = id === 'waterBottle' ? 0.055 : 0.095;
+    addGroundedDecal(group, 'caustic', shadowDia * 1.12, shadowDia * 1.12, causticAlpha, 0.0009, causticTint, true);
 
     const liquidBody = findExactOrDotNode(gltfScene, 'LiquidBody');
     const liquidMeniscus = findExactOrDotNode(gltfScene, 'LiquidMeniscus');
@@ -1424,13 +1736,14 @@ function mountBottle(id, gltfScene, posCfg, initialConc, beaconRadius, displayNa
     animState.fillRatios.set(id, 1.0);
     animState.capOpen.set(id, 0.0);
 
-    // Stagger bottle label heights cleanly so adjacent reagent pills never touch
+    // Subtle crisp optical anchor directly above each reagent bottle cap (no tall visual stagger clutter!)
     const bottleLabelHeights = {
-        stockBottle: neckTopY + 0.024,
-        waterBottle: neckTopY + 0.064,
-        unknownBottle: neckTopY + 0.024,
+        stockBottle: neckTopY + 0.014,
+        waterBottle: neckTopY + 0.036,
+        unknownBottle: neckTopY + 0.014,
     };
-    registerLabel(id, new THREE.Vector3(0, bottleLabelHeights[id] ?? neckTopY + 0.036, 0), () => displayName);
+    const bottleAccent = id === 'stockBottle' ? '#3b82f6' : id === 'waterBottle' ? '#22d3ee' : '#a855f7';
+    registerLabel(id, new THREE.Vector3(0, bottleLabelHeights[id] ?? neckTopY + 0.020, 0), () => displayName, bottleAccent);
 }
 
 function mountPipette(id, gltfScene, posCfg, accentColor) {
@@ -1486,15 +1799,15 @@ function mountPipette(id, gltfScene, posCfg, accentColor) {
     });
     animState.fillRatios.set(id, 0.0);
 
-    // Stagger center pipette label slightly higher so all 3 dedicated pipette pills stay 100% clear
-    const pipLabelY = id === 'pipette_water' ? 0.305 : 0.268;
+    // Compact optical anchor cleanly above pipette bulbs
+    const pipLabelY = id === 'pipette_water' ? 0.278 : 0.246;
     registerLabel(
         id,
         new THREE.Vector3(0, pipLabelY, 0),
         (obj) => {
             if (!obj) return '';
             return obj.currentVolume > 0
-                ? `${obj.shortLabel} (${obj.currentVolume.toFixed(0)}mL)`
+                ? `${obj.shortLabel} · ${obj.currentVolume.toFixed(0)}mL`
                 : obj.shortLabel;
         },
         accentColor
@@ -1552,13 +1865,12 @@ function mountTestTube(id, gltfScene, posCfg) {
     });
     animState.fillRatios.set(id, 0.0);
 
-    // Alternate test tube label heights (high/low) & stack volume neatly on line 2 so all 6 labels stay narrow & non-overlapping!
-    const oddTube = id === 'tube_8_2' || id === 'tube_4_6' || id === 'tube_0_10';
-    registerLabel(id, new THREE.Vector3(0, oddTube ? 0.205 : 0.162, 0), (obj) => {
+    // Clean uniform optical baseline above test tube rims (clears adjacent Unknown bottle label cleanly!)
+    registerLabel(id, new THREE.Vector3(0, 0.178, 0), (obj) => {
         if (!obj) return '';
         const short = obj.label.replace(' (Blank)', '');
-        return obj.currentVolume > 0 ? `${short}\n${obj.currentVolume.toFixed(0)}mL` : short;
-    });
+        return obj.currentVolume > 0 ? `${short} · ${obj.currentVolume.toFixed(0)}mL` : short;
+    }, '#38bdf8');
 }
 
 function mountCuvette(id, gltfScene, posCfg) {
@@ -1594,8 +1906,8 @@ function mountCuvette(id, gltfScene, posCfg) {
     beacon.position.y = -0.003;
     group.add(beacon);
 
-    // Ergonomic click/drag box around optical cuvette
-    addPickCollider(group, id, 'box', [0.044, 0.088, 0.044], 0.038);
+    // Ergonomic click/drag box around optical cuvette (also easily grabbable when seated inside Spec 20D+ chamber!)
+    addPickCollider(group, id, 'box', [0.056, 0.098, 0.056], 0.044);
 
     objects3D.set(id, {
         id,
@@ -1649,9 +1961,11 @@ function mountWasteBeaker(id, gltfScene, posCfg) {
     const liquidBody = findExactOrDotNode(gltfScene, 'LiquidBody');
     const liquidMeniscus = findExactOrDotNode(gltfScene, 'LiquidMeniscus');
 
-    // Grounded contact shadow + cool borosilicate caustic glow under waste beaker
-    addGroundedDecal(group, 'round', 0.128, 0.128, 0.62, 0.0007);
-    addGroundedDecal(group, 'caustic', 0.138, 0.138, 0.12, 0.0009, 0x7dd3fc, true);
+    // Fallback contact shadow ONLY when Cycles-baked bench_ao_v4 is unavailable
+    if (opticalUniforms.uHasBenchBake.value < 0.5) {
+        addGroundedDecal(group, 'round', 0.128, 0.128, 0.62, 0.0007);
+        addGroundedDecal(group, 'caustic', 0.138, 0.138, 0.10, 0.0009, 0x7dd3fc, true);
+    }
 
     const beacon = createHighlightBeacon(0.052);
     group.add(beacon);
@@ -1692,8 +2006,16 @@ function mountSpec20(id, gltfScene, posCfg) {
 
     enhanceLoadedAssetMaterials(gltfScene);
 
-    // Grounded chassis contact shadow under Spectronic 20D+ rubber feet
-    addGroundedDecal(group, 'rect', 0.41, 0.30, 0.82, 0.0007);
+    // Ensure NIST calibration inspection sticker clears SpecUpperShell top bevel cleanly
+    const calSticker = findExactOrDotNode(gltfScene, 'DetailV4_CalSticker');
+    if (calSticker) {
+        calSticker.position.y += 0.0006;
+    }
+
+    // Fallback chassis contact shadow ONLY when Cycles-baked bench_ao_v4 is unavailable
+    if (opticalUniforms.uHasBenchBake.value < 0.5) {
+        addGroundedDecal(group, 'rect', 0.41, 0.30, 0.82, 0.0007);
+    }
 
     // Subtle real-time emerald LCD light bounce positioned below display bezel onto keycaps (ZERO specular dot on LCD glass!)
     const lcdGlow = new THREE.PointLight(0x4ade80, 0.005, 0.085, 2.5);
@@ -1707,12 +2029,12 @@ function mountSpec20(id, gltfScene, posCfg) {
             map: specLcdTexture,
             emissiveMap: specLcdTexture,
             emissive: new THREE.Color(0xffffff),
-            emissiveIntensity: 0.98,
-            roughness: 0.16,
+            emissiveIntensity: 1.16,
+            roughness: 0.18,
             metalness: 0.02,
-            clearcoat: 0.45,
+            clearcoat: 0.35,
             clearcoatRoughness: 0.14,
-            envMapIntensity: 0.72,
+            envMapIntensity: 0.45,
         });
     }
 
@@ -1818,11 +2140,17 @@ export function syncSceneFromState(immediate = false) {
         if (pourStreamMesh) pourStreamMesh.visible = false;
         ['pipette_stock', 'pipette_water', 'pipette_unknown'].forEach((pid) => {
             const pEntry = objects3D.get(pid);
-            if (pEntry) {
+            const pObj = findObjectById(pid);
+            if (!pEntry) return;
+            if (!pObj || pObj.currentVolume <= 0.001) {
+                animState.loadedHoldPos.delete(pid);
                 pEntry.root.position.copy(pEntry.homePos);
-                pEntry.root.rotation.set(0, pEntry.homeRotY, 0);
-                if (pEntry.bulb) pEntry.bulb.scale.set(1, 1, 1);
+            } else {
+                const holdPos = animState.loadedHoldPos.get(pid) || pEntry.homePos.clone().add(new THREE.Vector3(0, 0.045, 0));
+                pEntry.root.position.copy(holdPos);
             }
+            pEntry.root.rotation.set(0, pEntry.homeRotY, 0);
+            if (pEntry.bulb) pEntry.bulb.scale.set(1, 1, 1);
         });
     }
 
@@ -1839,7 +2167,7 @@ export function syncSceneFromState(immediate = false) {
             animState.fillRatios.set(obj.id, targetRatio);
         }
 
-        // Update liquid optical properties (Volumetric Beer-Lambert Fresnel shader!)
+        // Update liquid optical properties (Volumetric Beer-Lambert + Clear-Water Cylindrical Refraction!)
         if (entry.liquidMat) {
             const conc = obj.type === 'pipette' ? obj.contentsConcentration : obj.concentration;
             const style = getLiquidOpticalStyle(conc, obj.type === 'beaker', entry.vesselThickness ?? 0.032);
@@ -1849,12 +2177,18 @@ export function syncSceneFromState(immediate = false) {
             entry.liquidMat.opacity = style.opacity ?? 0.65;
             entry.liquidMat.roughness = style.roughness ?? 0.022;
             entry.liquidMat.envMapIntensity = style.envMapIntensity ?? 1.15;
+            if (entry.liquidMat.userData?.uIsClearWater) {
+                entry.liquidMat.userData.uIsClearWater.value = style.isClearWater ? 1.0 : 0.0;
+            }
 
             if (entry.meniscusMat) {
                 entry.meniscusMat.color.copy(style.color);
                 entry.meniscusMat.emissive.copy(style.emissive);
                 entry.meniscusMat.emissiveIntensity = (style.emissiveIntensity ?? 0.16) * 0.85;
                 entry.meniscusMat.opacity = style.meniscusOpacity ?? 0.72;
+                if (entry.meniscusMat.userData?.uIsClearWater) {
+                    entry.meniscusMat.userData.uIsClearWater.value = style.isClearWater ? 1.0 : 0.0;
+                }
             }
         }
 
@@ -1901,20 +2235,28 @@ export function triggerActionEffect(type, payload = {}) {
         if (!pip || !src) return;
         const mouth = getWorldMouthPosition(payload.sourceId);
         const startPos = pip.root.position.clone();
-        const hoverPos = mouth.clone().add(new THREE.Vector3(0, 0.055, 0));
+        const hoverPos = mouth.clone().add(new THREE.Vector3(0, 0.050, 0));
         const dipPos = mouth.clone().add(new THREE.Vector3(0, -0.025, 0));
-        const restLoadedPos = pip.homePos.clone().add(new THREE.Vector3(0, 0.032, 0));
+        // Poise cleanly in front of the source vessel at hand height (100% framed tip-to-bulb, clear of bottle cap & HUD)
+        // so user moves straight to target tube/cuvette without returning to the pipette stand!
+        const isBottle = src.type === 'bottle';
+        const readyPos = new THREE.Vector3(
+            src.root.position.x + (isBottle ? 0.055 : 0.0),
+            0.085,
+            src.root.position.z + (isBottle ? 0.155 : 0.140)
+        );
+        animState.loadedHoldPos.set(payload.pipetteId, readyPos.clone());
 
         animState.activeChoreo = {
             kind: 'fillPipette',
             actorId: payload.pipetteId,
             sourceId: payload.sourceId,
             elapsed: 0,
-            duration: 0.72,
+            duration: 0.64,
             startPos,
             hoverPos,
             dipPos,
-            endPos: restLoadedPos,
+            endPos: readyPos,
         };
         return;
     }
@@ -1923,6 +2265,7 @@ export function triggerActionEffect(type, payload = {}) {
         const pip = objects3D.get(payload.pipetteId);
         const dest = objects3D.get(payload.destId);
         if (!pip || !dest) return;
+        animState.loadedHoldPos.delete(payload.pipetteId);
         const mouth = getWorldMouthPosition(payload.destId);
         const startPos = pip.root.position.clone();
         const dispensePos = mouth.clone().add(new THREE.Vector3(0, 0.018, 0));
@@ -2141,24 +2484,26 @@ function updateAnimations(dt) {
         const actor = objects3D.get(ch.actorId);
 
         if (actor && ch.kind === 'fillPipette') {
-            if (t < 0.25) {
-                const u = smoothstep(0, 0.25, t);
+            if (t < 0.20) {
+                const u = smoothstep(0, 0.20, t);
                 actor.root.position.lerpVectors(ch.startPos, ch.hoverPos, u);
-            } else if (t < 0.45) {
-                const u = smoothstep(0.25, 0.45, t);
+            } else if (t < 0.42) {
+                const u = smoothstep(0.20, 0.42, t);
                 actor.root.position.lerpVectors(ch.hoverPos, ch.dipPos, u);
                 if (actor.bulb) actor.bulb.scale.set(0.84, 1.0, 0.84);
-            } else if (t < 0.68) {
+            } else if (t < 0.66) {
                 actor.root.position.copy(ch.dipPos);
                 // Rubber bulb visibly expands as liquid aspirates!
-                const u = smoothstep(0.45, 0.68, t);
+                const u = smoothstep(0.42, 0.66, t);
                 const sx = 0.84 + 0.16 * u;
                 if (actor.bulb) actor.bulb.scale.set(sx, 1.0, sx);
-            } else if (t < 0.84) {
-                const u = smoothstep(0.68, 0.84, t);
+            } else if (t < 0.82) {
+                // Lift straight out of vessel neck cleanly without clipping glass rim
+                const u = smoothstep(0.66, 0.82, t);
                 actor.root.position.lerpVectors(ch.dipPos, ch.hoverPos, u);
             } else {
-                const u = smoothstep(0.84, 1.0, t);
+                // Glide smoothly to hand-ready poised position right in front of source vessel (NOT back to stand!)
+                const u = smoothstep(0.82, 1.0, t);
                 actor.root.position.lerpVectors(ch.hoverPos, ch.endPos, u);
             }
             actor.root.rotation.set(0, actor.homeRotY, 0);
@@ -2181,6 +2526,9 @@ function updateAnimations(dt) {
                     pourStreamMat.emissive.copy(ch.streamStyle.emissive);
                     pourStreamMat.emissiveIntensity = ch.streamStyle.emissiveIntensity;
                     pourStreamMat.opacity = Math.max(0.16, Math.min(0.84, ch.streamStyle.opacity + 0.12));
+                    if (pourStreamMat.userData?.uIsClearWater) {
+                        pourStreamMat.userData.uIsClearWater.value = ch.streamStyle.isClearWater ? 1.0 : 0.0;
+                    }
                 }
                 pourStreamMesh.visible = true;
             } else {
@@ -2231,6 +2579,9 @@ function updateAnimations(dt) {
                         pourStreamMat.emissive.copy(ch.streamStyle.emissive);
                         pourStreamMat.emissiveIntensity = ch.streamStyle.emissiveIntensity;
                         pourStreamMat.opacity = Math.max(0.16, Math.min(0.84, ch.streamStyle.opacity + 0.12));
+                        if (pourStreamMat.userData?.uIsClearWater) {
+                            pourStreamMat.userData.uIsClearWater.value = ch.streamStyle.isClearWater ? 1.0 : 0.0;
+                        }
                     }
                     pourStreamMesh.visible = true;
                 }
@@ -2268,12 +2619,26 @@ function updateAnimations(dt) {
                 animState.lidTarget = 1.0;
             }
         } else {
-            // Subtle float lift when pipette is loaded with liquid or object is click-selected!
+            // Loaded pipettes stay poised right above their source vessel (ready to go straight to tube/cuvette!)
             if (obj.type === 'pipette' && obj.currentVolume > 0) {
-                targetPos.y += 0.032 + Math.sin(now * 3.4) * 0.004;
-            }
-            if (state.selectedObjectId === id) {
-                targetPos.y += 0.045 + Math.sin(now * 5.0) * 0.005;
+                const holdPos = animState.loadedHoldPos.get(id);
+                if (holdPos) {
+                    targetPos.copy(holdPos);
+                    targetPos.y += Math.sin(now * 3.8) * 0.004;
+                    if (state.selectedObjectId === id) {
+                        targetPos.y += 0.010;
+                    }
+                } else {
+                    targetPos.y += 0.036 + Math.sin(now * 3.4) * 0.004;
+                    if (state.selectedObjectId === id) {
+                        targetPos.y += 0.018;
+                    }
+                }
+            } else {
+                if (obj.type === 'pipette') animState.loadedHoldPos.delete(id);
+                if (state.selectedObjectId === id) {
+                    targetPos.y += 0.045 + Math.sin(now * 5.0) * 0.005;
+                }
             }
         }
 
@@ -2283,11 +2648,11 @@ function updateAnimations(dt) {
         entry.root.rotation.y += (targetRotY - entry.root.rotation.y) * damp;
     });
 
-    // 7. Actively Dragged 3D Object Smoothing
+    // 7. Actively Dragged 3D Object Smoothing (Crisp 1:1 cursor tracking even under CPU load!)
     if (animState.draggedId) {
         const entry = objects3D.get(animState.draggedId);
         if (entry) {
-            entry.root.position.lerp(animState.dragWorldPos, Math.min(1, dt * 22));
+            entry.root.position.lerp(animState.dragWorldPos, Math.min(1, dt * 38));
             entry.root.rotation.z += (0 - entry.root.rotation.z) * damp;
         }
     }
@@ -2296,8 +2661,8 @@ function updateAnimations(dt) {
     const highlights = state.highlights || [];
     for (const [id, entry] of objects3D.entries()) {
         if (!entry.beacon) continue;
-        // Never float a ground halo ring in mid-air beneath an actively dragged or animated pipette/cuvette!
-        if (animState.draggedId === id || animState.activeChoreo?.actorId === id) {
+        // Never float a ground halo ring in mid-air beneath an actively dragged, animated, or hovering loaded pipette/cuvette!
+        if (animState.draggedId === id || animState.activeChoreo?.actorId === id || animState.loadedHoldPos.has(id)) {
             entry.beacon.visible = false;
             continue;
         }
@@ -2346,6 +2711,12 @@ export function setCameraPreset(presetKey) {
 }
 
 export function setDragVisualState(draggedId, worldPos = null, dropHoverId = null) {
+    // If user grabs an apparatus mid-choreography (e.g., dragging a pipette immediately after aspirating), yield smoothly to hand!
+    if (draggedId && animState.activeChoreo?.actorId === draggedId) {
+        const actor = objects3D.get(draggedId);
+        if (actor?.bulb) actor.bulb.scale.set(1, 1, 1);
+        animState.activeChoreo = null;
+    }
     animState.draggedId = draggedId;
     animState.dropHoverId = dropHoverId;
     if (worldPos) {
