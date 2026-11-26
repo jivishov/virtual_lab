@@ -2,7 +2,7 @@ import { LabScene } from '../../spectrophotometry_v2/src/scene.js?v=2';
 import { fitCamera } from '../../spectrophotometry_v2/src/camera-fit.js';
 import { CUVETTE } from '../../spectrophotometry_v2/assets/cuvette-dimensions.js';
 import { pipetteLevel } from '../../spectrophotometry_v2/src/pipettes.js';
-import { samples, concentrations, reactionTime, steps } from './model.js';
+import { samples, concentrations, reactionTime } from './model.js?v=2';
 
 const { G, M, V } = globalThis.E3D;
 const floor = 0.012;
@@ -241,17 +241,9 @@ export class CopperScene extends LabScene {
     }
   }
   benchPosition(id, s) {
-    const base = s.positions[id] || stations[id];
-    if (!base) return null;
-    if (s.placed[id]) return [...base];
-    if (id === 'pipette') return [...stations.pipette];
-    if (id === 'beaker') return [-2.2, floor, 2.34];
-    if (id === 'acid') return [-5.9, floor, -0.18];
-    if (id === 'brass') return [-4.25, floor, 2.56];
-    return [base[0], base[1], base[2] - 0.68];
+    return [...(s.positions[id] || stations[id])];
   }
   snapPosition(id, raw) {
-    if (id === 'beaker' || id === 'acid') return [...stations[id]];
     const b = this.equipmentBounds[id],
       margin = 0.08;
     return [
@@ -295,9 +287,7 @@ export class CopperScene extends LabScene {
       const node = this.objects[id];
       let dest = this.benchPosition(id, s);
       node.visible = id !== 'brass' || s.brass !== 'dissolved';
-      if (id === 'pipette')
-        node.visible =
-          !s.cleanup[2] && (s.placed.pipette || s.index <= 6 || steps[s.index]?.equipment === 'pipette');
+      if (id === 'pipette') node.visible = !!s.pipette && !s.cleanup[2];
       if (id === 'brass' && ['pan', 'beaker'].includes(s.brass)) {
         const base = this.benchPosition(s.brass === 'pan' ? 'balance' : 'beaker', s);
         dest = V.add(base, s.brass === 'pan' ? [0, 0.436, -0.16] : [0, 0.06, 0]);
@@ -347,7 +337,7 @@ export class CopperScene extends LabScene {
     this.diluted.visible = s.flask === 'diluted';
     this.fill('waste', s.cleanup[0] ? 0.22 : 0, 0.73);
     for (const bubble of this.bubbles) bubble.visible = s.fluid === 'reacting';
-    const role = s.pipette?.role || steps[s.index]?.assignAs;
+    const role = s.pipette?.role;
     const bulbColor =
       { acid: '#b65c43', water: '#438aa4', copper: '#4d8d80', unknown: '#8d6a99' }[role] || '#b78645';
     if (this.bulbColor !== bulbColor) {

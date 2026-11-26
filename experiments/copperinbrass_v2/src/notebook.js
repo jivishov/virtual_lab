@@ -1,5 +1,5 @@
-import { samples, concentrations, fitStandards } from './model.js';
-import { label, word, legacy } from './language.js';
+import { samples, concentrations, fitStandards, operation } from './model.js?v=2';
+import { label, word, legacy } from './language.js?v=2';
 const $ = (id) => document.getElementById(id);
 const svgNS = 'http://www.w3.org/2000/svg';
 const x = (c) => 44 + (235 * c) / 0.45,
@@ -119,8 +119,9 @@ export function drawBook(s) {
       return item;
     })
   );
-  $('cleanupBox').disabled = s.index !== 58;
-  $('answer').disabled = $('checkAnswer').disabled = s.index !== 59;
+  const action = operation(s)?.action;
+  $('cleanupBox').disabled = action !== 'cleaningChecklist';
+  $('answer').disabled = $('checkAnswer').disabled = action !== 'submitCalculation';
   if (s.answer != null) $('answer').value = s.answer;
 }
 export function exportCSV(s) {
@@ -132,7 +133,7 @@ export function exportCSV(s) {
     ['Final volume (L)', s.flask === 'diluted' ? '0.100' : ''],
     ['Reported Cu (%)', s.answer ?? ''],
     ['Completed steps', s.index],
-    ['Cleanup complete', s.index >= 59 ? 'yes' : 'no'],
+    ['Cleanup complete', s.cleanupRecorded ? 'yes' : 'no'],
   ];
   const fit = fitStandards(s.readings);
   if (fit)

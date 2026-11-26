@@ -1,5 +1,4 @@
-// The four-language protocol and the worksheet constants live with the original lab.
-import steps from '../../copperinbrass/js/instructions.js';
+import { samples, steps } from './protocol.js';
 import {
   BRASS_CU_PERCENT,
   FLASK_VOLUME,
@@ -11,8 +10,7 @@ import {
   calculateMassPercent,
 } from '../../copperinbrass/js/config.js';
 
-export { steps };
-export const samples = ['blank', 'std_0.1', 'std_0.2', 'std_0.4', 'unknown'];
+export { samples, steps };
 export const concentrations = { blank: 0, 'std_0.1': 0.1, 'std_0.2': 0.2, 'std_0.4': 0.4 };
 export const reactionTime = 3600;
 const liquids = {
@@ -33,9 +31,8 @@ export function newRun(random = Math.random) {
     weighed: false,
     brass: 'loose',
     errorOffsets: Object.fromEntries(samples.map((key) => [key, (random() - 0.5) * 0.004])),
-    placed: {},
     positions: {},
-    pipette: null,
+    pipette: { role: 'acid', content: null },
     reactionEnd: null,
     fluid: null,
     flask: 'empty',
@@ -47,6 +44,7 @@ export function newRun(random = Math.random) {
     reading: null,
     readings: [],
     cleanup: [false, false, false, false],
+    cleanupRecorded: false,
     answer: null,
   };
 }
@@ -54,44 +52,7 @@ export function newRun(random = Math.random) {
 // Equipment IDs describe physical objects. A cuvette keeps its sample identity
 // from issue through disposal, even while another cuvette occupies the instrument.
 export function operation(s) {
-  const step = steps[s.index];
-  if (!step) return null;
-  const sample = step.cuvetteType || step.assignAs;
-  switch (step.action) {
-    case 'placeEquipment':
-      return { from: step.equipment };
-    case 'weighBrass':
-      return { from: 'brass', to: 'balance' };
-    case 'transferBrass':
-      return { from: 'brass', to: 'beaker' };
-    case 'fillPipette':
-      return { from: 'pipette', to: step.source };
-    case 'dispensePipette':
-      return { from: 'pipette', to: step.destination };
-    case 'disposePipette':
-      return { from: 'pipette', to: 'waste' };
-    case 'waitReaction':
-      return { from: 'beaker' };
-    case 'getCuvette':
-      return { from: 'rack' };
-    case 'dispenseToCuvette':
-      return { from: 'pipette', to: sample };
-    case 'toggleLid':
-      return { from: 'lid' };
-    case 'insertCuvette':
-      return { from: sample, to: 'chamber' };
-    case 'calibrateSpec':
-      return { from: 'zero' };
-    case 'measure':
-      return { from: 'read' };
-    case 'removeCuvette':
-      return { from: 'lid' };
-    case 'cleaningChecklist':
-    case 'submitCalculation':
-      return { from: 'notebook' };
-    default:
-      throw Error('Unknown copper protocol action: ' + step.action);
-  }
+  return steps[s.index] || null;
 }
 
 export function fitStandards(readings) {
@@ -128,15 +89,10 @@ export function answerFromReadings(s) {
 }
 
 export function act(s, { from, to, answer }, now = Date.now()) {
-  const step = steps[s.index],
-    expected = operation(s);
+  const step = operation(s);
   if (!step) return fail('labComplete');
-  if (from !== expected.from || to !== expected.to) return fail('invalidInteraction');
+  if (from !== step.from || to !== step.to) return fail('invalidInteraction');
   switch (step.action) {
-    case 'placeEquipment':
-      s.placed[from] = true;
-      if (from === 'pipette') s.pipette = { role: step.assignAs, content: null };
-      break;
     case 'weighBrass':
       s.weighed = true;
       s.brass = 'pan';
@@ -159,15 +115,14 @@ export function act(s, { from, to, answer }, now = Date.now()) {
       s.pipette.content = null;
       break;
     case 'fillPipette':
-      if (!s.pipette || s.pipette.content) return fail('invalidInteraction');
+      if (s.pipette?.role !== step.role || s.pipette.content) return fail('invalidInteraction');
       if (to === 'beaker' && s.fluid !== 'copper') return fail('fillFromBeaker');
       if (to === 'flask' && s.flask !== 'diluted') return fail('fillFromFlask');
       s.pipette.content = liquids[to];
       if (to === 'beaker') s.fluid = null;
       break;
     case 'disposePipette':
-      if (s.pipette?.role !== step.pipetteAssignment) return fail('invalidInteraction');
-      s.placed.pipette = false;
+      if (s.pipette?.role !== step.role) return fail('invalidInteraction');
       s.pipette = null;
       break;
     case 'waitReaction':
@@ -176,10 +131,8 @@ export function act(s, { from, to, answer }, now = Date.now()) {
       s.fluid = 'copper';
       break;
     case 'getCuvette':
-      s.activeSample = step.assignAs;
-      s.cuvettes[s.activeSample] = { filled: false };
-      // Each standard gets a clean transfer pipette when its clean cuvette is issued.
-      if (s.activeSample.startsWith('std_')) s.pipette = { role: s.activeSample, content: null };
+      s.activeSample = step.sample;
+      s.cuvettes[step.sample] = { filled: false };
       break;
     case 'dispenseToCuvette':
       if (!s.cuvettes[to] || s.cuvettes[to].filled || s.pipette?.content !== to)
@@ -219,6 +172,7 @@ export function act(s, { from, to, answer }, now = Date.now()) {
       break;
     case 'cleaningChecklist':
       if (!s.cleanup.every(Boolean)) return fail('completeCleanupFirst');
+      s.cleanupRecorded = true;
       break;
     case 'submitCalculation': {
       if (answer == null || String(answer).trim() === '' || !Number.isFinite(Number(answer)))
@@ -229,8 +183,14 @@ export function act(s, { from, to, answer }, now = Date.now()) {
       s.answer = Number(answer);
       break;
     }
+    default:
+      throw Error('Unknown copper protocol action: ' + step.action);
   }
   s.index++;
+  const next = steps[s.index];
+  // Put a clean, dedicated pipette in the stand when the next transfer needs one.
+  if (next?.action === 'fillPipette' && s.pipette?.role !== next.role)
+    s.pipette = { role: next.role, content: null };
   return { ok: true };
 }
 

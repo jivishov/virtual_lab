@@ -1,11 +1,10 @@
 import {
   t,
-  getInstruction,
   getCurrentLang,
   setLanguage,
   initLanguage,
 } from '../../copperinbrass/js/i18n/i18n.js';
-import { samples } from './model.js';
+import { samples, steps } from './protocol.js';
 export { getCurrentLang, setLanguage, initLanguage };
 const languages = ['en', 'az', 'tr', 'de'];
 const shared = {
@@ -110,17 +109,140 @@ const words = {
     'Saf suyla 100 mL’ye tamamlayın. Son damlaları pipetle ekleyip karıştırın.',
     'Mit destilliertem Wasser auf 100 mL auffüllen. Für die letzten Tropfen die Pipette verwenden, dann mischen.',
   ],
-  hintPlace: [
-    'Select the item to set it out, or drag it onto the bench.',
-    'Əşyanı seçin və ya masaya sürükləyin.',
-    'Nesneyi seçin veya tezgâha sürükleyin.',
-    'Gerät anklicken oder auf den Tisch ziehen.',
+  weighBrass: [
+    'Weigh the brass sample on the balance pan.',
+    'Latun nümunəsini tərəzinin gözündə çəkin.',
+    'Pirinç numunesini terazinin kefesinde tartın.',
+    'Die Messingprobe auf der Waagschale wiegen.',
+  ],
+  transferBrass: [
+    'Transfer the weighed brass to the 50 mL beaker in the fume hood.',
+    'Çəkilmiş latunu sorucu şkafdakı 50 mL-lik stəkana köçürün.',
+    'Tarttığınız pirinci çeker ocaktaki 50 mL’lik behere aktarın.',
+    'Die gewogene Messingprobe in das 50-mL-Becherglas im Abzug geben.',
+  ],
+  drawAcid: [
+    'Use the acid pipette to draw nitric acid from the HNO₃ bottle.',
+    'Turşu üçün ayrılmış pipetlə HNO₃ şüşəsindən nitrat turşusu götürün.',
+    'Asit pipetiyle HNO₃ şişesinden nitrik asit çekin.',
+    'Mit der Säurepipette Salpetersäure aus der HNO₃-Flasche aufnehmen.',
+  ],
+  addAcid: [
+    'Dispense the nitric acid into the beaker containing the brass.',
+    'Nitrat turşusunu latun olan stəkana əlavə edin.',
+    'Nitrik asidi pirincin bulunduğu behere ekleyin.',
+    'Die Salpetersäure zur Messingprobe im Becherglas geben.',
+  ],
+  discardAcid: [
+    'Discard the used acid pipette in the waste beaker.',
+    'İstifadə olunmuş turşu pipetini tullantı stəkanına atın.',
+    'Kullanılmış asit pipetini atık beherine bırakın.',
+    'Die gebrauchte Säurepipette in das Abfallbecherglas geben.',
+  ],
+  observeBrass: [
+    'Observe the brass in the fume hood until it dissolves.',
+    'Latun tam həll olana qədər sorucu şkafdakı stəkanı müşahidə edin.',
+    'Pirinç tamamen çözünene kadar çeker ocaktaki beheri gözlemleyin.',
+    'Die Messingprobe im Abzug beobachten, bis sie sich vollständig aufgelöst hat.',
+  ],
+  drawDigest: [
+    'Use a clean pipette to draw the dissolved sample from the beaker.',
+    'Təmiz pipetlə stəkandan həll olmuş nümunə məhlulunu götürün.',
+    'Temiz bir pipetle beherdeki numune çözeltisini çekin.',
+    'Mit einer sauberen Pipette die Probenlösung aus dem Becherglas aufnehmen.',
+  ],
+  discardCopper: [
+    'Discard the used sample pipette in the waste beaker.',
+    'İstifadə olunmuş nümunə pipetini tullantı stəkanına atın.',
+    'Kullanılmış numune pipetini atık beherine bırakın.',
+    'Die gebrauchte Probenpipette in das Abfallbecherglas geben.',
+  ],
+  drawWater: [
+    'Draw distilled water with the clean water pipette.',
+    'Təmiz su pipeti ilə distillə suyu götürün.',
+    'Temiz su pipetiyle distile su çekin.',
+    'Mit der sauberen Wasserpipette destilliertes Wasser aufnehmen.',
+  ],
+  waterBlank: ['water blank', 'boş nümunə', 'kör numune', 'Wasserblindprobe'],
+  unknownSample: ['unknown', 'naməlum nümunə', 'bilinmeyen numune', 'unbekannte Probe'],
+  standardSample: ['{value} standard', '{value} standart', '{value} standart', '{value}-Standard'],
+  takeCell: [
+    'Take a clean cuvette from the rack for the {sample}.',
+    'Ştativdən təmiz küvet götürün ({sample}).',
+    'Raftan temiz bir küvet alın ({sample}).',
+    'Eine saubere Küvette aus dem Ständer nehmen ({sample}).',
+  ],
+  drawBlank: [
+    'Refill the water pipette with distilled water for the blank.',
+    'Boş nümunə üçün su pipetini yenidən distillə suyu ilə doldurun.',
+    'Kör numune için su pipetine yeniden distile su çekin.',
+    'Die Wasserpipette für den Blindwert erneut mit destilliertem Wasser füllen.',
+  ],
+  drawStandard: [
+    'Use a clean pipette to draw the {value} copper standard.',
+    'Təmiz pipetlə {value} mis standart məhlulundan götürün.',
+    'Temiz bir pipetle {value} bakır standart çözeltisinden çekin.',
+    'Mit einer sauberen Pipette die Kupfer-Standardlösung ({value}) aufnehmen.',
+  ],
+  drawUnknown: [
+    'Use a clean pipette to draw the diluted brass solution from the flask.',
+    'Təmiz pipetlə kolbadan durulaşdırılmış latun məhlulu götürün.',
+    'Temiz bir pipetle balondaki seyreltilmiş pirinç çözeltisinden çekin.',
+    'Mit einer sauberen Pipette die verdünnte Messinglösung aus dem Messkolben aufnehmen.',
+  ],
+  fillCell: [
+    'Dispense the solution into the {sample} cuvette.',
+    'Pipetdəki mayeni {sample} işarəli küvetə köçürün.',
+    'Pipetteki sıvıyı {sample} etiketli küvete aktarın.',
+    'Den Pipetteninhalt in die mit „{sample}“ beschriftete Küvette geben.',
+  ],
+  openLid: [
+    'Open the spectrophotometer’s sample chamber.',
+    'Spektrofotometrin nümunə kamerasının qapağını açın.',
+    'Spektrofotometrenin numune haznesinin kapağını açın.',
+    'Den Deckel der Probenkammer am Spektrophotometer öffnen.',
+  ],
+  insertCell: [
+    'Insert the {sample} cuvette into the sample chamber.',
+    'Doldurulmuş küveti nümunə kamerasına daxil edin ({sample}).',
+    'Dolu küveti numune haznesine yerleştirin ({sample}).',
+    'Die gefüllte Küvette in die Probenkammer einsetzen ({sample}).',
+  ],
+  zeroBlank: [
+    'Select ZERO to close the lid and set the water blank to 0.000 A.',
+    'Qapağı bağlamaq və su ilə sıfır göstəricisini 0.000 A təyin etmək üçün ZERO düyməsini seçin.',
+    'Kapağı kapatıp su körünü 0.000 A değerine ayarlamak için ZERO düğmesini seçin.',
+    'Mit ZERO den Deckel schließen und den Wasserblindwert auf 0.000 A setzen.',
+  ],
+  readCell: [
+    'Select READ to close the lid and record the absorbance of the {sample}.',
+    'Qapağı bağlamaq və absorbansı qeyd etmək üçün READ düyməsini seçin ({sample}).',
+    'Kapağı kapatıp absorbansı kaydetmek için READ düğmesini seçin ({sample}).',
+    'Mit READ den Deckel schließen und die Absorbanz aufzeichnen ({sample}).',
+  ],
+  returnCell: [
+    'Open the lid to return the {sample} cuvette to the rack.',
+    'Küveti ştativə qaytarmaq üçün qapağı açın ({sample}).',
+    'Küveti rafa geri almak için kapağı açın ({sample}).',
+    'Den Deckel öffnen, damit die Küvette in den Ständer zurückkehrt ({sample}).',
+  ],
+  recordCleanup: [
+    'Complete the cleanup checklist in the lab notebook.',
+    'Laboratoriya dəftərində təmizlik siyahısını tamamlayın.',
+    'Laboratuvar defterindeki temizlik listesini tamamlayın.',
+    'Die Aufräum-Checkliste im Laborbuch abschließen.',
+  ],
+  reportCopper: [
+    'Calculate the mass percent of copper in your brass sample and enter it in the notebook.',
+    'Latun nümunəsində misin kütlə payını faizlə hesablayıb dəftərə yazın.',
+    'Pirinç numunesinde kütlece bakır yüzdesini hesaplayıp deftere girin.',
+    'Den Kupfer-Massenanteil der Messingprobe in Prozent berechnen und ins Laborbuch eintragen.',
   ],
   hintPair: [
-    'Drag the tool onto its target, or select the two in order.',
-    'Aləti hədəfə sürükləyin və ya əvvəl aləti, sonra hədəfi seçin.',
-    'Aracı hedefe sürükleyin veya ikisini sırayla seçin.',
-    'Werkzeug auf das Ziel ziehen oder beide nacheinander auswählen.',
+    'Drag the marked item to its target, or select the item and then its target.',
+    'İşarələnmiş əşyanı hədəfə sürükləyin və ya əvvəl əşyanı, sonra hədəfi seçin.',
+    'İşaretli nesneyi hedefe sürükleyin ya da önce nesneyi, sonra hedefi seçin.',
+    'Das markierte Objekt zum Ziel ziehen oder erst das Objekt und dann das Ziel auswählen.',
   ],
   hintSingle: [
     'Select the marked item or use Equipment.',
@@ -187,10 +309,15 @@ export function word(key) {
   return legacy(shared[key] || key).replace(/^\d+\.\s*/, '');
 }
 export function instruction(index) {
-  if (index === 15) return word('quantTransfer');
-  if (index === 20) return word('fillMark');
-  if (index === 58) return word('cleanup') + ' · ' + word('openNotebook');
-  return fix(getInstruction(index));
+  const step = steps[index];
+  if (!step) return word('completed');
+  const prompt = word(step.prompt);
+  if (!step.sample) return prompt;
+  if (step.sample === 'blank') return prompt.replace('{sample}', word('waterBlank'));
+  if (step.sample === 'unknown') return prompt.replace('{sample}', word('unknownSample'));
+  const concentration = label(step.sample);
+  const standard = word('standardSample').replace('{value}', concentration);
+  return prompt.replace('{sample}', standard).replace('{value}', concentration);
 }
 export function label(id) {
   if (samples.includes(id))
@@ -203,14 +330,5 @@ export function label(id) {
   return legacy('equipment.' + id);
 }
 export function phase(index) {
-  const thresholds = [
-    [5, 'weigh'],
-    [12, 'dissolve'],
-    [21, 'dilution'],
-    [29, 'blanking'],
-    [50, 'standardsPhase'],
-    [58, 'unknown'],
-    [60, 'report'],
-  ];
-  return word(thresholds.find(([end]) => index < end)?.[1] || 'complete');
+  return word(steps[index]?.phase || 'complete');
 }

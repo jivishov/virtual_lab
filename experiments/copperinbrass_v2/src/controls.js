@@ -201,11 +201,7 @@ export class BenchControls {
     }
     const ground = this.r.onPlane(point.x, point.y, 0);
     const inside = ground && Math.abs(ground[0]) < 7.5 && Math.abs(ground[2]) < 5;
-    if (inside && !op?.to && a.item === op?.from && this.actions.isPlacement()) {
-      this.actions.perform({ from: a.item }, this.scene.snapPosition(a.item, ground));
-      return;
-    }
-    if (inside && !target && s.placed[a.item] && this.scene.canMove(a.item, s)) {
+    if (inside && !target && this.scene.canMove(a.item, s)) {
       s.positions[a.item] = this.scene.snapPosition(a.item, this.scene.objects[a.item].pos);
     } else if (op?.to && a.item === op.from) this.actions.wrong();
     this.scene.sync(s);

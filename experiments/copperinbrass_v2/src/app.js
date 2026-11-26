@@ -1,8 +1,8 @@
-import { Run, operation, samples, steps } from './model.js';
-import { CopperScene } from './scene.js';
-import { BenchControls } from './controls.js';
+import { Run, operation, samples, steps } from './model.js?v=2';
+import { CopperScene } from './scene.js?v=2';
+import { BenchControls } from './controls.js?v=2';
 import { cameraControls } from './camera.js';
-import { drawBook, exportCSV } from './notebook.js';
+import { drawBook, exportCSV } from './notebook.js?v=2';
 import {
   getCurrentLang,
   setLanguage,
@@ -12,7 +12,7 @@ import {
   instruction,
   legacy,
   phase,
-} from './language.js';
+} from './language.js?v=2';
 
 const $ = (id) => document.getElementById(id),
   canvas = $('bench');
@@ -51,12 +51,10 @@ function show(panel) {
   if (!panel.open) panel.showModal();
 }
 function helpText() {
-  const step = steps[state().index],
-    action = op();
-  if (!step) return word('completed');
+  const action = op();
+  if (!action) return word('completed');
   if (selected && action.to) return word('selectTarget') + ' ' + label(action.to) + '.';
-  if (step.action === 'placeEquipment') return word('hintPlace');
-  if (step.action === 'waitReaction') return word('wait');
+  if (action.action === 'waitReaction') return word('wait');
   if (action.from === 'notebook') return word('openNotebook');
   return word(action.to ? 'hintPair' : 'hintSingle');
 }
@@ -74,9 +72,9 @@ function gearButtons() {
     action = op(),
     target = selected ? action?.to : action?.from;
   const ids = [
-    ...gear,
+    ...gear.filter((id) => id !== 'pipette' || (s.pipette && !s.cleanup[2])),
     ...samples.filter((k) => s.cuvettes[k]),
-    ...(s.placed.spec ? ['lid', 'chamber', 'zero', 'read'] : []),
+    'lid', 'chamber', 'zero', 'read',
     'notebook',
   ];
   $('pickPrompt').textContent = helpText();
@@ -102,6 +100,7 @@ function renderUI() {
     step = steps[idx];
   $('direction').textContent = step ? instruction(idx) : word('completed');
   $('progress').textContent = Math.min(idx + 1, steps.length) + ' / ' + steps.length;
+  $('progressTrack').setAttribute('aria-valuemax', steps.length);
   $('progressTrack').setAttribute('aria-valuenow', idx);
   $('progressTrack').firstElementChild.style.width = (100 * idx) / steps.length + '%';
   $('phase').textContent = phase(idx);
@@ -110,7 +109,7 @@ function renderUI() {
   $('tip').textContent = helpText();
   $('tip').classList.remove('error');
   $('bookStatus').classList.remove('error');
-  $('bookStatus').textContent = idx === 60 ? word('completed') : '';
+  $('bookStatus').textContent = !step ? word('completed') : '';
   for (const [i, li] of [...$('stepList').children].entries()) {
     if (i === idx) li.setAttribute('aria-current', 'step');
     else li.removeAttribute('aria-current');
@@ -139,7 +138,7 @@ function showLanguage() {
 function wrong() {
   notice(legacy('messages.invalidInteraction'), true);
 }
-function perform(input, placement = null) {
+function perform(input) {
   const old = steps[state().index],
     result = run.perform(input);
   if (!result.ok) {
@@ -154,7 +153,6 @@ function perform(input, placement = null) {
     return false;
   }
   holdObservation = false;
-  if (placement) state().positions[input.from] = placement;
   selected = null;
   scene.sync(state(), { operation: input });
   renderUI();
@@ -339,7 +337,7 @@ function bind() {
     renderUI();
   };
   $('checks').onchange = (e) => {
-    if (state().index === 58 && e.target.matches('input[data-index]'))
+    if (op()?.action === 'cleaningChecklist' && e.target.matches('input[data-index]'))
       state().cleanup[Number(e.target.dataset.index)] = e.target.checked;
     scene.sync(state(), { animate: false });
     invalidate();
@@ -404,7 +402,6 @@ async function boot() {
       wrong,
       frame,
       freeView,
-      isPlacement: () => steps[state().index]?.action === 'placeEquipment',
     });
     tickCamera = cameraControls(renderer, controls, invalidate);
     bind();
